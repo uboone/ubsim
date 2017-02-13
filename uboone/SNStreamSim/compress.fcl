@@ -1,0 +1,8 @@
+BEGIN_PROLOG
+
+compress: {
+ module_type       : "ExecuteCompression"  
+ debug             : false
+}
+
+END_PROLOG
