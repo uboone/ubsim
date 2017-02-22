@@ -40,6 +40,7 @@ function initialize
     REFERENCE_FILES=""
     INPUT_FILES=""
     UPLOAD_REFERENCE_FILE=false
+    WORKSPACE=${WORKSPACE:-$PWD}
     #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
     #~~~~~~~~~~~~~~~~~~~~~~GET VALUE FROM THE CI_TESTS.CFG ARGS SECTION~~~~~~~~~~~~~~~
@@ -125,7 +126,7 @@ function fetch_files
     for file in ${2//,/ }
     do
         echo "Command: ifdh cp $file ./"
-        ifdh cp $file ./
+        ifdh cp $file ./ > fetch_inputs.log  2>&1
         local copy_exit_code=$?
 
         if [[ $copy_exit_code -ne 0 ]]; then
@@ -168,6 +169,11 @@ function data_production
     #~~~~~~~~~~~~~IF THE TESTMASK VALUE IS SET TO 1 THEN RUN THE PRODUCTION OF THR DATA~~~~~~~~~~~~~~~~~~
     if [[ "${1}" -eq 1 ]]
     then
+        # This is LArIAT specific.
+        # The slicer stage has output filename in the form file_%#.root
+        if [[ "${STAGE_NAME}" == "slicer" && "$(basename ${0})" == *"lariatsoft"* ]]; then  # This is LArIAT specific.
+            OUTPUT_STREAM=${OUTPUT_STREAM//.root/_%#.root}
+        fi
 
         echo -e "\nNumber of events for ${STAGE_NAME} stage: $NEVENTS\n"
         echo ${EXECUTABLE_NAME} --rethrow-all -n ${NEVENTS} -o ${OUTPUT_STREAM} --config ${FHiCL_FILE} ${INPUT_FILE}
@@ -179,27 +185,27 @@ function data_production
     fi
     exitstatus $?
 
-
-    if [[ "${STAGE_NAME}" == "mergeana" ]]; then  # This is uBooNE specific.
-                                            # The mergeana stage doesn't produce an artRoot file,
-                                            # but the CI expect to have it.
+    # This is uBooNE specific.
+    # The mergeana stage doesn't produce an artRoot file,
+    # but the CI expect to have it.
+    if [[ "${STAGE_NAME}" == "mergeana" && "$(basename ${0})" == *"uboonecode"* ]]; then
         for CUR_OUT in ${OUTPUT_STREAM//-o/}; do
             touch ${CUR_OUT}
         done
     fi
 
-    [[ "${OUTPUT_LIST}" == *"_%#"* ]] && \
-        for CUR_OUT in ${OUTPUT_STREAM//-o/}
+    # This is LArIAT specific.
+    # The slicer stage has output filename in the form file_%#.root
+    if [[ "${OUTPUT_STREAM}" == *"_%#"* &&  "${STAGE_NAME}" == "slicer" && "$(basename ${0})" == *"lariatsoft"* ]]; then
+
+        for CUR_OUT in ${OUTPUT_STREAM//-o/} # this is LArIAT specific
         do
-
             CUR_OUT=${CUR_OUT//*:/}
-            ### CUR_OUT2=$(echo $CUR_OUT | sed -r "s/_%#// ; s/_[0-9]+.root/.root/") # FIXME this is LArIAT specific, but doesn't work on MacOS
-                                                                                     # for now is replaced with simplified code below
             CUR_OUT2=$(echo $CUR_OUT | sed -e "s/_%#// ; s/_1.root/.root/")
-            [ "${CUR_OUT//_%#.root/_1.root}" = "${CUR_OUT2}" ] || ln -sv ${CUR_OUT//_%#.root/_1.root} ${CUR_OUT2}
+            ln -fv ${CUR_OUT//_%#.root/_1.root} ${CUR_OUT2} && rm ${CUR_OUT//_%#.root/_1.root}
         done
+    fi
 
-    OUTPUT_LIST=${OUTPUT_LIST//_%#/}
 }
 
 function generate_data_dump
@@ -316,7 +322,7 @@ function upload_reference_file
         fi
 
         echo "ifdh cp $current_basename ${filename}"
-        ifdh cp "$current_basename" "${filename}"
+        ifdh cp "$current_basename" "${filename}" > upload_ref_files.log 2>&1
 
         if [ $? -ne 0 ];then
             #if the copy fail,let's  consider it failed
