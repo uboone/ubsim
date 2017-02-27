@@ -202,6 +202,13 @@ microboone_reco_data_producers:
   stitchkalmanhitT0Reco:          @local::T0RecoAnodeCathodePiercing_data
   trackkalmanhitT0Reco:           @local::T0RecoAnodeCathodePiercing_data
 
+  ### T0 Anode/Cathode piercing track reco
+  pandoraCosmicKHitT0RecoLoose:        @local::T0RecoAnodeCathodePiercing_data_loose
+  pandoraCosmicT0RecoLoose:            @local::T0RecoAnodeCathodePiercing_data_loose
+  pmtrackT0RecoLoose:                  @local::T0RecoAnodeCathodePiercing_data_loose
+  stitchkalmanhitT0RecoLoose:          @local::T0RecoAnodeCathodePiercing_data_loose
+  trackkalmanhitT0RecoLoose:           @local::T0RecoAnodeCathodePiercing_data_loose
+
   ### T0 Anode/Cathode piercing track reco using beam-gate-flash
   pandoraCosmicKHitT0RecoBeam:   @local::T0RecoAnodeCathodePiercing_data_beamgate
   pandoraCosmicT0RecoBeam:       @local::T0RecoAnodeCathodePiercing_data_beamgate
@@ -253,6 +260,8 @@ microboone_reco_data_fuzzytracks: [      trackkalmanhit,
                                          stitchkalmanhitContTag,
                                          trackkalmanhitT0Reco,
                                          stitchkalmanhitT0Reco,
+                                         trackkalmanhitT0RecoLoose,
+                                         stitchkalmanhitT0RecoLoose,
                                          trackkalmanhitT0RecoBeam,
                                          stitchkalmanhitT0RecoBeam ]
                                          #showerrecofuzzy ]
@@ -274,6 +283,7 @@ microboone_reco_data_cctracks: [         #trackkalmanhitcc,
                                          pmtracktag,
                                          pmtrackContTag,
                                          pmtrackT0Reco,
+                                         pmtrackT0RecoLoose,
                                          pmtrackT0RecoBeam,
                                          pmtrackcalo,
                                          pmtrackpid]
@@ -286,6 +296,7 @@ microboone_reco_data_pandoraCosmic: [    pandoraCosmic,
                                          pandoraCosmicKalmanTrack,
                                          pandoraCosmicKHittag,
                                          pandoraCosmicKHitT0Reco,
+                                         pandoraCosmicKHitT0RecoLoose,
                                          pandoraCosmicKHitT0RecoBeam,
 #                                         pandoraCosmicPMA,
                                          pandoraCosmicKHitcalo,
@@ -299,6 +310,7 @@ microboone_reco_data_pandoraCosmic: [    pandoraCosmic,
                                          pandoraCosmictag,
                                          pandoraCosmicContTag,
                                          pandoraCosmicT0Reco,
+                                         pandoraCosmicT0RecoLoose,
                                          pandoraCosmicT0RecoBeam,
                                          pandoraCosmiccalo,
                                          pandoraCosmicpid ]
@@ -579,6 +591,12 @@ microboone_reco_data_producers.pandoraCosmicT0Reco.TrackProducer:     "pandoraCo
 microboone_reco_data_producers.pmtrackT0Reco.TrackProducer:           "pmtrack"
 microboone_reco_data_producers.stitchkalmanhitT0Reco.TrackProducer:   "stitchkalmanhit"
 microboone_reco_data_producers.trackkalmanhitT0Reco.TrackProducer:    "trackkalmanhit"
+
+microboone_reco_data_producers.pandoraCosmicKHitT0RecoLoose.TrackProducer: "pandoraCosmicKHit"
+microboone_reco_data_producers.pandoraCosmicT0RecoLoose.TrackProducer:     "pandoraCosmic"
+microboone_reco_data_producers.pmtrackT0RecoLoose.TrackProducer:           "pmtrack"
+microboone_reco_data_producers.stitchkalmanhitT0RecoLoose.TrackProducer:   "stitchkalmanhit"
+microboone_reco_data_producers.trackkalmanhitT0RecoLoose.TrackProducer:    "trackkalmanhit"
 
 microboone_reco_data_producers.pandoraCosmicKHitT0RecoBeam.TrackProducer: "pandoraCosmicKHit"
 microboone_reco_data_producers.pandoraCosmicT0RecoBeam.TrackProducer:     "pandoraCosmic"
