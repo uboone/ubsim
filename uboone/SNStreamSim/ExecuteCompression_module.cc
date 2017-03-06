@@ -67,8 +67,6 @@ private:
   // Tree
   TTree* _compress_chch_tree;
   TTree* _compress_evt_tree;
-  //algo tree
-  TTree* _algo_tree;
   
   // TTree variables
   double _compression;
@@ -90,7 +88,7 @@ private:
   double _time_loop, _time_get, _time_algo, _time_study, _time_calc, _time_swap, _time_ide, _time_read;
 
   /// Compression Algorithm Object...performs compression
-  compress::CompressionAlgoBase* _compress_algo;
+  std::unique_ptr< compress::CompressionAlgoBase > _compress_algo;
 
   // get the geometry
   art::ServiceHandle<geo::Geometry> _geom;
@@ -113,10 +111,6 @@ void ExecuteCompression::beginJob()
 
   art::ServiceHandle<art::TFileService> tfs;
 
-
-  _algo_tree = tfs->make<TTree>("_algo_tree","algo tree");
-
-
   _compress_evt_tree = tfs->make<TTree>("_compress_evt_tree","SNCompression event tree");
   _compress_evt_tree->Branch("_evt",&_evt,"evt/I");
   _compress_evt_tree->Branch("_compression",&_compression,"compression/D");
@@ -132,9 +126,6 @@ void ExecuteCompression::beginJob()
   _compression = _compressionU = _compressionV = _compressionY = 0;
   _NplU = _NplV = _NplY = 0;
 
-  _compress_algo->setTTree(_algo_tree);
-  _compress_algo->SetTTreeBranches();
-
   return;
 }
 
@@ -148,16 +139,16 @@ void ExecuteCompression::endJob()
 
 ExecuteCompression::ExecuteCompression(fhicl::ParameterSet const & p)
   : _compress_algo(nullptr)
-// Initialize member data here.
+    // Initialize member data here.
 {
-
+  
   produces< std::vector< recob::Wire > >();
 
   _debug             = p.get<bool>       ("debug");
   
   if (_debug) { std::cout << "setting up default compression algo" << std::endl; }
-  _compress_algo = new compress::AlgoDefault();
-
+  _compress_algo =  compress::AlgorithmFactory().MakeCompressionAlgo(p);
+  
 }
 
 void ExecuteCompression::produce(art::Event & e)
