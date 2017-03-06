@@ -3,21 +3,27 @@
 
 #include <string>
 #include <cstdlib>
+
+// Abstract algorithm class include
 #include "uboone/SNStreamSim/Fmwk/CompressionAlgoBase.h"
-#include "CompressionAlgosncompress.h"
+
+// Framework Includes
+#include "fhiclcpp/ParameterSet.h"
 
 namespace compress {
 
 
-  class AlgoDefault : public CompressionAlgosncompress {
+  class AlgorithmFactory {
 
   public:
-    AlgoDefault();
     
-    ~AlgoDefault(){}
+    AlgorithmFactory() {}
+    ~AlgorithmFactory() {}
 
+    std::unique_ptr< CompressionAlgoBase > MakeCompressionAlgo(fhicl::ParameterSet const& p);
+  
   };
-
+  
 }
 
 #endif

@@ -1,8 +1,6 @@
 /**
  * \file CompressionAlgoBase.h
  *
- * \ingroup DavidAna
- * 
  * @author David Caratelli
  */
 
@@ -15,7 +13,9 @@
 #include <iostream>
 #include <vector>
 #include <utility> // for pair
-#include "TTree.h"
+
+// Art Framework
+#include "fhiclcpp/ParameterSet.h"
 
 namespace compress {
 
@@ -31,6 +31,9 @@ namespace compress {
     
     /// Default constructor
     CompressionAlgoBase();
+
+    /// Constructor with input
+    CompressionAlgoBase(fhicl::ParameterSet const&pset);
     
     /// Default destructor
     virtual ~CompressionAlgoBase(){}
@@ -61,12 +64,6 @@ namespace compress {
     /// Get iterator to end of input WF
     virtual const tick GetInputEnd() { return _end; }
 
-    // set ttree branches
-    virtual void SetTTreeBranches() {}
-
-    // set TTree pointer
-    void setTTree(TTree* tree) { _algo_tree = tree; }
-    
 
   protected:
 
@@ -92,9 +89,6 @@ namespace compress {
     std::vector<double> _baselines;
     /// Vector where to hold the variance measured per block
     std::vector<double> _variances;
-
-    // TTree pointer
-    TTree* _algo_tree;
 
   };
 

@@ -6,6 +6,8 @@ art_make(
 			#${CETLIB}
                         #${Boost_SYSTEM_LIBRARY}
 			${ROOT_BASIC_LIB_LIST}
+		        ${ART_FRAMEWORK_CORE}	
+		        ${FHICLCPP}		
         )
 
 

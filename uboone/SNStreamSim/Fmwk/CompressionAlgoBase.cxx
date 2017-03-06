@@ -8,9 +8,10 @@ namespace compress {
   CompressionAlgoBase::CompressionAlgoBase(){
 
     _verbose = false; 
-    //_InWF.clear();
-    //_OutWF.clear();
-    //_OutWFStartTick.clear();
+  }
+
+  CompressionAlgoBase::CompressionAlgoBase(fhicl::ParameterSet  const &pset){
+    CompressionAlgoBase();
   }
   
   void CompressionAlgoBase::ApplyCompression(const std::vector<short> &waveform, int mode, const unsigned int ch){

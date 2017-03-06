@@ -1,56 +1,58 @@
-#ifndef COMPRESSIONALGOSNCOMPRESS_CXX
-#define COMPRESSIONALGOSNCOMPRESS_CXX
+#ifndef MICROBOONEFIRMWARE_CXX
+#define MICROBOONEFIRMWARE_CXX
 
-#include "CompressionAlgosncompress.h"
+#include "MicrobooneFirmware.h"
 #include <limits>
 #include <cstddef>
 
 namespace compress {
   
 
-  CompressionAlgosncompress::CompressionAlgosncompress()
+  MicrobooneFirmware::MicrobooneFirmware(fhicl::ParameterSet const& pset)
     : CompressionAlgoBase()
   {
-    _maxADC = 4095;
-    _buffer = std::vector<std::vector<int>>(3,std::vector<int>(2,0));
-    //_buffer.reserve(3);
-    //_buffer[0].reserve(2);
-    //_buffer[1].reserve(2);
-    //_buffer[2].reserve(2);
-    _thresh = std::vector<double>(3,0.);
+
+    _thresh = std::vector<int>(3,0.);
     _pol    = std::vector<int>(3,0);
-    //_thresh.reserve(3);
     std::vector<std::vector<int> > tmp(3,std::vector<int>(2,0));
     _buffer = tmp;
+    
+    std::vector<int> fCompressThresholds   = pset.get< std::vector<int> > ("CompressThresholds");
+    std::vector<int> fPolarity             = pset.get< std::vector<int> > ("Polarity");
+    _maxADC                                = pset.get< int >              ("MaxADC");
+    std::vector<int> fPlaneBuffers         = pset.get< std::vector<int> > ("PlaneBuffers");
+    _block                                 = pset.get< int >              ("BlockSize");
+    _deltaB                                = pset.get< int >              ("BaselineThreshold");
+    _deltaV                                = pset.get< int >              ("VarianceThreshold");
+    bool fDebug                            = pset.get< bool >             ("Debug");
 
-    _fillTree = false;
+    // the input for _deltaB is in ADC but the value used in the algorithm is in ADC^2:
+    _deltaB *= _deltaB;
 
-  }
+    if (fPlaneBuffers.size() != 6) {
+      throw std::runtime_error("ERROR in MicrobooneFirmware: incorrect size of input for plane-buffer values.");
+    }
+    
+    SetUVYplaneBuffer(fPlaneBuffers[0],fPlaneBuffers[1],fPlaneBuffers[2],
+		      fPlaneBuffers[3],fPlaneBuffers[4],fPlaneBuffers[5]);
 
-  void CompressionAlgosncompress::SetTTreeBranches()
-  {
-
-    if (!_algo_tree){
-      std::cout << "no TTree setup...quit" << std::endl;
-      return;
+    if (fPolarity.size() != 3) {
+      throw std::runtime_error("ERROR in MicrobooneFirmware: incorrect size of input for Polarity values.");
     }
 
-    //Setup tree
-    _algo_tree->Branch("_pl",&_pl,"pl/I");
-    _algo_tree->Branch("_v1",&_v1,"v1/I");
-    _algo_tree->Branch("_v2",&_v2,"v2/I");
-    _algo_tree->Branch("_v3",&_v3,"v3/I");
-    _algo_tree->Branch("_b1",&_b1,"b1/I");
-    _algo_tree->Branch("_b2",&_b2,"b2/I");
-    _algo_tree->Branch("_b3",&_b3,"b3/I");
-    _algo_tree->Branch("_max",&_max,"max/D");
-    _algo_tree->Branch("_save",&_save,"save/I");
+    SetPolarity(fPolarity[0], fPolarity[1], fPolarity[2]);
 
-    return;
+    if (fCompressThresholds.size() != 3) {
+      throw std::runtime_error("ERROR in MicrobooneFirmware: incorrect size of input for CompressThresholds values.");
+    }
+
+    SetCompressThresh(fCompressThresholds[0], fCompressThresholds[1], fCompressThresholds[2]);
+
+    SetDebug(fDebug);
 
   }
-  
-  void CompressionAlgosncompress::SetUVYplaneBuffer(int upre, int upost, int vpre, int vpost, int ypre, int ypost){
+
+  void MicrobooneFirmware::SetUVYplaneBuffer(int upre, int upost, int vpre, int vpost, int ypre, int ypost){
     
     _buffer[0][0]  = upre;
     _buffer[0][1] = upost;
@@ -62,7 +64,7 @@ namespace compress {
   }
   
   
-  void CompressionAlgosncompress::ApplyCompression(const std::vector<short> &waveform, const int mode, const unsigned int ch){
+  void MicrobooneFirmware::ApplyCompression(const std::vector<short> &waveform, const int mode, const unsigned int ch){
     
     // iterator to the beginning and end of the waveform
     _begin = waveform.begin();
@@ -117,8 +119,8 @@ namespace compress {
 	  t = _thisTick - _block + 1;
 	  for (; t < _thisTick + 1; t++){
 	    diff = ( (*t) - baseline ) * ( (*t) - baseline );
-	    if (diff < 4095) var += diff;
-	    else var += 4095;
+	    if (diff < _maxADC) var += diff;
+	    else var += _maxADC;
 	  }
 	  var = var >> 6;
 	  if (_debug){
@@ -139,8 +141,8 @@ namespace compress {
 	  int nn = 0;
 	  for (; t < _thisTick + _block + 1; t++){
 	    diff = ( (*t) - baseline ) * ( (*t) - baseline );
-	    if (diff < 4095) var += diff;
-	    else var += 4095;
+	    if (diff < _maxADC) var += diff;
+	    else var += _maxADC;
 	    nn += 1;
 	  }
 	  var = var >> 6;
@@ -164,8 +166,8 @@ namespace compress {
 	  t = _thisTick + 1;
 	  for (; t < _thisTick + _block + 1; t++){
 	    diff = ( (*t) - baseline ) * ( (*t) - baseline );
-	    if (diff < 4095) var += diff;
-	    else var += 4095;
+	    if (diff < _maxADC) var += diff;
+	    else var += _maxADC;
 	  }
 	  var = var >> 6;
 
@@ -205,8 +207,6 @@ namespace compress {
 	  _baselineMap[ch] = _baseline[1];
 	  if (_debug) std::cout << "Baseline updated to value " << _baselineMap[ch] << std::endl;
 	}
-	if (_algo_tree)
-	  _algo_tree->Fill();
       }// if we hit the end of a new block
 
       _v1 = _variance[0];
@@ -301,20 +301,7 @@ namespace compress {
   }
 
 
-  bool CompressionAlgosncompress::PassThreshold(double thisADC, double base){
-
-    // if positive threshold
-    // if (_thresh[_pl] >= 0){
-    //      if (thisADC > base + _thresh[_pl])
-    //	return true;
-    //   }
-	// if negative threshold
-    //    else{
-    //      if (thisADC < base + _thresh[_pl])
-    //	return true;
-    //    }
-
-    //BEGIN ANYA EDIT
+  bool MicrobooneFirmware::PassThreshold(double thisADC, double base){
 
     if (_pol[_pl] == 0){ //unipolar setting set at command line
 

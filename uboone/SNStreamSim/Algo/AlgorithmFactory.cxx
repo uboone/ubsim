@@ -3,21 +3,30 @@
 
 #include "AlgorithmFactory.h"
 
+// Algorithms
+#include "MicrobooneFirmware.h"
+
 namespace compress {
 
-  AlgoDefault::AlgoDefault() {
+  std::unique_ptr< CompressionAlgoBase > AlgorithmFactory::MakeCompressionAlgo(fhicl::ParameterSet const& p) {
 
-    std::cout << "setting up algorithm..." << std::endl;
+    std::cout << "creating algorithm" << std::endl;
+
+    std::string algname = p.get<std::string>("CompressionAlgoName");
+
+    std::unique_ptr< CompressionAlgoBase > ptr;
+
+    if (algname.compare("MicrobooneFirmware") == 0) {
+      std::unique_ptr< CompressionAlgoBase> new_ptr(new MicrobooneFirmware(p) );
+      ptr.swap(new_ptr);
+    }
     
-    this->SetCompressThresh(30,30,30);
-    this->SetPolarity(1,1,1);
-    this->SetMaxADC(4095);
-    this->SetUVYplaneBuffer(7,7,7,7,7,7);
-    this->SetBlockSize(64);
-    this->SetBaselineThresh(2.0);
-    this->SetVarianceThresh(2.0);
-    this->SetDebug(false);
+    else {
+      std::cout << "Algorithm name provided is " << algname << std::endl;
+      throw std::runtime_error("ERROR in AlgorithmFactory: no registered algorithm by that name.");
+    }
 
+    return std::move(ptr);
   }
 
 }
