@@ -16,6 +16,10 @@ T0RecoAnodeCathodePiercing: {
  T0posMax          :  507. # microseconds
  top2side          : true
  side2bottom       : true
+ front2side        : true
+ back2side         : true
+ side2front        : true
+ side2back         : true
  debug             : false
 }
 
