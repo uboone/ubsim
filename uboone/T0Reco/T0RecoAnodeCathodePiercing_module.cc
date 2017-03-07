@@ -138,7 +138,7 @@ T0RecoAnodeCathodePiercing::T0RecoAnodeCathodePiercing(fhicl::ParameterSet const
 
   fTrackProducer     = p.get<std::string>("TrackProducer");
   fFlashProducer     = p.get<std::string>("FlashProducer");
-  fTPCResolution     = p.get<double>     ("TPCResolution");
+  fTPCResolution     = p.get<double>     ("Resolution");
   fTimeResA          = p.get<double>     ("TimeResA");
   fTimeResC          = p.get<double>     ("TimeResC");
   fRecoT0TimeOffsetA = p.get<double>     ("RecoT0TimeOffsetA");
