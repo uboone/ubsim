@@ -4,7 +4,7 @@
 // File:        T0RecoAnodeCathodePiercingAna_module.cc
 //
 // Generated at Wed Jul 13 20:22:39 2016
-// Authors: David Caratelli and Chris Barnes
+// Authors: David Caratelli & Chris Barnes
 ////////////////////////////////////////////////////////////////////////
 
 #include "art/Framework/Core/EDAnalyzer.h"
@@ -71,8 +71,11 @@ private:
   std::string fCosmicTagProducer;
 
   bool        fUseMC;
-  double      fResolution; // cm resolution to allow mc-reco track matching. [Y,Z] must be within this distance
 
+  // Declare the two resolution values
+  double      fTPCResolution; // cm resolution on the faces of the TPC to determine if the track pierced that face
+  double      fMCResolution; // cm resolution to allow mc-reco track matching. [Y,Z] must be within this distance
+  
   // debug mode?
   bool _debug;
 
@@ -95,8 +98,6 @@ private:
   double _mc_y_start, _mc_y_end;
   double _mc_z_start, _mc_z_end;
   int    _matched;
-  int    _anode;
-  int    _cathode;
   int    _run, _subrun, _event;
 
   TTree* _mucs_tree;
@@ -113,11 +114,36 @@ private:
   float _mag;
   float _2d_adc;
 
+  // Define the variables for which face of the TPC that the particle pierces a bit more completely
+  
+  // Y-Faces of the TPC
+  int    _enters_top;
+  int    _exits_bottom;
+
+  // Z-Faces of the TPC
+  int    _enters_front;
+  int    _enters_back;
+  int    _exits_front;
+  int    _exits_back;
+
+  // X-Faces of the TPC
+  int    _enters_anode;
+  int    _enters_cathode;
+  int    _exits_anode;
+  int    _exits_cathode;
+
+  // Set a boolean variable for if one of the conditionals for which face of the TPC the track entered has been set yet.
+  bool if_loop_has_already_been_entered;
+
   // functions to be used throughout module
   bool   TrackEntersTop     (const std::vector<TVector3>& sorted_trk);
+  bool   TrackEntersFront   (const std::vector<TVector3>& sorted_trk);
+  bool   TrackEntersBack    (const std::vector<TVector3>& sorted_trk);
   bool   TrackEntersAnode   (const std::vector<TVector3>& sorted_trk);
   bool   TrackEntersSide    (const std::vector<TVector3>& sorted_trk);
   bool   TrackExitsBottom   (const std::vector<TVector3>& sorted_trk);
+  bool   TrackExitsFront    (const std::vector<TVector3>& sorted_trk);
+  bool   TrackExitsBack     (const std::vector<TVector3>& sorted_trk);
   bool   TrackExitsAnode    (const std::vector<TVector3>& sorted_trk);
   bool   TrackExitsSide     (const std::vector<TVector3>& sorted_trk);
 
@@ -141,22 +167,24 @@ T0RecoAnodeCathodePiercingAna::T0RecoAnodeCathodePiercingAna(fhicl::ParameterSet
   fHitProducer       = p.get<std::string>("HitProducer"      );
   fCosmicTagProducer = p.get<std::string>("CosmicTagProducer");
   fUseMC             = p.get<bool>       ("UseMC"            );
-  fResolution        = p.get<double>     ("Resolution"       );
+  fTPCResolution     = p.get<double>     ("TPCResolution"       );
+  fMCResolution      = p.get<double>     ("MCResolution"        );
   _debug             = p.get<bool>       ("debug"            );
 
   // get boundaries based on detector bounds
   auto const* geom = lar::providerFrom<geo::Geometry>();
 
-  _TOP    =   geom->DetHalfHeight() - fResolution;
-  _BOTTOM = - geom->DetHalfHeight() + fResolution;
-  _FRONT  =   fResolution;
-  _BACK   =   geom->DetLength() - fResolution;
+  _TOP    =   geom->DetHalfHeight() - fTPCResolution;
+  _BOTTOM = - geom->DetHalfHeight() + fTPCResolution;
+  _FRONT  =   fTPCResolution;
+  _BACK   =   geom->DetLength() - fTPCResolution;
 
 }
 
 void T0RecoAnodeCathodePiercingAna::beginJob()
 {
 
+  // '_tree'
   art::ServiceHandle<art::TFileService> tfs;
   _tree = tfs->make<TTree>("_tree","T0 reco performance");
   _tree->Branch("_mc_time",&_mc_time,"mc_time/D");
@@ -179,13 +207,29 @@ void T0RecoAnodeCathodePiercingAna::beginJob()
   _tree->Branch("_rc_x_end",&_rc_x_end,"rc_x_end/D");
   _tree->Branch("_rc_y_end",&_rc_y_end,"rc_y_end/D");
   _tree->Branch("_rc_z_end",&_rc_z_end,"rc_z_end/D");
-  // information on whether track enters/exits which sides
-  _tree->Branch("_anode"  ,&_anode  ,"anode/I"  );
-  _tree->Branch("_cathode",&_cathode,"cathode/I");
+  
   _tree->Branch("_run",&_run,"run/I");
   _tree->Branch("_subrun",&_subrun,"subrun/I");
   _tree->Branch("_event",&_event,"event/I");
 
+  // Define the branches for which face of the TPC that the track pierced.
+  // Y-Faces of TPC
+  _tree->Branch("_enters_top", &_enters_top, "enters_top/I");
+  _tree->Branch("_exits_bottom", &_exits_bottom, "exits_bottom/I");
+
+  // Z-Faces of the TPC
+  _tree->Branch("_enters_front", &_enters_front, "enters_front/I");
+  _tree->Branch("_enters_back", &_enters_back, "enters_back/I");
+  _tree->Branch("_exits_front", &_exits_front, "exits_front/I");
+  _tree->Branch("_exits_back", &_exits_back, "exits_back/I");
+
+  // X-Faces of the TPC
+  _tree->Branch("_enters_anode", &_enters_anode, "enters_anode/I");
+  _tree->Branch("_enters_cathode", &_enters_cathode, "enters_cathode/I");
+  _tree->Branch("_exits_anode", &_exits_anode, "exits_anode/I");
+  _tree->Branch("_exits_cathode", &_exits_cathode, "exits_cathode/I");
+
+  // '_mucs_tree'
   _mucs_tree = tfs->make<TTree>("_mucs_tree","MuCS tagged tracks tree");
   _mucs_tree->Branch("_reco_time",&_reco_time,"reco_time/D");
   _mucs_tree->Branch("_length", &_length, "length/D");
@@ -198,12 +242,28 @@ void T0RecoAnodeCathodePiercingAna::beginJob()
   _mucs_tree->Branch("_rc_x_end",&_rc_x_end,"rc_x_end/D");
   _mucs_tree->Branch("_rc_y_end",&_rc_y_end,"rc_y_end/D");
   _mucs_tree->Branch("_rc_z_end",&_rc_z_end,"rc_z_end/D");
-  _mucs_tree->Branch("_anode"  ,&_anode  ,"anode/I"  );
-  _mucs_tree->Branch("_cathode",&_cathode,"cathode/I");
   _mucs_tree->Branch("_run",&_run,"run/I");
   _mucs_tree->Branch("_subrun",&_subrun,"subrun/I");
   _mucs_tree->Branch("_event",&_event,"event/I");
 
+  // Define the branches for which face of the TPC that the track pierced.                                                                                                   
+  // Y-Faces of TPC                                                                                                                                                           
+  _mucs_tree->Branch("_enters_top", &_enters_top, "enters_top/I");
+  _mucs_tree->Branch("_exits_bottom", &_exits_bottom, "exits_bottom/I");
+
+  // Z-Faces of the TPC                                                                                                                                                       
+  _mucs_tree->Branch("_enters_front", &_enters_front, "enters_front/I");
+  _mucs_tree->Branch("_enters_back", &_enters_back, "enters_back/I");
+  _mucs_tree->Branch("_exits_front", &_exits_front, "exits_front/I");
+  _mucs_tree->Branch("_exits_back", &_exits_back, "exits_back/I");
+
+  // X-Faces of the TPC                                                                                                                                                    
+  _mucs_tree->Branch("_enters_anode", &_enters_anode, "enters_anode/I");
+  _mucs_tree->Branch("_enters_cathode", &_enters_cathode, "enters_cathode/I");
+  _mucs_tree->Branch("_exits_anode", &_exits_anode, "exits_anode/I");
+  _mucs_tree->Branch("_exits_cathode", &_exits_cathode, "exits_cathode/I");
+
+  // '_calo_tree'
   _calo_tree = tfs->make<TTree>("_calo_tree","Track Calorimetry TTree");
   _calo_tree->Branch("_x",&_x,"x/F");
   _calo_tree->Branch("_x_corr",&_x_corr,"x_corr/F");
@@ -216,6 +276,7 @@ void T0RecoAnodeCathodePiercingAna::beginJob()
   _calo_tree->Branch("_run",&_run,"run/I");
   _calo_tree->Branch("_dqds",&_dqds,"dqds/F");
 
+  // '_2dhit_tree'
   _2dhit_tree = tfs->make<TTree>("_2dhit_tree","2D Track Calorimetry TTree");
   _2dhit_tree->Branch("_mag",&_mag,"mag/F"); // track length measured as distance from entering to exiting point
   _2dhit_tree->Branch("_2d_adc",&_2d_adc,"2d_adc/F");
@@ -226,8 +287,6 @@ void T0RecoAnodeCathodePiercingAna::beginJob()
   _2dhit_tree->Branch("_rc_y_end",&_rc_y_end,"rc_y_end/D");
   _2dhit_tree->Branch("_rc_z_end",&_rc_z_end,"rc_z_end/D");
   _2dhit_tree->Branch("_t0",&_t0,"t0/D");
-
-  fResolution = 10; // cm
 
   // Use '_detp' to find 'efield' and 'temp'
   auto const* _detp = lar::providerFrom<detinfo::DetectorPropertiesService>();
@@ -240,7 +299,6 @@ void T0RecoAnodeCathodePiercingAna::beginJob()
 
 void T0RecoAnodeCathodePiercingAna::analyze(art::Event const & e)
 {
-
   _event  = e.event();
   _subrun = e.subRun();
   _run    = e.run();
@@ -333,12 +391,50 @@ void T0RecoAnodeCathodePiercingAna::analyze(art::Event const & e)
       _py = (_rc_y_end - _rc_y_start) / _mag;
       _pz = (_rc_z_end - _rc_z_start) / _mag;
 
-      _anode = _cathode = 0;
+      // Set all of the variables for which face of the TPC that the track pierced equal to 0
 
-      if ( (TrackExitsBottom(sorted_trk) == true) && (TrackEntersAnode(sorted_trk) == true)  ) { _anode = 1; _cathode = 0; }
-      if ( (TrackExitsBottom(sorted_trk) == true) && (TrackEntersAnode(sorted_trk) == false) ) { _anode = 0; _cathode = 1; }
-      if ( (TrackEntersTop(sorted_trk) == true)   && (TrackExitsAnode(sorted_trk) == true)   ) { _anode = 1; _cathode = 0; }
-      if ( (TrackEntersTop(sorted_trk) == true)   && (TrackExitsAnode(sorted_trk) == false)  ) { _anode = 0; _cathode = 1; }
+      _enters_top = _exits_bottom = _enters_front = _enters_back = _exits_front = _exits_back = _enters_anode = _enters_cathode = _exits_anode = _exits_cathode = 0;
+
+      // Set 'if_loop_has_already_been_entered' to false.
+      if_loop_has_already_been_entered = false;
+
+      // These conditionals handle the cases of the top-entering and bottom-exiting tracks.
+      // Anode to Bottom
+      if ( (TrackExitsBottom(sorted_trk) == true) && (TrackEntersAnode(sorted_trk) == true)  ) { _exits_bottom = 1; _enters_anode = 1;   if_loop_has_already_been_entered = true;  }
+
+      // Cathode to Bottom
+      if ( (TrackExitsBottom(sorted_trk) == true) && (TrackEntersAnode(sorted_trk) == false) ) { _exits_bottom = 1; _enters_cathode = 1; if_loop_has_already_been_entered = true;  }
+      
+      // Top to Anode
+      if ( (TrackEntersTop(sorted_trk) == true)   && (TrackExitsAnode(sorted_trk) == true)   ) { _enters_top = 1;   _exits_anode = 1;    if_loop_has_already_been_entered = true;  }
+
+      // Top to Cathode
+      if ( (TrackEntersTop(sorted_trk) == true)   && (TrackExitsAnode(sorted_trk) == false)  ) { _enters_top = 1;   _exits_cathode = 1;  if_loop_has_already_been_entered = true;  }
+
+      // These conditionals handle the cases of the endcap-piercing tracks (tracks can either enter or exit these faces of the TPC).
+      // Anode to Front
+      if ( (TrackExitsFront(sorted_trk) == true) && (TrackEntersAnode(sorted_trk) == true)  && (if_loop_has_already_been_entered == false)  ) { _exits_front = 1;  _enters_anode = 1;    }
+
+      // Cathode to Front
+      if ( (TrackExitsFront(sorted_trk) == true) && (TrackEntersAnode(sorted_trk) == false) && (if_loop_has_already_been_entered == false)  ) { _exits_front = 1;  _enters_cathode = 1;  }
+
+      // Anode to Back
+      if ( (TrackExitsBack(sorted_trk) == true) && (TrackEntersAnode(sorted_trk) == true)   && (if_loop_has_already_been_entered == false)  ) { _exits_back = 1;   _enters_anode = 1;    }
+
+      // Cathode to Back
+      if ( (TrackExitsBack(sorted_trk) == true) && (TrackEntersAnode(sorted_trk) == false)  && (if_loop_has_already_been_entered == false)  ) { _exits_back = 1;   _enters_cathode = 1;  }
+
+      // Front to Anode
+      if ( (TrackEntersFront(sorted_trk) == true) && (TrackExitsAnode(sorted_trk) == true)  && (if_loop_has_already_been_entered == false)  ) { _enters_front = 1; _exits_anode = 1;     }
+      
+      // Front to Cathode
+      if ( (TrackEntersFront(sorted_trk) == true) && (TrackExitsAnode(sorted_trk) == false) && (if_loop_has_already_been_entered == false)  ) { _enters_front = 1; _exits_cathode = 1;   }
+
+      // Back to Anode
+      if ( (TrackEntersBack(sorted_trk) == true) && (TrackExitsAnode(sorted_trk) == true)   && (if_loop_has_already_been_entered == false)  ) { _enters_back = 1;  _exits_anode = 1;     }
+
+      // Back to Cathode
+      if ( (TrackEntersBack(sorted_trk) == true) && (TrackExitsAnode(sorted_trk) == false)  && (if_loop_has_already_been_entered == false)  ) { _enters_back = 1;  _exits_cathode = 1;   }
 
       // reconstructed time comes from T0 object
       _rc_time = t0->Time();
@@ -362,7 +458,7 @@ void T0RecoAnodeCathodePiercingAna::analyze(art::Event const & e)
 	  auto const& mctrk = mctrk_h->at(j);
 	  
 	  // try matching to MC
-	  if (MatchTracks(track, mctrk, fResolution) == false)
+	  if (MatchTracks(track, mctrk, fMCResolution) == false)
 	    continue;
 	  
 	  // matched -> get MCTrack time and reconstructed track reconstructed T0
@@ -461,7 +557,6 @@ void T0RecoAnodeCathodePiercingAna::analyze(art::Event const & e)
 }
 
 
-
 bool T0RecoAnodeCathodePiercingAna::MatchTracks(const recob::Track& track, const sim::MCTrack& mctrk, const double& res)
 {
   //assumes both the reco track
@@ -512,6 +607,52 @@ bool   T0RecoAnodeCathodePiercingAna::TrackEntersTop(const std::vector<TVector3>
   return false;
 }
 
+
+bool T0RecoAnodeCathodePiercingAna::TrackEntersFront(const std::vector<TVector3>& sorted_trk)
+{
+
+  // Determine if the track enters the                                                                                              
+  // front of the TPC based on if the position                                                                                  
+  // of its initial Z-coordinate is less than                                                                                     
+  // the location of the front of the TPC in Z                                                                                                                                    
+
+  // First define 'top_pt' to mean the point at the start of the track                                                                     
+  auto const& top_pt = sorted_trk.at(0);
+
+  if (top_pt.Z() < _FRONT)
+    return true;
+
+  // I may include the case in which I check                                                                                        
+  // the y-coordinates as well, but I will not                                                                                                  
+  // implement that at this time                                                                                                                                                
+
+  // If this condition is not satisfied, then return 'false' (the track was not determined                                                                                
+  // within resolution to enter the front of the TPC)                                                                                                             
+  return false;
+}
+
+
+bool T0RecoAnodeCathodePiercingAna::TrackEntersBack(const std::vector<TVector3>& sorted_trk)
+{
+
+  // Determines if the track enters the                                                                                               
+  // back of the TPC based on if the position                                                                                         
+  // of its initial Z-coordinate is greater                                                                                                
+  // than the location of the back of the                                                                                                                         
+  // TPC in Z                                                                                                                                                                      
+
+  // First define 'top_pt' to mean the point at the start of the track                                                                      
+  auto const& top_pt = sorted_trk.at(0);
+
+  if (top_pt.Z() > _BACK)
+    return true;
+
+  // If this condition is not satisfied, then return 'false' (the track was not determined                                                                                  
+  // within resolution to enter the back of the TPC)                                                                                                                  
+  return false;
+}
+
+
 bool   T0RecoAnodeCathodePiercingAna::TrackEntersAnode(const std::vector<TVector3>& sorted_trk)
 {
 
@@ -555,10 +696,10 @@ bool   T0RecoAnodeCathodePiercingAna::TrackEntersSide(const std::vector<TVector3
   if ( (top_pt.Z() < _FRONT) or (top_pt.Z() > _BACK) )
     return false;
 
-
   // If the function makes it this far, then it will enter through one of the sides of the TPC
   return true;
 }
+
 
 bool   T0RecoAnodeCathodePiercingAna::TrackExitsBottom(const std::vector<TVector3>& sorted_trk)
 {
@@ -570,6 +711,43 @@ bool   T0RecoAnodeCathodePiercingAna::TrackExitsBottom(const std::vector<TVector
 
   return false;
 }
+
+
+bool   T0RecoAnodeCathodePiercingAna::TrackExitsFront(const std::vector<TVector3>& sorted_trk)
+{
+
+  // Determine if the track exits the                                                                                                                                       
+  // front of the TPC based on if the position                                                                                                                          
+  // of its final Z-coordinate is less than                                                                                                                      
+  // the location of the front of the TPC in Z                                                                                                                                      
+
+  // First define 'bottom_pt' to mean the point at the end of the track                                                                                                      
+  auto const& bottom_pt = sorted_trk.at(sorted_trk.size() - 1);
+
+  if (bottom_pt.Z() < _FRONT)
+    return true;
+
+  return false;
+}
+
+
+bool   T0RecoAnodeCathodePiercingAna::TrackExitsBack(const std::vector<TVector3>& sorted_trk)
+{
+
+  // Determine if the track exits the                                                                                                                           
+  // front of the TPC based on if the position                                                                                                          
+  // of its final Z-coordinate is less than                                                                                                                      
+  // the location of the front of the TPC in Z                                                                                                                                     
+
+  // First define 'bottom_pt' to mean the point at the end of the track                                                                                                  
+  auto const& bottom_pt = sorted_trk.at(sorted_trk.size() - 1);
+
+  if (bottom_pt.Z() > _BACK)
+    return true;
+
+  return false;
+}
+
 
 bool   T0RecoAnodeCathodePiercingAna::TrackExitsAnode(const std::vector<TVector3>& sorted_trk)
 {
@@ -616,6 +794,7 @@ bool   T0RecoAnodeCathodePiercingAna::TrackExitsSide(const std::vector<TVector3>
 
   return true;
 }
+
 
 void   T0RecoAnodeCathodePiercingAna::SortTrackPoints(const recob::Track& track, std::vector<TVector3>& sorted_trk)
 {
