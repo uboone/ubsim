@@ -3,8 +3,8 @@
 // Module Type: analyzer
 // File:        T0RecoAnodeCathodePiercingAna_module.cc
 //
-// Generated at Wed Jul 13 20:22:39 2016 by David Caratelli using artmod
-// from cetpkgsupport v1_10_02.
+// Generated at Wed Jul 13 20:22:39 2016
+// Authors: David Caratelli and Chris Barnes
 ////////////////////////////////////////////////////////////////////////
 
 #include "art/Framework/Core/EDAnalyzer.h"
