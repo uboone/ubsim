@@ -4,17 +4,17 @@ simple_plugin(KalmanFilterTest "module"
 	      ${ART_FRAMEWORK_CORE}
 	      ${ART_FRAMEWORK_PRINCIPAL}
 	      ${ART_FRAMEWORK_SERVICES_REGISTRY}
-	      art_Persistency_Common canvas_Persistency_Common
-	      art_Persistency_Provenance canvas_Persistency_Provenance
+	      art_Persistency_Common canvas
+	      art_Persistency_Provenance canvas
 	      ${ART_FRAMEWORK_SERVICES_BASIC}
 	      ${ART_FRAMEWORK_SERVICES_OPTIONAL}
 	      ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
 	      ${ART_FRAMEWORK_SERVICES_SYSTEM_FILECATALOGMETADATA_SERVICE}
-	      art_Utilities canvas_Utilities
+	      art_Utilities canvas
 	      ${MF_MESSAGELOGGER}
 	      ${MF_UTILITIES}
 	      ${FHICLCPP}
-	      ${CETLIB}
+	      cetlib cetlib_except
 	      ${PQ}
               BASENAME_ONLY
              )
@@ -25,17 +25,17 @@ simple_plugin(PropTest "module"
 	      ${ART_FRAMEWORK_CORE}
 	      ${ART_FRAMEWORK_PRINCIPAL}
 	      ${ART_FRAMEWORK_SERVICES_REGISTRY}
-	      art_Persistency_Common canvas_Persistency_Common
-	      art_Persistency_Provenance canvas_Persistency_Provenance
+	      art_Persistency_Common canvas
+	      art_Persistency_Provenance canvas
 	      ${ART_FRAMEWORK_SERVICES_BASIC}
 	      ${ART_FRAMEWORK_SERVICES_OPTIONAL}
 	      ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
 	      ${ART_FRAMEWORK_SERVICES_SYSTEM_FILECATALOGMETADATA_SERVICE}
-	      art_Utilities canvas_Utilities
+	      art_Utilities canvas
 	      ${MF_MESSAGELOGGER}
 	      ${MF_UTILITIES}
 	      ${FHICLCPP}
-	      ${CETLIB}
+	      cetlib cetlib_except
 	      ${PQ}
               BASENAME_ONLY
              )
@@ -46,17 +46,17 @@ simple_plugin(InteractTest "module"
 	      ${ART_FRAMEWORK_CORE}
 	      ${ART_FRAMEWORK_PRINCIPAL}
 	      ${ART_FRAMEWORK_SERVICES_REGISTRY}
-	      art_Persistency_Common canvas_Persistency_Common
-	      art_Persistency_Provenance canvas_Persistency_Provenance
+	      art_Persistency_Common canvas
+	      art_Persistency_Provenance canvas
 	      ${ART_FRAMEWORK_SERVICES_BASIC}
 	      ${ART_FRAMEWORK_SERVICES_OPTIONAL}
 	      ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
 	      ${ART_FRAMEWORK_SERVICES_SYSTEM_FILECATALOGMETADATA_SERVICE}
-	      art_Utilities canvas_Utilities
+	      art_Utilities canvas
 	      ${MF_MESSAGELOGGER}
 	      ${MF_UTILITIES}
 	      ${FHICLCPP}
-	      ${CETLIB}
+	      cetlib cetlib_except
 	      ${PQ}
               BASENAME_ONLY
              )
