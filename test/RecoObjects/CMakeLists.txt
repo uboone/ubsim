@@ -30,6 +30,7 @@ simple_plugin(PropTest "module"
 	      ${CLHEP}
 	      ${MF_UTILITIES}
 	      ${FHICLCPP}
+	      cetlib cetlib_except
 	      ${PQ}
               BASENAME_ONLY
              )
