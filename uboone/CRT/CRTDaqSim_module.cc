@@ -22,7 +22,7 @@ namespace crt{
 
   CRTDaqSim::CRTDaqSim(const fhicl::ParameterSet& pSet)
   {
-    produces< std::vector<CRTData> >();
+    produces< std::vector<artdaq::Fragment> >();
 
   }
 
@@ -38,10 +38,37 @@ namespace crt{
 
   void CRTDaqSim::produce(art::Event& evt)
   {
-    std::unique_ptr<std::vector<artdaq::Fragment> > crtHits(
+    std::unique_ptr<std::vector<artdaq::Fragment> > frags(
         new std::vector<artdaq::Fragment>);
 
-    evt.put(std::move(crtHits));
+    //make the metadata 
+      BernZMQFragmentMetadata(uint32_t ts_s, uint32_t ts_ns, 
+        uint32_t te_s, uint32_t te_ns,
+        int t_c, uint64_t t_o,
+        uint32_t r, uint32_t seq,
+        uint64_t fid, uint32_t rid,
+        uint32_t nch, uint32_t nadc)
+
+
+    bernfebdaq::BernZMQEvent zmqEvent;
+      uint16_t mac5;
+      uint16_t flags;
+      uint16_t lostcpu;
+      uint16_t lostfpga;
+      uint32_t ts0;
+      uint32_t ts1;
+      uint16_t adc[32];
+
+  frags.emplace_back( artdaq::Fragment::FragmentBytes(initial_payload_size,
+                                                      ev_counter(), fragment_id(),
+                                                      fragment_type_, metadata) );
+
+
+
+
+    // Performs the hardware coincidence
+
+    evt.put(std::move(frags));
   }
 
 

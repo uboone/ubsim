@@ -1,3 +1,8 @@
+/**
+  Eats up CRTData and spits out BernZMQFragments
+
+**/
+
 #ifndef CRTDaqSim_HH_
 #define CRTDaqSim_HH_
 
