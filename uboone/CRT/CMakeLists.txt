@@ -1,106 +1,61 @@
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
-include_directories( $ENV{NUTOOLS_INC} )
+# canvas_utlities
 
 art_make_library( LIBRARY_NAME CRT
-    SOURCE
-        CRTData.cc
-        CRTGeoObjectSorter.cc
-    LIBRARIES
-        larcore_Geometry
-        ${ROOT_BASIC_LIB_LIST}
-        ${CETLIB}
-        ${FHICLCPP}
-)
-
-art_make_library( LIBRARY_NAME CRTChannelMapAlg
-    SOURCE
-        CRTChannelMapAlg.cc
-    LIBRARIES larcore_Geometry
-        CRT
-        ${MF_MESSAGELOGGER}
-        ${MF_UTILITIES}
-        ${FHICLCPP}
-        ${ROOT_BASIC_LIB_LIST}
-        ${ROOT_GEOM}
-        ${CETLIB}
+  SOURCE
+    CRTData.cc
+    CRTGeoObjectSorter.cc
+    CRTChannelMapAlg.cc
+  LIBRARIES
+    larcore_Geometry
+    ${ROOT_BASIC_LIB_LIST}
+    ${CETLIB}
+    ${FHICLCPP}
 )
 
 simple_plugin( CRTDaqSim module
-        larcore_Geometry
-        CRT
-        ${ART_FRAMEWORK_CORE}
-        ${ART_FRAMEWORK_IO_SOURCES}
-        ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        canvas_Persistency_Common
-        art_Persistency_Provenance 
-        canvas_Persistency_Provenance
-        art_Utilities 
-        canvas_Utilities
-        lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
-        nutools_RandomUtils_NuRandomService_service
-        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-        ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-        ${MF_MESSAGELOGGER}
-        ${MF_UTILITIES}
-        ${ROOT_BASIC_LIB_LIST}
-        ${CLHEP}
-        ${CETLIB}
-  ${bernfebdaq-core_Overlays}
-  ${ROOT_BASIC_LIB_LIST}
-  ${ART_UTILITIES}
-  ${ARTDAQ_CORE}
-  ${FHICLCPP}
-  ${MF_MESSAGELOGGER}
-  ${MF_UTILITIES}
-  ${CETLIB}
-  ${GALLERY}        
-    BASENAME_ONLY
+    larcore_Geometry
+    CRT
+    art_Utilities 
+    canvas_Utilities
+    ${ART_FRAMEWORK_SERVICES_REGISTRY}
+    ${MF_MESSAGELOGGER}
+    ${ROOT_BASIC_LIB_LIST}
+    ${CLHEP}
+    ${CETLIB}
+    ${bernfebdaq-core_Overlays}
+    ${ROOT_BASIC_LIB_LIST}
+    ${ART_UTILITIES}
+    ${ARTDAQ_CORE}
+    ${FHICLCPP}
+    ${MF_MESSAGELOGGER}
+    ${CETLIB}
+    ${GALLERY}  
+  BASENAME_ONLY
 )
-
 
 simple_plugin( CRTDetSim module
-        CRT
-        ${ART_FRAMEWORK_CORE}
-        ${ART_FRAMEWORK_IO_SOURCES}
-        ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        canvas_Persistency_Common
-        art_Persistency_Provenance 
-        canvas_Persistency_Provenance
-        art_Utilities 
-        canvas_Utilities
-        lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
-        nutools_RandomUtils_NuRandomService_service
-        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-        ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-        ${MF_MESSAGELOGGER}
-        ${MF_UTILITIES}
-        ${ROOT_BASIC_LIB_LIST}
-        ${CLHEP}
-        ${CETLIB}
-    BASENAME_ONLY
+    CRT
+    art_Utilities 
+    lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
+    nutools_RandomUtils_NuRandomService_service
+    ${ART_FRAMEWORK_SERVICES_REGISTRY}
+    ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
+    ${MF_MESSAGELOGGER}
+    ${ROOT_BASIC_LIB_LIST}
+    ${CLHEP}
+    ${CETLIB}
+  BASENAME_ONLY
 )
 
-
 simple_plugin( CRTGeometryHelper service
-        larcore_Geometry
-        CRT
-        ${ART_FRAMEWORK_CORE}
-        ${ART_FRAMEWORK_IO_SOURCES}
-        ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        canvas_Persistency_Common
-        art_Persistency_Provenance 
-        canvas_Persistency_Provenance
-        art_Utilities 
-        canvas_Utilities
-        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-        ${MF_MESSAGELOGGER}
-        ${MF_UTILITIES}
-        ${ROOT_BASIC_LIB_LIST}
-        ${CETLIB}
-    BASENAME_ONLY
+    larcore_Geometry
+    CRT
+    art_Utilities 
+    ${ART_FRAMEWORK_SERVICES_REGISTRY}
+    ${MF_MESSAGELOGGER}
+    ${ROOT_BASIC_LIB_LIST}
+    ${CETLIB}
+  BASENAME_ONLY
 )
 
 install_headers()
