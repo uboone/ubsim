@@ -1,11 +1,22 @@
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( $ENV{NUTOOLS_INC} )
 
+art_make_library( LIBRARY_NAME CRT
+    SOURCE
+        CRTData.cc
+        CRTGeoObjectSorter.cc
+    LIBRARIES
+        larcore_Geometry
+        ${ROOT_BASIC_LIB_LIST}
+        ${CETLIB}
+        ${FHICLCPP}
+)
+
 art_make_library( LIBRARY_NAME CRTChannelMapAlg
     SOURCE
         CRTChannelMapAlg.cc
     LIBRARIES larcore_Geometry
-        CRTData
+        CRT
         ${MF_MESSAGELOGGER}
         ${MF_UTILITIES}
         ${FHICLCPP}
@@ -17,7 +28,6 @@ art_make_library( LIBRARY_NAME CRTChannelMapAlg
 simple_plugin( CRTDaqSim module
         larcore_Geometry
         CRT
-        CRTData
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
@@ -36,20 +46,21 @@ simple_plugin( CRTDaqSim module
         ${ROOT_BASIC_LIB_LIST}
         ${CLHEP}
         ${CETLIB}
+  ${bernfebdaq-core_Overlays}
+  ${ROOT_BASIC_LIB_LIST}
+  ${ART_UTILITIES}
+  ${ARTDAQ_CORE}
+  ${FHICLCPP}
+  ${MF_MESSAGELOGGER}
+  ${MF_UTILITIES}
+  ${CETLIB}
+  ${GALLERY}        
     BASENAME_ONLY
 )
 
-art_make_library( LIBRARY_NAME CRT
-    SOURCE
-        CRTData.cc
-        CRTGeoObjectSorter.cc
-    LIBRARIES
-        larcore_Geometry
-)
 
 simple_plugin( CRTDetSim module
         CRT
-        CRTData
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}

@@ -11,6 +11,11 @@
 #include "CLHEP/Random/RandFlat.h"
 #include "CLHEP/Random/RandGauss.h"
 #include "CLHEP/Random/RandPoisson.h"
+#include "messagefacility/MessageLogger/MessageLogger.h"
+#include "uboone/CRT/CRTData.hh"
+#include "artdaq-core/Data/Fragments.hh"
+#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
+
 
 #include <vector>
 #include <memory>
@@ -31,17 +36,13 @@ namespace crt{
 
   }
 
-  void CRTDaqSim::reconfigure(fhicl::ParameterSet const & pSet) {
-
-    fProducerName = pSet.get<std::string>("ProducerName", "crtdetsim");
-  }
-
   void CRTDaqSim::produce(art::Event& evt)
   {
     std::unique_ptr<std::vector<artdaq::Fragment> > frags(
         new std::vector<artdaq::Fragment>);
 
     //make the metadata 
+    /*
       BernZMQFragmentMetadata(uint32_t ts_s, uint32_t ts_ns, 
         uint32_t te_s, uint32_t te_ns,
         int t_c, uint64_t t_o,
@@ -63,11 +64,8 @@ namespace crt{
                                                       ev_counter(), fragment_id(),
                                                       fragment_type_, metadata) );
 
-
-
-
     // Performs the hardware coincidence
-
+  */
     evt.put(std::move(frags));
   }
 
