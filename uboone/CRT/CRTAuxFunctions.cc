@@ -1,4 +1,4 @@
-#include "bernfebdaq/Utilities/CRTAuxFunctions.hh"
+#include "uboone/CRT/CRTAuxFunctions.hh"
 
 int crt::auxfunctions::getFEBN(uint64_t febid){
 

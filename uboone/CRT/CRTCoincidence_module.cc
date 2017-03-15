@@ -22,7 +22,7 @@
 
 #include "art/Framework/Services/Optional/TFileService.h"
 
-#include "bernfebdaq/Utilities/CRTAuxFunctions.hh"
+#include "uboone/CRT/CRTAuxFunctions.hh"
 
 #include "TTree.h"
 

@@ -5,6 +5,7 @@ art_make_library( LIBRARY_NAME CRT
     CRTData.cc
     CRTGeoObjectSorter.cc
     CRTChannelMapAlg.cc
+    CRTAuxFunctions.cc
   LIBRARIES
     larcore_Geometry
     ${ROOT_BASIC_LIB_LIST}
@@ -58,25 +59,17 @@ simple_plugin( CRTGeometryHelper service
   BASENAME_ONLY
 )
 
-
-simple_plugin(TimeCoincidence "module"
-              bernfebdaq-core_Overlays
-          art_Framework_Services_Optional
-          art_Framework_Services_Registry
-          art_Framework_Services_Optional_TFileService_service
-          ${ROOT_BASIC_LIB_LIST} )
-
 simple_plugin(CRTCalibration "module"
-          bernfebdaq_Utilities      
-              bernfebdaq-core_Overlays
+        CRT 
+            bernfebdaq_core_overlays
           art_Framework_Services_Optional
           art_Framework_Services_Registry
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
 
 simple_plugin(CRTCoincidence "module"
-          bernfebdaq_Utilities      
-              bernfebdaq-core_Overlays
+            CRT
+              bernfebdaq_core_overlays
           art_Framework_Services_Optional
           art_Framework_Services_Registry
           art_Framework_Services_Optional_TFileService_service
