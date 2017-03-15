@@ -91,6 +91,7 @@ namespace crt{
         zmqEvent.adc[adc_n]=crtDat.ADC();
 
         fEvents[feb_n].push_back(zmqEvent);
+        fMetadata[feb_n].increment(0,0,0,1,0);
       }
     }
 
