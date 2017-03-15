@@ -33,12 +33,13 @@ outputs: {
 
 physics: {
 
-  producers : { }
+  producers : {
+    mixer: @local::microboone_overlay
+  }
 
   analyzers: { }
 
   filters : {
-    mixer: @local::microboone_overlay
     swtrigger: @local::microboone_swtrigger_mc_bnb
   }
 
@@ -51,13 +52,10 @@ physics: {
 
 }
 
-#services.IChannelStatusService.ChannelStatusProvider.UseDB: false
-
-physics.filters.mixer.detail.RawDigitDataModuleLabel: "daq"
-physics.filters.mixer.detail.RawDigitMCModuleLabel:   "daqnonoise"
-physics.filters.mixer.detail.OpDetDataModuleLabel:    "pmtreadout"
-physics.filters.mixer.detail.OpDetMCModuleLabel:      "pmtreadoutnonoise"
-physics.filters.mixer.detail.InputFileIsData:         false
+physics.producers.mixer.RawDigitDataModuleLabel: "retriever"
+physics.producers.mixer.RawDigitMCModuleLabel:   "daqnonoise"
+physics.producers.mixer.OpDetDataModuleLabel:    "retriever"
+physics.producers.mixer.OpDetMCModuleLabel:      "pmtreadoutnonoise"
 
 physics.filters.swtrigger.OpDataModule: "mixer"
 
