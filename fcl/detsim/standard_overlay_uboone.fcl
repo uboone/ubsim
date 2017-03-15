@@ -54,10 +54,12 @@ physics: {
 #services.IChannelStatusService.ChannelStatusProvider.UseDB: false
 
 physics.filters.mixer.detail.RawDigitDataModuleLabel: "daq"
+physics.filters.mixer.detail.TriggerDataModuleLabel: "daq"
+physics.filters.mixer.detail.TriggerMCModuleLabel: "triggersim"
 physics.filters.mixer.detail.RawDigitMCModuleLabel:   "daqnonoise"
 physics.filters.mixer.detail.OpDetDataModuleLabel:    "pmtreadout"
 physics.filters.mixer.detail.OpDetMCModuleLabel:      "pmtreadoutnonoise"
 physics.filters.mixer.detail.InputFileIsData:         false
 
 physics.filters.swtrigger.OpDataModule: "mixer"
-
+physics.filters.swtrigger.DAQHeaderModule: "mixer"
