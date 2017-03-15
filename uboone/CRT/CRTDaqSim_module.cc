@@ -128,7 +128,11 @@ namespace crt{
 
   void CRTDaqSim::reconfigure(fhicl::ParameterSet const& pSet)
   {
-
+    fProducerName = pSet.get<std::string>("InputTag","crt_detsim");
+    fPollingTime = pSet.get<unsigned>("PollingTime",1);
+    fTimeCorrectionDiff = pSet.get<unsigned>("TimeCorrectionDiff",0);
+    fTimeOffset = pSet.get<unsigned>("TimeOffset",0);
+    fCoincidenceTime = pSet.get<unsigned>("CoincidenceTime",0);
   }
 
   void CRTDaqSim::beginRun(art::Run& run)
