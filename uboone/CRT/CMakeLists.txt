@@ -22,7 +22,7 @@ simple_plugin( CRTDaqSim module
     ${ROOT_BASIC_LIB_LIST}
     ${CLHEP}
     ${CETLIB}
-    ${bernfebdaq-core_Overlays}
+    bernfebdaq_core_overlays
     ${ROOT_BASIC_LIB_LIST}
     ${ART_UTILITIES}
     ${ARTDAQ_CORE}

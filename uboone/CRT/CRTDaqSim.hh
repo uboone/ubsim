@@ -8,14 +8,50 @@
 
 #include "art/Framework/Core/ModuleMacros.h"
 #include "art/Framework/Core/EDProducer.h"
-#include "art/Framework/Principal/Event.h"
+#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
 #include "fhiclcpp/ParameterSet.h"
 
 #include <string>
+#include <vector>
+#include <array>
 
-namespace crt{
-  class CRTDaqSim :  public art:: EDProducer{
+namespace art{
+  class Event;
+  class SubRun;
+  class Run;
+}
+
+// TODO: either use include or forward def
+namespace bernfebdaq
+{
+  class BernZMQFragmentMetadata;
+  class BernZMQEvent;
+}
+
+#define N_CRT_FEBS 76
+
+namespace crt
+{
+  class CRTDaqSim :  public art:: EDProducer
+  {
+
+    /// Configuration parameters
+    //  Name of the producer whose products DaqSim will consume
     std::string fProducerName;
+    // The time window in which the boards will be polled in s.
+    uint32_t fPollingTime;
+    // The static time correction diff in s?
+    uint32_t fTimeCorrectionDiff;
+    // The static time offset in s?
+    uint32_t fTimeOffset;
+    // The inter-channel coincidence window time in ns
+    uint32_t fCoincidenceTime;
+
+    /// State machine objects
+    std::array<bernfebdaq::BernZMQFragmentMetadata, N_CRT_FEBS> fMetadata;
+    std::array<std::vector<bernfebdaq::BernZMQEvent>, N_CRT_FEBS> fEvents;
+
+    uint32_t fSeqID;
 
   public:
 
@@ -26,7 +62,13 @@ namespace crt{
     ~CRTDaqSim();
 
     /// art::EDProducer::produce implementation
-    virtual void produce (art::Event&);
+    void produce (art::Event&);
+
+    void reconfigure(fhicl::ParameterSet const&);
+    void beginRun(art::Run &);
+    void beginSubRun(art::SubRun &);
+    void endRun(art::Run &);
+    void endSubRun(art::SubRun &);
 
   };
 }
