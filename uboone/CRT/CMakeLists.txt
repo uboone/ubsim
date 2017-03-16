@@ -18,6 +18,8 @@ art_make( EXCLUDE
   BASENAME_ONLY
   LIBRARY_NAME 
     CRTData
+  LIB_LIBRARIES
+    ${ART_FRAMEWORK_CORE} 
 )   
 
 art_make_library( LIBRARY_NAME CRT
