@@ -1,11 +1,11 @@
 #include "litemaker_base.fcl"
 
 BEGIN_PROLOG
-litemc_reco3d_pandora: @local::litemaker_base
+litedatamin_reco3d_pandora: @local::litemaker_base
 
-litemc_reco3d_pandora.out_filename: "larlite_reco3d_pandora.root"
+litedatamin_reco3d_pandora.out_filename: "larlite_reco3d_pandora.root"
 
-litemc_reco3d_pandora.DataLookUpMap:
+litedatamin_reco3d_pandora.DataLookUpMap:
 {
   cluster:    ["pandoraNu","pandoraCosmic"]
   sps:        ["pandoraCosmic","pandoraNu"]
@@ -20,7 +20,7 @@ litemc_reco3d_pandora.DataLookUpMap:
   partid:     ["pandoraCosmicpid","pandoraNupid"]
 }
 
-litemc_reco3d_pandora.AssociationLookUpMap:
+litedatamin_reco3d_pandora.AssociationLookUpMap:
 {
   hit:        ["gaushit","pandoraCosmicHitRemoval"]
   cluster:    ["pandoraNu","pandoraCosmic"]
