@@ -3,25 +3,25 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( $ENV{NUTOOLS_INC} )
 
 art_make( EXCLUDE
+    CRTAuxFunctions.cc
+    CRTCalibration_module.cc
+    CRTChannelMapAlg.cc
+    CRTCoincidence_module.cc
+    CRTDaqSim_module.cc
+    CRTDetSim_module.cc
+    CRTGeometryHelper_service.cc
+    CRTTriggerFilter_module.cc
     CRTGeoObjectSorter.cc
     CRTChannelMapAlg.cc
     CRTAuxFunctions.cc
     CRTDaqSim_module.cc
   BASENAME_ONLY
-  LIBRARY_NAME CRTData
-  LIB_LIBRARIES 
-      larcore_Geometry
-      ${ROOT_BASIC_LIB_LIST}
-      ${CETLIB}
-      ${FHICLCPP}
-  MODULE_LIBRARIES 
+  LIBRARY_NAME 
+    CRTData
 )   
-
-
 
 art_make_library( LIBRARY_NAME CRT
   SOURCE
-    CRTData.cc
     CRTGeoObjectSorter.cc
     CRTChannelMapAlg.cc
     CRTAuxFunctions.cc
@@ -34,6 +34,7 @@ art_make_library( LIBRARY_NAME CRT
 
 simple_plugin( CRTDaqSim module
     larcore_Geometry
+    CRTData
     CRT
     art_Utilities 
     canvas_Utilities
@@ -55,6 +56,7 @@ simple_plugin( CRTDaqSim module
 
 simple_plugin( CRTDetSim module
     CRT
+    CRTData
     art_Utilities 
     lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
     nutools_RandomUtils_NuRandomService_service
@@ -79,7 +81,7 @@ simple_plugin( CRTGeometryHelper service
 )
 
 simple_plugin(CRTCalibration "module"
-        CRT 
+        CRT
             bernfebdaq_core_overlays
           art_Framework_Services_Optional
           art_Framework_Services_Registry
