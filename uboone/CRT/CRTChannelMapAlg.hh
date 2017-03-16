@@ -27,6 +27,7 @@
 #ifndef CRTChannelMapAlg_hh_
 #define CRTChannelMapAlg_hh_
 
+#include "uboone/CRT/CRTGeoObjectSorter.hh"
 #include "larcore/Geometry/AuxDetChannelMapAlg.h"
 #include "larcore/Geometry/AuxDetGeo.h"
 

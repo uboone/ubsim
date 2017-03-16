@@ -1,6 +1,5 @@
 #include "uboone/CRT/CRTChannelMapAlg.hh"
 #include "larcore/Geometry/GeoObjectSorterStandard.h"
-#include "uboone/CRT/CRTGeoObjectSorter.hh"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "larcore/Geometry/AuxDetGeometryCore.h"
 #include "fhiclcpp/ParameterSet.h"
