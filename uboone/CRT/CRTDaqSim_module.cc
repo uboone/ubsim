@@ -60,8 +60,10 @@ namespace crt{
     {
 
       //TODO: Check the channel numbering again.
-      unsigned feb_n = crtDat.Channel()/100;
-      unsigned adc_n = crtDat.Channel()%100;
+      unsigned feb_n = crtDat.Channel()/32;
+      unsigned adc_n = crtDat.Channel()%32;
+
+      //channel0ID = 32 * moduleID + 2 * stripID + 0
       mf::LogInfo("CRTDaqSim")<<"Converting CRTData for FEB: "<<feb_n<<" ADC_N: "<<adc_n;
 
       if(feb_n>=N_CRT_FEBS || adc_n>=32)
@@ -85,7 +87,7 @@ namespace crt{
       }
       if (! is_part_of_previous_event){
         bernfebdaq::BernZMQEvent zmqEvent;
-        mf:LogInfo("CRTDaqSim")<<"Creating New Fragment";
+        mf::LogInfo("CRTDaqSim")<<"Creating New Fragment";
         // TODO: Put this into the configuration
         zmqEvent.mac5 = 5;
         zmqEvent.flags = 3;
