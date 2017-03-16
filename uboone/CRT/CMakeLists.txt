@@ -1,4 +1,6 @@
 # canvas_utlities
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
+include_directories( $ENV{NUTOOLS_INC} )
 
 art_make_library( LIBRARY_NAME CRT
   SOURCE
