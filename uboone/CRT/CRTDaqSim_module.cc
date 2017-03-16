@@ -62,6 +62,14 @@ namespace crt{
       //TODO: Check the channel numbering again.
       unsigned feb_n = crtDat.Channel()/100;
       unsigned adc_n = crtDat.Channel()%100;
+      mf::LogInfo("CRTDaqSim")<<"Converting CRTData for FEB: "<<feb_n<<" ADC_N: "<<adc_n;
+
+      if(feb_n>=N_CRT_FEBS || adc_n>=32)
+      {
+        mf::LogWarning("CRTDaqSim")<<"Cannot Convert CRTData";
+        continue;
+      }
+
       bool is_part_of_previous_event = false;
 
       for(auto event_it = fEvents[feb_n].begin() ; 
@@ -70,13 +78,14 @@ namespace crt{
         if ( crtDat.T0() >=event_it->Time_TS0()-fCoincidenceTime && crtDat.T0() <= event_it->Time_TS0()-fCoincidenceTime  ){
           is_part_of_previous_event = true;
           //add the ADC to this one
+          mf::LogInfo("CRTDaqSim")<<"Adding data to existing Fragment";
           event_it->adc[adc_n] = crtDat.ADC();
-
           break;
         }
       }
       if (! is_part_of_previous_event){
         bernfebdaq::BernZMQEvent zmqEvent;
+        mf:LogInfo("CRTDaqSim")<<"Creating New Fragment";
         // TODO: Put this into the configuration
         zmqEvent.mac5 = 5;
         zmqEvent.flags = 3;
@@ -89,7 +98,6 @@ namespace crt{
           zmqEvent.adc[tmp_adc]=0;
         }
         zmqEvent.adc[adc_n]=crtDat.ADC();
-
         fEvents[feb_n].push_back(zmqEvent);
         fMetadata[feb_n].increment(0,0,0,1,0);
       }
@@ -103,6 +111,7 @@ namespace crt{
 
       uint32_t te_s = ts_s + fPollingTime;
       uint32_t te_ns = 0;
+      mf::LogInfo("CRTDaqSim")<<"Polling Data at time: "<<ts_s;
 
       for(int feb_n=0; feb_n<N_CRT_FEBS; feb_n++){
 
