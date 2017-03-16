@@ -56,6 +56,8 @@ physics.producers.mixer.RawDigitDataModuleLabel: "retriever"
 physics.producers.mixer.RawDigitMCModuleLabel:   "daqnonoise"
 physics.producers.mixer.OpDetDataModuleLabel:    "retriever"
 physics.producers.mixer.OpDetMCModuleLabel:      "pmtreadoutnonoise"
+physics.producers.mixer.TriggerDataModuleLabel:  "retriever"
+physics.producers.mixer.TriggerMCModuleLabel:  "triggersim"
 
 physics.filters.swtrigger.OpDataModule: "mixer"
-
+physics.filters.swtrigger.DAQHeaderModule: "mixer"
