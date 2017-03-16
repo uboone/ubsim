@@ -64,7 +64,7 @@ namespace crt{
       unsigned adc_n = crtDat.Channel()%32;
 
       //channel0ID = 32 * moduleID + 2 * stripID + 0
-      mf::LogInfo("CRTDaqSim")<<"Converting CRTData for FEB: "<<feb_n<<" ADC_N: "<<adc_n;
+      mf::LogInfo("CRTDaqSim")<<"Converting CRTData for FEB: "<<feb_n<<" ADC_N: "<<adc_n<<std::endl<<"For input channel number: "<<crtDat.Channel();
 
       if(feb_n>=N_CRT_FEBS || adc_n>=32)
       {

@@ -160,10 +160,10 @@ namespace crt{
         short q1 = CLHEP::RandGauss::shoot(engine, fQPed + fQSlope * npe1, fQRMS * npe1);
 
         // Adjacent channels on a strip are numbered sequentially
-        uint32_t moduleID = adsc.AuxDetID();
-        uint32_t stripID = adsc.AuxDetSensitiveID();
-        uint32_t channel0ID = 32 * moduleID + 2 * stripID + 0;
-        uint32_t channel1ID = 32 * moduleID + 2 * stripID + 1;
+        //uint32_t moduleID = adsc.AuxDetID();
+        //uint32_t stripID = adsc.AuxDetSensitiveID();
+        uint32_t channel0ID = adsc.AuxDetID()*2;
+        uint32_t channel1ID = adsc.AuxDetID()*2+1;
 
         // Write AuxDetDigit for each channel
         crtHits->push_back(CRTData(channel0ID, t0, ppsTicks, q0));
