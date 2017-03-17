@@ -32,11 +32,11 @@ namespace crt{
 
   CRTDaqSim::CRTDaqSim(const fhicl::ParameterSet& pSet):
     fProducerName(pSet.get<std::string>("InputTag","crtdetsim")) ,
+    fInstanceName(pSet.get<std::string>("InstanceLabel","BernZMQ")),
     fPollingTime(pSet.get<unsigned>("PollingTime",1)),
     fTimeCorrectionDiff(pSet.get<unsigned>("TimeCorrectionDiff",0)),
     fTimeOffset(pSet.get<unsigned>("TimeOffset",0)),
-    fCoincidenceTime(pSet.get<unsigned>("CoincidenceTime",0)),
-    fInstanceName(pSet.get<std::string>("InstanceLabel","BernZMQ"))
+    fCoincidenceTime(pSet.get<unsigned>("CoincidenceTime",0))
   {
     //TODO: add in either some time jitter (POISSON), or adc noise (Gaussian)
     //art::ServiceHandle<rndm::NuRandomService> Seeds;
