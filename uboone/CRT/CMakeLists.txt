@@ -20,6 +20,16 @@ art_make( EXCLUDE
     CRTData
   LIB_LIBRARIES
     ${ART_FRAMEWORK_CORE} 
+
+  MODULE_LIBRARIES
+    ${CETLIB}
+    ${ROOT_GEOM}
+    ${ROOT_XMLIO}
+    ${ROOT_GDML}
+    ${ROOT_BASIC_LIB_LIST}
+    art_Persistency_Common canvas_Persistency_Common
+    art_Persistency_Provenance canvas_Persistency_Provenance
+    art_Utilities canvas_Utilities
 )   
 
 art_make_library( LIBRARY_NAME CRT
