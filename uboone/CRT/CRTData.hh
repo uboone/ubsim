@@ -30,9 +30,9 @@ namespace crt {
 
     /// The channel number which can be referenced to module, strip via the channel map
     uint32_t fChannel;
-    /// Precise time
+    /// Time relative to GPS
     uint32_t fT0;
-    /// imprecise time
+    /// Time relative to beam trigger
     uint32_t fT1;
     /// ADC value returned by CRT
     uint32_t fADC;
