@@ -38,6 +38,8 @@ namespace crt
     /// Configuration parameters
     //  Name of the producer whose products DaqSim will consume
     std::string fProducerName;
+    /// To Make the daq and sim identical
+    std::string fInstanceName;
     // The time window in which the boards will be polled in s.
     uint32_t fPollingTime;
     // The static time correction diff in s?
