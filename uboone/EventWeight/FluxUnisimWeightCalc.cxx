@@ -22,8 +22,8 @@ namespace evwgh {
     evwgh::IFDHFileTransfer IFDH;
   public:
     FluxUnisimWeightCalc();
-    double MiniBooNEWeightCalc(double enu, int ptype, int ntype, art::ServiceHandle<art::RandomNumberGenerator> rng);
-    double MicroBooNEWeightCalc(double enu, int ptype, int ntype, art::ServiceHandle<art::RandomNumberGenerator> rng);
+    double MiniBooNEWeightCalc(double enu, int ptype, int ntype, int uni);
+    double MicroBooNEWeightCalc(double enu, int ptype, int ntype, int uni);
     void Configure(fhicl::ParameterSet const& p);
     std::vector<std::vector<double> > GetWeight(art::Event & e);
 
@@ -31,7 +31,8 @@ namespace evwgh {
     CLHEP::RandGaussQ *fGaussRandom;
     std::vector<double> fWeightArray;
     int fNuni;   // Number of universes you want to generate
-    double fScale; // Scale factor to enhance or degrade a given systematic uncertanity
+    double fScalePos; // Scale factor to enhance or degrade a given Positive systematic uncertanity
+    double fScaleNeg; // Scale factor to enhance or degrade a given Negative systematic uncertanity
     std::string fMode;   // if you want multisim or +/- 1sigma
     std::string fGenieModuleLabel;
     std::string fWeightCalc; // if you want MiniBooNE or MicroBooNE calculator
@@ -59,11 +60,12 @@ namespace evwgh {
     fhicl::ParameterSet const &pset=p.get<fhicl::ParameterSet> (GetName());
 
     fNuni  = pset.get<int>("number_of_multisims");
-    fScale = pset.get<double>("scale_factor");
+    fScalePos = pset.get<double>("scale_factor_pos");
+    fScaleNeg = pset.get<double>("scale_factor_neg");
     fMode  = pset.get<std::string>("mode");	
     fWeightCalc = pset.get<std::string>("weight_calculator");
 
-    if(fWeightCalc != "MicroBooNE" || fWeightCalc != "MiniBooNE"){
+    if(fWeightCalc != "MicroBooNE" && fWeightCalc != "MiniBooNE"){
       throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown weight calculator "<< fWeightCalc << std::endl;     
     }
 
@@ -75,10 +77,33 @@ namespace evwgh {
 
     /// Grab the histogram related to the variation 
     std::string dataInput2pos  =   pset.get< std::string >("PositiveSystematicVariation_hist_file");
-    std::string rwfilepos      = IFDH.fetch(dataInput2pos);
-
     std::string dataInput2neg  =   pset.get< std::string >("NegativeSystematicVariation_hist_file");
+
+    //
+    //  If there is only one file supplied use 
+    //     it for both positive and negative
+    //
+    if(dataInput2pos.empty() || dataInput2neg.empty()){
+      
+      if(dataInput2pos.empty() && dataInput2neg.empty()){
+	throw cet::exception(__FUNCTION__) << GetName()<<"::No Unisim histograms "<< std::endl;
+      }
+
+      if(dataInput2pos.empty() && !(dataInput2neg.empty())){
+	dataInput2pos = dataInput2neg;
+      }
+
+      if( dataInput2neg.empty() && !(dataInput2pos.empty())){   	
+	dataInput2neg = dataInput2pos;
+      }
+      
+    }
+
+
+    std::string rwfilepos      = IFDH.fetch(dataInput2pos);
     std::string rwfileneg      = IFDH.fetch(dataInput2neg);
+
+    
     
     std::cout << "FILES COPIED" << std::endl;
 
@@ -113,7 +138,26 @@ namespace evwgh {
     fcv.Close();
     frwpos.Close();
     frwneg.Close(); 
+
+
+    //Setup the random number generator
+    art::ServiceHandle<art::RandomNumberGenerator> rng;
+    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
     
+    //
+    //   This part is important!!! You want to be sure to use the same random number throughout all the 
+    //   events, otherwise you will be smearing over all the correlations. 
+    //
+    //   While the random number seed it set in the fcl file, you only want to use the same throw PER UNIVERSE
+    //
+    //
+    fWeightArray.resize(fNuni);
+    
+    if (fMode.find("multisim") != std::string::npos )
+      for (int i=0;i<fNuni;i++) fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+    else
+      for (int i=0;i<fNuni;i++) fWeightArray[i]=1.;
+
   }
 
   std::vector<std::vector<double> > FluxUnisimWeightCalc::GetWeight(art::Event & e)
@@ -176,19 +220,19 @@ namespace evwgh {
       // Collect neutrino energy
       double enu=mclist[inu].GetNeutrino().Nu().E();      
 
-      //Setup the random number generator
-      art::ServiceHandle<art::RandomNumberGenerator> rng;
-      fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
-     
       //Let's make a weights based on the calculator you have requested 
       if(fMode.find("multisim") != std::string::npos){
 	for (int i=0;i<fNuni;i++) {
 
-	  if(fWeightCalc != "MicroBooNE"){
-	    weight[inu][i]=MicroBooNEWeightCalc(enu, ptype, ntype, rng);
+	  if(fWeightCalc.find("MicroBooNE") != std::string::npos){
+	    std::cout << fWeightCalc << " Weight calc" << std::endl; 
+	    weight[inu][i]=MicroBooNEWeightCalc(enu, ptype, ntype, i);
+	    if( i <  5 ){ std::cout << "weight[ "<< inu << "][" << i<< "] : " << weight[inu][i] << std::endl;}
 	  }
-	  if(fWeightCalc != "MiniBooNE"){
-	    weight[inu][i]=MiniBooNEWeightCalc(enu, ptype, ntype, rng);
+	  if(fWeightCalc.find("MiniBooNE") != std::string::npos){
+	    std::cout << fWeightCalc << " Weight calc" << std::endl; 
+	    weight[inu][i]=MiniBooNEWeightCalc(enu, ptype, ntype, i);
+	    if( i <  5 ){ std::cout << "weight[ "<< inu << "][" << i<< "] : " << weight[inu][i] << std::endl;}	    
 	  }
 
 	}//Iterate through the number of universes      
@@ -198,7 +242,7 @@ namespace evwgh {
     return weight;
   }
 
-  double FluxUnisimWeightCalc::MiniBooNEWeightCalc(double enu, int ptype, int ntype, art::ServiceHandle<art::RandomNumberGenerator> rng)
+  double FluxUnisimWeightCalc::MiniBooNEWeightCalc(double enu, int ptype, int ntype, int uni)
   {
     // 
     //   This is directly based on the MiniBooNE framework to 
@@ -206,7 +250,6 @@ namespace evwgh {
     //         All this is a reproduction by J. Zennamo in 2017 
     //                      of code written by S. Brice in 2008
     //                                         
-    double rand = fGaussRandom->shoot(&rng->getEngine(GetName()),0,1);
     double weight = 1;
     
     int bin = int(enu/0.05)+1; //convert energy (in GeV) into 50 MeV bin
@@ -216,41 +259,43 @@ namespace evwgh {
     //    http://cdcvs0.fnal.gov/cgi-bin/public-cvs/cvsweb-public.cgi/~checkout~/...
     //          miniboone/AnalysisFramework/MultisimMatrix/src/MultisimMatrix_initialise.F?rev=1.18;content-type=text%2Fplain
     //
-    double scaled_pos = fScale*fRWpos[ptype][ntype][bin] + 
-      (1-fScale)*fCV[ptype][ntype][bin];
+    double scaled_pos = fScalePos*fRWpos[ptype][ntype][bin] + 
+      (1-fScalePos)*fCV[ptype][ntype][bin];
     
-    double scaled_neg = fScale*fRWneg[ptype][ntype][bin] + 
-      (1-fScale)*fCV[ptype][ntype][bin];
+    double scaled_neg = fScaleNeg*fRWneg[ptype][ntype][bin] + 
+      (1-fScaleNeg)*fCV[ptype][ntype][bin];
     
     // This is based on:
     //    http://cdcvs0.fnal.gov/cgi-bin/public-cvs/cvsweb-public.cgi/~checkout~/...
     //           miniboone/AnalysisFramework/MultisimMatrix/src/MultisimMatrix_getWeight.F?rev=1.41;content-type=text%2Fplain
     //
-    if(rand > 0){      
-      double syst = rand*(scaled_pos/fCV[ptype][ntype][bin]);
-      weight = 1 + (syst - 1);
+    if(fWeightArray[uni] > 0){      
+      double syst = fWeightArray[uni]*((scaled_pos/fCV[ptype][ntype][bin])-1);
+      weight = 1 + (syst);
     }
     else{
-      double syst = rand*(scaled_neg/fCV[ptype][ntype][bin]);
-      weight = 1 - (syst - 1);    
+      double syst = fWeightArray[uni]*((scaled_neg/fCV[ptype][ntype][bin])-1);
+      weight = 1 - (syst);    
     }
 
     return weight;
   }
   
-  double FluxUnisimWeightCalc::MicroBooNEWeightCalc(double enu, int ptype, int ntype, art::ServiceHandle<art::RandomNumberGenerator> rng)
+  double FluxUnisimWeightCalc::MicroBooNEWeightCalc(double enu, int ptype, int ntype, int uni)
   {
-    /*      	  
-		  double STDev = sqrt((fCV[ptype][ntype][bin]-fRWneg[ptype][ntype][bin])*
-		  (fCV[ptype][ntype][bin]-fRWneg[ptype][ntype][bin]))+
-		  sqrt((fCV[ptype][ntype][bin]-fRWpos[ptype][ntype][bin])*
-		  (fCV[ptype][ntype][bin]-fRWpos[ptype][ntype][bin]))/2;
-    */
+    
     int bin = int(enu/0.05)+1; //convert energy (in GeV) into 50 MeV bin
-    
-    double STDev = 1-(fRWneg[ptype][ntype][bin]/fCV[ptype][ntype][bin]);	  
-    
-    double weight = fGaussRandom->shoot(&rng->getEngine(GetName()),1,STDev);
+    double weight = 1;
+    double Scaled_syst_shift = 0;
+
+    if(fWeightArray[uni] >= 0 ){ 
+      Scaled_syst_shift = (fScalePos)*(fRWpos[ptype][ntype][bin]) + (1-fScalePos)*(fCV[ptype][ntype][bin]);
+      weight = 1+(fWeightArray[uni]*((Scaled_syst_shift/fCV[ptype][ntype][bin])-1));
+    }
+    else{  
+      Scaled_syst_shift = (fScaleNeg)*(fRWneg[ptype][ntype][bin]) + (1-fScaleNeg)*(fCV[ptype][ntype][bin]);      
+      weight = 1-(fWeightArray[uni]*((Scaled_syst_shift/fCV[ptype][ntype][bin])-1));
+    }    
 
     return weight;
   }
