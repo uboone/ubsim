@@ -1,12 +1,11 @@
 BEGIN_PROLOG
-
 microboone_eventweight:
 {
  module_type:	"EventWeight"
   #weight_functions:   [ func1, bnbcorrection, piplus, piminus, kzero, kplus]
   #weight_functions:   [ piplussplines]
   #weight_functions:   [ func1, bnbcorrection, piplussplines, piminus, kzero, kplus]
- weight_functions:[horncurrentpos]
+ weight_functions:[horncurrent,pioninexsec,nucleontotxsec,nucleonqexsec,nucleoninexsec,pionqexsec,piontotxsec,expskin,piplussplines,piplus,piminus,kzero,kplus]
 
  #throw exception if weight outside limits
  min_weight: 0
@@ -32,11 +31,98 @@ horncurrent:{
         PositiveSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_horn175ka_rgen610.6_flux.root"
         NegativeSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_horn173ka_rgen610.6_flux.root"
         random_seed:1
-        scale_factor:1
+        scale_factor_pos:1  
+        scale_factor_neg:1
         weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         mode: multisim
         number_of_multisims: 30        
 }
+
+pioninexsec:{
+        type: FluxUnisim
+        CentralValue_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_10kpot_ntrd1000_flux.root"
+        PositiveSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_pioninexsec_up_rgen610.6_flux.root"
+        NegativeSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_pioninexsec_down_rgen610.6_flux.root"
+        random_seed:1
+        scale_factor_pos:1  
+        scale_factor_neg:1
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
+        mode: multisim
+        number_of_multisims: 30        
+}
+nucleontotxsec:{
+        type: FluxUnisim
+        CentralValue_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_10kpot_ntrd1000_flux.root"
+        PositiveSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_nucleontotxsec_up_rgen610.6_flux.root"
+        NegativeSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_nucleontotxsec_down_rgen610.6_flux.root"
+        random_seed:1
+        scale_factor_pos:1  
+        scale_factor_neg:1
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
+        mode: multisim
+        number_of_multisims: 30        
+}
+nucleonqexsec:{
+        type: FluxUnisim
+        CentralValue_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_10kpot_ntrd1000_flux.root"
+        PositiveSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_nucleonqexsec_up_rgen610.6_flux.root"
+        NegativeSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_nucleonqexsec_down_rgen610.6_flux.root"
+        random_seed:1
+        scale_factor_pos:0.333 #From MiniBooNE 
+        scale_factor_neg:0.573 #From MiniBooNE
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
+        mode: multisim
+        number_of_multisims: 30        
+}
+nucleoninexsec:{
+        type: FluxUnisim
+        CentralValue_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_10kpot_ntrd1000_flux.root"
+        PositiveSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_nucleoninexsec_up_rgen610.6_flux.root"
+        NegativeSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_nucleoninexsec_down_rgen610.6_flux.root"
+        random_seed:1
+        scale_factor_pos:1  
+        scale_factor_neg:1
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
+        mode: multisim
+        number_of_multisims: 30        
+}
+pionqexsec:{
+        type: FluxUnisim
+        CentralValue_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_10kpot_ntrd1000_flux.root"
+        PositiveSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_pionqexsec_up_rgen610.6_flux.root"
+        NegativeSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_pionqexsec_down_rgen610.6_flux.root"
+        random_seed:1
+        scale_factor_pos:0.292 #From MiniBooNE  
+        scale_factor_neg:0.585 #From MiniBooNE
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
+        mode: multisim
+        number_of_multisims: 30        
+}
+piontotxsec:{
+        type: FluxUnisim
+        CentralValue_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_10kpot_ntrd1000_flux.root"
+        PositiveSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_piontotxsec_up_rgen610.6_flux.root"
+        NegativeSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_piontotxsec_down_rgen610.6_flux.root"
+        random_seed:1
+        scale_factor_pos:1  
+        scale_factor_neg:1
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
+        mode: multisim
+        number_of_multisims: 30        
+}
+expskin:{
+        type: FluxUnisim
+        CentralValue_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_10kpot_ntrd1000_flux.root"
+        PositiveSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/expskin_nrtd1000_flux.root"
+        NegativeSystematicVariation_hist_file:"" #Leave Blank There is only a model switch
+        random_seed:1
+        scale_factor_pos:1  
+        scale_factor_neg:1
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
+        mode: multisim
+        number_of_multisims: 30        
+}
+
 
  bnbcorrection: {
  
