@@ -136,7 +136,7 @@ namespace evwgh {
       }
       
       double enu=mclist[inu]->GetNeutrino().Nu().E();
-      bin=enu/0.05;
+      bin=int(enu/0.05)+1;
       for (int i=0;i<fNmultisims;i++) {
 	weight[inu][i]=1-(1-fRW[ptype][ntype][bin]/fCV[ptype][ntype][bin])*fWeightArray[i];
       }
