@@ -185,7 +185,7 @@ microboone_reco_mcc8_producers:
   stitchkalmanhittagcc:           @local::microboone_cosmictracktagger
 
   ### PMA
-  pmtrack:                        @local::standard_pmalgtrackmaker
+  pmtrack:                        @local::microboone_pmalgtrajfitter
   pmtracktag:                     @local::microboone_cosmictracktagger
   pmtrackcalo:                    @local::microboone_calomc
   pmtrackpid:                     @local::microboone_chi2pid
@@ -576,8 +576,9 @@ microboone_reco_mcc8_producers.pandoraNuKHitFlashMatch.BeamFlashTrackMatchAlgPar
 #microboone_reco_mcc8_producers.showerrecofuzzy.InputProducer:                    "fuzzyclustermerger"
 microboone_reco_mcc8_producers.showerrecopandora.InputProducer:                  "pandoraNu"
 
-microboone_reco_mcc8_producers.pmtrack.ClusterModuleLabel:                       "trajcluster"
+microboone_reco_mcc8_producers.pmtrack.PfpModuleLabel:                           "trajcluster"
 microboone_reco_mcc8_producers.pmtrack.HitModuleLabel:                           "trajcluster"
+microboone_reco_mcc8_producers.pmtrack.PMAlgFitting.RunVertexing:                true
 
 microboone_reco_mcc8_producers.pmtracktag.TrackModuleLabel:                      "pmtrack"
 microboone_reco_mcc8_producers.pmtrackcalo.TrackModuleLabel:                     "pmtrack"
