@@ -180,7 +180,7 @@ microboone_reco_data_producers:
   stitchkalmanhittagcc:           @local::microboone_cosmictracktagger
 
   ### PMA
-  pmtrack:                        @local::standard_pmalgtrackmaker
+  pmtrack:                        @local::microboone_pmalgtrajfitter
   pmtracktag:                     @local::microboone_cosmictracktagger
   pmtrackcalo:                    @local::microboone_calodata
   pmtrackpid:                     @local::microboone_chi2pid
@@ -383,9 +383,10 @@ microboone_reco_data_producers.caldata.NumSigma:                                
 microboone_reco_data_producers.caldata.DodQdxCalib:                              false
 
 microboone_reco_data_producers.gaushit.CalDataModuleLabel:                       "caldata"
-microboone_reco_data_producers.gaushit.MinSig:                                   [3.25, 4.0, 3.75]
+microboone_reco_data_producers.gaushit.MinSig:                                   [2.5,  3.0,  3.25]
 microboone_reco_data_producers.gaushit.MinWidth:                                 [1.0,  1.0,  1.0]
-microboone_reco_data_producers.gaushit.MaxMultiHit:                              6
+microboone_reco_mcc8_producers.gaushit.LongMaxHits:                              [ 25, 25, 25]
+microboone_reco_data_producers.gaushit.MaxMultiHit:                              4
 microboone_reco_data_producers.gaushit.TryNplus1Fits:                            false
 microboone_reco_data_producers.gaushit.Chi2NDF:                                  50.
 #microboone_reco_data_producers.gaushit.FilterHits:                               true
@@ -560,8 +561,9 @@ microboone_reco_data_producers.pandoraNuKHitFlashMatch.BeamFlashTrackMatchAlgPar
 #microboone_reco_data_producers.showerrecofuzzy.InputProducer:                    "fuzzyclustermerger"
 microboone_reco_data_producers.showerrecopandora.InputProducer:                  "pandoraNu"
 
-microboone_reco_data_producers.pmtrack.ClusterModuleLabel:                       "trajcluster"
+microboone_reco_data_producers.pmtrack.PfpModuleLabel:                           "trajcluster"
 microboone_reco_data_producers.pmtrack.HitModuleLabel:                           "trajcluster"
+microboone_reco_data_producers.pmtrack.PMAlgFitting.RunVertexing:                true
 
 microboone_reco_data_producers.pmtracktag.TrackModuleLabel:                      "pmtrack"
 microboone_reco_data_producers.pmtrackcalo.TrackModuleLabel:                     "pmtrack"
