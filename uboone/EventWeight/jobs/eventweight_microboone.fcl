@@ -25,6 +25,7 @@ microboone_eventweight:
           mode: multisim
 	  number_of_multisims: 10
  	}
+
 horncurrent:{
         type: FluxUnisim
         CentralValue_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_10kpot_ntrd1000_flux.root"
@@ -114,7 +115,7 @@ expskin:{
         type: FluxUnisim
         CentralValue_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/may06_10kpot_ntrd1000_flux.root"
         PositiveSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/expskin_nrtd1000_flux.root"
-        NegativeSystematicVariation_hist_file:"" #Leave Blank There is only a model switch
+        NegativeSystematicVariation_hist_file:"/uboone/app/users/jaz8600/work/BeamUncertDev/UnisimHists/expskin_nrtd1000_flux.root"
         random_seed:1
         scale_factor_pos:1  
         scale_factor_neg:1
