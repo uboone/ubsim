@@ -90,10 +90,12 @@ namespace evwgh {
       }
 
       if(dataInput2pos.empty() && !(dataInput2neg.empty())){
+	std::cout << "Using Negative Unisims for Positive Unisims" << std::endl;
 	dataInput2pos = dataInput2neg;
       }
 
       if( dataInput2neg.empty() && !(dataInput2pos.empty())){   	
+	std::cout << "Using Positive Unisims for Negative Unisims" << std::endl;
 	dataInput2neg = dataInput2pos;
       }
       
@@ -125,7 +127,7 @@ namespace evwgh {
 
     for (int iptyp=0;iptyp<4;iptyp++) {
       for (int intyp=0;intyp<4;intyp++) {
-	for (int ibin=0;ibin<200;ibin++) {
+	for (int ibin=0;ibin<200;ibin++) { //Grab events from ibin+1 
 
 	  fCV[iptyp][intyp][ibin]=(dynamic_cast<TH1F*> (fcv.Get(Form("h5%d%d",ptype[iptyp],ntype[intyp]))))->GetBinContent(ibin+1);
 	  fRWpos[iptyp][intyp][ibin]=(dynamic_cast<TH1F*> (frwpos.Get(Form("h5%d%d",ptype[iptyp],ntype[intyp]))))->GetBinContent(ibin+1);
@@ -199,20 +201,20 @@ namespace evwgh {
  
      // Discover the neutrino parent type
       //     This contains the neutrino's parentage information
-      if (      fluxlist[inu].fptype==211 || fluxlist[inu].fptype==-211 ) ptype = 0;
-      else if ( fluxlist[inu].fptype==321 || fluxlist[inu].fptype==-321 ) ptype = 1;
-      else if ( fluxlist[inu].fptype==130 ) ptype = 2;
-      else if ( fluxlist[inu].fptype==13 || fluxlist[inu].fptype==-13 ) ptype = 3;
+      if ( fluxlist[inu].fptype==13 || fluxlist[inu].fptype==-13 )             ptype = 0;
+      else if (      fluxlist[inu].fptype==211 || fluxlist[inu].fptype==-211 ) ptype = 1;
+      else if ( fluxlist[inu].fptype==130 )                                    ptype = 2;
+      else if ( fluxlist[inu].fptype==321 || fluxlist[inu].fptype==-321 )      ptype = 3;                                    
       else {
 	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0].fptype<< std::endl;
       }
 
       // Discover the neutrino type
       //     This contains the neutrino's flavor information
-      if (      fluxlist[inu].fntype==14 ) ntype=0;
-      else if ( fluxlist[inu].fntype==-14 ) ntype=1;
-      else if ( fluxlist[inu].fntype==12 ) ntype=2;
-      else if ( fluxlist[inu].fntype==-12 ) ntype=3;
+      if (      fluxlist[inu].fntype==12 )  ntype=0;
+      else if ( fluxlist[inu].fntype==-12 ) ntype=1;
+      else if ( fluxlist[inu].fntype==14 )  ntype=2;
+      else if ( fluxlist[inu].fntype==-14 ) ntype=3;
       else {
 	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0].fptype<< std::endl;
       }
@@ -252,7 +254,7 @@ namespace evwgh {
     //                                         
     double weight = 1;
     
-    int bin = int(enu/0.05)+1; //convert energy (in GeV) into 50 MeV bin
+    int bin = int(enu/0.05); //convert energy (in GeV) into 50 MeV bin
 
 
     //  This is based on:
@@ -284,7 +286,7 @@ namespace evwgh {
   double FluxUnisimWeightCalc::MicroBooNEWeightCalc(double enu, int ptype, int ntype, int uni)
   {
     
-    int bin = int(enu/0.05)+1; //convert energy (in GeV) into 50 MeV bin
+    int bin = int(enu/0.05); //convert energy (in GeV) into 50 MeV bin
     double weight = 1;
     double Scaled_syst_shift = 0;
 
