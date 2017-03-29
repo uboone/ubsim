@@ -15,6 +15,7 @@ art_make( EXCLUDE
     CRTChannelMapAlg.cc
     CRTAuxFunctions.cc
     CRTDaqSim_module.cc
+    CRTMerger_module.cc
   BASENAME_ONLY
   LIBRARY_NAME 
     CRTData
@@ -30,7 +31,7 @@ art_make( EXCLUDE
     art_Persistency_Common canvas_Persistency_Common
     art_Persistency_Provenance canvas_Persistency_Provenance
     art_Utilities canvas_Utilities
-)   
+)
 
 art_make_library( LIBRARY_NAME CRT
   SOURCE
@@ -107,6 +108,19 @@ simple_plugin(CRTCoincidence "module"
           art_Framework_Services_Registry
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
+
+simple_plugin( CRTMerger module
+  bernfebdaq_core_overlays
+  ${ROOT_BASIC_LIB_LIST}
+  ${ART_UTILITIES}
+  ${ARTDAQ_CORE}
+  ${FHICLCPP}
+  ${MF_MESSAGELOGGER}
+  ${MF_UTILITIES}
+  ${CETLIB}
+  ${GALLERY}
+  CRTData
+)
 
 install_headers()
 install_fhicl()
