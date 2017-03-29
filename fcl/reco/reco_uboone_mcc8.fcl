@@ -338,8 +338,8 @@ microboone_reco_mcc8_pandoraNu: [        pandoraNu,
 microboone_reco_mcc8_pandora: [          @sequence::microboone_reco_mcc8_pandoraCosmic,
                                          @sequence::microboone_reco_mcc8_pandoraNu ]
 
-microboone_reco_mcc8_mcreco: [           mchitfinder]
-                                         #eventweight]
+microboone_reco_mcc8_mcreco: [           mchitfinder,
+                                         eventweight]
 
 microboone_reco_mcc8: [                  rns,
                                          @sequence::microboone_reco_mcc8_mcreco,
