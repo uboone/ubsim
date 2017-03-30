@@ -1,5 +1,3 @@
-cet_find_library( IFDH NAMES ifdh PATHS ENV IFDHC_LIB NO_DEFAULT_PATH )
-include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 file(GLOB WGHCALCFILES *WeightCalc* Factory* )
 include_directories ( $ENV{GENIE_INC}/GENIE )
 
@@ -25,7 +23,6 @@ art_make_library(LIBRARY_NAME WeightCalculators
 		      ${CLHEP}
                       ${ROOT_BASIC_LIB_LIST}
                       ${Boost_SYSTEM_LIBRARY}
-                      ${IFDH}
 	        ) 
 
 art_make(LIBRARY_NAME   EventWeight
@@ -37,7 +34,6 @@ art_make(LIBRARY_NAME   EventWeight
 		      WeightCalculators
                       ${MF_MESSAGELOGGER}
                       ${MF_UTILITIES}
-                      ${IFDH}
                       ${Boost_SYSTEM_LIBRARY}
         MODULE_LIBRARIES EventWeight
 			 WeightCalculators
