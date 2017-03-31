@@ -339,7 +339,7 @@ microboone_reco_data_pandora: [          @sequence::microboone_reco_data_pandora
 microboone_reco_data: [                  rns,
                                          @sequence::microboone_reco_data_optical,
                                          @sequence::microboone_reco_data_signalprocessing,
-                                         @sequence::microboone_reco_data_fuzzypath,
+                                         #@sequence::microboone_reco_data_fuzzypath,
                                          @sequence::microboone_reco_data_pandora,
                                          @sequence::microboone_reco_data_ccpath ]
 
@@ -383,7 +383,7 @@ microboone_reco_data_producers.caldata.NumSigma:                                
 microboone_reco_data_producers.caldata.DodQdxCalib:                              false
 
 microboone_reco_data_producers.gaushit.CalDataModuleLabel:                       "caldata"
-microboone_reco_data_producers.gaushit.MinSig:                                   [2.5,  3.0,  3.25]
+microboone_reco_data_producers.gaushit.MinSig:                                   [2.6,  3.4,  3.4]
 microboone_reco_data_producers.gaushit.MinWidth:                                 [1.0,  1.0,  1.0]
 microboone_reco_mcc8_producers.gaushit.LongMaxHits:                              [ 25, 25, 25]
 microboone_reco_data_producers.gaushit.MaxMultiHit:                              4
