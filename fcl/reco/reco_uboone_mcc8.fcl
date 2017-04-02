@@ -345,7 +345,7 @@ microboone_reco_mcc8: [                  rns,
                                          @sequence::microboone_reco_mcc8_mcreco,
                                          @sequence::microboone_reco_mcc8_optical,
                                          @sequence::microboone_reco_mcc8_signalprocessing,
-                                         #@sequence::microboone_reco_mcc8_fuzzypath,
+                                         @sequence::microboone_reco_mcc8_fuzzypath,
                                          @sequence::microboone_reco_mcc8_pandora,
                                          @sequence::microboone_reco_mcc8_ccpath ]
 
