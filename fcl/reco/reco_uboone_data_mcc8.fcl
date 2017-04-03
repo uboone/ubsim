@@ -339,7 +339,7 @@ microboone_reco_data_pandora: [          @sequence::microboone_reco_data_pandora
 microboone_reco_data: [                  rns,
                                          @sequence::microboone_reco_data_optical,
                                          @sequence::microboone_reco_data_signalprocessing,
-                                         @sequence::microboone_reco_data_fuzzypath,
+                                         #@sequence::microboone_reco_data_fuzzypath,
                                          @sequence::microboone_reco_data_pandora,
                                          @sequence::microboone_reco_data_ccpath ]
 
