@@ -345,8 +345,8 @@ microboone_reco_data: [                  rns,
 
 microboone_reco_data_stage1: [           rns,
                                          @sequence::microboone_reco_data_optical,
-                                         @sequence::microboone_reco_data_signalprocessing,
-                                         @sequence::microboone_reco_data_fuzzypath ]
+                                         @sequence::microboone_reco_data_signalprocessing ]
+                                         #@sequence::microboone_reco_data_fuzzypath ]
 
 microboone_reco_data_stage2: [           rns,
                                          @sequence::microboone_reco_data_pandora,
@@ -581,10 +581,14 @@ microboone_reco_data_producers.stitchkalmanhitccContTag.TrackModuleLabels:      
 microboone_reco_data_producers.stitchkalmanhitccContTag.ApplyTags:               [true]
 microboone_reco_data_producers.pandoraCosmicContTag.TrackModuleLabels:           ["pandoraCosmic"]
 microboone_reco_data_producers.pandoraCosmicContTag.ApplyTags:                   [true]
-microboone_reco_data_producers.pandoraNuContTag.TrackModuleLabels:               ["pandoraCosmic","trackkalmanhit","pandoraNu"]
-microboone_reco_data_producers.pandoraNuContTag.ApplyTags:                       [false,false,true]
-microboone_reco_data_producers.pandoraNuPMAContTag.TrackModuleLabels:            ["pandoraCosmic","trackkalmanhit","pandoraNuPMA"]
-microboone_reco_data_producers.pandoraNuPMAContTag.ApplyTags:                    [false,false,true]
+#microboone_reco_data_producers.pandoraNuContTag.TrackModuleLabels:               ["pandoraCosmic","trackkalmanhit","pandoraNu"]
+microboone_reco_data_producers.pandoraNuContTag.TrackModuleLabels:               ["pandoraCosmic","pandoraNu"]
+#microboone_reco_data_producers.pandoraNuContTag.ApplyTags:                       [false,false,true]
+microboone_reco_data_producers.pandoraNuContTag.ApplyTags:                       [false,true]
+#microboone_reco_data_producers.pandoraNuPMAContTag.TrackModuleLabels:            ["pandoraCosmic","trackkalmanhit","pandoraNuPMA"]
+microboone_reco_data_producers.pandoraNuPMAContTag.TrackModuleLabels:            ["pandoraCosmic","pandoraNuPMA"]
+#microboone_reco_data_producers.pandoraNuPMAContTag.ApplyTags:                    [false,false,true]
+microboone_reco_data_producers.pandoraNuPMAContTag.ApplyTags:                    [false,true]
 microboone_reco_data_producers.pmtrackContTag.TrackModuleLabels:                 ["pmtrack"]
 microboone_reco_data_producers.pmtrackContTag.ApplyTags:                         [true]
 
