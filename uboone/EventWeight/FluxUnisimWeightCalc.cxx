@@ -288,9 +288,9 @@ namespace evwgh {
   
   double FluxUnisimWeightCalc::MicroBooNEWeightCalc(double enu, int ptype, int ntype, int uni)
   {
-    
-    /*    int bin = int(enu/0.05); //convert energy (in GeV) into 50 MeV bin
+   
     double weight = 1;
+    /*    int bin = int(enu/0.05); //convert energy (in GeV) into 50 MeV bin
     double Scaled_syst_shift = 0;
 
     if(fWeightArray[uni] >= 0 ){ 
