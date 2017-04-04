@@ -22,7 +22,7 @@ namespace evwgh {
     evwgh::IFDHFileTransfer IFDH;
   public:
     FluxUnisimWeightCalc();
-    double MiniBooNEWeightCalc(double enu, int ptype, int ntype, int uni);
+    double MiniBooNEWeightCalc(double enu, int ptype, int ntype, int uni, bool noNeg);
     double MicroBooNEWeightCalc(double enu, int ptype, int ntype, int uni);
     void Configure(fhicl::ParameterSet const& p);
     std::vector<std::vector<double> > GetWeight(art::Event & e);
@@ -31,13 +31,16 @@ namespace evwgh {
     CLHEP::RandGaussQ *fGaussRandom;
     std::vector<double> fWeightArray;
     int fNuni;   // Number of universes you want to generate
-    double fScalePos; // Scale factor to enhance or degrade a given Positive systematic uncertanity
-    double fScaleNeg; // Scale factor to enhance or degrade a given Negative systematic uncertanity
+    double fScalePos; // Scale factor to enhance or degrade a given positive systematic uncertanity
+    double fScaleNeg; // Scale factor to enhance or degrade a given negative systematic uncertanity
     std::string fMode;   // if you want multisim or +/- 1sigma
     std::string fGenieModuleLabel;
     std::string fWeightCalc; // if you want MiniBooNE or MicroBooNE calculator
 
     //Weight Arrays
+    // These will contain the systematic variations
+    // with these in place we can start to calculate weights
+    // these will depend on the parent particle, neutrino flavor, and neutrino energy
     //         ptype: pi, k, k0, mu
     //         |  ntype: numu, numubar, nue, nuebar 
     //         |  |   binnig: 50MeV
@@ -45,6 +48,9 @@ namespace evwgh {
     double fCV[4][4][200];
     double fRWpos[4][4][200];
     double fRWneg[4][4][200];
+
+    // This is for when there is only one systematic variation (i.e. skin depth)
+    bool PosOnly = false;
        
      DECLARE_WEIGHTCALC(FluxUnisimWeightCalc)
   };
@@ -56,15 +62,15 @@ namespace evwgh {
 
   void FluxUnisimWeightCalc::Configure(fhicl::ParameterSet const& p)
   {
-    //get configuration for this function
+    //Collect the fcl parameters from the fhicl file
     fhicl::ParameterSet const &pset=p.get<fhicl::ParameterSet> (GetName());
-
     fNuni  = pset.get<int>("number_of_multisims");
     fScalePos = pset.get<double>("scale_factor_pos");
     fScaleNeg = pset.get<double>("scale_factor_neg");
     fMode  = pset.get<std::string>("mode");	
     fWeightCalc = pset.get<std::string>("weight_calculator");
 
+    // This sets whether we use the MiniBooNE or a modern calculation for the weights  
     if(fWeightCalc != "MicroBooNE" && fWeightCalc != "MiniBooNE"){
       throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown weight calculator "<< fWeightCalc << std::endl;     
     }
@@ -83,39 +89,19 @@ namespace evwgh {
     //  If there is only one file supplied use 
     //     it for both positive and negative
     //
-    if(dataInput2pos.empty() || dataInput2neg.empty()){
-      
-      if(dataInput2pos.empty() && dataInput2neg.empty()){
-	throw cet::exception(__FUNCTION__) << GetName()<<"::No Unisim histograms "<< std::endl;
-      }
-
-      if(dataInput2pos.empty() && !(dataInput2neg.empty())){
-	std::cout << "Using Negative Unisims for Positive Unisims" << std::endl;
-	dataInput2pos = dataInput2neg;
-      }
-
-      if( dataInput2neg.empty() && !(dataInput2pos.empty())){   	
-	std::cout << "Using Positive Unisims for Negative Unisims" << std::endl;
-	dataInput2neg = dataInput2pos;
-      }
-      
+    if(dataInput2pos == dataInput2neg){
+      PosOnly = true;
     }
-
 
     std::string rwfilepos      = IFDH.fetch(dataInput2pos);
     std::string rwfileneg      = IFDH.fetch(dataInput2neg);
-
-    
-    
-    std::cout << "FILES COPIED" << std::endl;
 
     //Set up the naming convention of the 
     //   histograms that contain all the information we have 
     int ptype[4] = {1,2,3,4}; //mu, pi, k0, k
     int ntype[4] = {1,2,3,4}; //nue, anue, numu, anumu
 
-    std::cout << "TURING FILES INTO ROOT" << std::endl; 
-    // Define the files that store the histograms
+        // Define the files that store the histograms
     TFile fcv(Form("%s",cvfile.c_str()));
     TFile frwpos(Form("%s", rwfilepos.c_str()));
     TFile frwneg(Form("%s", rwfileneg.c_str()));
@@ -152,9 +138,9 @@ namespace evwgh {
     //
     //   While the random number seed it set in the fcl file, you only want to use the same throw PER UNIVERSE
     //
-    //
     fWeightArray.resize(fNuni);
     
+    // This sets up if we want to reweight events or just assess 1sigma shifts 
     if (fMode.find("multisim") != std::string::npos )
       for (int i=0;i<fNuni;i++) fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
     else
@@ -177,7 +163,6 @@ namespace evwgh {
     //  counting how many interactions there are per event 
     //  (neutrino counting is CRITICALLY important for applying the 
     //   correct weights and not ending up with unphysical values)
-    std::cout << "Getting mc truth info" << std::endl; 
     art::Handle< std::vector<simb::MCTruth> > mctruthHandle;
     e.getByLabel(fGenieModuleLabel,mctruthHandle);
     std::vector<simb::MCTruth> const& mclist = *mctruthHandle;
@@ -201,19 +186,19 @@ namespace evwgh {
  
      // Discover the neutrino parent type
       //     This contains the neutrino's parentage information
-      if ( fluxlist[inu].fptype==13 || fluxlist[inu].fptype==-13 )             ptype = 0;
-      else if (      fluxlist[inu].fptype==211 || fluxlist[inu].fptype==-211 ) ptype = 1;
-      else if ( fluxlist[inu].fptype==130 )                                    ptype = 2;
-      else if ( fluxlist[inu].fptype==321 || fluxlist[inu].fptype==-321 )      ptype = 3;                                    
+      if (      fluxlist[inu].fptype==13  || fluxlist[inu].fptype==-13  ) ptype = 0;
+      else if ( fluxlist[inu].fptype==211 || fluxlist[inu].fptype==-211 ) ptype = 1;
+      else if ( fluxlist[inu].fptype==130                               ) ptype = 2;
+      else if ( fluxlist[inu].fptype==321 || fluxlist[inu].fptype==-321 ) ptype = 3;                                    
       else {
 	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0].fptype<< std::endl;
       }
 
       // Discover the neutrino type
       //     This contains the neutrino's flavor information
-      if (      fluxlist[inu].fntype==12 )  ntype=0;
+      if (      fluxlist[inu].fntype==12  ) ntype=0;
       else if ( fluxlist[inu].fntype==-12 ) ntype=1;
-      else if ( fluxlist[inu].fntype==14 )  ntype=2;
+      else if ( fluxlist[inu].fntype==14  ) ntype=2;
       else if ( fluxlist[inu].fntype==-14 ) ntype=3;
       else {
 	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0].fptype<< std::endl;
@@ -227,14 +212,10 @@ namespace evwgh {
 	for (int i=0;i<fNuni;i++) {
 
 	  if(fWeightCalc.find("MicroBooNE") != std::string::npos){
-	    std::cout << fWeightCalc << " Weight calc" << std::endl; 
 	    weight[inu][i]=MicroBooNEWeightCalc(enu, ptype, ntype, i);
-	    if( i <  5 ){ std::cout << "weight[ "<< inu << "][" << i<< "] : " << weight[inu][i] << std::endl;}
 	  }
 	  if(fWeightCalc.find("MiniBooNE") != std::string::npos){
-	    std::cout << fWeightCalc << " Weight calc" << std::endl; 
-	    weight[inu][i]=MiniBooNEWeightCalc(enu, ptype, ntype, i);
-	    if( i <  5 ){ std::cout << "weight[ "<< inu << "][" << i<< "] : " << weight[inu][i] << std::endl;}	    
+	    weight[inu][i]=MiniBooNEWeightCalc(enu, ptype, ntype, i, PosOnly);
 	  }
 
 	}//Iterate through the number of universes      
@@ -244,7 +225,7 @@ namespace evwgh {
     return weight;
   }
 
-  double FluxUnisimWeightCalc::MiniBooNEWeightCalc(double enu, int ptype, int ntype, int uni)
+  double FluxUnisimWeightCalc::MiniBooNEWeightCalc(double enu, int ptype, int ntype, int uni, bool noNeg)
   {
     // 
     //   This is directly based on the MiniBooNE framework to 
@@ -261,6 +242,9 @@ namespace evwgh {
     //    http://cdcvs0.fnal.gov/cgi-bin/public-cvs/cvsweb-public.cgi/~checkout~/...
     //          miniboone/AnalysisFramework/MultisimMatrix/src/MultisimMatrix_initialise.F?rev=1.18;content-type=text%2Fplain
     //
+    //  pseudocode:
+    //   Scaled Reweighting = ScaleFactor * Reweighting + ( 1 - ScaleFactor) * Central Value
+    //
     double scaled_pos = fScalePos*fRWpos[ptype][ntype][bin] + 
       (1-fScalePos)*fCV[ptype][ntype][bin];
     
@@ -271,22 +255,41 @@ namespace evwgh {
     //    http://cdcvs0.fnal.gov/cgi-bin/public-cvs/cvsweb-public.cgi/~checkout~/...
     //           miniboone/AnalysisFramework/MultisimMatrix/src/MultisimMatrix_getWeight.F?rev=1.41;content-type=text%2Fplain
     //
+    //  pseudocode:
+    //   Check value of Random Number array [RAND] for this universe [uni] such that:
+    //   If RAND[uni] > 0
+    //       Weight =  1 + ( RAND[uni] * [ { Scaled Reweighting[pos] / Central Value } - 1 ] )
+    //   If RAND[uni] < 0
+    //       Weight =  1 - ( RAND[uni] * [ { Scaled Reweighting[neg] / Central Value } - 1 ] )
+    //
+    //   if there is only one systematic histogram offered sub this:
+    //   If RAND[uni] < 0
+    //       Weight =  1 - ( RAND[uni] * [ < 2 - { Scaled Reweighting[pos] / Central Value } > - 1 ] )
+    //
+    
     if(fWeightArray[uni] > 0){      
       double syst = fWeightArray[uni]*((scaled_pos/fCV[ptype][ntype][bin])-1);
       weight = 1 + (syst);
+    }
+    else if(noNeg == true){      
+      double syst = fWeightArray[uni]*( (2 - (scaled_pos/fCV[ptype][ntype][bin])) - 1);           
+      weight = 1 - (syst);      
+      
     }
     else{
       double syst = fWeightArray[uni]*((scaled_neg/fCV[ptype][ntype][bin])-1);
       weight = 1 - (syst);    
     }
 
+    if(weight < 0) weight = 1; 
+   
     return weight;
   }
   
   double FluxUnisimWeightCalc::MicroBooNEWeightCalc(double enu, int ptype, int ntype, int uni)
   {
     
-    int bin = int(enu/0.05); //convert energy (in GeV) into 50 MeV bin
+    /*    int bin = int(enu/0.05); //convert energy (in GeV) into 50 MeV bin
     double weight = 1;
     double Scaled_syst_shift = 0;
 
@@ -298,7 +301,7 @@ namespace evwgh {
       Scaled_syst_shift = (fScaleNeg)*(fRWneg[ptype][ntype][bin]) + (1-fScaleNeg)*(fCV[ptype][ntype][bin]);      
       weight = 1-(fWeightArray[uni]*((Scaled_syst_shift/fCV[ptype][ntype][bin])-1));
     }    
-
+    */
     return weight;
   }
 
