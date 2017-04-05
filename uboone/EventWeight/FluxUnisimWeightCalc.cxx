@@ -1,6 +1,7 @@
 #include "WeightCalcCreator.h"
 #include "WeightCalc.h"
-#include "uboone/EventWeight/IFDHFileTransfer.h"
+
+#include <iostream>
 
 #include "TH1D.h"
 #include "TH1F.h"
@@ -19,7 +20,7 @@
 namespace evwgh {
   class FluxUnisimWeightCalc : public WeightCalc
   {
-    evwgh::IFDHFileTransfer IFDH;
+
   public:
     FluxUnisimWeightCalc();
     double MiniBooNEWeightCalc(double enu, int ptype, int ntype, int uni, bool noNeg);
@@ -79,7 +80,6 @@ namespace evwgh {
     
     /// Grab the histogram related to the CV
     std::string dataInput1       =   pset.get< std::string >("CentralValue_hist_file");
-    std::string cvfile = IFDH.fetch(dataInput1);
 
     /// Grab the histogram related to the variation 
     std::string dataInput2pos  =   pset.get< std::string >("PositiveSystematicVariation_hist_file");
@@ -93,9 +93,11 @@ namespace evwgh {
       PosOnly = true;
     }
 
-    std::string rwfilepos      = IFDH.fetch(dataInput2pos);
-    std::string rwfileneg      = IFDH.fetch(dataInput2neg);
 
+    cet::search_path sp("FW_SEARCH_PATH");
+    std::string rwfilepos      = sp.find_file(dataInput2pos);
+    std::string rwfileneg      = sp.find_file(dataInput2neg);
+    std::string cvfile         = sp.find_file(dataInput1);
     //Set up the naming convention of the 
     //   histograms that contain all the information we have 
     int ptype[4] = {1,2,3,4}; //mu, pi, k0, k
