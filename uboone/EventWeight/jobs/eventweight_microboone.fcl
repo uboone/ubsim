@@ -2,10 +2,10 @@ BEGIN_PROLOG
 microboone_eventweight:
 {
  module_type:	"EventWeight"
-  #weight_functions:   [ func1, bnbcorrection, piplus, piminus, kzero, kplus]
-  #weight_functions:   [ piplussplines]
-  #weight_functions:   [ func1, bnbcorrection, piplussplines, piminus, kzero, kplus]
- weight_functions:[horncurrent,pioninexsec,nucleontotxsec,nucleonqexsec,nucleoninexsec,pionqexsec,piontotxsec,expskin,piplussplines,piplus,piminus,kzero,kplus]
+  #Correction factor for flux
+  weight_functions:   [bnbcorrection]
+  #non-Hadron Production Flux Uncertainties 
+  #weight_functions:[horncurrent,pioninexsec,nucleontotxsec,nucleonqexsec,nucleoninexsec,pionqexsec,piontotxsec,expskin]
 
  #throw exception if weight outside limits
  min_weight: 0
