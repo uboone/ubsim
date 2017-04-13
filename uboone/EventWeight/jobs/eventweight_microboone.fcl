@@ -3,7 +3,7 @@ microboone_eventweight:
 {
  module_type:	"EventWeight"
   #Correction factor for flux
-  weight_functions:   [bnbcorrection]
+  weight_functions:   [kplus,bnbcorrection]
   #non-Hadron Production Flux Uncertainties 
   #weight_functions:[horncurrent,pioninexsec,nucleontotxsec,nucleonqexsec,nucleoninexsec,pionqexsec,piontotxsec,expskin]
 
@@ -150,7 +150,7 @@ expskin:{
        parameter_list: ["piplus"]
        parameter_sigma: 1
        mode: multisim
-       number_of_multisims: 10
+       number_of_multisims: 500
        PrimaryHadronGeantCode: 211 # geant code for particle production on Be
        ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE_SplinesHARP.root"
 }
@@ -179,14 +179,15 @@ expskin:{
 }
 
  kplus:{
-       type: PrimaryHadronFS
+       type: PrimaryHadronFeynmanScaling
 #       random_seed: 1
        parameter_list: ["kplus"]
-       parameter_sigma: 1
- 
+       parameter_sigma: 1 
        mode: multisim
-       number_of_multisims: 10
+       scale_factor: 2
+       number_of_multisims: 500
        PrimaryHadronGeantCode: 321 # geant code for particle production on Be
+       weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
        ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE.root"
 }
 
