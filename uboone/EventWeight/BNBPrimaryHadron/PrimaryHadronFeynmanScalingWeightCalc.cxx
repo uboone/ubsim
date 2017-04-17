@@ -295,23 +295,10 @@ namespace evwgh {
       double c6 = FSKPlusFitVal.at(5);     
       double c7 = FSKPlusFitVal.at(6);     
       
-      //      std::cout << " Default Parameters: " << std::endl;
-      //for(unsigned int c = 0; c < FSKPlusFitVal.size(); c++){
-      //	std::cout << " \t c" << c+1 << " : " << FSKPlusFitVal.at(c) << std::endl;
-      //}
-
-      double CV = c1*(HadronVec.P()*HadronVec.P()/HadronE)*exp(-1.*c3*fabs(pow(xF,c4)) 
-							       - c7*fabs(pow(HadronPT*xF,c6))
+      double CV = c1*(HadronVec.P()*HadronVec.P()/HadronE)*exp(-1.*c3*pow(fabs(xF),c4) 
+							       - c7*pow(fabs(HadronPT*xF),c6)
 							       - c2*HadronPT
 							       - c5*HadronPT*HadronPT);
-
-      /*      std::cout << "Standard Cross Section for :" << std::endl;
-      std::cout << " \t HadronVec.P() : \t" << HadronVec.P() << std::endl;
-      std::cout << " \t HadronE       : \t" << HadronE << std::endl;
-      std::cout << " \t HadronPT      : \t" << HadronPT << std::endl;
-      std::cout << " \t xF            : \t" << xF << std::endl;
-      std::cout << " \t CV XSec       : \t" << CV << std::endl;
-      */
 
       if(CV < 0) CV = 0;
 
@@ -337,20 +324,11 @@ namespace evwgh {
 	 smeared_c7 > 0){
 	parameters_pass = true;	
       }
-      /*
-      std::cout << " Smeared Parameters: " << std::endl;
-      for(unsigned int c = 0; c < FSKPlusFitSmeared.size(); c++){
-	std::cout << " \t c" << c+1 << " : " << FSKPlusFitSmeared.at(c) << std::endl;
-      }
-      */
-      
-      double RW = smeared_c1*(HadronVec.P()*HadronVec.P()/HadronE)*exp(-1.*smeared_c3*pow(xF,smeared_c4) 
-								       - smeared_c7*pow(HadronPT*xF,smeared_c6)
+        
+      double RW = smeared_c1*(HadronVec.P()*HadronVec.P()/HadronE)*exp(-1.*smeared_c3*pow(fabs(xF),smeared_c4) 
+								       - smeared_c7*pow(fabs(HadronPT*xF),smeared_c6)
 								       - smeared_c2*HadronPT
 								       - smeared_c5*HadronPT*HadronPT);
-
-      //      std::cout << " \t RW XSec       : \t" << RW << std::endl;
-
 
       if(RW < 0) RW = 0;
       
