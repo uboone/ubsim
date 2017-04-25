@@ -41,7 +41,15 @@ namespace evwgh {
     static std::vector<double>              MultiGaussianSmearing(
 			                        std::vector<double> const& centralValue, 
                                                 TMatrixD* const& inputCovarianceMatrix, 
-                                                double rand);
+                                                std::vector<double> rand);
+
+    static std::vector<double>              MultiGaussianSmearing(
+			                        std::vector<double> const& centralValue, 
+                                                TMatrixD* const& LowerTriangleCovarianceMatrix, 
+						bool isDecomposed,
+                                                std::vector<double> rand);
+    
+
   private:
     std::string fName;
   };
