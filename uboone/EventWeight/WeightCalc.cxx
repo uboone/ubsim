@@ -14,7 +14,7 @@
 #include "CLHEP/Random/RandomEngine.h"
 #include "CLHEP/Random/RandGaussQ.h"
 
-namespace evwgh {
+namespace evwgh { 
   std::vector<std::vector<double> > WeightCalc::MultiGaussianSmearing(std::vector<double> const& centralValue,std::vector< std::vector<double> > const& inputCovarianceMatrix,int n_multisims,CLHEP::RandGaussQ& GaussRandom)
   {
 
@@ -100,13 +100,24 @@ namespace evwgh {
     return setOfSmearedCentralValues;
   } // WeightCalc::MultiGaussianSmearing() - gives a vector of sets of smeared parameters
 
-  std::vector<double> WeightCalc::MultiGaussianSmearing(std::vector<double> const& centralValue, TMatrixD* const& inputCovarianceMatrix, double rand)
+  /////////////
+  /// Over load of the above function that only returns a single varied parameter set
+  ////////////
+  std::vector<double> WeightCalc::MultiGaussianSmearing(std::vector<double> const& centralValue, TMatrixD* const& inputCovarianceMatrix, std::vector< double > rand)
   {
 
     //compute the smeared central values
     std::vector<double> smearedCentralValues;
 
+    //
     //perform Choleskey Decomposition
+    //
+    // Best description I have found 
+    //     is in the PDG (Monte Carlo techniques, Algorithms, Gaussian distribution)
+    //
+    //  http://pdg.lbl.gov/2016/reviews/rpp2016-rev-monte-carlo-techniques.pdf (Page 5)
+    //
+    //
     TDecompChol dc = TDecompChol(*(inputCovarianceMatrix));
     if(!dc.Decompose())
       {
@@ -127,7 +138,50 @@ namespace evwgh {
 	
 	for(unsigned int row = 0; row < col+1; ++row)
 	  {
-	    weightFromU += U(row,col)*rand;
+	    weightFromU += U(row,col)*rand[row];
+ 	  }
+
+	//multiply this weight by each col of the central values to obtain
+	//the gaussian smeared and constrained central values
+	// smearedCentralValues.push_back(weightFromU * centralValue[col]);
+	smearedCentralValues.push_back(weightFromU + centralValue[col]);
+      }
+  return smearedCentralValues;
+  } // WeightCalc::MultiGaussianSmearing() - Gives a single set of smeared parameters
+
+
+  /////////
+  //
+  /*
+    static std::vector<double>              MultiGaussianSmearing(
+    std::vector<double> const& centralValue,
+    TMatrixD* const& LowerTriangleCovarianceMatrix,
+    bool isDecomposed,
+    std::vector<double> rand);
+  */
+  ////////
+  std::vector<double> WeightCalc::MultiGaussianSmearing(std::vector<double> const& centralValue, TMatrixD* const& LowerTriangleCovarianceMatrix, bool isDecomposed, std::vector< double > rand)
+  {
+    
+    //compute the smeared central values
+    std::vector<double> smearedCentralValues;
+    
+    // This guards against accidentally 
+    if(!isDecomposed){
+      throw art::Exception(art::errors::StdException)
+	<< "Must supply the decomposed lower triangular covariance matrix.";
+      return smearedCentralValues;      
+    } 
+
+     
+    for(unsigned int col = 0; col < centralValue.size(); ++col)
+      {
+	//find the weight of each col of the upper triangular cov. matrix
+	double weightFromU = 0.;
+	
+	for(unsigned int row = 0; row < col+1; ++row)
+	  {
+	    weightFromU += LowerTriangleCovarianceMatrix[0][row][col]*rand[row];
  	  }
 
 	//multiply this weight by each col of the central values to obtain
