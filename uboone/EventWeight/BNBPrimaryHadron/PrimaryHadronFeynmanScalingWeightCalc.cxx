@@ -41,8 +41,8 @@ namespace evwgh {
   public:
     PrimaryHadronFeynmanScalingWeightCalc();
     void Configure(fhicl::ParameterSet const& p);
-    std::pair< bool, double > MiniBooNEWeightCalc(simb::MCFlux flux, double rand);
-    std::pair< bool, double > MicroBooNEWeightCalc(simb::MCFlux flux, double rand);
+    std::pair< bool, double > MiniBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand);
+    std::pair< bool, double > MicroBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand);
     virtual std::vector<std::vector<double> > GetWeight(art::Event & e);
     
 
@@ -58,7 +58,7 @@ namespace evwgh {
     std::string ExternalDataInput;
     double fScaleFactor;
     TFile* file;
-    std::vector< double > fWeightArray; 
+    std::vector< std::vector< double > > fWeightArray; 
     std::string fMode;
     std::vector<double> FSKPlusFitVal;
     TMatrixD* FSKPlusFitCov;    
@@ -118,21 +118,28 @@ namespace evwgh {
     fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
     
     //
-    //   This part is important!!! You want to be sure to use the same random number throughout all the 
-    //   events, otherwise you will be smearing over all the correlations. 
+    //  This part is very important. You will need more than a single random number
+    //  per event. In fact you will need per universe as many random numbers as there
+    //  are rows in the covariance matrix. 
     //
-    //   While the random number seed it set in the fcl file, you only want to use the same throw PER UNIVERSE
+    //  To properly perform Cholesky decomposition you'll use a correlated set of random
+    //  numbers when creating the smeared cross section methods. Please see documentation
+    //  in WeightCalc to help with this.
     //
-    fWeightArray.resize(2*fNmultisims);
-    
-    // This sets up if we want to reweight events or just assess 1sigma shifts 
-    if (fMode.find("multisim") != std::string::npos )
-      for (unsigned int i=0;i<fWeightArray.size();i++) fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
-    else
-      for (unsigned int i=0;i<fWeightArray.size();i++) fWeightArray[i]=1.;
- 
+    fWeightArray.resize(fNmultisims);
+        
+    for (unsigned int i=0;i<fWeightArray.size();i++) {
+      fWeightArray[i].resize(FSKPlusFitCov->GetNcols());      
+      if (fMode.find("multisim") != std::string::npos ){
+	for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
+	  fWeightArray[i][j]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+	}
+      }
+      else{
+	std::fill(fWeightArray[i].begin(), fWeightArray[i].end(), 1.);
+      }
+    }
   }
-
   std::vector<std::vector<double> > PrimaryHadronFeynmanScalingWeightCalc::GetWeight(art::Event & e)
   {
 
@@ -174,14 +181,27 @@ namespace evwgh {
       if(fMode.find("multisim") != std::string::npos){       
 	for (unsigned int i = 0; i < fWeightArray.size() && int(weight[inu].size()) <= fNmultisims; i++) {
 	  if(fWeightCalc.find("MicroBooNE") != std::string::npos){
-
-	    if(MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]).first){
-	      weight[inu].push_back(MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]).second);
+	    
+	    //
+	    //This way we only have to call the WeightCalc once
+	    // 
+	    std::pair<bool, double> test_weight =
+	      MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
+	    
+	    if(test_weight.first){
+	      weight[inu].push_back(test_weight.second);
 	    }
 	  }
 	  if(fWeightCalc.find("MiniBooNE") != std::string::npos){
-	    if(MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]).first){
-	      weight[inu].push_back(MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]).second);
+
+	    //
+	    //This way we only have to call the WeightCalc once
+	    // 
+	    std::pair<bool, double> test_weight =
+	      MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
+	    
+	    if(test_weight.first){
+	      weight[inu].push_back(test_weight.second);
 	    }
 	  }
 	}//Iterate through the number of universes      
@@ -203,7 +223,7 @@ namespace evwgh {
   //// 
   //   Use the MiniBooNE Implementation to determine the weight 
   ////
-  std::pair< bool, double> PrimaryHadronFeynmanScalingWeightCalc::MiniBooNEWeightCalc(simb::MCFlux flux, double rand){
+  std::pair< bool, double> PrimaryHadronFeynmanScalingWeightCalc::MiniBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand){
     
   // We now know that we have the hadronic parent that we want so we need to
     // prepare the kinimatic information about the iteraction to go into the Feynman Scaling 
@@ -258,9 +278,9 @@ namespace evwgh {
       ProtonVec.SetPxPyPzE(ProtonPx,ProtonPy,ProtonPz,ProtonE);
       
 
-      double E_cm = sqrt(2*ProtonMass + 2*ProtonMass*ProtonE); // Is this right?
+      double E_cm = sqrt(2*ProtonMass + 2*ProtonMass*ProtonVec.P()); // Is this right?
       double gamma = (ProtonE + ProtonMass) / E_cm; 
-      double gammaBeta = ProtonPz/E_cm;
+      double gammaBeta = ProtonVec.P()/E_cm;
 
       double MaxThreshold;
       if(fabs(fprimaryHad) == 321){
@@ -357,7 +377,7 @@ namespace evwgh {
   //// 
   //   Use the MicroBooNE Implementation to determine the weight 
   ////
-  std::pair<bool, double> PrimaryHadronFeynmanScalingWeightCalc::MicroBooNEWeightCalc(simb::MCFlux flux, double rand){
+  std::pair<bool, double> PrimaryHadronFeynmanScalingWeightCalc::MicroBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand){
     
     double weight = 1;
     bool parameters_pass = true;
