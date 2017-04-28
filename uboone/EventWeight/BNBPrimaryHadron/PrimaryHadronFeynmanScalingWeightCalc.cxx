@@ -350,7 +350,7 @@ namespace evwgh {
 								       - smeared_c2*HadronPT
 								       - smeared_c5*HadronPT*HadronPT);
 
-      if(RW < 0) RW = 0;
+      //      if(RW < 0) RW = 0;
       
       double weight = 1; 
 
@@ -366,6 +366,9 @@ namespace evwgh {
       else{
 	weight *= RW/CV;
       }
+
+      if(weight < 0) weight = 1;
+      if(weight >30) weight = 30;
 
       std::pair<bool, double> output(parameters_pass, weight);
 
