@@ -21,7 +21,6 @@ art_make_library(LIBRARY_NAME BNBPrimaryHadronWeightCalculators
 #			      ${FHICLCPP}
 				      ${CLHEP}
 #                      ${ROOT_BASIC_LIB_LIST}
-                       ${IFDH}
 		              ) 
 
 #art_make(LIBRARY_NAME   BNBPrimaryHadron
