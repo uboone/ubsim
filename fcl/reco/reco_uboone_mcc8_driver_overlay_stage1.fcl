@@ -16,7 +16,7 @@ physics.producers.digitfilter.DigitModuleLabel: "mixer"
 #physics.producers.ophitLow.InputModule: "mixer"
 physics.producers.saturation.LGProducer: "mixer"
 physics.producers.saturation.HGProducer: "mixer"
-physics.producers.saturation.HGProducerCosmic: "mixer"
+physics.producers.saturation.HGProducerCosmic: "pmtreadout"
 
 physics.producers.pandoraCosmicKHitFlashTag.TriggerProducer: "mixer"
 
