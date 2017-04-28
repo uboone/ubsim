@@ -59,17 +59,20 @@ namespace evwgh {
     int fprimaryHad;
     std::string fWeightCalc;
     std::string ExternalDataInput;
+    std::string ExternalFitInput;
     double fScaleFactor;
     TFile* file;
+    TFile* Fitfile;
     std::vector< std::vector< double > > fWeightArray; 
     std::string fMode;
 
-    TMatrixD* HARPpiPlusCov;    
-    TMatrixD* HARPpiPlusLowerTriangluarCov;    
-    TMatrixD* HARPpiPlusXSec;    
+    TMatrixD* HARPCov;    
+    TMatrixD* HARPLowerTriangluarCov;    
+    TMatrixD* HARPXSec;    
 
     std::vector<double> HARPmomentumBounds;
     std::vector<double> HARPthetaBounds;
+    std::vector<double> SWParam;
 
     bool fIsDecomposed;
     
@@ -94,14 +97,41 @@ namespace evwgh {
     fNmultisims			=   pset.get<int>("number_of_multisims");
     fprimaryHad			=   pset.get<int>("PrimaryHadronGeantCode");
     std::string dataInput       =   pset.get< std::string >("ExternalData");
+    std::string fitInput        =   pset.get< std::string >("ExternalFit");
     fWeightCalc                 =   pset.get<std::string>("weight_calculator");
     fMode                       =   pset.get<std::string>("mode");
     fScaleFactor                =   pset.get<double>("scale_factor");
+    
+    ////////////////////////
+    //
+    //  We will configure the down stream code to run on the primary 
+    //   hadron that we want to be assigning an uncertainty to 
+    //
+    ///////////////////////
+    std::string HadronName; 
+    std::string HadronAbriviation;
+    if(fprimaryHad == 211){
+      HadronName = "PiPlus";
+      HadronAbriviation = "PP";
+    }
+    else if(fprimaryHad == -211){
+      HadronName = "PiMinus";
+      HadronAbriviation = "PM";
+    }
+    else{ 
+	throw art::Exception(art::errors::StdException)
+	  << "sanford-wang is only configured for charged pions ";
+      }
+
+    ///////////////////
+    //
     // Get HARP Data:
     //   Now let's get the external data that we will need 
     //   to assess what the variations we can make around our
     //   central value cross section 
+    //
     //   First: Pull in the file
+    ///////////////////
     cet::search_path sp("FW_SEARCH_PATH");
     std::string ExternalDataInput = sp.find_file(dataInput);
     file = new TFile(Form("%s",ExternalDataInput.c_str()));
@@ -110,13 +140,13 @@ namespace evwgh {
     pname.resize(4); // there are 4 items
 
     // Define what we will gather from HARP data
-    pname[0] = "HARPData/PiPlus/PPCrossSection"; // Cross Section
-    pname[1] = "HARPData/PiPlus/PPcovarianceMatrix"; // Covariance Matrix
-    pname[2] = "HARPData/PiPlus/PPmomentumBoundsArray"; // Momentum Bounds
-    pname[3] = "HARPData/PiPlus/PPthetaBoundsArray"; // Theta Bounds
+    pname[0] = Form("HARPData/%s/%sCrossSection",HadronName.c_str(),HadronAbriviation.c_str()); // Cross Section
+    pname[1] = Form("HARPData/%s/%scovarianceMatrix",HadronName.c_str(),HadronAbriviation.c_str()); // Covariance Matrix
+    pname[2] = Form("HARPData/%s/%smomentumBoundsArray",HadronName.c_str(),HadronAbriviation.c_str()); // Momentum Bounds
+    pname[3] = Form("HARPData/%s/%sthetaBoundsArray",HadronName.c_str(),HadronAbriviation.c_str()); // Theta Bounds
 
-    HARPpiPlusXSec = (TMatrixD*) file->Get(pname[0].c_str());
-    HARPpiPlusCov  = (TMatrixD*) file->Get(pname[1].c_str());
+    HARPXSec = (TMatrixD*) file->Get(pname[0].c_str());
+    HARPCov  = (TMatrixD*) file->Get(pname[1].c_str());
 
     TArrayD* HARPmomentumBoundsArray = (TArrayD*) file->Get(pname[2].c_str());
     HARPmomentumBounds = 
@@ -125,6 +155,27 @@ namespace evwgh {
     TArrayD* HARPthetaBoundsArray = (TArrayD*) file->Get(pname[3].c_str());
     HARPthetaBounds = 
       PrimaryHadronSWCentralSplineVariationWeightCalc::ConvertToVector(HARPthetaBoundsArray);    
+    
+    /////////////////
+    //
+    //   Extract the Sanford-Wang Fit Parmeters
+    //
+    ////////////////
+
+    
+    std::string ExternalFitInput = sp.find_file(fitInput);
+    Fitfile = new TFile(Form("%s",ExternalFitInput.c_str()));
+
+    std::string fitname; // these are what we will extract from the file
+
+    fitname = Form("SW/%s/SW%sFitVal",HadronName.c_str(),HadronName.c_str()); // Sanford-Wang Fit Parameters
+
+    TArrayD* SWParamArray = (TArrayD*) Fitfile->Get(fitname.c_str());
+    SWParam = 
+      PrimaryHadronSWCentralSplineVariationWeightCalc::ConvertToVector(SWParamArray);    
+
+
+
 
     //Prepare random generator
     art::ServiceHandle<art::RandomNumberGenerator> rng;
@@ -142,7 +193,7 @@ namespace evwgh {
     fWeightArray.resize(2*fNmultisims);
         
     for (unsigned int i=0;i<fWeightArray.size();i++) {
-      fWeightArray[i].resize(HARPpiPlusCov->GetNcols());
+      fWeightArray[i].resize(HARPCov->GetNcols());
       if (fMode.find("multisim") != std::string::npos ){
 	for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
 	  fWeightArray[i][j]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
@@ -158,7 +209,7 @@ namespace evwgh {
     /////
 
     //perform Choleskey Decomposition
-    TDecompChol dc = TDecompChol(*(HARPpiPlusCov));
+    TDecompChol dc = TDecompChol(*(HARPCov));
     if(!dc.Decompose())
       {
     	throw art::Exception(art::errors::StdException)
@@ -168,7 +219,7 @@ namespace evwgh {
     //Get upper triangular matrix. This maintains the relations in the
     //covariance matrix, but simplifies the structure.
     fIsDecomposed = true;
-    HARPpiPlusLowerTriangluarCov = new TMatrixD(dc.GetU());  
+    HARPLowerTriangluarCov = new TMatrixD(dc.GetU());  
        
   }//End Configure
 
@@ -265,7 +316,9 @@ namespace evwgh {
     bool parameters_pass = true;
     
     double weight = 1;
-    
+
+    ///////////////////////////////
+    //
     // We now know that we have the hadronic parent that we want so we need to
     // prepare the kinematic information about the iteraction to go into the Sanford-Wang
     // calculation
@@ -283,23 +336,16 @@ namespace evwgh {
     //       MiniBooNE Collaboration, PhysRevD.79.072002
     //       D.Schmitz Thesis; http://lss.fnal.gov/archive/thesis/2000/fermilab-thesis-2008-26.pdf
     //
-    //
+    //////////////////////////////
 
-    // Sanford-Wang parameterization: 
-    //    Attributed author in MiniBooNE code is Mike Shaevitz 
-    //
-    //    Parameters are taken from Table 5 from PhysRevD.79.072002
-    //    THIS IS ONLY APPLICABLE TO positively charged pions
-    //
-
-    double c1 = 220.7;
-    double c2 = 1.080;
-    double c3 = 1.0;
-    double c4 = 1.978;
-    double c5 = 1.32;
-    double c6 = 5.572;
-    double c7 = 0.08678;
-    double c8 = 9.686;
+    double c1 = SWParam[0];
+    double c2 = SWParam[1];
+    double c3 = SWParam[2];
+    double c4 = SWParam[3];
+    double c5 = SWParam[4];
+    double c6 = SWParam[5];
+    double c7 = SWParam[6];
+    double c8 = SWParam[7];
     double c9 = 1.0; // This isn't in the table but it is described in the text
     
     //  Lay out the event kinimatics 
@@ -321,6 +367,23 @@ namespace evwgh {
 			     HadronMass*HadronMass);
       HadronVec.SetPxPyPzE(HadronPx,HadronPy,HadronPz,HadronE);
 
+      ////////
+      //  
+      //   Based on MiniBooNE code to evaluate the theta value within below the maximum 
+      //    HARP theta coverage. This helps keep the splines well formed and constrains  
+      //    the uncertainties at very low neutrino energy
+      //
+      ////////
+
+      double ThetaOfInterest;
+      if(HadronVec.Theta() > 0.195){
+	ThetaOfInterest = 0.195;
+      }
+      else{
+	ThetaOfInterest = HadronVec.Theta();
+      }
+
+
       // Get Initial Proton Kinitmatics 
       //   CURRENTLY GSimple flux files drop information about 
       //   the initial state proton, but that this 
@@ -341,17 +404,18 @@ namespace evwgh {
       double CV = c1 * pow(HadronVec.P(), c2) * 
 	(1. - HadronVec.P()/(ProtonVec.P() - c9)) *
 	exp(-1. * c3 * pow(HadronVec.P(), c4) / pow(ProtonVec.P(), c5)) *
-	exp(-1. * c6 * HadronVec.Theta() *(HadronVec.P() - c7 * ProtonVec.P() * pow(cos(HadronVec.Theta()), c8)));
+	exp(-1. * c6 * ThetaOfInterest *(HadronVec.P() - c7 * ProtonVec.P() * pow(cos(ThetaOfInterest), c8)));
 
       // Check taken from MiniBooNE code
       if(HadronVec.P() > (ProtonVec.P() - c9)){CV = 0;} 
 
-      
+      //////
+      //
       // Now that we have our central value based on the Sanford-Wang parameterization we 
       // need to create variations around this value. MiniBooNE did this by performing 
       // spline fits to the HARP data. This is a reproduction of that code:
       // 
-      //
+      ////
       double HARPmomentumBins[int(HARPmomentumBounds.size())];
       double HARPthetaBins[int(HARPthetaBounds.size())];
 
@@ -394,7 +458,7 @@ namespace evwgh {
       int anaBin = 0;
       for(int pbin = 0; pbin < Npbins; pbin++){
 	for(int tbin = 0; tbin < Ntbins; tbin++){	
-	  HARPCrossSectionAnalysisBins[anaBin] = HARPpiPlusXSec[0][pbin][tbin];
+	  HARPCrossSectionAnalysisBins[anaBin] = HARPXSec[0][pbin][tbin];
 	  anaBin++;
 	}
       }
@@ -406,7 +470,7 @@ namespace evwgh {
       //
 
       std::vector< double > smearedHARPCrossSectionAnalysisBins = 
-	WeightCalc::MultiGaussianSmearing(HARPCrossSectionAnalysisBins, HARPpiPlusLowerTriangluarCov, fIsDecomposed,rand); 
+	WeightCalc::MultiGaussianSmearing(HARPCrossSectionAnalysisBins, HARPLowerTriangluarCov, fIsDecomposed,rand); 
       HARPCrossSectionAnalysisBins.clear();
 
       //
@@ -423,12 +487,12 @@ namespace evwgh {
       // std::vector back into a TMatrixD, though this is a bit annoying since TMatrices 
       // are an annoying format. 
       //
-      TMatrixD*  smearedHARPpiPlusXSec = new TMatrixD(Npbins,Ntbins);
+      TMatrixD*  smearedHARPXSec = new TMatrixD(Npbins,Ntbins);
       
       anaBin = 0;
       for(int pbin = 0; pbin < Npbins; pbin++){
 	  for(int tbin = 0; tbin < Ntbins; tbin++){
-	  smearedHARPpiPlusXSec[0][pbin][tbin] = smearedHARPCrossSectionAnalysisBins[anaBin];	  
+	  smearedHARPXSec[0][pbin][tbin] = smearedHARPCrossSectionAnalysisBins[anaBin];	  
 	  anaBin++;
 	}
       }
@@ -461,13 +525,14 @@ namespace evwgh {
 	    //
 	    // We want to create spline at fixed theta values, that way we can 
 	    // study the cross section at the given meson momentum
-	    MomentumBins[tbin].SetBinContent(pbin+1, smearedHARPpiPlusXSec[0][pbin][tbin]);		    
+	    MomentumBins[tbin].SetBinContent(pbin+1, smearedHARPXSec[0][pbin][tbin]);		    
 	    // This will give us the cross section in discreet slices of theta (tbin)
 	    // but each histogram in the vector will be the cross section in bins of
 	    // momentum that can then be cublic splined  
 	    //
 	  }
 	
+	  //
 	  // in a given theta slice we can now spline over the cross section entries
 	  // in bins of momentum
 	  //
@@ -477,6 +542,7 @@ namespace evwgh {
 	  // in TSpline3 but it is default in DCSPLC (the Fortran CERN library spline function)
 	  // this helps to control the smoothness of the spline and minimizes the variation bin to bin
 	  // For TSpine3 this is controlled by:
+	  //
 	  //  b1 = constrain first knot 1st derivative 
 	  //  b2 = constrain first knot 2nd derivative 
 	  //  e1 = constrain final knot 1st derivative 
@@ -488,7 +554,7 @@ namespace evwgh {
 
       }
       MomentumBins.clear();
-      delete smearedHARPpiPlusXSec;
+      delete smearedHARPXSec;
       //
       // Now that we have the 1D Splines over momentum we want to know
       // what the cross section is for the meson's momentum in bins of
@@ -500,16 +566,17 @@ namespace evwgh {
       for(int tbin = 0; tbin < Ntbins; tbin++){
 	ThetaBins->SetBinContent(tbin+1, SplinesVsMomentum[tbin].Eval(HadronVec.P()));
       } 
-      
+
+      ////      
       // Now we can spline across the theta bins and we can extract the exact value of the 
       // cross section for the meson's theta value
       //
       //  Options described above.
-      //
+      /////
 
       TSpline3* FinalSpline = new TSpline3(ThetaBins,"b2e2",0,0);
 
-      double RW = FinalSpline->Eval(HadronVec.Theta());
+      double RW = FinalSpline->Eval(ThetaOfInterest);
 
       SplinesVsMomentum.clear();
       delete ThetaBins;
@@ -525,8 +592,14 @@ namespace evwgh {
       //   cdcvs0.fnal.gov/cgi-bin/public-cvs/cvsweb-public.cgi/~checkout~/ ... 
       //              miniboone/AnalysisFramework/MultisimMatrix/src/MultisimMatrix.inc    
       //
-      //  This forces any negative spline fit to be zero     
-      if(weight < 0) weight = 0; 
+      //  This forces any negative spline fit to be 1     
+
+      ////////
+      //  Possible Bug.
+      ////////
+      if(weight < 0) weight = 1;  // This seems to be a feature in the MiniBooNE code
+                                  //  It looks like the intension is to set this to zero
+                                  //  but it is set to 1 before it is set to zero 
       //  This locks in a max weight for all universes 
       if(weight > 30) weight = 30;
       
