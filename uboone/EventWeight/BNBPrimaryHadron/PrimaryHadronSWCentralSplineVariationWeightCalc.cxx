@@ -416,17 +416,10 @@ namespace evwgh {
       // spline fits to the HARP data. This is a reproduction of that code:
       // 
       ////
-      double HARPmomentumBins[int(HARPmomentumBounds.size())];
-      double HARPthetaBins[int(HARPthetaBounds.size())];
 
-      for(int bin = 0; bin < int(HARPmomentumBounds.size()); bin++){
-	HARPmomentumBins[bin] = HARPmomentumBounds[bin];
-      }
-      
-      for(int bin = 0; bin < int(HARPthetaBounds.size()); bin++){
-	HARPthetaBins[bin] = HARPthetaBounds[bin];
-      }
-      
+      double* HARPmomentumBins = HARPmomentumBounds.data(); // Convert std::vector to array
+      double* HARPthetaBins = HARPthetaBounds.data();       // Convert std::vector to array
+
       int Ntbins = int(HARPthetaBounds.size()) - 1;
       int Npbins = int(HARPmomentumBounds.size()) - 1;
       
