@@ -63,7 +63,7 @@ microboone_flashfilter: { module_type: "OpFlashFilter"
    		  	  OpFlashTag: ""
 		  	  Verbose: false
 		  	  FlashCuts: [
-			       	       [ { MinPE:35 MinTime:2.9 MaxTime:5.2 } ]
+			       	       [ { MinPE:40 MinTime:2.9 MaxTime:5.2 } ]
 		  	     	     ]
    		        }
 
