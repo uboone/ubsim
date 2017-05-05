@@ -26,3 +26,5 @@ physics.producers.pandoraCosmicKHitFlashTag.TriggerProducer: "mixer"
 
 services.DetectorClocksService.TrigModuleName: "mixer"
 
+services.FileCatalogMetadata.fileType: "mc"
+
