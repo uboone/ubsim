@@ -91,7 +91,7 @@ microboone_reco_data_producers:
 
   ### noise filtering (if needed)
 
-  digitfilter:                    @local::microboone_rawdigitfilter
+  #digitfilter:                    @local::microboone_rawdigitfilter
   wcNoiseFilter:                  @local::microboone_wirecellnoisefilter
 
   ### calwire producers
@@ -378,7 +378,7 @@ microboone_reco_data_MucSTags: [         #MuCSTrackTaggertrackkalmanhit,
 ### These are for MCC 7
 
 # this turns on the truncation of the RawDigits
-microboone_reco_data_producers.digitfilter.TruncateTicks:                        true
+#microboone_reco_data_producers.digitfilter.TruncateTicks:                        true
 
 microboone_reco_data_producers.caldata.DigitModuleLabel:                         "wcNoiseFilter"
 microboone_reco_data_producers.caldata.Threshold:                                [0, 0, 0]  # Not what you think...
@@ -388,7 +388,7 @@ microboone_reco_data_producers.caldata.DodQdxCalib:                             
 microboone_reco_data_producers.gaushit.CalDataModuleLabel:                       "caldata"
 microboone_reco_data_producers.gaushit.MinSig:                                   [2.6,  3.4,  3.4]
 microboone_reco_data_producers.gaushit.MinWidth:                                 [1.0,  1.0,  1.0]
-microboone_reco_mcc8_producers.gaushit.LongMaxHits:                              [ 25, 25, 25]
+microboone_reco_data_producers.gaushit.LongMaxHits:                              [ 25, 25, 25]
 microboone_reco_data_producers.gaushit.MaxMultiHit:                              4
 microboone_reco_data_producers.gaushit.TryNplus1Fits:                            false
 microboone_reco_data_producers.gaushit.Chi2NDF:                                  50.
@@ -505,12 +505,12 @@ microboone_reco_data_producers.pandoraCosmicKHitFlashMatch.FlashModuleLabel:    
 microboone_reco_data_producers.pandoraCosmicKHitFlashMatch.BeamFlashTrackMatchAlgParams.MakeOutsideDriftTags: "true"
 
 # Remove hits, based on geometry and Flashes                                     Geometry tagger                   Flash tagger
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.CosmicProducerLabels:    ["pandoraCosmicKalmanTrackPFPart", "pandoraCosmicKHitFlashTag" ]
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.TrackProducerLabels:     ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.AssnProducerLabels:      ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.CosmicTagThresholds:     [0.6,                              0.99                        ]
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.PFParticleProducerLabel: "pandoraCosmic"
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.EndTickPadding:          75
+microboone_reco_data_producers.pandoraCosmicHitRemoval.CosmicProducerLabels:    ["pandoraCosmicKalmanTrackPFPart", "pandoraCosmicKHitFlashTag" ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.TrackProducerLabels:     ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.AssnProducerLabels:      ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.CosmicTagThresholds:     [0.6,                              0.99                        ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.PFParticleProducerLabel: "pandoraCosmic"
+microboone_reco_data_producers.pandoraCosmicHitRemoval.EndTickPadding:          75
 
 # Pandora neutrino pass related
 microboone_reco_data_producers.pandoraNu.GeantModuleLabel:                       "largeant"
