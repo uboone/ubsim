@@ -120,7 +120,7 @@ simple_plugin( CRTMerger module
   ${MF_UTILITIES}
   ${CETLIB}
   ${GALLERY}
-  CRTData
+  CRTSimData
 )
 
 install_headers()
