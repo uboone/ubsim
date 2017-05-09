@@ -69,7 +69,6 @@ private:
   // Declare member data here.
 
   art::ServiceHandle<art::TFileService> tfs;
-  TTree*       my_tree_;
 
   std::string  raw_data_label_;
   std::string  SiPMpositions_;
@@ -77,13 +76,13 @@ private:
   std::string  CRTGains_;
   std::string  CRTPedestals_;
  
-  double max_time_difference_ ;//= 400;//max time for coincidence                                                                                                
-  double Lbar_; // = 10.8;//Width for scintillator strip
-  double Lbartop_; // = 11.2;//Width for scintillator strip_top
-  double Emin_;// = 100;//Energy threshold for hit     
+  double max_time_difference_ ;//max time for coincidence                                                                                                
+  double Lbar_; //Width for scintillator strip
+  double Lbartop_; //Width for scintillator strip_top
+  int store_hit_;
+  double Emin_;//Energy threshold for hit     
 
-  std::map<std::pair<int,double>, BernZMQEvent const*> HitCollection;
-  
+  //std::map<std::pair<int,std::pair<double,double> >, BernZMQEvent const*> HitCollection;
   
   std::map <int, std::vector<double> > sensor_pos; //key = FEB*100+ch
   std::map <int, double > FEBDel; //key = FEB;
@@ -104,8 +103,16 @@ private:
   TH1F* TimeDiff;
   //quallity plots
 
+  TTree*       my_tree_;
+  double xtot=-10000., ytot=-10000., ztot=-10000.;
+  double hit_time_ns = 1e18;
+  double hit_time_s = 1e18;
+  int plane = -1;
+  double td = 1e19;
 
-
+  //test
+  bool verbose = 0;
+  //test
 
 };
 
@@ -120,6 +127,7 @@ bernfebdaq::CRTHitProducer::CRTHitProducer(fhicl::ParameterSet const & p)
     max_time_difference_(p.get<double>("max_time_difference")),
     Lbar_(p.get<double>("Lbar")),
     Lbartop_(p.get<double>("Lbartop")),
+    store_hit_(p.get<int>("store_hit")),
     Emin_(p.get<double>("Emin"))//,
 {
   // Call appropriate produces<>() functions here.
@@ -129,6 +137,12 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 {
   // Implementation of required member function here.
 
+  //vaciar HitCollection
+  std::map<std::pair<int,std::pair<double,double> >, BernZMQEvent const*> HitCollection;
+
+  //hit collection on this event	    
+  std::unique_ptr<std::vector<crt::CRTData::CRTHit> > CRTHiteventCol(new std::vector<crt::CRTData::CRTHit>);
+  
   art::Handle< std::vector<artdaq::Fragment> > rawHandle;
   evt.getByLabel(raw_data_label_, "BernZMQ", rawHandle);
   
@@ -140,7 +154,7 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
     std::cout << std::endl;
     return;
   }
-
+  
   //get better access to the data                                                                                                                       
   std::vector<artdaq::Fragment> const& rawFragments(*rawHandle);
 
@@ -155,15 +169,22 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
     //See bernfebdaq-core/bernfebdaq-core/Overlays/BernFEBFragment.hh                                                                                    
     auto bfrag_metadata = bfrag.metadata();
     size_t   nevents    = bfrag_metadata->n_events();   //number of BernFEBEvents in this packet                                                         
-    auto time_start_ns = bfrag_metadata->time_start_nanosec();     //last second.                                                                        
     auto time_start_seconds = bfrag_metadata->time_start_seconds();     //last second.                                                                   
+    //auto time_start_ns = bfrag_metadata->time_start_nanosec();     //last second.                                                                            
     //auto time_end_ns = bfrag_metadata->time_end_nanosec();     //last second + 1s.                                                                  
     auto FEB_MAC =  bfrag_metadata->feb_id();     //mac addresss of this packet                                                                           
     auto FEB_ID = crt::auxfunctions::getFEBN(FEB_MAC); //FEB ID  
     auto feb_tevt = FEB_ID;
     double FEB_del = crt::auxfunctions::getFEBDel(FEB_ID,FEBDel); //cable_legth FEB delay in ns.         
-    time_start_ns = time_start_ns + FEB_del; // time corrected by cable delay
+    // time_start_ns = time_start_ns + FEB_del; // time of the fragment corrected by cable delay
     //time_end_ns = time_end_ns + FEB_del; //    
+
+
+    /* std::cout.precision(19);
+    std::cout<<"FRAGMENT:time_start_seconds:  "<<time_start_seconds<<std::endl;
+    std::cout<<"FRAGMENT:time_start_ns:  "<<time_start_ns<<std::endl;
+    //    std::cout<<"FRAGMENT:time_start_total:  "<<time_start_seconds+time_start_ns<<std::endl;
+    getchar();*/
 
 
     for(size_t i_e=0; i_e<nevents; ++i_e){//B
@@ -171,25 +192,40 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
       auto time_ts0 = this_event->Time_TS0();         //grab the event time from last second                                                              
 
       double corrected_time = GetCorrectedTime(time_ts0,*bfrag_metadata);      //correct this time                                                         
-      double time_tevt = time_start_seconds+(corrected_time*1e-9); ///CHECK THIS TIME!!!!!
-      //double time_tevt = corrected_time; 
+      corrected_time = corrected_time + FEB_del;// in ns
 
-      std::pair<int,double> keypair_tevt;
-      keypair_tevt = std::make_pair(feb_tevt,time_tevt);
+      double time_tevt_s = time_start_seconds;
+      double time_tevt_ns = corrected_time;
+      std::pair<double,double> timepair_tevt;
+      timepair_tevt = std::make_pair(time_tevt_s,time_tevt_ns);
+
+      std::pair<int,std::pair<double,double> > keypair_tevt;
+      keypair_tevt = std::make_pair(feb_tevt,timepair_tevt);
       HitCollection[keypair_tevt]=this_event;
 
 
+      /*std::cout.precision(19);
+      std::cout<<"EVENT:time_ts0:  "<<time_ts0<<std::endl;
+      std::cout<<"EVENT:corrected_time:  "<<corrected_time<<std::endl;
+      std::cout<<"FRAGMENT:time_start_seconds:  "<<time_start_seconds<<std::endl;
+      //std::cout<<"EVENT:time_tevt:  "<<time_tevt<<std::endl;
+      getchar();*/
+
       for(auto itA = begin(HitCollection); itA != end(HitCollection); ++itA){//C
 
-	std::pair<int,double> keypair_st = (*itA).first;
+	std::pair<int,std::pair<double,double> > keypair_st = (*itA).first;
 	BernZMQEvent const* event_st = (*itA).second;
 
-	auto feb_st = keypair_st.first;
-	auto time_st = keypair_st.second;
+	auto feb_st = keypair_st.first;	
+	std::pair<double,double> timepair_st;
+	timepair_st = keypair_st.second;
+	double time_st_s = timepair_st.first;
+	double time_st_ns = timepair_st.second;
 
-	auto time_diff = abs(time_tevt - time_st);
-
-	if( (time_diff<max_time_difference_) && (feb_st !=  feb_tevt) ){//D //COINCIDENCE 
+	auto time_diff = abs( (time_tevt_ns) - (time_st_ns) );//in ns
+       
+	if( (time_tevt_s == time_st_s) && (time_diff<max_time_difference_) && (feb_st !=  feb_tevt) ){//D //COINCIDENCE 
+	//if( (time_diff<max_time_difference_) && (time_diff>0) && (feb_st !=  feb_tevt) ){//D //COINCIDENCE 
 	  
 	  std::vector<std::pair<int,double> > pes_tevt;//to be store                                                                                       
 
@@ -240,7 +276,10 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 	  std::vector<double> pos_tevt2 = crt::auxfunctions::getPos(key_tevt2, sensor_pos);
 	  
 	  std::vector<double> interpos_tevt = crt::auxfunctions::inter_X(pesmax_tevt1, pos_tevt1, pesmax_tevt2, pos_tevt2);
-	  double interpos_tevt_err = crt::auxfunctions::inter_X_error(pesmax_tevt1, pesmax_tevt2, Lbar_);//CHECK for TOP
+
+	  double LBar = Lbar_;
+	  if(pos_tevt1[3]==3) LBar = Lbartop_;//for top
+	  double interpos_tevt_err = crt::auxfunctions::inter_X_error(pesmax_tevt1, pesmax_tevt2, LBar);
 
 
 	  std::vector<std::pair<int,double> > pes_st;//to be store                                                                                               
@@ -294,7 +333,7 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 	  std::vector<double> pos_st2 = crt::auxfunctions::getPos(key_st2, sensor_pos);
 
 	  std::vector<double> interpos_st = crt::auxfunctions::inter_X(pesmax_st1, pos_st1, pesmax_st2, pos_st2);
-	  double interpos_st_err = crt::auxfunctions::inter_X_error(pesmax_st1, pesmax_st2, Lbar_);//CHECH for TOP
+	  double interpos_st_err = crt::auxfunctions::inter_X_error(pesmax_st1, pesmax_st2, LBar);
 
 
 
@@ -307,7 +346,7 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 	    TimeDiff->Fill(time_diff);
 	    //quality plots
 
-	    double xtot=-10000., ytot=-10000., ztot=-10000.;
+	    //	    double xtot=-10000., ytot=-10000., ztot=-10000.;
 
 	    if( (interpos_tevt[6]==1) && (interpos_st[6] != 1) ){xtot=interpos_tevt[0];} //CHECK for TOP
 	    if( (interpos_tevt[6]==2) && (interpos_st[6] != 2) ){ytot=interpos_tevt[1];}
@@ -325,76 +364,127 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 	    hytot->Fill(ytot);
 	    hztot->Fill(ztot);
 
-	    double hit_time = (time_tevt + time_st)/2; //errors!! calculate error
+	    hit_time_ns = (time_tevt_ns + time_st_ns)/2; //errors!! calculate error
+	    hit_time_s = time_tevt_s;
 
-	    crt::CRTData::CRTHit CRTevent;
 
-	    CRTevent.x_pos= xtot;    //light atenuation missing                                                                                                               
-	    CRTevent.x_err= sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );
-	    CRTevent.y_pos= ytot;
-	    CRTevent.y_err= sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );
-	    CRTevent.z_pos= ztot;
-	    CRTevent.z_err= sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );
 
-	    CRTevent.ts0_ns = hit_time; //errors!!  
+
+	    crt::CRTData::CRTHit CRTHitevent;
+
+	    CRTHitevent.x_pos= xtot;    //light atenuation missing                                                                                                          
+	    CRTHitevent.x_err= sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );
+	    CRTHitevent.y_pos= ytot;
+	    CRTHitevent.y_err= sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );
+	    CRTHitevent.z_pos= ztot;
+	    CRTHitevent.z_err= sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );
+
+	    CRTHitevent.ts0_s = hit_time_s; //errors!!  
+	    CRTHitevent.ts0_ns = hit_time_ns; //errors!!  
 	    
 	    std::vector<uint8_t> ids;
 	    ids.push_back(feb_tevt);
 	    ids.push_back(feb_st);
-	    CRTevent.feb_id = ids;
+	    CRTHitevent.feb_id = ids;
 	    
 	    
 	    std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
 	    pesmap[feb_tevt] = pes_tevt;
 	    pesmap[feb_st] = pes_st;
-	    CRTevent.pesmap = pesmap;
+	    CRTHitevent.pesmap = pesmap;
 
 	    //WRITE THE CRTHit SOMEWHERE!!!!!!!
-
-
-
+	    CRTHiteventCol->emplace_back(CRTHitevent);
+	    
+	    plane = pos_tevt1[3];
+	    my_tree_->Fill();
 	    //WRITE THE CRTHit SOMEWHERE!!!!!!!
 
 	    //quality plot
-	    if(pos_tevt1[3]==0){
+	    if(plane==0){
 	      HitDistBot->Fill(ztot,xtot);
 	    }                                               
-	    if(pos_tevt1[3]==1){                                                                                                            
+	    if(plane==1){                                                                                                            
 	      HitDistFT->Fill(ztot, ytot);
 	    }
-	    if(pos_tevt1[3]==2){              
-	      HitDistPipe->Fill( ztot, ytot);
+	    if(plane==2){              
+	      HitDistPipe->Fill(ztot, ytot);
 	    }
-	    if(pos_tevt1[3]==3){
+	    if(plane==3){
 	      HitDistTop->Fill(ztot,xtot);
 	    }                                                                              
 	    //quality plot
+
+	    //verbose
+	    if(verbose){
+	      std::cout.precision(19);
+	      std::cout<<"CRTHit in plane: "<<interpos_tevt[3]<<"  Interaction point--> x: "<<xtot<<"  y: "<<ytot<<"  z: "<<ztot<<std::endl;  
+	      std::cout<<"in time (ns): "<<hit_time_ns<<std::endl;
+	      std::cout<<"Time tevt_s: "<<time_tevt_s<< "   time st_s: " << time_st_s<<std::endl;
+	      std::cout<<"Time tevt_ns: "<<time_tevt_ns<< "   time st_ns: " << time_st_ns<<std::endl;
+	      std::cout<<"Time difference (ns): "<<time_diff<<std::endl;
+	       	      
+	      std::cout<<"Coincidence between feb_tevt "<<feb_tevt<<" and feb_st: " <<feb_st <<std::endl;
+	      std::cout<<"max_tevt1: "<<max_temp1_tevt<<" max_tevt2: "<<max_temp2_tevt<<" max_st1: "<<max_temp1_st<<" max_st2: "<<max_temp2_st<<std::endl;
+	      std::cout<<"pedestal1_tevt: "<<pedestal_tevt1.first<<" pedestal2_tevt: "<<pedestal_tevt2.first<<" pedestal1_st: "<<pedestal_st1.first<<" pedestal2_st: "<<pedestal_st2.first<<std::endl;
+	      std::cout<<"gain1_tevt: "<<gain_tevt1.first<<" gain2_tevt: "<<gain_tevt2.first<<" gain1_st: "<<gain_st1.first<<" gain2_st: "<<gain_st2.first<<std::endl;
+	      std::cout<<"pesmax_tevt1: "<<pesmax_tevt1<<" pesmax_tevt2: "<<pesmax_tevt2<<" pesmax_st1: "<<pesmax_st1<<" pesmax_st2: "<<pesmax_st2<<std::endl;
+	      std::cout<<"pos1_tevt: x: "<<pos_tevt1[0]<<" y: "<<pos_tevt1[1] <<" z: " <<pos_tevt1[2]<<std::endl;
+	      std::cout<<"pos2_tevt: x: "<<pos_tevt2[0]<<" y: "<<pos_tevt2[1] <<" z: " <<pos_tevt2[2]<<std::endl;
+	      std::cout<<"pos1_st: x: "<<pos_st1[0]<<" y: "<<pos_st1[1] <<" z: " <<pos_st1[2]<<std::endl;
+	      std::cout<<"pos2_st: x: "<<pos_st2[0]<<" y: "<<pos_st2[1] <<" z: " <<pos_st2[2]<<std::endl;
+	      std::cout<<"Interpos_tevt x: "<<interpos_tevt[0]<<" y: "<<interpos_tevt[1]<<" z: "<<interpos_tevt[2]<< " in plane "<<interpos_tevt[3]<<" and layer "<<interpos_tevt[4]<<" with orientation "<<interpos_tevt[5]<<" interpolada en eje: "<<interpos_tevt[6]<<std::endl;
+	      std::cout<<"Interpos_st   x: "<<interpos_st[0]<<" y: "<<interpos_st[1]<<" z: "<<interpos_st[2]<< " in plane "<<interpos_st[3]<<" and layer "<<interpos_st[4]<<" with orientation "<<interpos_st[5]<<" interpolada en eje: "<<interpos_st[6]<<std::endl;
+	      getchar();
+	    }
+
+	    //verbose
+
 	    
 	  }//E
 	}//D
       }//C
     }//B
   }//A
+
+  //store into event
+  if(store_hit_ == 1)  
+    evt.put(std::move(CRTHiteventCol));
+  
 }
 
 void bernfebdaq::CRTHitProducer::beginJob()
 {
-  my_tree_ = tfs->make<TTree>("my_tree","CRT Analysis Tree");
+  my_tree_ = tfs->make<TTree>("my_tree","CRT Tree");
+  my_tree_->Branch("hit_time_s", &hit_time_s, "time (s)");
+  my_tree_->Branch("hit_time_ns", &hit_time_ns, "time (ns)");
+  my_tree_->Branch("timediff", &td, "timediff (ns)");
+  my_tree_->Branch("CRTplane", &plane, "(0=Bot, 1=FT, 2=PS, 3=Top)");
+  my_tree_->Branch("Xreco", &xtot, "Xreco (cm)");
+  my_tree_->Branch("Yreco", &ytot, "Yreco (cm)");
+  my_tree_->Branch("Zreco", &ztot, "Zreco (cm)");
+
+
+
 
   crt::auxfunctions::FillPos(SiPMpositions_, sensor_pos); //key = FEB*100+ch  //fill sipm positions      
   crt::auxfunctions::FillFEBDel(FEBDelays_, FEBDel); //key = FEB  //fill FEB delays
   crt::auxfunctions::FillGain(CRTGains_, SiPMgain); //key = FEB*100+ch  //fill sipms gain
   crt::auxfunctions::FillGain(CRTPedestals_, SiPMpedestal); //key = FEB*100+ch  //same for pedestals 
 
-  HitDistBot = tfs->make<TH2F>("Bottom","Bottom",350,200,900, 350, -200, 500);
+  double inch =2.54; //inch in cm 
+  HitDistBot = tfs->make<TH2F>("Bottom","Bottom",125,-700+205*inch,-700+205*inch+125*10.89,60,-300+50.4*inch,-300+50.4*inch+60*10.89);
+  //HitDistBot = tfs->make<TH2F>("Bottom","Bottom",350,200,900, 350, -200, 500);
   HitDistBot->GetXaxis()->SetTitle("Z (cm)");
   HitDistBot->GetYaxis()->SetTitle("X (cm)");
 
-  HitDistFT = tfs->make<TH2F>("Feedthrough Side","Feedthrough Side",700,-200,1200, 250, -300, 200);
+  HitDistFT = tfs->make<TH2F>("Feedthrough Side","Feedthrough Side",125,-704+205*inch,-704+205*inch+125*10.89,60,-308-19.1*inch,-308-19.1*inch+60*10.89);
+  //  HitDistFT = tfs->make<TH2F>("Feedthrough Side","Feedthrough Side",700,-200,1200, 250, -300, 200);
   HitDistFT->GetXaxis()->SetTitle("Z (cm)");
   HitDistFT->GetYaxis()->SetTitle("Y (cm)");
 
-  HitDistPipe = tfs->make<TH2F>("Pipe Side","Pipe Side",700,-200,1200, 350, -300, 400);
+  HitDistPipe = tfs->make<TH2F>("Pipe Side","Pipe Side",125,-704+205*inch,-704+205*inch+125*10.89,60,-294-19.1*inch,-294-19.1*inch+60*10.89);
+  //  HitDistPipe = tfs->make<TH2F>("Pipe Side","Pipe Side",700,-200,1200, 350, -300, 400);
   HitDistPipe->GetXaxis()->SetTitle("Z (cm)");
   HitDistPipe->GetYaxis()->SetTitle("Y (cm)");
 
