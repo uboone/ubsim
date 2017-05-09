@@ -17,7 +17,7 @@ art_make( EXCLUDE
     CRTDaqSim_module.cc
   BASENAME_ONLY
   LIBRARY_NAME 
-    CRTData
+    CRTSimData
   LIB_LIBRARIES
     ${ART_FRAMEWORK_CORE} 
 
@@ -38,6 +38,7 @@ art_make_library( LIBRARY_NAME CRT
     CRTChannelMapAlg.cc
     CRTAuxFunctions.cc
   LIBRARIES
+    CRTSimData
     larcore_Geometry
     ${ROOT_BASIC_LIB_LIST}
     ${CETLIB}
@@ -46,7 +47,7 @@ art_make_library( LIBRARY_NAME CRT
 
 simple_plugin( CRTDaqSim module
     larcore_Geometry
-    CRTData
+    CRTSimData
     CRT
     art_Utilities 
     canvas_Utilities
@@ -68,7 +69,7 @@ simple_plugin( CRTDaqSim module
 
 simple_plugin( CRTDetSim module
     CRT
-    CRTData
+    CRTSimData
     art_Utilities 
     lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
     nutools_RandomUtils_NuRandomService_service

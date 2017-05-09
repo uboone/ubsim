@@ -19,14 +19,14 @@
  */
 
 
-#ifndef CRTData_hh_
-#define CRTData_hh_
+#ifndef CRTSimData_hh_
+#define CRTSimData_hh_
 
 #include <cstdint>
 
 namespace crt {
 
-  class CRTData {
+  class CRTSimData {
 
     /// The channel number which can be referenced to module, strip via the channel map
     uint32_t fChannel;
@@ -38,10 +38,10 @@ namespace crt {
     uint32_t fADC;
    public:
     /// Default constructor
-    CRTData();
+    CRTSimData();
     /// To be used when constructing from existing data
-    CRTData(uint32_t channel, uint32_t t0, uint32_t t1, uint32_t adc);
-    virtual ~CRTData();
+    CRTSimData(uint32_t channel, uint32_t t0, uint32_t t1, uint32_t adc);
+    virtual ~CRTSimData();
     /// Channel getter
     uint32_t Channel();
     /// T0 Getter
