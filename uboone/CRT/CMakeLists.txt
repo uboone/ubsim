@@ -7,6 +7,7 @@ art_make( EXCLUDE
     CRTCalibration_module.cc
     CRTChannelMapAlg.cc
     CRTCoincidence_module.cc
+    CRTHitProducer_module.cc	
     CRTDaqSim_module.cc
     CRTDetSim_module.cc
     CRTGeometryHelper_service.cc
@@ -19,7 +20,7 @@ art_make( EXCLUDE
     CRTMerger_module.cc
   BASENAME_ONLY
   LIBRARY_NAME 
-    CRTData
+    CRTSimData
   LIB_LIBRARIES
     ${ART_FRAMEWORK_CORE} 
 
@@ -40,6 +41,7 @@ art_make_library( LIBRARY_NAME CRT
     CRTChannelMapAlg.cc
     CRTAuxFunctions.cc
   LIBRARIES
+    CRTSimData
     larcore_Geometry
     ${ROOT_BASIC_LIB_LIST}
     ${CETLIB}
@@ -48,7 +50,7 @@ art_make_library( LIBRARY_NAME CRT
 
 simple_plugin( CRTDaqSim module
     larcore_Geometry
-    CRTData
+    CRTSimData
     CRT
     art_Utilities 
     canvas_Utilities
@@ -70,7 +72,7 @@ simple_plugin( CRTDaqSim module
 
 simple_plugin( CRTDetSim module
     CRT
-    CRTData
+    CRTSimData
     art_Utilities 
     lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
     nutools_RandomUtils_NuRandomService_service
@@ -110,7 +112,16 @@ simple_plugin(CRTCoincidence "module"
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
 
-simple_plugin( CRTMerger "module"
+
+simple_plugin(CRTHitProducer "module"
+            CRT
+              bernfebdaq_core_overlays
+          art_Framework_Services_Optional
+          art_Framework_Services_Registry
+          art_Framework_Services_Optional_TFileService_service
+          ${ROOT_BASIC_LIB_LIST} )
+
+simple_plugin( CRTMerger module
   bernfebdaq_core_overlays
   ${ROOT_BASIC_LIB_LIST}
   ${ART_UTILITIES}
@@ -122,8 +133,9 @@ simple_plugin( CRTMerger "module"
   ${MF_UTILITIES}
   ${CETLIB}
   ${GALLERY}
-  CRTData
+  CRTSimData
 )
+
 
 install_headers()
 install_fhicl()

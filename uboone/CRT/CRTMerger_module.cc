@@ -1,6 +1,6 @@
 #include "uboone/CRT/CRTMerger.hh"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "uboone/CRT/CRTData.hh"
+#include "uboone/CRT/CRTSimData.hh"
 #include "artdaq-core/Data/Fragments.hh"
 #include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
 
@@ -11,10 +11,7 @@ namespace crt{
   fCRTEvent(fFileNames)
   {
     this->reconfigure(pset);
-    produces< std::vector<CRTData> >();
-    //art::ServiceHandle<art::FileCatalogMetadata> md;
-    //for(auto it = fFileNames.begin(); it!= fFileNames.end(); ++it)
-    //md->addMetadataString("mixparent", *it);
+    produces< std::vector<CRTSimData> >();
   }
 
   CRTMerger::~CRTMerger()
@@ -35,8 +32,8 @@ namespace crt{
 
   void CRTMerger::produce(art::Event& event)
   {
-    std::unique_ptr<std::vector<crt::CRTData> > crtHits(
-        new std::vector<crt::CRTData>);
+    std::unique_ptr<std::vector<crt::CRTSimData> > crtHits(
+        new std::vector<crt::CRTSimData>);
 
     //For this event
     auto event_t =  event.time().value();
@@ -60,7 +57,7 @@ namespace crt{
             for(auto adc_channel =0; adc_channel<32; adc_channel++){
 
               unsigned channel = pc_id*1000+feb_id*100+adc_channel;
-              crt::CRTData myNewHit(channel, bernfrag.eventdata(i)->Time_TS0(), bernfrag.eventdata(i)->Time_TS1(), bernfrag.eventdata(i)->ADC(adc_channel));
+              crt::CRTSimData myNewHit(channel, bernfrag.eventdata(i)->Time_TS0(), bernfrag.eventdata(i)->Time_TS1(), bernfrag.eventdata(i)->ADC(adc_channel));
               crtHits->push_back(myNewHit);
             }
           }
