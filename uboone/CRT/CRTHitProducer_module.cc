@@ -16,6 +16,7 @@
 //#include "art/Utilities/InputTag.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
+//#include "art//
 
 #include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
 #include "artdaq-core/Data/Fragments.hh"
@@ -131,6 +132,7 @@ bernfebdaq::CRTHitProducer::CRTHitProducer(fhicl::ParameterSet const & p)
     Emin_(p.get<double>("Emin"))//,
 {
   // Call appropriate produces<>() functions here.
+  produces< std::vector<crt::CRTData::CRTHit>   >(); //substitute
 }
 
 void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
