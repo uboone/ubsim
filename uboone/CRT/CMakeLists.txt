@@ -111,7 +111,7 @@ simple_plugin(CRTCoincidence "module"
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
 
-<<<<<<< HEAD
+
 simple_plugin(CRTHitProducer "module"
             CRT
               bernfebdaq_core_overlays
@@ -119,7 +119,7 @@ simple_plugin(CRTHitProducer "module"
           art_Framework_Services_Registry
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
-=======
+
 simple_plugin( CRTMerger module
   bernfebdaq_core_overlays
   ${ROOT_BASIC_LIB_LIST}
@@ -132,7 +132,7 @@ simple_plugin( CRTMerger module
   ${GALLERY}
   CRTSimData
 )
->>>>>>> d8428e13c358d35c14a74a6c5a8221f277095fb1
+
 
 install_headers()
 install_fhicl()
