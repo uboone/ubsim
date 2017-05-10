@@ -1,4 +1,4 @@
-#include "uboone/CRT/CRTData.hh"
+#include "uboone/CRT/CRTSimData.hh"
 #include "uboone/CRT/CRTDaqSim.hh"
 
 
@@ -13,7 +13,7 @@
 #include "CLHEP/Random/RandGauss.h"
 #include "CLHEP/Random/RandPoisson.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "uboone/CRT/CRTData.hh"
+#include "uboone/CRT/CRTSimData.hh"
 #include "artdaq-core/Data/Fragments.hh"
 #include "bernfebdaq-core/Overlays/FragmentType.hh"
 
@@ -31,7 +31,8 @@
 namespace crt{
 
   CRTDaqSim::CRTDaqSim(const fhicl::ParameterSet& pSet):
-    fProducerName(pSet.get<std::string>("InputTag","crt_detsim")) ,
+    fProducerName(pSet.get<std::string>("InputTag","crtdetsim")) ,
+    fInstanceName(pSet.get<std::string>("InstanceLabel","BernZMQ")),
     fPollingTime(pSet.get<unsigned>("PollingTime",1)),
     fTimeCorrectionDiff(pSet.get<unsigned>("TimeCorrectionDiff",0)),
     fTimeOffset(pSet.get<unsigned>("TimeOffset",0)),
@@ -40,7 +41,9 @@ namespace crt{
     //TODO: add in either some time jitter (POISSON), or adc noise (Gaussian)
     //art::ServiceHandle<rndm::NuRandomService> Seeds;
     //Seeds->createEngine(*this, "", "CRTDaq", pSet, "Seed");
-    produces< std::vector<artdaq::Fragment> >();
+    produces< std::vector<artdaq::Fragment> >(
+        fInstanceName
+      );
   }
 
   CRTDaqSim::~CRTDaqSim()
@@ -53,7 +56,7 @@ namespace crt{
     std::unique_ptr<std::vector<artdaq::Fragment> > frags(
         new std::vector<artdaq::Fragment>);
 
-    art::Handle<std::vector<crt::CRTData> > crtDataHandle;
+    art::Handle<std::vector<crt::CRTSimData> > crtDataHandle;
     evt.getByLabel(fProducerName, crtDataHandle);
 
     for (auto crtDat : *crtDataHandle)
@@ -64,11 +67,11 @@ namespace crt{
       unsigned adc_n = crtDat.Channel()%32;
 
       //channel0ID = 32 * moduleID + 2 * stripID + 0
-      mf::LogInfo("CRTDaqSim")<<"Converting CRTData for FEB: "<<feb_n<<" ADC_N: "<<adc_n<<std::endl<<"For input channel number: "<<crtDat.Channel();
+      mf::LogInfo("CRTDaqSim")<<"Converting CRTSimData for FEB: "<<feb_n<<" ADC_N: "<<adc_n<<std::endl<<"For input channel number: "<<crtDat.Channel();
 
       if(feb_n>=N_CRT_FEBS || adc_n>=32)
       {
-        mf::LogWarning("CRTDaqSim")<<"Cannot Convert CRTData";
+        mf::LogWarning("CRTDaqSim")<<"Cannot Convert CRTSimData";
         continue;
       }
 
@@ -135,7 +138,7 @@ namespace crt{
         fEvents[feb_n] = std::vector<bernfebdaq::BernZMQEvent>();
       }
     }
-    evt.put(std::move(frags));
+    evt.put(std::move(frags), fInstanceName);
   }
 
   void CRTDaqSim::reconfigure(fhicl::ParameterSet const& pSet)

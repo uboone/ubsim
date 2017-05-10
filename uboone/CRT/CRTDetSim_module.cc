@@ -1,4 +1,4 @@
-#include "uboone/CRT/CRTData.hh"
+#include "uboone/CRT/CRTSimData.hh"
 #include "uboone/CRT/CRTDetSim.hh"
 
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
@@ -25,7 +25,7 @@ namespace crt{
     art::ServiceHandle<rndm::NuRandomService> Seeds;
     Seeds->createEngine(*this, "HepJamesRandom", "crt", pSet, "Seed");
     this->reconfigure(pSet);
-    produces< std::vector<CRTData> >();
+    produces< std::vector<CRTSimData> >();
 
   }
 
@@ -90,8 +90,8 @@ namespace crt{
 
   void CRTDetSim::produce(art::Event& evt)
   {
-    std::unique_ptr<std::vector<crt::CRTData> > crtHits(
-        new std::vector<crt::CRTData>);
+    std::unique_ptr<std::vector<crt::CRTSimData> > crtHits(
+        new std::vector<crt::CRTSimData>);
 
     art::ServiceHandle<geo::AuxDetGeometry> geoService;
 
@@ -166,8 +166,8 @@ namespace crt{
         uint32_t channel1ID = adsc.AuxDetID()*2+1;
 
         // Write AuxDetDigit for each channel
-        crtHits->push_back(CRTData(channel0ID, t0, ppsTicks, q0));
-        crtHits->push_back(CRTData(channel1ID, t1, ppsTicks, q1));
+        crtHits->push_back(CRTSimData(channel0ID, t0, ppsTicks, q0));
+        crtHits->push_back(CRTSimData(channel1ID, t1, ppsTicks, q1));
       }
     }
 
