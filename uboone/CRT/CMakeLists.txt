@@ -10,6 +10,7 @@ art_make( EXCLUDE
     CRTDaqSim_module.cc
     CRTDetSim_module.cc
     CRTGeometryHelper_service.cc
+    CRTMerger_module.cc
     CRTTriggerFilter_module.cc
     CRTGeoObjectSorter.cc
     CRTChannelMapAlg.cc
@@ -109,10 +110,12 @@ simple_plugin(CRTCoincidence "module"
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
 
-simple_plugin( CRTMerger module
+simple_plugin( CRTMerger "module"
   bernfebdaq_core_overlays
   ${ROOT_BASIC_LIB_LIST}
   ${ART_UTILITIES}
+  ${ART_FRAMEWORK_SERVICES_REGISTRY}
+  ${ART_FRAMEWORK_SERVICES_SYSTEM_FILECATALOGMETADATA_SERVICE}
   ${ARTDAQ_CORE}
   ${FHICLCPP}
   ${MF_MESSAGELOGGER}

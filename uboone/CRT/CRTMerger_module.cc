@@ -12,11 +12,25 @@ namespace crt{
   {
     this->reconfigure(pset);
     produces< std::vector<CRTData> >();
+    //art::ServiceHandle<art::FileCatalogMetadata> md;
+    //for(auto it = fFileNames.begin(); it!= fFileNames.end(); ++it)
+    //md->addMetadataString("mixparent", *it);
   }
 
   CRTMerger::~CRTMerger()
   {
 
+  }
+
+
+  void beginRun(art::Run &)
+  {
+    
+  }
+ 
+  void endRun(art::Run &)
+  {
+    
   }
 
   void CRTMerger::produce(art::Event& event)
@@ -67,6 +81,14 @@ namespace crt{
     fTag = {pset.get<std::string>("InputTagName","daq")};
     fTimeWindow = pset.get<unsigned>("TimeWindow",10);
   }
+
+
+/*
+  void CRTMerger::beginRun(art::Run const&)
+  {
+
+  }
+  */
 }
 
 DEFINE_ART_MODULE(crt::CRTMerger)
