@@ -228,3 +228,33 @@ double crt::auxfunctions::inter_X_error(double S1, double S2, double L){
   return x_error;
 }
 
+
+double crt::auxfunctions::getTcorr(std::vector<double>& inpos1, std::vector<double>& inpos2 ,double T){                                                                         
+  
+  double L = 0;                                                                                                                                              
+  if(inpos1[3]==0 || inpos1[3]==3){//bottom&top (XZ)                                                                                                         
+    
+    if(inpos1[6]==1){//correction in z                                                                                                                       
+      L = abs(inpos1[2]-inpos2[2]);                                                                                                                          
+    }                                                                                                                                                        
+    
+    if(inpos1[6]==3){//correction in x                                                                                                                       
+      L = abs(inpos1[0]-inpos2[0]);                                                                                                                          
+    }                                                                                                                                                        
+  }                                                                                                                                                          
+  
+  if(inpos1[3]==1 || inpos1[3]==2){//FT&pipe (YZ)                                                                                                           
+    
+    if(inpos1[6]==2){//correction in z                                                                                                                       
+      L = abs(inpos1[2]-inpos2[2]);                                                                                                                          
+    }                                                                                                                                                        
+    
+    if(inpos1[6]==3){//correction in y                                                                                                                       
+      L = abs(inpos1[1]-inpos2[1]);                                                                                                                          
+    }                                                                                                                                                        
+    
+  }                                                                                                                                                          
+  
+  double Tcorr = T - (L*6.2/100);                                                                                                                            
+  return Tcorr;                                                                                                                                              
+}

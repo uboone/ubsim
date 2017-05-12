@@ -43,6 +43,9 @@ namespace crt {
     std::vector<double> inter_X(double S1, std::vector<double>& pS1, double S2, std::vector<double>& pS2);//return interaction position within the strip given relative intensities.
     double inter_X_error(double S1, double S2, double L);//return error por interaction position.
 
+    double getTcorr(std::vector<double>& inpos1, std::vector<double>& inpos2 , double T);//return corrected time, along the fiber. 6.2ns/m 
+
+
     /*
       BernZMQEvent const* event1;
       BernZMQEvent const* event2;
