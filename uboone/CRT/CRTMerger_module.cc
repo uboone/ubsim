@@ -19,6 +19,17 @@ namespace crt{
 
   }
 
+
+  void beginRun(art::Run &)
+  {
+    
+  }
+ 
+  void endRun(art::Run &)
+  {
+    
+  }
+
   void CRTMerger::produce(art::Event& event)
   {
     std::unique_ptr<std::vector<crt::CRTSimData> > crtHits(
@@ -67,6 +78,14 @@ namespace crt{
     fTag = {pset.get<std::string>("InputTagName","daq")};
     fTimeWindow = pset.get<unsigned>("TimeWindow",10);
   }
+
+
+/*
+  void CRTMerger::beginRun(art::Run const&)
+  {
+
+  }
+  */
 }
 
 DEFINE_ART_MODULE(crt::CRTMerger)
