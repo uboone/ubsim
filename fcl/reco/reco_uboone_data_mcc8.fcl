@@ -505,12 +505,12 @@ microboone_reco_data_producers.pandoraCosmicKHitFlashMatch.FlashModuleLabel:    
 microboone_reco_data_producers.pandoraCosmicKHitFlashMatch.BeamFlashTrackMatchAlgParams.MakeOutsideDriftTags: "true"
 
 # Remove hits, based on geometry and Flashes                                     Geometry tagger                   Flash tagger
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.CosmicProducerLabels:    ["pandoraCosmicKalmanTrackPFPart", "pandoraCosmicKHitFlashTag" ]
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.TrackProducerLabels:     ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.AssnProducerLabels:      ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.CosmicTagThresholds:     [0.6,                              0.99                        ]
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.PFParticleProducerLabel: "pandoraCosmic"
-microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.EndTickPadding:          75
+microboone_reco_data_producers.pandoraCosmicHitRemoval.CosmicProducerLabels:    ["pandoraCosmicKalmanTrackPFPart", "pandoraCosmicKHitFlashTag" ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.TrackProducerLabels:     ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.AssnProducerLabels:      ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.CosmicTagThresholds:     [0.6,                              0.99                        ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.PFParticleProducerLabel: "pandoraCosmic"
+microboone_reco_data_producers.pandoraCosmicHitRemoval.EndTickPadding:          75
 
 # Pandora neutrino pass related
 microboone_reco_data_producers.pandoraNu.GeantModuleLabel:                       "largeant"
