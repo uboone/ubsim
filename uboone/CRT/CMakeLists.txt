@@ -1,39 +1,41 @@
 # canvas_utlities
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
-include_directories( $ENV{NUTOOLS_INC} )
+#include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
+#include_directories( $ENV{NUTOOLS_INC} )
 
-art_make( EXCLUDE
-    CRTAuxFunctions.cc
-    CRTCalibration_module.cc
-    CRTChannelMapAlg.cc
-    CRTCoincidence_module.cc
-    CRTHitProducer_module.cc	
-    CRTDaqSim_module.cc
-    CRTDetSim_module.cc
-    CRTGeometryHelper_service.cc
-    CRTMerger_module.cc
-    CRTTriggerFilter_module.cc
-    CRTGeoObjectSorter.cc
-    CRTChannelMapAlg.cc
-    CRTAuxFunctions.cc
-    CRTDaqSim_module.cc
-    CRTMerger_module.cc
-  BASENAME_ONLY
-  LIBRARY_NAME 
-    CRTSimData
-  LIB_LIBRARIES
-    ${ART_FRAMEWORK_CORE} 
+add_subdirectory(CRTProducts)
 
-  MODULE_LIBRARIES
-    ${CETLIB}
-    ${ROOT_GEOM}
-    ${ROOT_XMLIO}
-    ${ROOT_GDML}
-    ${ROOT_BASIC_LIB_LIST}
-    art_Persistency_Common canvas_Persistency_Common
-    art_Persistency_Provenance canvas_Persistency_Provenance
-    art_Utilities canvas_Utilities
-)
+#art_make( EXCLUDE
+#    CRTAuxFunctions.cc
+#    CRTCalibration_module.cc
+#    CRTChannelMapAlg.cc
+#    CRTCoincidence_module.cc
+#    CRTHitProducer_module.cc	
+#    CRTDaqSim_module.cc
+#    CRTDetSim_module.cc
+#    CRTGeometryHelper_service.cc
+#    CRTMerger_module.cc
+#    CRTTriggerFilter_module.cc
+#    CRTGeoObjectSorter.cc
+#    CRTChannelMapAlg.cc
+#    CRTAuxFunctions.cc
+#    CRTDaqSim_module.cc
+#    CRTMerger_module.cc
+#  BASENAME_ONLY
+#  LIBRARY_NAME 
+#    CRTSimData
+#  LIB_LIBRARIES
+#    ${ART_FRAMEWORK_CORE} 
+#
+#  MODULE_LIBRARIES
+#    ${CETLIB}
+#    ${ROOT_GEOM}
+#    ${ROOT_XMLIO}
+#    ${ROOT_GDML}
+#    ${ROOT_BASIC_LIB_LIST}
+#    art_Persistency_Common canvas_Persistency_Common
+#    art_Persistency_Provenance canvas_Persistency_Provenance
+#    art_Utilities canvas_Utilities
+#)
 
 art_make_library( LIBRARY_NAME CRT
   SOURCE
@@ -41,7 +43,7 @@ art_make_library( LIBRARY_NAME CRT
     CRTChannelMapAlg.cc
     CRTAuxFunctions.cc
   LIBRARIES
-    CRTSimData
+    CRTProducts
     larcore_Geometry
     ${ROOT_BASIC_LIB_LIST}
     ${CETLIB}
@@ -50,7 +52,7 @@ art_make_library( LIBRARY_NAME CRT
 
 simple_plugin( CRTDaqSim module
     larcore_Geometry
-    CRTSimData
+    CRTProducts
     CRT
     art_Utilities 
     canvas_Utilities
@@ -72,7 +74,7 @@ simple_plugin( CRTDaqSim module
 
 simple_plugin( CRTDetSim module
     CRT
-    CRTSimData
+    CRTProducts
     art_Utilities 
     lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
     nutools_RandomUtils_NuRandomService_service
@@ -133,7 +135,7 @@ simple_plugin( CRTMerger module
   ${MF_UTILITIES}
   ${CETLIB}
   ${GALLERY}
-  CRTSimData
+  CRTProducts
 )
 
 

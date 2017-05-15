@@ -1,0 +1,24 @@
+<!--                                                                                  -->
+<!--  Include art::Wrapper lines for objects that we would like to put into the event -->
+<!--  Include the non-wrapper lines for all objects on the art::Wrapper lines and     -->
+<!--  for all objects that are data members of those objects.                         -->
+<!--                                                                                  -->
+
+
+<lcgdict>
+
+  <class name="crt::CRTSimData" ClassVersion="10">
+   <version ClassVersion="10" checksum="3886338717"/>
+  </class>
+  
+ <class name="std::vector<crt::CRTSimData>"/>
+ <class name="art::Wrapper< std::vector<crt::CRTSimData> >"/>
+ 
+  <class name="crt::CRTHit" ClassVersion="10">
+   <version ClassVersion="10" checksum="1279492675"/>
+  </class>
+  
+ <class name="std::vector<crt::CRTHit>"/>
+ <class name="art::Wrapper< std::vector<crt::CRTHit> >"/>
+
+</lcgdict>

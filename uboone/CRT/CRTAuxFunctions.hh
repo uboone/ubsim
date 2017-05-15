@@ -8,6 +8,7 @@
 
 #include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
 #include "artdaq-core/Data/Fragments.hh"
+#include "uboone/CRT/CRTProducts/CRTHit.hh"
 
 #include <iostream>
 #include <sstream>
@@ -61,53 +62,29 @@ namespace crt {
   }
 
 
-  namespace CRTData {
-
-    typedef struct {
-      std::vector<uint8_t> feb_id;
-      std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
-      double peshit;
-      uint32_t ts0_s;
-      uint16_t ts0_s_err;
-      uint32_t ts0_ns;
-      uint16_t ts0_ns_err;
-      //uint32_t ts1_ns;
-      //uint16_t ts1_ns_err;
-      double x_pos;
-      double x_err;
-      double y_pos;
-      double y_err;
-      double z_pos;
-      double z_err;
-    }CRTHit;
-
-
-    typedef struct {
-      std::vector<uint8_t> feb_id;
-      std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
-      double peshit;
-      uint32_t ts0_ns;
-      uint16_t ts0_ns_err;
-      //uint32_t ts1_ns;
-      //uint16_t ts1_ns_err;
-      double x1_pos;
-      double x1_err;
-      double y1_pos;
-      double y1_err;
-      double z1_pos;
-      double z1_err;
-      double x2_pos;
-      double x2_err;
-      double y2_pos;
-      double y2_err;
-      double z2_pos;
-      double z2_err;
-    }CRTTrack;
-
-
-}
-
-
+  typedef struct {
+    std::vector<uint8_t> feb_id;
+    std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
+    double peshit;
+    uint32_t ts0_ns;
+    uint16_t ts0_ns_err;
+    //uint32_t ts1_ns;
+    //uint16_t ts1_ns_err;
+    double x1_pos;
+    double x1_err;
+    double y1_pos;
+    double y1_err;
+    double z1_pos;
+    double z1_err;
+    double x2_pos;
+    double x2_err;
+    double y2_pos;
+    double y2_err;
+    double z2_pos;
+    double z2_err;
+  }CRTTrack;
+  
+  
 }
 
 #endif

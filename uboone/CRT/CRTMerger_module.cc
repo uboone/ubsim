@@ -1,6 +1,6 @@
 #include "uboone/CRT/CRTMerger.hh"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "uboone/CRT/CRTSimData.hh"
+#include "uboone/CRT/CRTProducts/CRTSimData.hh"
 #include "artdaq-core/Data/Fragments.hh"
 #include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
 

@@ -132,7 +132,7 @@ bernfebdaq::CRTHitProducer::CRTHitProducer(fhicl::ParameterSet const & p)
 {
   // Call appropriate produces<>() functions here.
    if(store_hit_ == 1)  
-     produces< std::vector<crt::CRTData::CRTHit>   >(); //substitute
+     produces< std::vector<crt::CRTHit>   >(); //substitute
 }
 
 void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
@@ -143,7 +143,7 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
   std::map<std::pair<int,std::pair<double,double> >, BernZMQEvent const*> HitCollection;
 
   //hit collection on this event	    
-  std::unique_ptr<std::vector<crt::CRTData::CRTHit> > CRTHiteventCol(new std::vector<crt::CRTData::CRTHit>);
+  std::unique_ptr<std::vector<crt::CRTHit> > CRTHiteventCol(new std::vector<crt::CRTHit>);
   
   art::Handle< std::vector<artdaq::Fragment> > rawHandle;
   evt.getByLabel(raw_data_label_, "BernZMQ", rawHandle);
@@ -360,7 +360,7 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 	    hit_time_s = time_tevt_s;
 	    
 	    
-	    crt::CRTData::CRTHit CRTHitevent;
+	    crt::CRTHit CRTHitevent;
 	    
 	    CRTHitevent.x_pos= xtot;
 	    CRTHitevent.x_err= sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );

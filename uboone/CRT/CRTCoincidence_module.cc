@@ -445,7 +445,7 @@ void bernfebdaq::CRTCoincidence::analyze(art::Event const & evt)
 		   }*/
 	      }
 	      
-	      crt::CRTData::CRTHit CRTevent;  
+	      crt::CRTHit CRTevent;  
 	      
 	      CRTevent.x_pos= xtot;    //light atenuation missing
 	      CRTevent.x_err= sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );
@@ -579,7 +579,7 @@ void bernfebdaq::CRTCoincidence::endJob()
   for(auto it = begin(CoincidenceCollection); it != end(CoincidenceCollection); ++it){
     
     std::pair< BernZMQEvent const*, BernZMQEvent const* > CoincidencePair = (*it).second;
-    crt::CRTData::CRTProduct CRTevent;  
+    crt::CRTProduct CRTevent;  
     
     //calculate CRTProduct components
     
