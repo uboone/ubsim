@@ -19,6 +19,8 @@
   </class>
   
  <class name="std::vector<crt::CRTHit>"/>
+ <class name="std::vector< std::pair<int,double> >"/>
+ <class name="std::map< unsigned char, std::vector< std::pair<int,double> > > "/>
  <class name="art::Wrapper< std::vector<crt::CRTHit> >"/>
 
 </lcgdict>

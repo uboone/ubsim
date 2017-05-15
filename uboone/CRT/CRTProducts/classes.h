@@ -11,7 +11,9 @@
 #include "canvas/Persistency/Common/Wrapper.h"
 #include "CRTSimData.hh"
 #include "CRTHit.hh"
+#include <utility>
 #include <vector>
+#include <map>
 
 //
 // Only include objects that we would like to be able to put into the event.
@@ -20,6 +22,9 @@
 
 template class std::vector<crt::CRTSimData>;
 template class art::Wrapper< std::vector<crt::CRTSimData> >;
+
+template class std::vector< std::pair<int,double> >;
+template class std::map< unsigned char, std::vector< std::pair<int,double> > >;
 
 template class std::vector<crt::CRTHit>;
 template class art::Wrapper< std::vector<crt::CRTHit> >;
