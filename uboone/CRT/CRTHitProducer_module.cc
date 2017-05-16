@@ -109,6 +109,7 @@ private:
   double hit_time_s = 1e18;
   int plane = -1;
   double td = 1e19;
+  std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
 
   //test
   bool verbose = 0;
@@ -377,7 +378,7 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 	    ids.push_back(feb_st);
 	    CRTHitevent.feb_id = ids;
 	    
-	    std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
+	    //std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
 	    pesmap[feb_tevt] = pes_tevt;
 	    pesmap[feb_st] = pes_st;
 	    CRTHitevent.pesmap = pesmap;
@@ -448,6 +449,7 @@ void bernfebdaq::CRTHitProducer::beginJob()
   my_tree_->Branch("hit_time_ns", &hit_time_ns, "time (ns)");
   my_tree_->Branch("timediff", &td, "timediff (ns)");
   my_tree_->Branch("CRTplane", &plane, "(0=Bot, 1=FT, 2=PS, 3=Top)");
+  my_tree_->Branch("pes_info", &pesmap, "...");
   my_tree_->Branch("Xreco", &xtot, "Xreco (cm)");
   my_tree_->Branch("Yreco", &ytot, "Yreco (cm)");
   my_tree_->Branch("Zreco", &ztot, "Zreco (cm)");
@@ -459,43 +461,48 @@ void bernfebdaq::CRTHitProducer::beginJob()
   crt::auxfunctions::FillGain(CRTPedestals_, SiPMpedestal); //key = FEB*100+ch  //same for pedestals 
 
   double inch =2.54; //inch in cm 
-  HitDistBot = tfs->make<TH2F>("Bottom","Bottom",125,-700+205*inch,-700+205*inch+125*10.89,60,-300+50.4*inch,-300+50.4*inch+60*10.89);
+  HitDistBot = tfs->make<TH2F>("hBottom","Bottom",125,-700+205*inch,-700+205*inch+125*10.89,60,-300+50.4*inch,-300+50.4*inch+60*10.89);
   HitDistBot->GetXaxis()->SetTitle("Lenght along the beam (cm)");
   HitDistBot->GetYaxis()->SetTitle("Lenght along the drift (cm)");
   HitDistBot->GetZaxis()->SetTitle("Entries/bin");
+  HitDistBot->SetOption("COLZ");
 
-  HitDistFT = tfs->make<TH2F>("Feedthrough Side","Feedthrough Side",125,-704+205*inch,-704+205*inch+125*10.89,60,-308-19.1*inch,-308-19.1*inch+60*10.89);
+  HitDistFT = tfs->make<TH2F>("hFeedthroughSide","Feedthrough Side",125,-704+205*inch,-704+205*inch+125*10.89,60,-308-19.1*inch,-308-19.1*inch+60*10.89);
   HitDistFT->GetXaxis()->SetTitle("Lenght along the beam (cm)");
   HitDistFT->GetYaxis()->SetTitle("Height (cm)");
   HitDistFT->GetZaxis()->SetTitle("Entries/bin");
+  HitDistFT->SetOption("COLZ");
 
-  HitDistPipe = tfs->make<TH2F>("Pipe Side","Pipe Side",125,-704+205*inch,-704+205*inch+125*10.89,60,-294-19.1*inch,-294-19.1*inch+60*10.89);
+  HitDistPipe = tfs->make<TH2F>("hPipeSide","Pipe Side",125,-704+205*inch,-704+205*inch+125*10.89,60,-294-19.1*inch,-294-19.1*inch+60*10.89);
   HitDistPipe->GetXaxis()->SetTitle("Lenght along the beam (cm)");
   HitDistPipe->GetYaxis()->SetTitle("Height (cm)");
   HitDistPipe->GetZaxis()->SetTitle("Entries/bin");
+  HitDistPipe->SetOption("COLZ");
 
-  HitDistTop = tfs->make<TH2F>("hT","CRT Top",125,-701+205*inch,-701+205*inch+125*11.38,80,2-170-300+50.4*inch,2-170-300+50.4*inch+80*11.38);
+  HitDistTop = tfs->make<TH2F>("hTop","Top",125,-701+205*inch,-701+205*inch+125*11.38,80,2-170-300+50.4*inch,2-170-300+50.4*inch+80*11.38);
   HitDistTop->GetXaxis()->SetTitle("Lenght along the beam (cm)");
   HitDistTop->GetYaxis()->SetTitle("Lenght along the drift (cm)"); 
   HitDistTop->GetZaxis()->SetTitle("Entries/bin"); 
+  HitDistTop->SetOption("COLZ");
 
-  FEBvsFEB = tfs->make<TH2F>("FEBvsFEB","FEBvsFEB",100,0,100,100,0,100);
+  FEBvsFEB = tfs->make<TH2F>("hFEBvsFEB","FEBvsFEB",100,0,100,100,0,100);
   FEBvsFEB->GetXaxis()->SetTitle("FEB ID");
   FEBvsFEB->GetYaxis()->SetTitle("FEB ID");
+  FEBvsFEB->SetOption("COLZ");
 
-  TimeDiff = tfs->make<TH1F>("Coincidence time difference","Coincidence time difference",400,0,400);
+  TimeDiff = tfs->make<TH1F>("hCoincidencetimedifference","Coincidence time difference",400,0,400);
   TimeDiff->GetXaxis()->SetTitle("Time Difference (ns)");
   TimeDiff->GetYaxis()->SetTitle("Entries/bin");
 
-  hxtot = tfs->make<TH1F>("xtot","xtot",70000,-200,500);
+  hxtot = tfs->make<TH1F>("hxtot","xtot",70000,-200,500);
   hxtot->GetXaxis()->SetTitle("Reconstructed X (cm)");
   hxtot->GetYaxis()->SetTitle("Entries/bin");
 
-  hytot = tfs->make<TH1F>("ytot","ytot",60000,-300,300);
+  hytot = tfs->make<TH1F>("hytot","ytot",60000,-300,300);
   hytot->GetXaxis()->SetTitle("Reconstructed Y (cm)");
   hytot->GetYaxis()->SetTitle("Entries/bin");
 
-  hztot = tfs->make<TH1F>("ztot","ztot",130000,-100,1200);
+  hztot = tfs->make<TH1F>("hztot","ztot",130000,-100,1200);
   hztot->GetXaxis()->SetTitle("Reconstructed Z (cm)");
   hztot->GetYaxis()->SetTitle("Entries/bin");
 
