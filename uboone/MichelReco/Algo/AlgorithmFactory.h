@@ -36,7 +36,6 @@
 #include "StepAroundCluster.h"
 #include "StepSuperSonicCluster.h"
 #include "SuperSonicClusterer.h"
-#include "TSpectrumBoundary.h"
 #include "TruncatedQBoundary.h"
 #include "PhotonFinder.h"
 #include "ClusterPhotons.h"
