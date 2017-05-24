@@ -40,7 +40,7 @@ physics:
                  SimTimeArray_us: [4050]
                  NumElectronsArray: [100000]
                  YArray_cm: [0]
-                 ZArray_cm: [512]
+                 ZArray_cm: [530]
                  Verbose: true
               }
    

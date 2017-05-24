@@ -168,7 +168,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
 
     if(hit.tick < _reco_tick_offset) {
       if(_verbose)
-	std::cout << "Skipping truth charge deposition ID " << hit.signal_id << " @ tick " << hit.tick << std::endl;
+	std::cout << "[BUFFOON!] Skipping truth charge deposition ID " << hit.signal_id << " @ tick " << hit.tick << std::endl;
       continue;
     }
 
@@ -182,7 +182,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
       _tick_offset = 0;
       art::Handle<std::vector<raw::RawDigit> > digit_h;
       e.getByLabel(_raw_digit_producer,digit_h);
-      if(!digit_h.isValid()) std::cerr << "Failed to fetch RawDigit with label " << _raw_digit_producer << std::endl;
+      if(!digit_h.isValid()) std::cerr << "[BUFFOON!] Failed to fetch RawDigit with label " << _raw_digit_producer << std::endl;
 
       for(auto const& ch : hit.channel_list) {
 	_ch = ch;
@@ -202,7 +202,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
 	  this->compute_params(_wf, _mean, _std_dev, _min, _max, _argmin, _argmax);
 
 	  if(_verbose) 
-	    std::cout << "Storing " << _raw_digit_producer << " raw::RawDigit ... ch=" << _ch
+	    std::cout << "[BUFFOON!] Storing " << _raw_digit_producer << " raw::RawDigit ... ch=" << _ch
 		      << " plane=" << _plane
 		      << " wire=" << _wire
 		      << " ... " << adcs.size() << " ADC samples start @ tick=" << _start_tick
@@ -216,7 +216,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
 	  found=true;
 	  break;
 	}
-	if(!found) std::cout << "Could not find target channel " << _ch 
+	if(!found) std::cout << "[BUFFOON!] Could not find target channel " << _ch 
 			     << " or wire " << _wire 
 			     << " for producer " << _raw_digit_producer << std::endl;
       }
@@ -232,7 +232,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
       
       art::Handle<std::vector<raw::RawDigit> > digit_h;
       e.getByLabel(_filtered_digit_producer,digit_h);
-      if(!digit_h.isValid()) std::cerr << "Failed to fetch RawDigit with label " << _filtered_digit_producer << std::endl;
+      if(!digit_h.isValid()) std::cerr << "[BUFFOON!] Failed to fetch RawDigit with label " << _filtered_digit_producer << std::endl;
       
       for(auto const& ch : hit.channel_list) {
 	_ch = ch;
@@ -252,7 +252,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
 	  this->compute_params(_wf, _mean, _std_dev, _min, _max, _argmin, _argmax);
 
 	  if(_verbose) 
-	    std::cout << "Storing " << _filtered_digit_producer << " raw::RawDigit ... ch=" << _ch
+	    std::cout << "[BUFFOON!] Storing " << _filtered_digit_producer << " raw::RawDigit ... ch=" << _ch
 		      << " plane=" << _plane
 		      << " wire=" << _wire
 		      << " ... " << adcs.size() << " ADC samples start @ tick=" << _start_tick
@@ -266,7 +266,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
 	  found=true;
 	  break;
 	}
-	if(!found) std::cout << "Could not find target channel " << _ch 
+	if(!found) std::cout << "[BUFFOON!] Could not find target channel " << _ch 
 			     << " or wire " << _wire 
 			     << " for producer " << _filtered_digit_producer << std::endl;
       }
@@ -282,7 +282,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
     
       art::Handle<std::vector<recob::Wire> > wire_h;
       e.getByLabel(_wire_producer,wire_h);
-      if(!wire_h.isValid()) std::cerr << "Failed to fetch Wire with label " << _wire_producer << std::endl;
+      if(!wire_h.isValid()) std::cerr << "[BUFFOON!] Failed to fetch Wire with label " << _wire_producer << std::endl;
 
       for(auto const& ch : hit.channel_list) {
 	_ch = ch;
@@ -309,7 +309,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
 	  this->compute_params(_wf, _mean, _std_dev, _min, _max, _argmin, _argmax);
 
 	    if(_verbose) 
-	      std::cout << "Storing " << _wire_producer << " recob::Wire ... ch=" << _ch
+	      std::cout << "[BUFFOON!] Storing " << _wire_producer << " recob::Wire ... ch=" << _ch
 			<< " plane=" << _plane
 			<< " wire=" << _wire
 			<< " ... " << range.data().size() << " ADC samples start @ tick=" << _start_tick
@@ -325,7 +325,7 @@ void SingleSimChannelAna::analyze(art::Event const & e)
 	  }
 	  break;
 	}
-	if(!found) std::cout << "Could not find target channel " << _ch 
+	if(!found) std::cout << "[BUFFOON!] Could not find target channel " << _ch 
 			     << " or wire " << _wire 
 			     << " for producer " << _wire_producer << std::endl;
       }

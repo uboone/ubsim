@@ -176,12 +176,12 @@ void SingleSimChannel::produce(art::Event & e)
     fTick_v.push_back(ts->TPCTDC2Tick(tdc));
 
     if(fVerbose)
-      std::cout << "Charge injection id " << index << " @ TDC=" << tdc
+      std::cout << "[BUFFOON!] Charge injection id " << index << " @ TDC=" << tdc
 		<< " @ Y=" << fY_v[index] << " @ Z=" << fZ_v[index]
 		<< " with " << fNumElectrons_v[index] << " electrons " << std::endl;
 
     if(tdc<0) {
-      std::cerr << "\033[93m[WARNING]\033[00m ignoring fSimTime " << fSimTime_v[index]
+      std::cerr << "\033[93m[WARNING BUFFOON!]\033[00m ignoring fSimTime " << fSimTime_v[index]
 		<< " as it results in negative TDC (invalid)" << std::endl;
       continue;
     }
@@ -196,7 +196,7 @@ void SingleSimChannel::produce(art::Event & e)
     for(size_t plane=0; plane<3; ++plane) {
       auto channel = geo->NearestChannel(xyz,plane);
       auto wire = geo->ChannelToWire(channel).front().Wire;
-      if(fVerbose) std::cout << "    plane " << plane << " channel " 
+      if(fVerbose) std::cout << "[BUFFOON!]    plane " << plane << " channel " 
 			     << channel << " ... wire " << wire << std::endl;
       pulse_record.channel_list[plane] = channel;
       switch(plane) {
@@ -204,7 +204,7 @@ void SingleSimChannel::produce(art::Event & e)
       case 1: fPlane1Channel_v.push_back(channel); fPlane1Wire_v.push_back(wire); break;
       case 2: fPlane2Channel_v.push_back(channel); fPlane2Wire_v.push_back(wire); break;
       default:
-	std::cerr << "unexpected plane! " << plane << std::endl;
+	std::cerr << "[BUFFOON!] unexpected plane! " << plane << std::endl;
 	throw std::exception();
       }
       sim::SimChannel sch(channel);
