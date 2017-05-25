@@ -278,7 +278,16 @@ namespace evwgh {
       ProtonVec.SetPxPyPzE(ProtonPx,ProtonPy,ProtonPz,ProtonE);
       
 
-      double E_cm = sqrt(2*ProtonMass + 2*ProtonMass*ProtonVec.P()); // Is this right?
+      double E_cm = sqrt(2*ProtonMass + 2*ProtonMass*ProtonVec.P()); //Bug inherited from MB code
+      //
+      //  From Mike S. :
+      //  The fitting was done without this error so I think that you need to use:
+      //           ecm = sqrt(2.*mp**2+2.*mp*eb)
+      //
+      //    This should be fixed once the comparisons between MB and MicroBooNE have converged
+      //
+      //
+
       double gamma = (ProtonE + ProtonMass) / E_cm; 
       double gammaBeta = ProtonVec.P()/E_cm;
 
