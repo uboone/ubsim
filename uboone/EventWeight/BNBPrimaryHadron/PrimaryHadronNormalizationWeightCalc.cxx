@@ -199,9 +199,9 @@ namespace evwgh {
     else{parameters_pass = false;}
     
     
-      std::pair<bool, double> output(parameters_pass, weight);
-      
-      return output; 
+    std::pair<bool, double> output(parameters_pass, weight);
+    
+    return output; 
 
   }// Done with the MiniBooNE function
 

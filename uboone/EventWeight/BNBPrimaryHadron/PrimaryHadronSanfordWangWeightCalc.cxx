@@ -357,7 +357,7 @@ namespace evwgh {
 
       if(weight < 0) weight = 1;
       if(weight > 30) weight = 30;
-      if(weight != weight) weight = 30;//From MiniBooNE; in Fortran Nan > 30
+      if(!(isfinite(weight))) weight = 30;//From MiniBooNE; in Fortran Nan > 30
 
       std::pair<bool, double> output(parameters_pass, weight);
 

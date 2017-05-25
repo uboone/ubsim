@@ -583,7 +583,7 @@ namespace evwgh {
                                   //  but it is set to 1 before it is set to zero 
       //  This locks in a max weight for all universes 
       if(weight > 30) weight = 30;
-      if(weight != weight) weight = 30; //From MiniBooNE; in Fortran Nan > 30
+      if(!(isfinite(weight))) weight = 30; //From MiniBooNE; in Fortran Nan > 30
       
      
       std::pair<bool, double> output(parameters_pass, weight);

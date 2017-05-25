@@ -296,7 +296,7 @@ namespace evwgh {
 
     if(weight < 0) weight = 1; 
     if(weight > 30) weight = 30;
-    if(weight != weight) weight = 30;
+    if(!(isfinite(weight))) weight = 30;
 
     if( (ntype == 0 || ntype == 1) && ptype == 1) weight = 1;
 
