@@ -11,6 +11,7 @@
 #include "canvas/Persistency/Common/Wrapper.h"
 #include "CRTSimData.hh"
 #include "CRTHit.hh"
+#include "CRTTrack.hh"
 #include <utility>
 #include <vector>
 #include <map>
@@ -28,3 +29,6 @@ template class std::map< unsigned char, std::vector< std::pair<int,double> > >;
 
 template class std::vector<crt::CRTHit>;
 template class art::Wrapper< std::vector<crt::CRTHit> >;
+
+template class std::vector<crt::CRTTrack>;
+template class art::Wrapper< std::vector<crt::CRTTrack> >;

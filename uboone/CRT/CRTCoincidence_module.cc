@@ -22,6 +22,8 @@
 
 #include "art/Framework/Services/Optional/TFileService.h"
 
+#include "uboone/CRT/CRTProducts/CRTHit.hh"
+#include "uboone/CRT/CRTProducts/CRTTrack.hh"
 #include "uboone/CRT/CRTAuxFunctions.hh"
 
 #include "TTree.h"
@@ -281,7 +283,7 @@ void bernfebdaq::CRTCoincidence::analyze(art::Event const & evt)
 	    h2pes->Fill(pesmax_tevt2);
 	    //Interpolar!!!! 1
 	    
-	    std::vector<double> interpos_tevt = crt::auxfunctions::inter_X(pesmax_tevt1, pos_tevt1, pesmax_tevt2, pos_tevt2);
+	    std::vector<double> interpos_tevt = crt::auxfunctions::inter_X(pesmax_tevt1, pos_tevt1, pesmax_tevt2, pos_tevt2, Lbar);
 	    double interpos_tevt_err = crt::auxfunctions::inter_X_error(pesmax_tevt1, pesmax_tevt2, Lbar);
 	    
 	    //Interpolar!!!! 1
@@ -342,7 +344,7 @@ void bernfebdaq::CRTCoincidence::analyze(art::Event const & evt)
 	    h4->Fill(max_temp2_st);
 	    h4pes->Fill(pesmax_st2);
 	    //Interpolar y absolute position!!!! st                                                                                                                         
-	    std::vector<double> interpos_st = crt::auxfunctions::inter_X(pesmax_st1, pos_st1, pesmax_st2, pos_st2);
+	    std::vector<double> interpos_st = crt::auxfunctions::inter_X(pesmax_st1, pos_st1, pesmax_st2, pos_st2, Lbar);
 	    double interpos_st_err = crt::auxfunctions::inter_X_error(pesmax_st1, pesmax_st2, Lbar);
 	    //Interpolar!!!! st    
 	    

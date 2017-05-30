@@ -123,6 +123,14 @@ simple_plugin(CRTHitProducer "module"
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
 
+simple_plugin(CRTTrackProducer "module"
+            CRT
+              bernfebdaq_core_overlays
+          art_Framework_Services_Optional
+          art_Framework_Services_Registry
+          art_Framework_Services_Optional_TFileService_service
+          ${ROOT_BASIC_LIB_LIST} )
+
 simple_plugin( CRTMerger module
   bernfebdaq_core_overlays
   ${ROOT_BASIC_LIB_LIST}
