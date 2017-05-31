@@ -112,7 +112,6 @@ namespace detsim {
     std::string             fTrigModName;       ///< Trigger data product producer name
     
     bool                    fSimDeadChannels;   ///< if True, simulate dead channels using the ChannelStatus service.  If false, do not simulate dead channels
-    bool                    fSimMisconfiguredChannels;
 
     bool fMakeNoiseDists;
 
@@ -150,7 +149,6 @@ namespace detsim {
     //
     // Needed for post-filter noise (pfn) generator
     //
-    std::vector<double> _pfn_shaping_time_v;
     TF1  *_pfn_f1;
     TF1  *_pfn_MyPoisson;
     TVirtualFFT *_pfn_ifft;
@@ -171,7 +169,6 @@ namespace detsim {
   //-------------------------------------------------
   SimWireMicroBooNE::SimWireMicroBooNE(fhicl::ParameterSet const& pset)
   : fNoiseHist(0)
-    , _pfn_shaping_time_v()
     , _pfn_f1(nullptr)
     , _pfn_MyPoisson(nullptr)
     , _pfn_ifft(nullptr)
@@ -211,7 +208,6 @@ namespace detsim {
     fGetNoiseFromHisto= p.get< bool                >("GetNoiseFromHisto");
     fGenNoise         = p.get< unsigned short      >("GenNoise");
     fSimDeadChannels  = p.get< bool                >("SimDeadChannels");
-    fSimMisconfiguredChannels = p.get< bool        >("SimMisconfiguredChannels");
 
     fMakeNoiseDists   = p.get< bool                >("MakeNoiseDists", false);
 
@@ -315,7 +311,6 @@ namespace detsim {
 
   void SimWireMicroBooNE::produce(art::Event& evt)
   {
-
 
     //--------------------------------------------------------------------
     //
@@ -523,6 +518,7 @@ namespace detsim {
 	}	
       }//end Generate Noise
 
+
       //If the channel is bad, we can stop here
       //if you are using the UbooneChannelStatusService, then this removes disconnected, "dead", and "low noise" channels
       if (fSimDeadChannels && (ChannelStatusProvider.IsBad(chan) || !ChannelStatusProvider.IsPresent(chan)) ) {
@@ -564,6 +560,7 @@ namespace detsim {
       raw::RawDigit rd(chan, fNTimeSamples, adcvec, fCompression);
       rd.SetPedestal(ped_mean);
       digcol->push_back(std::move(rd)); // we do move the raw digit copy, though
+      
     }// end of loop over channels
 
  
@@ -690,14 +687,16 @@ namespace detsim {
 
   void SimWireMicroBooNE::GenNoisePostFilter(std::vector<float> &noise, double noise_factor, size_t view, int chan)
   {
+    
+     //electronics conditions
+    const lariov::ElectronicsCalibProvider& elec_provider 
+       = art::ServiceHandle<lariov::ElectronicsCalibService>()->GetProvider();
+    
     // noise is a vector of size fNTicks, which is the number of ticks
     const size_t waveform_size = noise.size();
-    
-    if(_pfn_shaping_time_v.size()<=view || _pfn_shaping_time_v[view]<0)
-      throw cet::exception("SimWireMicroBooNE")
-	<< "GenNoisePostFilter encounters unknown view!" << std::endl;    
+       
 
-    Double_t ShapingTime = _pfn_shaping_time_v[view];
+    Double_t ShapingTime = elec_provider.ShapingTime(chan);
 
       if(!_pfn_f1) _pfn_f1 = new TF1("_pfn_f1", "([0]*exp(-0.5*(((x*9592/2)-[1])/[2])**2)*exp(-0.5*pow(x*9592/(2*[3]),[4]))+[5])", 0.0, (double)waveform_size/2);
 
@@ -709,7 +708,7 @@ namespace detsim {
     Double_t params[1] = {0.};
     Double_t fitpar[6] = {0.};
 
-    if(ShapingTime==2.0) {
+    if(ShapingTime > 1.5 && ShapingTime <= 2.5) {
       params[0] = 3.3708; //2us
 
       // wiener-like
@@ -722,7 +721,7 @@ namespace detsim {
 
 
     }
-    else if(ShapingTime==1.0) {
+    else if(ShapingTime > 0.75 && ShapingTime <= 1.5) {
       params[0] = 3.5125; //1us
       fitpar[0] = 14.4;
       fitpar[1] = 35.1;
