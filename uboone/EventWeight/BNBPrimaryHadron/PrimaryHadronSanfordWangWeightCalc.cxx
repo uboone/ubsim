@@ -182,7 +182,7 @@ namespace evwgh {
           
       //Let's make a weights based on the calculator you have requested 
       if(fMode.find("multisim") != std::string::npos){       
-	for (unsigned int i = 0; i < fWeightArray.size() && int(weight[inu].size()) <= fNmultisims; i++) {
+	for (unsigned int i = 0;  int(weight[inu].size()) < fNmultisims; i++) {
 	  if(fWeightCalc.find("MicroBooNE") != std::string::npos){
 	    
 	    //
