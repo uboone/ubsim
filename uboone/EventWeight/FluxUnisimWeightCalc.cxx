@@ -203,7 +203,7 @@ namespace evwgh {
       else if ( fluxlist[inu].fntype==14  ) ntype=2;
       else if ( fluxlist[inu].fntype==-14 ) ntype=3;
       else {
-	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0].fptype<< std::endl;
+	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ntype "<<fluxlist[0].fntype<< std::endl;
       }
 
       // Collect neutrino energy
