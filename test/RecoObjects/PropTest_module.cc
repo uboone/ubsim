@@ -226,9 +226,9 @@ namespace trkf
 	double m1 = mom1[2]*mom2[0] - mom1[0]*mom2[2];
 	double m2 = mom1[0]*mom2[1] - mom1[1]*mom2[0];
 	std::cout << "mom1 x mom2 = " << m0 << ", " << m1 << ", " << m2 << std::endl;
-	assert(std::abs(m0) <= 1.e-8);
-	assert(std::abs(m1) <= 1.e-8);
-	assert(std::abs(m2) <= 1.e-8);
+	assert(std::abs(m0) <= 1.e-6);
+	assert(std::abs(m1) <= 1.e-6);
+	assert(std::abs(m2) <= 1.e-6);
 
 	// Make sure displacement vector is parallel to initial momentum.
 
