@@ -236,9 +236,9 @@ namespace trkf
 	double d1 = mom1[2]*dx[0] - mom1[0]*dx[2];
 	double d2 = mom1[0]*dx[1] - mom1[1]*dx[0];
 	std::cout << "mom1 x dx = " << d0 << ", " << d1 << ", " << d2 << std::endl;
-	assert(std::abs(d0) <= 1.e-8);
-	assert(std::abs(d1) <= 1.e-8);
-	assert(std::abs(d2) <= 1.e-8);
+	assert(std::abs(d0) <= 1.e-6);
+	assert(std::abs(d1) <= 1.e-6);
+	assert(std::abs(d2) <= 1.e-6);
 
 	// Test propagation matrix by numerical partial derivatives.
 
