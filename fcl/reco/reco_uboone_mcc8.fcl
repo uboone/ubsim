@@ -87,10 +87,11 @@ microboone_reco_mcc8_producers:
   saturation : @local::correct_saturation_mc
 
   ### flash finders
-  simpleFlashBeam   : @local::UBFlashBeamMC
-  simpleFlashCosmic : @local::UBFlashCosmicMC
-  opflashBeam       : @local::microboone_opflash_saturation_beam
-  opflashCosmic     : @local::microboone_opflash_saturation_cosmic
+  simpleFlashBeam      : @local::UBFlashBeamMC
+  simpleFlashBeamLowPE : @local::UBFlashBeamMC
+  simpleFlashCosmic    : @local::UBFlashCosmicMC
+  opflashBeam          : @local::microboone_opflash_saturation_beam
+  opflashCosmic        : @local::microboone_opflash_saturation_cosmic
 
   ### noise filtering (if needed)
   #digitfilter:                    @local::microboone_rawdigitfilter
@@ -239,7 +240,8 @@ microboone_reco_mcc8_optical: [ saturation,
                                 opflashCosmic,
                                 opflashBeam,
                                 simpleFlashCosmic,
-                                simpleFlashBeam]
+                                simpleFlashBeam,
+                                simpleFlashBeamLowPE]
 
 microboone_reco_mcc8_signalprocessing: [ #digitfilter,
                                          wcNoiseFilter,
@@ -627,5 +629,7 @@ microboone_reco_mcc8_producers.pandoraCosmicT0RecoBeam.TrackProducer:     "pando
 microboone_reco_mcc8_producers.pmtrackT0RecoBeam.TrackProducer:           "pmtrack"
 #microboone_reco_mcc8_producers.stitchkalmanhitT0RecoBeam.TrackProducer:   "stitchkalmanhit"
 #microboone_reco_mcc8_producers.trackkalmanhitT0RecoBeam.TrackProducer:    "trackkalmanhit"
+
+microboone_reco_mcc8_producers.simpleFlashBeamLowPE.AlgoConfig.PEThreshold: 6
 
 END_PROLOG
