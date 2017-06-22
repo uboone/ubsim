@@ -286,7 +286,7 @@ namespace trkf
 	boost::optional<double> dist21 = prop->err_prop(trk2, psurf1, trkf::Propagator::UNKNOWN,
 							false);
 	assert(!!dist21);
-	assert(std::abs(dist - std::abs(*dist21)) <= 1.e-10 * std::max(1., dist));
+	assert(std::abs(dist - std::abs(*dist21)) <= 1.e-6 * std::max(1., dist));
 
 	// Check that state vector and error matrix returned to the original.
 	// This will test that the forward and backward propagation matrices
