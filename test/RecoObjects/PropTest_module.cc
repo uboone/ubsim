@@ -277,7 +277,7 @@ namespace trkf
 
 	    double dij = (trk1b.getVector()(i) - trk1a.getVector()(i)) / (2.*small);
 	    std::cout << "(" << i << "," << j << "): " << dij << ", " << pm(i,j) << std::endl;
-	    assert(std::abs(dij - pm(i,j)) <= 2.e-3*std::max(std::abs(dij), 1.));
+	    assert(std::abs(dij - pm(i,j)) <= 1.e-2*std::max(std::abs(dij), 1.));
 	  }
 	}
 
