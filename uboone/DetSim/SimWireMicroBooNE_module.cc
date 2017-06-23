@@ -131,21 +131,6 @@ namespace detsim {
 
     ::detinfo::ElecClock fClock; ///< TPC electronics clock
 
-    // little helper class to hold the params of each charge dep
-    class ResponseParams {
-    public:
-      ResponseParams(double charge, double y, double z, size_t time) : m_charge(charge), m_y(y), m_z(z), m_time(time) {}
-      double getCharge() { return m_charge; }
-      double getY() { return m_y; }
-      double getZ() { return m_z; }
-      size_t getTime()   { return m_time; }
-    private:
-      double m_charge;
-      double m_y;
-      double m_z;
-      size_t m_time;
-    };
-
     //
     // Needed for post-filter noise (pfn) generator
     //
@@ -405,7 +390,7 @@ namespace detsim {
     digcol->reserve(N_CHANNELS);
 
     //first vector index is channel
-    std::vector< std::vector<std::unique_ptr<ResponseParams> > > responseParamsVec;
+    std::vector< std::vector<std::unique_ptr<util::ResponseParams> > > responseParamsVec;
     responseParamsVec.resize(N_CHANNELS);
     
    
@@ -444,7 +429,7 @@ namespace detsim {
 	  double y = (double)energyDeposit.y;
 	  double z = (double)energyDeposit.z;
 	  if(charge == 0) continue;
-	  responseParamsVec[chan].emplace_back(new ResponseParams(charge, y, z, raw_digit_index));
+	  responseParamsVec[chan].emplace_back(new util::ResponseParams(charge, y, z, raw_digit_index));
 	}
       }
     } // channels
@@ -531,7 +516,13 @@ namespace detsim {
       
       
       //Channel is good, so convolute response onto all charges and fill the chargeWork vector
-      for (auto& item : responseParamsVec[chan]) {
+      sss->Convolute(chan, tempWork, responseParamsVec[chan]);
+      for(size_t bin = 0; bin < fNTicks; ++bin) {
+        chargeWork[bin] += tempWork[bin];
+      }
+      
+      
+      /*for (auto& item : responseParamsVec[chan]) {
         std::fill(tempWork.begin(), tempWork.end(), 0.);
 	auto charge = item->getCharge();
         if(charge==0) continue;
@@ -546,7 +537,7 @@ namespace detsim {
         for(size_t bin = 0; bin < fNTicks; ++bin) {
           chargeWork[bin] += tempWork[bin];
         }
-      }
+      }*/
 
 
       // add this digit to the collection;
