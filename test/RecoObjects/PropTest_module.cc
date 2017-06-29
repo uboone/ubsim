@@ -277,7 +277,7 @@ namespace trkf
 
 	    double dij = (trk1b.getVector()(i) - trk1a.getVector()(i)) / (2.*small);
 	    std::cout << "(" << i << "," << j << "): " << dij << ", " << pm(i,j) << std::endl;
-	    assert(std::abs(dij - pm(i,j)) <= 2.e-3*std::max(std::abs(dij), 1.));
+	    assert(std::abs(dij - pm(i,j)) <= 2.e-2*std::max(std::abs(dij), 1.));
 	  }
 	}
 
@@ -296,7 +296,7 @@ namespace trkf
 	const trkf::TrackError& err2 = trk2.getError();
 	int n = vec1.size();
 	for(int i=0; i<n; ++i) {
-	  assert(std::abs(vec1(i) - vec2(i)) <= 1.e-6);
+	  assert(std::abs(vec1(i) - vec2(i)) <= 1.e-4);
 	  for(int j=0; j<n; ++j) {
 	    std::cout << "(" << i << "," << j << "): " << err1(i,j) << ", " << err2(i,j) << std::endl;
 	    assert(std::abs(err1(i,j) - err2(i,j)) <= 1.e-3*std::max(std::abs(err1(i,j)), 1.));
