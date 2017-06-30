@@ -21,9 +21,8 @@ namespace crt{
   {
     std::vector<std::string> fFileNames;
 
-
     //The gallery events to check for the  crt data
-    gallery::Event fCRTEvent;
+    //gallery::Event fCRTEvent;
 
     // Producer tag of the CRT events
     art::InputTag fTag;
@@ -33,7 +32,8 @@ namespace crt{
 
     //See which T0 to use
     bool fUseT0;
-
+    bool _debug;
+    
   public:
 
     CRTMerger(const fhicl::ParameterSet&);
@@ -47,7 +47,12 @@ namespace crt{
     virtual void produce (art::Event&);
 
     void reconfigure(fhicl::ParameterSet const & p) override;
-
+    
+  private:
+    std::string fMerged_Object;
+    
+    unsigned crt_start_ns;
+    unsigned crt_end_ns;
   };
 
 }
