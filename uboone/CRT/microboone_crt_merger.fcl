@@ -1,0 +1,11 @@
+BEGIN_PROLOG
+
+microboone_crt_merger:{
+
+ module_type	: "CRTMerger"
+ InputFilenames : ["/uboone/data/users/wketchum/crt_artdaq_0602-201006.root"]
+ ObjectProducer	: "merger"
+ InputTagName	: "crtdaq"
+ debug		: true
+}
+END_PROLOG
