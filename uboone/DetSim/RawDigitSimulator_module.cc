@@ -62,6 +62,8 @@ extern "C" {
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 #include "lardata/Utilities/LArFFT.h"
 #include "uboone/Utilities/SignalShapingServiceMicroBooNE.h"
+#include "larevt/CalibrationDBI/Interface/ElectronicsCalibService.h"
+#include "larevt/CalibrationDBI/Interface/ElectronicsCalibProvider.h"
 
 namespace art {
   class Event;
@@ -243,7 +245,7 @@ namespace detsim{
 
     // If the unit is # electrons, run convolution
     if(!fSigUnit) {
-      sss->Convolute(fChannel,sigvec);
+      sss->Convolute(fChannel,sigvec,0.0,0.0);
     }
 
 
@@ -251,8 +253,11 @@ namespace detsim{
     // Do noise
     //
     //get ASIC Gain and Noise in ADCatLowestGain:
-    double fASICGain      = sss->GetASICGain(fChannel);    //Jyoti - to read different gain for U,V & Y planes 
-    double fShapingTime   = sss->GetShapingTime(fChannel); //Jyoti - to read different shaping time for U,V & Y planes 
+    const lariov::ElectronicsCalibProvider& elec_provider
+    = art::ServiceHandle<lariov::ElectronicsCalibService>()->GetProvider();
+
+    double fASICGain      = elec_provider.Gain(fChannel);    //Jyoti - to read different gain for U,V & Y planes 
+    double fShapingTime   = elec_provider.ShapingTime(fChannel); //Jyoti - to read different shaping time for U,V & Y planes 
     //Check that shaping time is an allowed value
     //If so, Pick out noise factor 
     //If not, through exception

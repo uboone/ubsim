@@ -226,9 +226,9 @@ namespace trkf
 	double m1 = mom1[2]*mom2[0] - mom1[0]*mom2[2];
 	double m2 = mom1[0]*mom2[1] - mom1[1]*mom2[0];
 	std::cout << "mom1 x mom2 = " << m0 << ", " << m1 << ", " << m2 << std::endl;
-	assert(std::abs(m0) <= 1.e-8);
-	assert(std::abs(m1) <= 1.e-8);
-	assert(std::abs(m2) <= 1.e-8);
+	assert(std::abs(m0) <= 1.e-6);
+	assert(std::abs(m1) <= 1.e-6);
+	assert(std::abs(m2) <= 1.e-6);
 
 	// Make sure displacement vector is parallel to initial momentum.
 
@@ -236,9 +236,9 @@ namespace trkf
 	double d1 = mom1[2]*dx[0] - mom1[0]*dx[2];
 	double d2 = mom1[0]*dx[1] - mom1[1]*dx[0];
 	std::cout << "mom1 x dx = " << d0 << ", " << d1 << ", " << d2 << std::endl;
-	assert(std::abs(d0) <= 1.e-8);
-	assert(std::abs(d1) <= 1.e-8);
-	assert(std::abs(d2) <= 1.e-8);
+	assert(std::abs(d0) <= 1.e-6);
+	assert(std::abs(d1) <= 1.e-6);
+	assert(std::abs(d2) <= 1.e-6);
 
 	// Test propagation matrix by numerical partial derivatives.
 
@@ -277,7 +277,7 @@ namespace trkf
 
 	    double dij = (trk1b.getVector()(i) - trk1a.getVector()(i)) / (2.*small);
 	    std::cout << "(" << i << "," << j << "): " << dij << ", " << pm(i,j) << std::endl;
-	    assert(std::abs(dij - pm(i,j)) <= 1.e-4*std::max(std::abs(dij), 1.));
+	    assert(std::abs(dij - pm(i,j)) <= 2.e-2*std::max(std::abs(dij), 1.));
 	  }
 	}
 
@@ -286,7 +286,7 @@ namespace trkf
 	boost::optional<double> dist21 = prop->err_prop(trk2, psurf1, trkf::Propagator::UNKNOWN,
 							false);
 	assert(!!dist21);
-	assert(std::abs(dist - std::abs(*dist21)) <= 1.e-10 * std::max(1., dist));
+	assert(std::abs(dist - std::abs(*dist21)) <= 1.e-6 * std::max(1., dist));
 
 	// Check that state vector and error matrix returned to the original.
 	// This will test that the forward and backward propagation matrices
@@ -296,7 +296,7 @@ namespace trkf
 	const trkf::TrackError& err2 = trk2.getError();
 	int n = vec1.size();
 	for(int i=0; i<n; ++i) {
-	  assert(std::abs(vec1(i) - vec2(i)) <= 1.e-8);
+	  assert(std::abs(vec1(i) - vec2(i)) <= 1.e-3);
 	  for(int j=0; j<n; ++j) {
 	    std::cout << "(" << i << "," << j << "): " << err1(i,j) << ", " << err2(i,j) << std::endl;
 	    assert(std::abs(err1(i,j) - err2(i,j)) <= 1.e-3*std::max(std::abs(err1(i,j)), 1.));
