@@ -389,9 +389,10 @@ namespace evwgh {
     if(fabs(fCV[ptype][ntype][bin]) < 1.e-12) weight = 1;
 
     if(weight < 0) weight = 1; 
+    if(weight > 30) weight = 30; 
     if(!(isfinite(weight))){
       std::cout << "UniSim " <<  fParameter_list.at(0) << " : Failed to get a finite weight" << std::endl;      
-      weight = 1000;}
+      weight = 30;}
 
     if( (ntype == 0 || ntype == 1) && ptype == 1) weight = 1;
     if( (ntype == 1 || ntype == 3) && ptype == 3) weight = 1;

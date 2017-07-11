@@ -277,9 +277,15 @@ namespace evwgh {
 	for (unsigned int i = 0; int(weight[inu].size()) < fNmultisims; i++) {
 
 	  if(fWeightCalc.find("MicroBooNE") != std::string::npos){
-	    
-	    if(MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]).first){
-	      weight[inu].push_back(MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]).second);
+
+	    //
+	    //This way we only have to call the WeightCalc once
+	    // 
+	    std::pair<bool, double> test_weight =
+	      MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
+
+	    if(test_weight.first){
+	      weight[inu].push_back(test_weight.second);
 	    }
 	  }
 	  if(fWeightCalc.find("MiniBooNE") != std::string::npos){
@@ -899,9 +905,10 @@ namespace evwgh {
       }
 
       if(weight < 0) weight = 0; 
+      if(weight > 30) weight = 30; 
       if(!(isfinite(weight))){
 	std::cout << "SW+Splines : Failed to get a finite weight" << std::endl; 	
-	weight = 1000;
+	weight = 30;
       }
 
       std::pair<bool, double> output(parameters_pass, weight);

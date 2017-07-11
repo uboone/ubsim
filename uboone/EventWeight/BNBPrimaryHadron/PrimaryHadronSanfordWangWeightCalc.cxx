@@ -508,10 +508,10 @@ namespace evwgh {
       }
 
       if(weight < 0) weight = 0; 
-      
+      if(weight > 30) weight = 30; 
       if(!(isfinite(weight))){
 	std::cout << "SW : Failed to get a finite weight" << std::endl;      
-	weight = 1000;
+	weight = 30;
       }
 
       std::pair<bool, double> output(parameters_pass, weight);
