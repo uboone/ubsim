@@ -11,6 +11,7 @@ art_make( BASENAME_ONLY
           LIBRARY_NAME     uboonecode_uboone_UBXSec
           LIB_LIBRARIES
                    uboonecode_uboone_UBXSec_Algorithms
+                   uboonecode_uboone_UBXSec_DataTypes
                    uboonecode_uboone_BasicTool_GeoAlgo
                    uboone_UBFlashFinder
 		   uboonecode_uboone_SelectionTool_OpT0FinderBase
@@ -59,7 +60,8 @@ art_make( BASENAME_ONLY
 
           MODULE_LIBRARIES
                    uboonecode_uboone_UBXSec_Algorithms 
-                   uboonecode_uboone_UBXSec
+                   uboonecode_uboone_UBXSec_DataTypes
+                   #uboonecode_uboone_UBXSec
                    larsim_MCCheater_BackTracker_service
 		   larpandora_LArPandoraInterface
                    #                   larpandora_LArPandoraContent
@@ -106,4 +108,5 @@ install_fhicl()
 install_source()
 
 add_subdirectory(Algorithms)
+add_subdirectory(DataTypes)
 add_subdirectory(job)
