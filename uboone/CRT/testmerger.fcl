@@ -1,5 +1,7 @@
 #include "services_microboone.fcl"
 #include "microboone_crt_merger.fcl"
+#include "time_memory_tracker_microboone.fcl"
+#
 process_name: CRTMerger
 
 source:
@@ -11,14 +13,15 @@ services:
 {
 	scheduler		:	{defaultExceptions	: false			}    # Make all uncaught exceptions fatal.        
 	TFileService		:	{fileName		: "testmerge.root"	}
-#	TimeTracker		:	@local::microboone_time_tracker
-#	MemoryTracker		:	@local::microboone_memory_tracker
-#	RandomNumberGenerator	:	{}                     #ART native random number generator
-#	BackTracker		:	@local::microboone_backtracker
+	TimeTracker		:	@local::microboone_time_tracker
+	MemoryTracker		:	@local::microboone_memory_tracker
+	RandomNumberGenerator	:	{}                     #ART native random number generator
+	BackTracker		:	@local::microboone_backtracker
 	
 	#BELOW you see a list of the common services! Uncomment the ones you need.
-#	DetectorClocksService	:	@local::microboone_detectorclocks
+	DetectorClocksService	:	@local::microboone_detectorclocks
 	message			:	@local::standard_info
+	FileCatalogMetadata	:	@local::art_file_catalog_mc
 }
 physics:
 {
@@ -33,12 +36,10 @@ physics:
 #	}
 #	filters:
 #	{
-#	}
-	
+#	}	
 	merge2produce	:[merger]
-#	ana		:[]
-	stream1		:[out1]
 #	trigger_paths	:[merge2produce]
+	stream1		:[out1]
 	end_paths	:[stream1]
 }
 outputs:
@@ -46,7 +47,7 @@ outputs:
 	out1:
 	{
 		module_type	: RootOutput
-		fileName	: "T0Reco.root"
+		fileName	: "IP_artEvent.root"
 		dataTier	: "reco"
 		compressionLevel: 1
 	}

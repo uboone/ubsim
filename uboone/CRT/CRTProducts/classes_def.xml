@@ -33,5 +33,12 @@
   
   <class name="std::vector<crt::CRTTrack>"/>
   <class name="art::Wrapper< std::vector<crt::CRTTrack> >"/>
+
+  <class name="crt::MSetCRTFrag" ClassVersion="10">
+   <version ClassVersion="10" checksum="1184856394"/>
+  </class>
+  <class name="art::Wrapper<vector<crt::MSetCRTFrag> >" />
+  <class name="std::vector<crt::MSetCRTFrag>"/>
+
   
 </lcgdict>
