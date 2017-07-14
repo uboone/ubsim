@@ -7,7 +7,8 @@
 crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset): fFileNames(pset.get<std::vector<std::string> >("InputFilenames"))
 {
 	this->reconfigure(pset);
-	produces< std::vector<crt::MSetCRTFrag> >();	
+	produces< std::vector<crt::MSetCRTFrag> >();
+	produces< std::vector<artdaq::Fragment> >();
 	fTag		= pset.get<art::InputTag> ("InputTagName");
 	//fMerged_Object= pset.get<std::string> ("ObjectProducer");
 	_debug		= pset.get<bool>		 ("debug");
@@ -31,8 +32,8 @@ void crt::CRTMerger::produce(art::Event& event)
 	{
 		std::cout << "NEW EVENT" << std::endl;
 	}
-	
 	std::unique_ptr<std::vector<crt::MSetCRTFrag> > MergedCRTFragSet(new std::vector<crt::MSetCRTFrag>);
+	std::unique_ptr<std::vector<artdaq::Fragment> > BareBernFragments(new std::vector<artdaq::Fragment>);
 	
 	//For this event
 	art::Timestamp evtTime = event.time();
@@ -57,25 +58,39 @@ void crt::CRTMerger::produce(art::Event& event)
 			
 			std::cout<<"TPC (s) "<<evt_time_sec<<"     CRT(s) "<<crt_bf_time_s<<"     TPC (ns) "<<evt_time_nsec<<"     CRT_start(ns) "<<crt_bf_time_start_ns<<"     CRT_end(ns) "<<crt_bf_time_end_ns<<std::endl;
 			
-			if ((evt_time_sec - crt_bf_time_s)!=0)
+			if (evt_time_sec < crt_bf_time_s)
 			{
 				xxx=1;
 				std::cout<<"escape 1"<<std::endl;
 				break;
 			}
-			if ((evt_time_sec - crt_bf_time_s)==0)
+			else if ((evt_time_sec - crt_bf_time_s)==0)
 			{
-				std::cout<<"---> "<<evt_time_sec<<"     "<<crt_bf_time_s<<"    "<<evt_time_nsec<<"     ("<<crt_bf_time_start_ns<<", "<<crt_bf_time_end_ns<<")     "<<xxx<<std::endl;
+				std::cout<<"1---> "<<evt_time_sec<<"     "<<crt_bf_time_s<<"    "<<evt_time_nsec<<"     ("<<crt_bf_time_start_ns<<", "<<crt_bf_time_end_ns<<")     "<<xxx<<std::endl;
 				
 				if(abs(crt_bf_time_start_ns - evt_time_nsec)<fTimeWindow)
 				{
 					std::cout<<"merge:"<<std::endl;
-					//crt::MSetCRTFrag FragCRT2Merge(bernfrag, evt_time_sec, evt_time_nsec, crt_bf_time_start_ns, crt_bf_time_end_ns);
 					crt::MSetCRTFrag FragCRT2Merge(i_crtFrag);
 					MergedCRTFragSet->emplace_back(FragCRT2Merge);
+					BareBernFragments->emplace_back(i_crtFrag);
 					xxx=1;
 					break;
-				}		
+				}
+			}
+			else
+			{
+				std::cout<<"2---> "<<evt_time_sec<<"     "<<crt_bf_time_s<<"    "<<evt_time_nsec<<"     ("<<crt_bf_time_start_ns<<", "<<crt_bf_time_end_ns<<")     "<<xxx<<std::endl;
+				
+				if(abs(crt_bf_time_start_ns - evt_time_nsec)<fTimeWindow)
+				{       
+					std::cout<<"merge:"<<std::endl;
+					crt::MSetCRTFrag FragCRT2Merge(i_crtFrag);
+					MergedCRTFragSet->emplace_back(FragCRT2Merge);
+					BareBernFragments->emplace_back(i_crtFrag);
+					xxx=1;
+					break;
+				}
 			}
 		}
 		if (xxx==1)
@@ -85,8 +100,13 @@ void crt::CRTMerger::produce(art::Event& event)
 		}
 	}
 	if (MergedCRTFragSet->size()>0)
-	std::cout<<"----> "<<MergedCRTFragSet->size()<<std::endl;
+	std::cout<<"#MergedCRTFragSet----> "<<MergedCRTFragSet->size()<<std::endl;
 	event.put(std::move(MergedCRTFragSet));
+	
+	if (BareBernFragments->size()>0)
+        std::cout<<"#BareBernFragments----> "<<BareBernFragments->size()<<std::endl;
+        event.put(std::move(BareBernFragments));
+	
 }
 
 void crt::CRTMerger::reconfigure(fhicl::ParameterSet const & pset)
