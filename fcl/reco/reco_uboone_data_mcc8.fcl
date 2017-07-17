@@ -395,6 +395,8 @@ microboone_reco_data_MucSTags: [         #MuCSTrackTaggertrackkalmanhit,
 microboone_reco_data_producers.caldata.DigitModuleLabel:                         "wcNoiseFilter"
 microboone_reco_data_producers.caldata.Threshold:                                [0, 0, 0]  # Not what you think...
 microboone_reco_data_producers.caldata.NumSigma:                                 [9, 9, 9]  # Closer to what you think...
+microboone_reco_data_producers.caldata.ROIFinder.Threshold:                      [0, 0, 0]
+microboone_reco_data_producers.caldata.ROIFinder.NumSigma:                       [9, 9, 9]
 microboone_reco_data_producers.caldata.DodQdxCalib:                              false
 
 microboone_reco_data_producers.gaushit.CalDataModuleLabel:                       "caldata"
