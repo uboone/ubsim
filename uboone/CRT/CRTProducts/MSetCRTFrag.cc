@@ -5,18 +5,10 @@ namespace crt
 	MSetCRTFrag::MSetCRTFrag()
 	{
 	}
-	/*
-	MSetCRTFrag::MSetCRTFrag(bernfebdaq::BernZMQFragment frag, uint32_t GPS_s, uint32_t TPC_ns, uint32_t crt_frag_beg_ns, uint32_t crt_frag_end_ns): fSec(GPS_s), fTPC_ns(TPC_ns), fCRT_frag_beg_ns(crt_frag_beg_ns), fCRT_frag_end_ns(crt_frag_end_ns) 
-	{	
-	}
-	*/
-	MSetCRTFrag::MSetCRTFrag(artdaq::Fragment const & f)
+	MSetCRTFrag::MSetCRTFrag(artdaq::Fragment const & f1, artdaq::Fragment const& f2, artdaq::Fragment const& f3)
 	{
-		bernfebdaq::BernZMQFragment testfrag(f);	
 	}
 	MSetCRTFrag::~MSetCRTFrag()
         {
-        }	
+        }
 }
-
-
