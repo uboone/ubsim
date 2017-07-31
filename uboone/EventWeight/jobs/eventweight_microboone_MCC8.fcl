@@ -9,8 +9,8 @@ microboone_eventweight:
   #non-Hadron Production Flux Uncertainties 
   #weight_functions:[horncurrent,pioninexsec,nucleontotxsec,nucleonqexsec,nucleoninexsec,pionqexsec,piontotxsec,expskin]
  
-  #Full set of well-formed Beam Uncertainties for use with post-MCC8 Flux
-  weight_functions:[piplus, piminus, kplus, kzero, kminus, horncurrent, pioninexsec, nucleontotxsec, nucleonqexsec, nucleoninexsec, pionqexsec, piontotxsec, expskin]
+  #Full set of well-formed Beam Uncertainties
+  weight_functions:[bnbcorrection, piplus, piminus, kplus, kzero, kminus, horncurrent, pioninexsec, nucleontotxsec, nucleonqexsec, nucleoninexsec, pionqexsec, piontotxsec, expskin]
  
  #throw exception if weight outside limits
  min_weight: 0
@@ -47,6 +47,7 @@ microboone_eventweight:
         number_of_multisims: 1000        
 	use_MiniBooNE_random_numbers: false
         }
+ 
  nucleontotxsec:{
         type: FluxUnisim
         CentralValue_hist_file:"beamData/UnisimHists/may06_10kpot_ntrd1000_flux.root"
@@ -61,6 +62,7 @@ microboone_eventweight:
         number_of_multisims: 1000        
 	use_MiniBooNE_random_numbers: false
         }
+ 
  nucleonqexsec:{
         type: FluxUnisim
         CentralValue_hist_file:"beamData/UnisimHists/may06_10kpot_ntrd1000_flux.root"
@@ -75,6 +77,7 @@ microboone_eventweight:
         number_of_multisims: 1000        
 	use_MiniBooNE_random_numbers: false
         }
+ 
  nucleoninexsec:{
         type: FluxUnisim
         CentralValue_hist_file:"beamData/UnisimHists/may06_10kpot_ntrd1000_flux.root"
@@ -89,6 +92,7 @@ microboone_eventweight:
 	number_of_multisims: 1000        
 	use_MiniBooNE_random_numbers: false
         }
+ 
  pionqexsec:{
         type: FluxUnisim
         CentralValue_hist_file:"beamData/UnisimHists/may06_10kpot_ntrd1000_flux.root"
@@ -103,6 +107,7 @@ microboone_eventweight:
         number_of_multisims: 1000        
 	use_MiniBooNE_random_numbers: false
         }
+ 
  piontotxsec:{
         type: FluxUnisim
         CentralValue_hist_file:"beamData/UnisimHists/may06_10kpot_ntrd1000_flux.root"
@@ -117,6 +122,7 @@ microboone_eventweight:
         number_of_multisims: 1000        
 	use_MiniBooNE_random_numbers: false
         }
+ 
  expskin:{
         type: FluxUnisim
         CentralValue_hist_file:"beamData/UnisimHists/may06_10kpot_ntrd1000_flux.root"
@@ -131,14 +137,11 @@ microboone_eventweight:
         number_of_multisims: 1000        
 	use_MiniBooNE_random_numbers: false
         }
- 
- 
- bnbcorrection: {
-        
+  
+ bnbcorrection: {        
         type: FluxHist
         cv_hist_file: "uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_02.28.2014_470_rwhist/gsimple_uboone_flux.root"
-        rw_hist_file: "uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_02.28.2014_470_rwhist/redecay_uboone_flux.root"
-        
+        rw_hist_file: "uboonebeam/bnb_gsimple/bnb_gsimple_fluxes_02.28.2014_470_rwhist/redecay_uboone_flux.root"        
         random_seed: 985
         mode: reweight
         number_of_multisims: 1
@@ -182,17 +185,14 @@ microboone_eventweight:
         number_of_multisims: 1000
         PrimaryHadronGeantCode: 321 # geant code for particle production on Be
         weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
-
 	### Uncertainties without SciBooNE Contraint
-        #parameter_list: ["kplusOld"]
-        #scale_factor: 2   
-        #ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE_KPlus_withoutSciBooNE.root"
-	
+        parameter_list: ["kplusOld"]
+        scale_factor: 2   
+        ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE_KPlus_withoutSciBooNE.root"      
 	### Uncertainties with SciBooNE Constraint
-        parameter_list: ["kplus"]
-        scale_factor: 1         
-        ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE.root"
-	
+        #parameter_list: ["kplus"]
+        #scale_factor: 1         
+        #ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE.root"	
 	use_MiniBooNE_random_numbers: false
         }
 
@@ -204,7 +204,7 @@ microboone_eventweight:
         mode: multisim
         scale_factor: 1
         number_of_multisims: 1000
-        PrimaryHadronGeantCode: [130, 310, 311] # MiniBooNE only reweighted GEANT CODE = 10
+        PrimaryHadronGeantCode: [130] # MiniBooNE only reweighted GEANT CODE = 10
         weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
         ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE.root"
 	use_MiniBooNE_random_numbers: false
