@@ -59,7 +59,6 @@ simple_plugin( CRTGeometryHelper service
         ${MF_UTILITIES}
         ${ROOT_BASIC_LIB_LIST}
         cetlib cetlib_except
-    BASENAME_ONLY
 )
 simple_plugin( CRTDetSim module
         larcorealg_Geometry
