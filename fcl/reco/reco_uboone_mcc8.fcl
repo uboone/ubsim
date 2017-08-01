@@ -154,6 +154,7 @@ microboone_reco_mcc8_producers:
   ### pandora cosmic trackkalman
   pandoraCosmicKalmanTrack:       @local::kalmantrackfit
   pandoraNuKalmanTrack:           @local::kalmantrackfit
+  pandoraNuKalmanShower:          @local::kalmantrackfit
 
   ### track fit producers
   #trackkalmanhit:                 @local::microboone_track3Dkalmanhit        # Track fit for fuzzy cluster
@@ -337,7 +338,8 @@ microboone_reco_mcc8_pandoraNu: [        pandoraNu,
                                          pandoraNuPMAcalo,
                                          pandoraNuPMApid,
                                          pandoraNuKHitFlashMatch,
-                                         showerrecopandora ]
+                                         showerrecopandora,
+					 pandoraNuKalmanShower ]
 
 
 microboone_reco_mcc8_pandora: [          @sequence::microboone_reco_mcc8_pandoraCosmic,
@@ -483,10 +485,12 @@ microboone_reco_mcc8_producers.pandoraCosmicKHit.ClusterModuleLabel:            
 microboone_reco_mcc8_producers.pandoraCosmicKHit.PFParticleModuleLabel:          "pandoraCosmic"
 
 microboone_reco_mcc8_producers.pandoraCosmicKalmanTrack.inputs.inputPFParticleLabel: "pandoraCosmic"
+microboone_reco_mcc8_producers.pandoraCosmicKalmanTrack.inputs.inputShowersLabel:    ""
 microboone_reco_mcc8_producers.pandoraCosmicKalmanTrack.inputs.inputTracksLabel: ""
 microboone_reco_mcc8_producers.pandoraCosmicKalmanTrack.inputs.inputCaloLabel:   ""
 microboone_reco_mcc8_producers.pandoraCosmicKalmanTrack.inputs.inputPidLabel:    ""
 microboone_reco_mcc8_producers.pandoraCosmicKalmanTrack.options.trackFromPF:     true
+microboone_reco_mcc8_producers.pandoraCosmicKalmanTrack.options.showerFromPF:    false
 
 microboone_reco_mcc8_producers.pandoraCosmicPMA.HitModuleLabel:                  "gaushit"
 microboone_reco_mcc8_producers.pandoraCosmicPMA.PfpModuleLabel:                  "pandoraCosmic"
@@ -544,10 +548,20 @@ microboone_reco_mcc8_producers.pandoraNuKHit.ClusterModuleLabel:                
 microboone_reco_mcc8_producers.pandoraNuKHit.HitFinderModuleLabel:               "pandoraCosmicHitRemoval"
 
 microboone_reco_mcc8_producers.pandoraNuKalmanTrack.inputs.inputPFParticleLabel: "pandoraNu"
+microboone_reco_mcc8_producers.pandoraNuKalmanTrack.inputs.inputShowersLabel:    ""
 microboone_reco_mcc8_producers.pandoraNuKalmanTrack.inputs.inputTracksLabel:     ""
 microboone_reco_mcc8_producers.pandoraNuKalmanTrack.inputs.inputCaloLabel:       ""
 microboone_reco_mcc8_producers.pandoraNuKalmanTrack.inputs.inputPidLabel:        ""
 microboone_reco_mcc8_producers.pandoraNuKalmanTrack.options.trackFromPF:         true
+microboone_reco_mcc8_producers.pandoraNuKalmanTrack.options.showerFromPF:        false
+
+microboone_reco_mcc8_producers.pandoraNuKalmanShower.inputs.inputPFParticleLabel: "pandoraNu"
+microboone_reco_mcc8_producers.pandoraNuKalmanShower.inputs.inputShowersLabel:    "showerrecopandora"
+microboone_reco_mcc8_producers.pandoraNuKalmanShower.inputs.inputTracksLabel:     ""
+microboone_reco_mcc8_producers.pandoraNuKalmanShower.inputs.inputCaloLabel:       ""
+microboone_reco_mcc8_producers.pandoraNuKalmanShower.inputs.inputPidLabel:        ""
+microboone_reco_mcc8_producers.pandoraNuKalmanShower.options.trackFromPF:         false
+microboone_reco_mcc8_producers.pandoraNuKalmanShower.options.showerFromPF:        true
 
 microboone_reco_mcc8_producers.pandoraNuPMA.HitModuleLabel:                      "pandoraCosmicHitRemoval"
 microboone_reco_mcc8_producers.pandoraNuPMA.PfpModuleLabel:                      "pandoraNu"
