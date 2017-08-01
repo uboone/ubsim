@@ -14,12 +14,12 @@ art_make_library(LIBRARY_NAME WeightCalculators
 		      ${ART_FRAMEWORK_PRINCIPAL}
 		      ${ART_FRAMEWORK_SERVICES_REGISTRY}
 		      ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-		      art_Persistency_Common canvas canvas
-                      art_Persistency_Provenance canvas canvas
-                      art_Utilities canvas canvas
-                      cetlib cetlib_except
+		      art_Persistency_Common canvas_Persistency_Common canvas_Persistency_Common
+                      art_Persistency_Provenance canvas_Persistency_Provenance canvas_Persistency_Provenance
+                      art_Utilities canvas_Utilities canvas_Utilities
+                      ${CETLIB}
 		      ${FHICLCPP}
-                      #${MF_MESSAGELOGGER}
+                      ${MF_MESSAGELOGGER}
 		      ${CLHEP}
                       ${ROOT_BASIC_LIB_LIST}
                       ${Boost_SYSTEM_LIBRARY}
@@ -32,14 +32,12 @@ art_make(LIBRARY_NAME   EventWeight
 	 LIB_LIBRARIES
                       BNBPrimaryHadronWeightCalculators
 		      WeightCalculators
-                      #${MF_MESSAGELOGGER}
-                      #${MF_UTILITIES}
+                      ${MF_MESSAGELOGGER}
+                      ${MF_UTILITIES}
                       ${Boost_SYSTEM_LIBRARY}
         MODULE_LIBRARIES EventWeight
 			 WeightCalculators
                          BNBPrimaryHadronWeightCalculators
-			 ${MF_MESSAGELOGGER}
-                     	 ${MF_UTILITIES}
 	)
 
 
