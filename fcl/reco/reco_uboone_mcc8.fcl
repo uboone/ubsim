@@ -25,7 +25,7 @@
 
 #include "mchitmodules.fcl"
 #include "mcreco.fcl"
-#include "eventweight_microboone.fcl"
+#include "eventweight_microboone_BNBcorrectionOnly.fcl"
 
 BEGIN_PROLOG
 
