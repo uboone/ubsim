@@ -25,7 +25,6 @@
 
 #include "mchitmodules.fcl"
 #include "mcreco.fcl"
-#include "eventweight_microboone.fcl"
 
 BEGIN_PROLOG
 
@@ -222,9 +221,6 @@ microboone_reco_mcc8_producers:
   #stitchkalmanhitT0RecoBeam:     @local::T0RecoAnodeCathodePiercing_mc_beamgate
   #trackkalmanhitT0RecoBeam:      @local::T0RecoAnodeCathodePiercing_mc_beamgate
 
-  ### Adds the necessary event weights for the MC
-  eventweight:                   @local::microboone_eventweight
-
 }
 
 microboone_reco_mcc8_filters:
@@ -343,8 +339,7 @@ microboone_reco_mcc8_pandoraNu: [        pandoraNu,
 microboone_reco_mcc8_pandora: [          @sequence::microboone_reco_mcc8_pandoraCosmic,
                                          @sequence::microboone_reco_mcc8_pandoraNu ]
 
-microboone_reco_mcc8_mcreco: [           mchitfinder,
-                                         eventweight]
+microboone_reco_mcc8_mcreco: [           mchitfinder ]
 
 microboone_reco_mcc8: [                  rns,
                                          @sequence::microboone_reco_mcc8_mcreco,
