@@ -3,14 +3,14 @@ microboone_eventweight:
 {
  module_type:	"EventWeight"
   #Completed Flux Correction
-  #weight_functions:   [bnbcorrection]
+  weight_functions:   [bnbcorrection]
   #Completed Hadron Productio Uncertainties 
   #weight_functions:   [piplus, piminus, kplus, kzero, kminus]
   #non-Hadron Production Flux Uncertainties 
   #weight_functions:[horncurrent,pioninexsec,nucleontotxsec,nucleonqexsec,nucleoninexsec,pionqexsec,piontotxsec,expskin]
  
   #Full set of well-formed Beam Uncertainties for use with post-MCC8 Flux
-  weight_functions:[piplus, piminus, kplus, kzero, kminus, horncurrent, pioninexsec, nucleontotxsec, nucleonqexsec, nucleoninexsec, pionqexsec, piontotxsec, expskin]
+  #weight_functions:[piplus, piminus, kplus, kzero, kminus, horncurrent, pioninexsec, nucleontotxsec, nucleonqexsec, nucleoninexsec, pionqexsec, piontotxsec, expskin]
  
  #throw exception if weight outside limits
  min_weight: 0
