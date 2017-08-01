@@ -127,9 +127,9 @@ function fetch_files
     debug_backup=$IFDH_DEBUG
 
     ### BEGIN temporary workaround for ifdhc v2_0_9 ###
-    source /cvmfs/fermilab.opensciencegrid.org/products/common/etc/setups.sh
-    unsetup ifdhc_config
-    setup ifdhc_config v2_0_8a
+    ### source /cvmfs/fermilab.opensciencegrid.org/products/common/etc/setups.sh
+    ### unsetup ifdhc_config
+    ### setup ifdhc_config v2_0_8a
     ### END temporary workaround for ifdhc v2_0_9 ###
 
     export IFDH_DEBUG=1
@@ -316,12 +316,7 @@ function exitstatus
         if [[ -n "$ERRORSTRING" ]];then
             echo "`basename $PWD`~${EXITSTATUS}~$ERRORSTRING" >> $WORKSPACE/data_production_stats${ci_cur_exp_name}.log
         fi
-        if  [[ "${EXITSTATUS}" -eq 201 ]]; then
-            # if data product names differs, allows to check the data product size
-            return "${EXITSTATUS}"
-        else
-            exit "${EXITSTATUS}"
-        fi
+        exit "${EXITSTATUS}"
     fi
 }
 
