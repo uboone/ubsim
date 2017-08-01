@@ -551,7 +551,7 @@ microboone_reco_data_producers.pandoraNuKalmanTrack.options.trackFromPF:        
 microboone_reco_data_producers.pandoraNuKalmanTrack.options.showerFromPF:        false
 
 microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputPFParticleLabel: "pandoraNu"
-microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputShowersLabel:    "showerrecopandora"
+microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputShowersLabel:    "pandoraNu"
 microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputTracksLabel:     ""
 microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputCaloLabel:       ""
 microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputPidLabel:        ""
