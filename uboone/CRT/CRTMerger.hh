@@ -4,7 +4,9 @@
 #include "art/Framework/Core/ModuleMacros.h"
 #include "art/Framework/Core/EDProducer.h"
 #include "art/Framework/Principal/Event.h"
+#include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Run.h"
+#include "art/Framework/Principal/SubRun.h"
 #include "artdaq-core/Data/Fragments.hh"
 #include "fhiclcpp/ParameterSet.h"
 #include "canvas/Utilities/InputTag.h"
@@ -12,15 +14,18 @@
 //#include "gallery/ValidHandle.h"
 #include <string>
 #include <istream>
+#include "ifdh.h"
+//#include "IFDH_service.h"
 
 using namespace art;
-
+using namespace std;
 namespace crt
 {
 	class CRTMerger : public art::EDProducer
 	{
 		std::vector<std::string> fFileNames;
-		
+		std::vector<std::string> fTestFiles;
+		 
 		// Producer tag of the CRT events
 		art::InputTag fTag;
 		std::string Merged_Object;
@@ -35,7 +40,7 @@ namespace crt
 		~CRTMerger();
 		//explicit CRTMerger(fhicl::ParameterSet const &p);
 		
-		void produce(art::Event & evt) override;
+		void produce( art::Event &evt ) override;
 		
 		void beginJob() override;
 		
@@ -46,6 +51,9 @@ namespace crt
 		private:
 		
 		std::vector< std::vector< artdaq::Fragment > > w;
+		ifdh_ns::ifdh* fIFDH=0;
+		
+		std::vector< std::string > fCRTFile;
 	};
 }
 #endif // CRT_MERGER_HH

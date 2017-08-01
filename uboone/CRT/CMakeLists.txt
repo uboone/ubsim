@@ -1,6 +1,8 @@
 # canvas_utlities
 #include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 #include_directories( $ENV{NUTOOLS_INC} )
+#include_directories( $ENV{IFDHC_DIR}/Linux64bit+3.10-2.17-e10-p2711-prof/inc )
+include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 
 add_subdirectory(CRTProducts)
 
@@ -142,6 +144,7 @@ simple_plugin( CRTMerger module
   ${MF_MESSAGELOGGER}
   ${MF_UTILITIES}
   ${CETLIB}
+  ifdh
   ${GALLERY}
   CRTProducts
 )

@@ -7,16 +7,16 @@
 crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset): fFileNames(pset.get<std::vector<std::string> >("InputFilenames"))
 {
 	this->reconfigure(pset);
-	produces< std::vector<crt::MSetCRTFrag> >();
+	//produces< std::vector<crt::MSetCRTFrag> >();
 	produces< std::vector<artdaq::Fragment> >();
 	//produces< std::vector< std::vector<artdaq::Fragment> > >();
 	fTag		= pset.get<art::InputTag> ("InputTagName");
-	//fMerged_Object= pset.get<std::string> ("ObjectProducer");
 	_debug		= pset.get<bool>		 ("debug");
 }
 
 crt::CRTMerger::~CRTMerger()
 {
+	//fIFDH->cleanup();
 }
 
 void crt::CRTMerger::beginJob()
@@ -53,8 +53,8 @@ void crt::CRTMerger::produce(art::Event& event)
 	
 	unsigned int count = 0;
 	unsigned int n = 0;
-	gallery::Event fCRTEvent(fFileNames);
-	
+	//gallery::Event fCRTEvent(fFileNames);
+	gallery::Event fCRTEvent(fTestFiles);
 	for(fCRTEvent.toBegin(); !fCRTEvent.atEnd(); ++fCRTEvent)
 	{
 		int xxx = 0;
@@ -132,7 +132,7 @@ void crt::CRTMerger::produce(art::Event& event)
 	//ec//std::cout << "Size of VecofVecFrags " << VecofVecFrags->size() << std::endl;
 	//event.put(std::move(VecofVecFrags));
 	event.put(std::move(ThisFragSet));
-	event.put(std::move(MergedCRTFragSet));
+	//event.put(std::move(MergedCRTFragSet));
 	if (_debug)
 	std::cout<<"---X---"<<std::endl;
 }
@@ -141,6 +141,32 @@ void crt::CRTMerger::reconfigure(fhicl::ParameterSet const & pset)
 {
 	fTag = {pset.get<std::string>("InputTagName","crtdaq")};
 	fTimeWindow = pset.get<unsigned>("TimeWindow",5000000);
+	fCRTFile = pset.get< std::vector < std::string > >("InputFilenames");
+	if ( ! fIFDH ) fIFDH = new ifdh_ns::ifdh;
+	std::string fetchedfile(fIFDH->fetchInput(fCRTFile[0]));
+	fTestFiles.push_back(fetchedfile);
+	gallery::Event testGallery4ifdh(fTestFiles);
+	unsigned int N = 0;
+	for(testGallery4ifdh.toBegin(); !testGallery4ifdh.atEnd(); ++testGallery4ifdh)
+	{
+		auto const& TryCRT_frags = *(testGallery4ifdh.getValidHandle< std::vector<artdaq::Fragment> >(fTag));
+		N++;
+		std::vector< artdaq::Fragment > f;
+		
+		for(auto iv=begin(TryCRT_frags); iv!=end(TryCRT_frags); ++iv)
+		{
+			auto const& fg = *iv;
+			f.push_back(fg);
+		}
+		w.push_back(f);
+	}
+	fMaxCount=N;
+	
+	if ( ! fIFDH )
+	delete fIFDH;
+	//std::cout<<"fMaxCount "<<fMaxCount<<std::endl;
+	
+	/*
 	gallery::Event fCRTEvent(fFileNames);
 	unsigned int row = 0;
 	unsigned int col = 0;
@@ -172,6 +198,7 @@ void crt::CRTMerger::reconfigure(fhicl::ParameterSet const & pset)
 	}
 	fMaxCount=row;
 	std::cout<<"fMaxCount "<<fMaxCount<<std::endl;
+	*/
 }
 
 DEFINE_ART_MODULE(crt::CRTMerger)

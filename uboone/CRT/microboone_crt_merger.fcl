@@ -5,6 +5,6 @@ microboone_crt_merger:{
  module_type	: "CRTMerger"
  InputFilenames : ["/pnfs/uboone/scratch/users/kolahalb/crt_artdaq_0602-201006.root"]
  InputTagName	: "crtdaq"
- debug		: false
+ debug		: true
 }
 END_PROLOG
