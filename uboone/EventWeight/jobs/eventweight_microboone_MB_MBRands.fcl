@@ -9,7 +9,7 @@ microboone_eventweight:
   #non-Hadron Production Flux Uncertainties 
   #weight_functions:[horncurrent,pioninexsec,nucleontotxsec,nucleonqexsec,nucleoninexsec,pionqexsec,piontotxsec,expskin]
  
-  #Full set of well-formed Beam Uncertainties for use with post-MCC8 Flux
+  #Full set of well-formed Beam Uncertainties
   weight_functions:[piplus, piminus, kplus, kzero, kminus, horncurrent, pioninexsec, nucleontotxsec, nucleonqexsec, nucleoninexsec, pionqexsec, piontotxsec, expskin]
  
  #throw exception if weight outside limits
@@ -27,10 +27,10 @@ microboone_eventweight:
         random_seed:1578
         scale_factor_pos:1  
         scale_factor_neg:1
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         mode: multisim
         number_of_multisims: 1000        
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  
  pioninexsec:{
@@ -42,10 +42,10 @@ microboone_eventweight:
         random_seed:5
         scale_factor_pos:1  
         scale_factor_neg:1
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         mode: multisim
         number_of_multisims: 1000        
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  nucleontotxsec:{
         type: FluxUnisim
@@ -56,10 +56,10 @@ microboone_eventweight:
         random_seed:1346
         scale_factor_pos:1  
         scale_factor_neg:1
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         mode: multisim
         number_of_multisims: 1000        
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  nucleonqexsec:{
         type: FluxUnisim
@@ -70,10 +70,10 @@ microboone_eventweight:
         random_seed:1675
         scale_factor_pos:0.333 #From MiniBooNE 
         scale_factor_neg:0.573 #From MiniBooNE
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         mode: multisim
         number_of_multisims: 1000        
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  nucleoninexsec:{
         type: FluxUnisim
@@ -84,10 +84,10 @@ microboone_eventweight:
         random_seed:97442
         scale_factor_pos:1  
         scale_factor_neg:1
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         mode: multisim
 	number_of_multisims: 1000        
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  pionqexsec:{
         type: FluxUnisim
@@ -98,10 +98,10 @@ microboone_eventweight:
         random_seed:3678
         scale_factor_pos:0.292 #From MiniBooNE  
         scale_factor_neg:0.585 #From MiniBooNE
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         mode: multisim
         number_of_multisims: 1000        
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  piontotxsec:{
         type: FluxUnisim
@@ -112,10 +112,10 @@ microboone_eventweight:
         random_seed:4
         scale_factor_pos:1  
         scale_factor_neg:1
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         mode: multisim
         number_of_multisims: 1000        
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  expskin:{
         type: FluxUnisim
@@ -126,10 +126,10 @@ microboone_eventweight:
         random_seed:1231
         scale_factor_pos:1  
         scale_factor_neg:1
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         mode: multisim
         number_of_multisims: 1000        
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  
  
@@ -153,10 +153,10 @@ microboone_eventweight:
         scale_factor: 1
         number_of_multisims: 1000
         PrimaryHadronGeantCode: 211 # geant code for particle production on Be
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE_SplinesHARP.root"
         ExternalFit:"beamData/ExternalData/BNBExternalData_uBooNE.root"
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  
  piminus:{
@@ -168,20 +168,21 @@ microboone_eventweight:
         scale_factor: 1
         number_of_multisims: 1000
         PrimaryHadronGeantCode: -211 # geant code for particle production on Be
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE_SplinesHARP.root"
         ExternalFit:"beamData/ExternalData/BNBExternalData_uBooNE.root"
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
  
  kplus:{
         type: PrimaryHadronFeynmanScaling
         random_seed: 34567
+
         parameter_sigma: 1 
         mode: multisim
         number_of_multisims: 1000
         PrimaryHadronGeantCode: 321 # geant code for particle production on Be
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
 
 	### Uncertainties without SciBooNE Contraint
         #parameter_list: ["kplusOld"]
@@ -193,7 +194,7 @@ microboone_eventweight:
         scale_factor: 1         
         ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE.root"
 	
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
 
  kzero:{
@@ -204,10 +205,10 @@ microboone_eventweight:
         mode: multisim
         scale_factor: 1
         number_of_multisims: 1000
-        PrimaryHadronGeantCode: [130, 310, 311] # MiniBooNE only reweighted GEANT CODE = 10
-        weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+        PrimaryHadronGeantCode: [130] # MiniBooNE only reweighted GEANT CODE = 10
+        weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
         ExternalData:"beamData/ExternalData/BNBExternalData_uBooNE.root"
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
 
  kminus:{
@@ -220,7 +221,7 @@ microboone_eventweight:
         number_of_multisims: 1000
         PrimaryHadronGeantCode: -321 # geant code for particle production on Be
         weight_calculator: "MiniBooNE" # "MicroBooNE" OR "MiniBooNE"
-	use_MiniBooNE_random_numbers: false
+	use_MiniBooNE_random_numbers: true
         }
 
  }
