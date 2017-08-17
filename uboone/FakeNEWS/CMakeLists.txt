@@ -9,7 +9,7 @@ art_make( EXCLUDE SingleSimChannel_module.cc SingleSimChannelAna_module.cc
 simple_plugin(SingleSimChannel "module"
               BASENAME_ONLY
 	      uboonecode_uboone_FakeNEWS
-              larcore_Geometry
+              larcorealg_Geometry
               larcore_Geometry_Geometry_service
 	      lardataobj_Simulation
 	      larcoreobj_SummaryData
@@ -30,7 +30,7 @@ simple_plugin(SingleSimChannel "module"
 simple_plugin(SingleSimChannelAna "module"
               BASENAME_ONLY
 	      uboonecode_uboone_FakeNEWS
-              larcore_Geometry
+              larcorealg_Geometry
               larcore_Geometry_Geometry_service
 	      lardataobj_RecoBase
 	      lardataobj_RawData
