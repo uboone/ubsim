@@ -20,7 +20,6 @@ services.TimeTracker.printSummary: false
 services.TimeTracker.dbOutput: {}
 services.MemoryTracker.printSummaries: []
 services.MemoryTracker.includeMallocInfo: false
-services.MemoryTracker.filename: ""
 
 services.FileCatalogMetadata.applicationVersion: "develop"
 services.FileCatalogMetadata.fileType: "mc"
