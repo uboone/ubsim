@@ -1,5 +1,5 @@
 
-# The xml files here are used to use image making
+# The text files here are used to use image making
 # They need to be found via FW_SEARCH_PATH
 
 # install constraint files
