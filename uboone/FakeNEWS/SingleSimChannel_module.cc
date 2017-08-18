@@ -23,7 +23,7 @@
 #include "lardataobj/Simulation/SimChannel.h"
 #include "lardataobj/RawData/TriggerData.h"
 #include "larcore/Geometry/Geometry.h"
-#include "larcore/Geometry/GeometryCore.h"
+#include "larcorealg/Geometry/GeometryCore.h"
 
 #include "ParamHolder.h"
 
@@ -97,7 +97,7 @@ SingleSimChannel::SingleSimChannel(fhicl::ParameterSet const & p)
   fVerbose = p.get<bool>("Verbose",false);
   assert( fSimTime_v.size() == fY_v.size() &&
 	  fSimTime_v.size() == fZ_v.size() &&
-	  fSimTime_v.size() == fNumElectrons_v );
+	  fSimTime_v.size() == fNumElectrons_v.size() );
 }
 
 void SingleSimChannel::beginJob()
