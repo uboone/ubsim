@@ -1,6 +1,10 @@
 #include "standard_g4_uboone.fcl"
 
+process_name: G4noSCE
+
 outputs.out1.fileName: "%ifb_%tc_g4_nospacecharge.root"
 
 services.SpaceCharge.EnableSimSpatialSCE: false
 services.SpaceCharge.EnableSimEfieldSCE: false
+
+source.inputCommands: ["keep *_*_*_*", "drop *_*_*_G4*","drop *_*_*_Detsim*","drop *_*_*_McReco*" ]
