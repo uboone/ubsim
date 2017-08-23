@@ -22,3 +22,17 @@ physics.larcv: [ "opreco", "mcinfo", "superaWholeViewMC" ]
 # Add larcv sequence to end_paths.
 
 physics.end_paths: [ @sequence::physics.end_paths, larcv ]
+
+# Configuration for TFileMetadataMicroBooNE service.
+
+microboone_tfile_metadata:
+{
+  JSONFileName:	[ "ana_hist.root.json", 
+                  "larlite_mcinfo.root.json",
+                  "larlite_opreco.root.json",
+                  "larcv.root.json" ]
+  GenerateTFileMetadata: [ true, true, true, true ]
+  dataTier:              [ "root-tuple", "larlite", "larlite", "larcv" ]
+  fileFormat:            [ "root", "root", "root", "root" ]
+}
+
