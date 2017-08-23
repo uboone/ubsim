@@ -11,7 +11,7 @@ SuperaWholeView: {
   module_type:     "LArSoftSuperaSriver"
   supera_params:   "supera_segment.fcl"
   out_filename:    "larcv.root"
-  unique_filename: true
+  unique_filename: false
   stream:          "mc"
 }
 
