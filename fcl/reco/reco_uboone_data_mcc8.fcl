@@ -28,6 +28,7 @@
 #include "microboone_dqmflashes.fcl"
 #include "microboone_dqmchannels.fcl"
 #include "microboone_dqmgoodruns.fcl"
+#include "mcsfitproducer.fcl"
 
 BEGIN_PROLOG
 
@@ -217,6 +218,10 @@ microboone_reco_data_producers:
   #stitchkalmanhitccContTag:       @local::microboone_containment_tag
   pmtrackContTag:                 @local::microboone_containment_tag
 
+  ### MCS Momentum
+  pandoraNuMCSMu:                 @local::mcsfitproducer
+  pmtrackMCSMu:                   @local::mcsfitproducer
+
   ### T0 Anode/Cathode piercing track reco
   pandoraCosmicKHitT0Reco:        @local::T0RecoAnodeCathodePiercing_data
   pandoraCosmicT0Reco:            @local::T0RecoAnodeCathodePiercing_data
@@ -318,6 +323,7 @@ microboone_reco_data_cctracks: [         #trackkalmanhitcc,
                                          pmtrack,
                                          pmtracktag,
                                          pmtrackContTag,
+					 pmtrackMCSMu,
                                          pmtrackT0Reco,
                                          pmtrackT0RecoLoose,
                                          pmtrackT0RecoBeam,
@@ -358,6 +364,7 @@ microboone_reco_data_pandoraNu: [        pandoraNu,
                                          pandoraNuPMA,
                                          pandoraNutag,
                                          pandoraNuContTag,
+					 pandoraNuMCSMu,
                                          pandoraNucalo,
                                          pandoraNupid,
                                          pandoraNuKHittag,
@@ -679,6 +686,9 @@ microboone_reco_data_producers.pandoraNuPMAContTag.TrackModuleLabels:           
 microboone_reco_data_producers.pandoraNuPMAContTag.ApplyTags:                    [false,true]
 microboone_reco_data_producers.pmtrackContTag.TrackModuleLabels:                 ["pmtrack"]
 microboone_reco_data_producers.pmtrackContTag.ApplyTags:                         [true]
+
+microboone_reco_data_producers.pandoraNuMCSMu.inputs.inputLabel: "pandoraNu"
+microboone_reco_data_producers.pmtrackMCSMu.inputs.inputLabel:   "pmtrack"
 
 microboone_reco_data_producers.pandoraCosmicKHitT0Reco.TrackProducer: "pandoraCosmicKHit"
 microboone_reco_data_producers.pandoraCosmicT0Reco.TrackProducer:     "pandoraCosmic"
