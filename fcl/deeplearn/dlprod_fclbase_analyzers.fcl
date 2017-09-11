@@ -57,7 +57,7 @@ dlprod_analyzers:
 
    reco2d:  @local::litemc_reco2d
 
-   superaWholeView:   @local::SuperaWholeView
+   superaWholeView:   @local::SuperaBasic
    superaWholeViewMC: @local::SuperaMCBasic
    superaFocusedView: @local::SuperaFocusedView
    superaFocusedViewPlus: @local::SuperaFocusedViewPlus
