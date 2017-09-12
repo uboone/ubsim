@@ -214,6 +214,7 @@ microboone_reco_mcc8_producers:
 
   ### MCS Momentum
   pandoraNuMCSMu:                 @local::mcsfitproducer
+  pandoraCosmicMCSMu:             @local::mcsfitproducer
   pmtrackMCSMu:                   @local::mcsfitproducer
 
   ### T0 Anode/Cathode piercing track reco
@@ -337,6 +338,7 @@ microboone_reco_mcc8_pandoraCosmic: [    pandoraCosmic,
                                          pandoraCosmicKHitT0RecoLoose,
                                          pandoraCosmicKHitT0RecoBeam,
 #                                         pandoraCosmicPMA,
+					 pandoraCosmicMCSMu,
                                          pandoraCosmicKHitcalo,
                                          pandoraCosmicKHitpid,
                                          pandoraCosmicPFPart,         # Tag cosmics using geometry and out-of-time
@@ -710,8 +712,9 @@ microboone_reco_mcc8_producers.pandoraNuPMAContTag.ApplyTags:                   
 microboone_reco_mcc8_producers.pmtrackContTag.TrackModuleLabels:                 ["pmtrack"]
 microboone_reco_mcc8_producers.pmtrackContTag.ApplyTags:                         [true]
 
-microboone_reco_mcc8_producers.pandoraNuMCSMu.inputs.inputLabel: "pandoraNu"
-microboone_reco_mcc8_producers.pmtrackMCSMu.inputs.inputLabel:   "pmtrack"
+microboone_reco_mcc8_producers.pandoraNuMCSMu.inputs.inputLabel:     "pandoraNu"
+microboone_reco_mcc8_producers.pandoraCosmicMCSMu.inputs.inputLabel: "pandoraCosmic"
+microboone_reco_mcc8_producers.pmtrackMCSMu.inputs.inputLabel:       "pmtrack"
 
 microboone_reco_mcc8_producers.pandoraCosmicKHitT0Reco.TrackProducer: "pandoraCosmicKHit"
 microboone_reco_mcc8_producers.pandoraCosmicT0Reco.TrackProducer:     "pandoraCosmic"
