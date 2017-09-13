@@ -27,6 +27,7 @@
 #include "microboone_dqmhits.fcl"
 #include "microboone_dqmflashes.fcl"
 #include "microboone_dqmchannels.fcl"
+#include "microboone_dqmtpcbursts.fcl"
 #include "microboone_dqmgoodruns.fcl"
 
 BEGIN_PROLOG
@@ -249,10 +250,11 @@ microboone_reco_data_producers:
 
 microboone_reco_data_analyzers:
 {
-  DQMHits:     @local::microboone_dqmhits
-  DQMFlashes:  @local::microboone_dqmflashes
-  DQMChannels: @local::microboone_dqmchannels
-  DQMGoodRuns: @local::microboone_dqmgoodruns
+  DQMHits:      @local::microboone_dqmhits
+  DQMFlashes:   @local::microboone_dqmflashes
+  DQMChannels:  @local::microboone_dqmchannels
+  DQMTPCBursts: @local::microboone_dqmtpcbursts
+  DQMGoodRuns:  @local::microboone_dqmgoodruns
 }
 
 microboone_reco_data_filters:
@@ -419,6 +421,7 @@ microboone_reco_data_MucSTags: [         #MuCSTrackTaggertrackkalmanhit,
 microboone_dqm_ana: [                    DQMHits,
                                          DQMFlashes,
                                          DQMChannels,
+                                         DQMTPCBursts,
                                          DQMGoodRuns ]
 
 ### Below we include overrides for the modules above
