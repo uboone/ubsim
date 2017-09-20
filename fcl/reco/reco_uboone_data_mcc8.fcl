@@ -125,7 +125,7 @@ microboone_reco_data_producers:
   pandoraCosmic:                  @local::microboone_pandoraAllHitsCR
 
   ### pandora core modules
-  pandoraNu:                      @local::microboone_pandoraAllHitsNu
+  pandoraNu:                      @local::microboone_pandoraAllHitsSliceNu
 
   ### pandora track3dkalmanhit
   pandoraCosmicKHit:              @local::microboone_track3Dkalmanhit

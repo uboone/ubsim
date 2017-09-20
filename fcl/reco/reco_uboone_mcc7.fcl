@@ -125,7 +125,7 @@ microboone_reco_mcc7_producers:
   mchitfinder:                 @local::standard_mchitfinder
 
   ### pandora core modules
-  pandoraNu:                   @local::microboone_pandoraAllHitsNu
+  pandoraNu:                   @local::microboone_pandoraAllHitsSliceNu
 
   ### pandora cosmic kalmanhit
   pandoraCosmicKHit:           @local::microboone_track3Dkalmanhit

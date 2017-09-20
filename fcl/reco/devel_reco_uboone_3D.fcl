@@ -51,7 +51,7 @@ physics:
 
   ### pandora core modules
   pandoraCosmic: @local::microboone_pandoraAllHitsCR
-  pandoraNu:     @local::microboone_pandoraAllHitsNu
+  pandoraNu:     @local::microboone_pandoraAllHitsSliceNu
 
   ### pandora cosmic kalmanhit
   pandoraCosmicKHit: @local::microboone_track3Dkalmanhit

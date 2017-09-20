@@ -67,7 +67,7 @@ microboone_reco_minimal_producers:
   pandoraCosmic:                @local::microboone_pandoraAllHitsCR
 
   ### pandora neutrino pass
-  pandoraNu:                    @local::microboone_pandoraAllHitsNu
+  pandoraNu:                    @local::microboone_pandoraAllHitsSliceNu
 
   ### pandora cosmic kalmanhit
   pandoraCosmicKHit:            @local::microboone_track3Dkalmanhit

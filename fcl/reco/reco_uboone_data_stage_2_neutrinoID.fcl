@@ -56,7 +56,7 @@ physics:
   rns:                          { module_type: RandomNumberSaver }
 
   ### pandora core modules
-  pandoraNu:                    @local::microboone_pandoraAllHitsNu
+  pandoraNu:                    @local::microboone_pandoraAllHitsSliceNu
 
   ### pandora cosmic kalmanhit
   pandoraCosmicKHit:            @local::microboone_track3Dkalmanhit
