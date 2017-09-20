@@ -1,4 +1,5 @@
 #include "mchitmodules.fcl"
+#include "eventweight_microboone_BNBcorrectionOnly.fcl"
 #include "reco_uboone_data_mcc8_driver_common.fcl"
 
 process_name: McRecoStage1
@@ -21,7 +22,7 @@ physics.producers.saturation.LGProducer: "mixer"
 physics.producers.saturation.HGProducer: "mixer"
 physics.producers.saturation.HGProducerCosmic: "pmtreadout"
 
-physics.producers.pandoraCosmicKHitFlashTag.TriggerProducer: "mixer"
+#physics.producers.pandoraCosmicKHitFlashTag.TriggerProducer: "mixer"
 
 #physics.producers.digitfilter.ProcessNoise:                         true
 #physics.producers.digitfilter.FFTAlg.TransformViewVec:              [true,false,false]

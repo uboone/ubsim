@@ -24,6 +24,12 @@
 #include "cosmicflashtagger.fcl"
 #include "wirecellmodules_microboone.fcl"
 #include "microboone_dlpmtprecuts.fcl"
+#include "microboone_dqmhits.fcl"
+#include "microboone_dqmflashes.fcl"
+#include "microboone_dqmchannels.fcl"
+#include "microboone_dqmtpcbursts.fcl"
+#include "microboone_dqmgoodruns.fcl"
+#include "mcsfitproducer.fcl"
 
 BEGIN_PROLOG
 
@@ -131,8 +137,8 @@ microboone_reco_data_producers:
 
   ### pandora cosmic pfparticle
   pandoraCosmicKHitPFPart:        @local::microboone_cosmicpfparticletagger
-  pandoraCosmicKalmanTrackPFPart: @local::microboone_cosmicpfparticletagger
-  pandoraCosmicKHitFlashTag:      @local::microboone_cosmicpfpflashtagger
+  pandoraCosmicPFPart:            @local::microboone_cosmicpfparticletagger
+  pandoraCosmicFlashTag:          @local::microboone_cosmicpfpflashtagger
 
   ### pandora analysis
   pandoraCosmicKHittag:           @local::microboone_cosmictracktagger
@@ -150,14 +156,23 @@ microboone_reco_data_producers:
   pandoraNuKHittag:               @local::microboone_cosmictracktagger
   pandoraNuKHitcalo:              @local::microboone_calodata
   pandoraNuKHitpid:               @local::microboone_chi2pid
+  pandoraNuKalmanTracktag:        @local::microboone_cosmictracktagger
+  pandoraNuKalmanTrackcalo:       @local::microboone_calodata
+  pandoraNuKalmanTrackpid:        @local::microboone_chi2pid
+  pandoraNuKalmanShowertag:       @local::microboone_cosmictracktagger
+  pandoraNuKalmanShowercalo:      @local::microboone_calodata
+  pandoraNuKalmanShowerpid:       @local::microboone_chi2pid
   pandoraNuPMAtag:                @local::microboone_cosmictracktagger
   pandoraNuPMAcalo:               @local::microboone_calodata
   pandoraNuPMApid:                @local::microboone_chi2pid
   pandoraNuKHitFlashMatch:        @local::microboone_beamflashtrackmatchtagger
+  pandoraNuKalmanTrackFlashMatch: @local::microboone_beamflashtrackmatchtagger
+  pandoraNuKalmanShowerFlashMatch: @local::microboone_beamflashtrackmatchtagger
 
   ### pandora cosmic trackkalman
   pandoraCosmicKalmanTrack:       @local::kalmantrackfit
   pandoraNuKalmanTrack:           @local::kalmantrackfit
+  pandoraNuKalmanShower:          @local::kalmantrackfit
 
   ### track fit producers
   #trackkalmanhit:                 @local::microboone_track3Dkalmanhit        # Track fit for fuzzy cluster
@@ -205,6 +220,11 @@ microboone_reco_data_producers:
   #stitchkalmanhitccContTag:       @local::microboone_containment_tag
   pmtrackContTag:                 @local::microboone_containment_tag
 
+  ### MCS Momentum
+  pandoraNuMCSMu:                 @local::mcsfitproducer
+  pandoraCosmicMCSMu:             @local::mcsfitproducer
+  pmtrackMCSMu:                   @local::mcsfitproducer
+
   ### T0 Anode/Cathode piercing track reco
   pandoraCosmicKHitT0Reco:        @local::T0RecoAnodeCathodePiercing_data
   pandoraCosmicT0Reco:            @local::T0RecoAnodeCathodePiercing_data
@@ -233,6 +253,15 @@ microboone_reco_data_producers:
   MuCSTrackTaggerpandoraCosmicKHit: @local::microboone_MuCSTrackTagger
   MuCSTrackTaggerpmtrack:           @local::microboone_MuCSTrackTagger
   
+}
+
+microboone_reco_data_analyzers:
+{
+  DQMHits:      @local::microboone_dqmhits
+  DQMFlashes:   @local::microboone_dqmflashes
+  DQMChannels:  @local::microboone_dqmchannels
+  DQMTPCBursts: @local::microboone_dqmtpcbursts
+  DQMGoodRuns:  @local::microboone_dqmgoodruns
 }
 
 microboone_reco_data_filters:
@@ -298,6 +327,7 @@ microboone_reco_data_cctracks: [         #trackkalmanhitcc,
                                          pmtrack,
                                          pmtracktag,
                                          pmtrackContTag,
+					 pmtrackMCSMu,
                                          pmtrackT0Reco,
                                          pmtrackT0RecoLoose,
                                          pmtrackT0RecoBeam,
@@ -315,11 +345,12 @@ microboone_reco_data_pandoraCosmic: [    pandoraCosmic,
                                          pandoraCosmicKHitT0RecoLoose,
                                          pandoraCosmicKHitT0RecoBeam,
 #                                         pandoraCosmicPMA,
+					 pandoraCosmicMCSMu,
                                          pandoraCosmicKHitcalo,
                                          pandoraCosmicKHitpid,
-                                         pandoraCosmicKalmanTrackPFPart,
+                                         pandoraCosmicPFPart,         # Tag cosmics using geometry and out-of-time
                                          pandoraCosmicKHitPFPart,
-                                         pandoraCosmicKHitFlashTag,    # New flash tagger
+                                         pandoraCosmicFlashTag,       # Tag cosmics using optical info
                                          pandoraCosmicKHitFlashMatch,
                                          pandoraTrackPFPartMatch,
                                          pandoraCosmicHitRemoval,     # Remove hits, based on PFP geometry and flashes
@@ -334,19 +365,29 @@ microboone_reco_data_pandoraCosmic: [    pandoraCosmic,
 microboone_reco_data_pandoraNu: [        pandoraNu,
                                          pandoraNuKHit,
                                          pandoraNuKalmanTrack,
+					 pandoraNuKalmanShower,
                                          pandoraNuPMA,
                                          pandoraNutag,
                                          pandoraNuContTag,
+					 pandoraNuMCSMu,
                                          pandoraNucalo,
                                          pandoraNupid,
                                          pandoraNuKHittag,
                                          pandoraNuKHitcalo,
                                          pandoraNuKHitpid,
+                                         pandoraNuKalmanTracktag,
+                                         pandoraNuKalmanTrackcalo,
+                                         pandoraNuKalmanTrackpid,
+                                         pandoraNuKalmanShowertag,
+                                         pandoraNuKalmanShowercalo,
+                                         pandoraNuKalmanShowerpid,
                                          pandoraNuPMAtag,
                                          pandoraNuPMAContTag,
                                          pandoraNuPMAcalo,
                                          pandoraNuPMApid,
                                          pandoraNuKHitFlashMatch,
+                                         pandoraNuKalmanTrackFlashMatch,
+                                         pandoraNuKalmanShowerFlashMatch,
                                          showerrecopandora ]
 
 microboone_reco_data_pandora: [          @sequence::microboone_reco_data_pandoraCosmic,
@@ -386,6 +427,12 @@ microboone_reco_data_MucSTags: [         #MuCSTrackTaggertrackkalmanhit,
                                          MuCSTrackTaggerpandoraCosmic, 
                                          MuCSTrackTaggerpandoraCosmicKHit, 
                                          MuCSTrackTaggerpmtrack ]
+
+microboone_dqm_ana: [                    DQMHits,
+                                         DQMFlashes,
+                                         DQMChannels,
+                                         DQMTPCBursts,
+                                         DQMGoodRuns ]
 
 ### Below we include overrides for the modules above
 ### These are for MCC 7
@@ -479,10 +526,12 @@ microboone_reco_data_producers.pandoraCosmicKHit.ClusterModuleLabel:            
 microboone_reco_data_producers.pandoraCosmicKHit.PFParticleModuleLabel:          "pandoraCosmic"
 
 microboone_reco_data_producers.pandoraCosmicKalmanTrack.inputs.inputPFParticleLabel: "pandoraCosmic"
+microboone_reco_data_producers.pandoraCosmicKalmanTrack.inputs.inputShowersLabel:    ""
 microboone_reco_data_producers.pandoraCosmicKalmanTrack.inputs.inputTracksLabel: ""
 microboone_reco_data_producers.pandoraCosmicKalmanTrack.inputs.inputCaloLabel:   ""
 microboone_reco_data_producers.pandoraCosmicKalmanTrack.inputs.inputPidLabel:    ""
 microboone_reco_data_producers.pandoraCosmicKalmanTrack.options.trackFromPF:     true
+microboone_reco_data_producers.pandoraCosmicKalmanTrack.options.showerFromPF:    false
 
 microboone_reco_data_producers.pandoraCosmicPMA.HitModuleLabel:                  "gaushit"
 microboone_reco_data_producers.pandoraCosmicPMA.PfpModuleLabel:                  "pandoraCosmic"
@@ -509,23 +558,23 @@ microboone_reco_data_producers.pandoraCosmicKHitPFPart.EndTickPadding:          
 microboone_reco_data_producers.pandoraCosmicKHitPFPart.TPCYBoundary:             20
 microboone_reco_data_producers.pandoraCosmicKHitPFPart.TPCZBoundary:             5
 
-microboone_reco_data_producers.pandoraCosmicKalmanTrackPFPart.PFParticleModuleLabel: "pandoraCosmic"
-microboone_reco_data_producers.pandoraCosmicKalmanTrackPFPart.TrackModuleLabel:      "pandoraCosmicKalmanTrack"
-microboone_reco_data_producers.pandoraCosmicKalmanTrackPFPart.EndTickPadding:        75
-microboone_reco_data_producers.pandoraCosmicKalmanTrackPFPart.TPCYBoundary:          20
-microboone_reco_data_producers.pandoraCosmicKalmanTrackPFPart.TPCZBoundary:          5
+microboone_reco_data_producers.pandoraCosmicPFPart.PFParticleModuleLabel:        "pandoraCosmic"
+microboone_reco_data_producers.pandoraCosmicPFPart.TrackModuleLabel:             "pandoraCosmic"
+microboone_reco_data_producers.pandoraCosmicPFPart.EndTickPadding:               75
+microboone_reco_data_producers.pandoraCosmicPFPart.TPCYBoundary:                 20
+microboone_reco_data_producers.pandoraCosmicPFPart.TPCZBoundary:                 5
 
 microboone_reco_data_producers.pandoraCosmicKHitFlashMatch.TrackModuleLabel:     "pandoraCosmicKHit"
 microboone_reco_data_producers.pandoraCosmicKHitFlashMatch.FlashModuleLabel:     "simpleFlashCosmic"
 microboone_reco_data_producers.pandoraCosmicKHitFlashMatch.BeamFlashTrackMatchAlgParams.MakeOutsideDriftTags: "true"
 
-# Remove hits, based on geometry and Flashes                                     Geometry tagger                   Flash tagger
-microboone_reco_data_producers.pandoraCosmicHitRemoval.CosmicProducerLabels:    ["pandoraCosmicKalmanTrackPFPart", "pandoraCosmicKHitFlashTag" ]
-microboone_reco_data_producers.pandoraCosmicHitRemoval.TrackProducerLabels:     ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
-microboone_reco_data_producers.pandoraCosmicHitRemoval.AssnProducerLabels:      ["pandoraCosmicKalmanTrack",       "pandoraCosmicKHit"         ]
-microboone_reco_data_producers.pandoraCosmicHitRemoval.CosmicTagThresholds:     [0.6,                              0.99                        ]
-microboone_reco_data_producers.pandoraCosmicHitRemoval.PFParticleProducerLabel: "pandoraCosmic"
-microboone_reco_data_producers.pandoraCosmicHitRemoval.EndTickPadding:          75
+# Remove hits                                                                    Geometry tagger         Flash tagger
+microboone_reco_data_producers.pandoraCosmicHitRemoval.CosmicProducerLabels:     ["pandoraCosmicPFPart", "pandoraCosmicFlashTag" ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.TrackProducerLabels:      ["pandoraCosmic",       "pandoraCosmic"         ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.AssnProducerLabels:       ["pandoraCosmic",       "pandoraCosmic"         ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.CosmicTagThresholds:      [0.6,                   0.99                    ]
+microboone_reco_data_producers.pandoraCosmicHitRemoval.PFParticleProducerLabel:  "pandoraCosmic"
+microboone_reco_data_producers.pandoraCosmicHitRemoval.EndTickPadding:           75
 
 # Pandora neutrino pass related
 microboone_reco_data_producers.pandoraNu.GeantModuleLabel:                       "largeant"
@@ -540,10 +589,20 @@ microboone_reco_data_producers.pandoraNuKHit.ClusterModuleLabel:                
 microboone_reco_data_producers.pandoraNuKHit.HitFinderModuleLabel:               "pandoraCosmicHitRemoval"
 
 microboone_reco_data_producers.pandoraNuKalmanTrack.inputs.inputPFParticleLabel: "pandoraNu"
+microboone_reco_data_producers.pandoraNuKalmanTrack.inputs.inputShowersLabel:    ""
 microboone_reco_data_producers.pandoraNuKalmanTrack.inputs.inputTracksLabel:     ""
 microboone_reco_data_producers.pandoraNuKalmanTrack.inputs.inputCaloLabel:       ""
 microboone_reco_data_producers.pandoraNuKalmanTrack.inputs.inputPidLabel:        ""
 microboone_reco_data_producers.pandoraNuKalmanTrack.options.trackFromPF:         true
+microboone_reco_data_producers.pandoraNuKalmanTrack.options.showerFromPF:        false
+
+microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputPFParticleLabel: "pandoraNu"
+microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputShowersLabel:    "pandoraNu"
+microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputTracksLabel:     ""
+microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputCaloLabel:       ""
+microboone_reco_data_producers.pandoraNuKalmanShower.inputs.inputPidLabel:        ""
+microboone_reco_data_producers.pandoraNuKalmanShower.options.trackFromPF:         false
+microboone_reco_data_producers.pandoraNuKalmanShower.options.showerFromPF:        true
 
 microboone_reco_data_producers.pandoraNuPMA.HitModuleLabel:                      "pandoraCosmicHitRemoval"
 microboone_reco_data_producers.pandoraNuPMA.PfpModuleLabel:                      "pandoraNu"
@@ -564,6 +623,22 @@ microboone_reco_data_producers.pandoraNuKHitcalo.SpacePointModuleLabel:         
 microboone_reco_data_producers.pandoraNuKHitpid.CalorimetryModuleLabel:          "pandoraNuKHitcalo"
 microboone_reco_data_producers.pandoraNuKHitpid.TrackModuleLabel:                "pandoraNuKHit"
 
+microboone_reco_data_producers.pandoraNuKalmanTracktag.TrackModuleLabel:         "pandoraNuKalmanTrack"
+
+microboone_reco_data_producers.pandoraNuKalmanTrackcalo.TrackModuleLabel:        "pandoraNuKalmanTrack"
+microboone_reco_data_producers.pandoraNuKalmanTrackcalo.SpacePointModuleLabel:   "pandoraNuKalmanTrack"
+
+microboone_reco_data_producers.pandoraNuKalmanTrackpid.CalorimetryModuleLabel:   "pandoraNuKalmanTrackcalo"
+microboone_reco_data_producers.pandoraNuKalmanTrackpid.TrackModuleLabel:         "pandoraNuKalmanTrack"
+
+microboone_reco_data_producers.pandoraNuKalmanShowertag.TrackModuleLabel:        "pandoraNuKalmanShower"
+
+microboone_reco_data_producers.pandoraNuKalmanShowercalo.TrackModuleLabel:       "pandoraNuKalmanShower"
+microboone_reco_data_producers.pandoraNuKalmanShowercalo.SpacePointModuleLabel:  "pandoraNuKalmanShower"
+
+microboone_reco_data_producers.pandoraNuKalmanShowerpid.CalorimetryModuleLabel:  "pandoraNuKalmanShowercalo"
+microboone_reco_data_producers.pandoraNuKalmanShowerpid.TrackModuleLabel:        "pandoraNuKalmanShower"
+
 microboone_reco_data_producers.pandoraNuPMAtag.TrackModuleLabel:                 "pandoraNuPMA"
 
 microboone_reco_data_producers.pandoraNuPMAcalo.TrackModuleLabel:                "pandoraNuPMA"
@@ -575,6 +650,14 @@ microboone_reco_data_producers.pandoraNuPMApid.TrackModuleLabel:                
 microboone_reco_data_producers.pandoraNuKHitFlashMatch.TrackModuleLabel:         "pandoraNuKHit"
 microboone_reco_data_producers.pandoraNuKHitFlashMatch.FlashModuleLabel:         "simpleFlashBeam"
 microboone_reco_data_producers.pandoraNuKHitFlashMatch.BeamFlashTrackMatchAlgParams.MakeOutsideDriftTags: "true"
+
+microboone_reco_data_producers.pandoraNuKalmanTrackFlashMatch.TrackModuleLabel:  "pandoraNuKalmanTrack"
+microboone_reco_data_producers.pandoraNuKalmanTrackFlashMatch.FlashModuleLabel:  "simpleFlashBeam"
+microboone_reco_data_producers.pandoraNuKalmanTrackFlashMatch.BeamFlashTrackMatchAlgParams.MakeOutsideDriftTags: "true"
+
+microboone_reco_data_producers.pandoraNuKalmanShowerFlashMatch.TrackModuleLabel: "pandoraNuKalmanShower"
+microboone_reco_data_producers.pandoraNuKalmanShowerFlashMatch.FlashModuleLabel: "simpleFlashBeam"
+microboone_reco_data_producers.pandoraNuKalmanShowerFlashMatch.BeamFlashTrackMatchAlgParams.MakeOutsideDriftTags: "true"
 
 #microboone_reco_data_producers.showerrecofuzzy.InputProducer:                    "fuzzyclustermerger"
 microboone_reco_data_producers.showerrecopandora.InputProducer:                  "pandoraNu"
@@ -610,6 +693,10 @@ microboone_reco_data_producers.pandoraNuPMAContTag.ApplyTags:                   
 microboone_reco_data_producers.pmtrackContTag.TrackModuleLabels:                 ["pmtrack"]
 microboone_reco_data_producers.pmtrackContTag.ApplyTags:                         [true]
 
+microboone_reco_data_producers.pandoraNuMCSMu.inputs.inputLabel:     "pandoraNu"
+microboone_reco_data_producers.pandoraCosmicMCSMu.inputs.inputLabel: "pandoraCosmic"
+microboone_reco_data_producers.pmtrackMCSMu.inputs.inputLabel:       "pmtrack"
+
 microboone_reco_data_producers.pandoraCosmicKHitT0Reco.TrackProducer: "pandoraCosmicKHit"
 microboone_reco_data_producers.pandoraCosmicT0Reco.TrackProducer:     "pandoraCosmic"
 microboone_reco_data_producers.pmtrackT0Reco.TrackProducer:           "pmtrack"
@@ -634,6 +721,8 @@ microboone_reco_data_producers.pandoraCosmiccalo.CaloAlg.CalAreaConstants:      
 microboone_reco_data_producers.pandoraCosmicKHitcalo.CaloAlg.CalAreaConstants:   [4.746e-3, 3.091e-3, 4.688e-3]
 microboone_reco_data_producers.pandoraNucalo.CaloAlg.CalAreaConstants:           [4.746e-3, 3.091e-3, 4.688e-3]
 microboone_reco_data_producers.pandoraNuKHitcalo.CaloAlg.CalAreaConstants:       [4.746e-3, 3.091e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraNuKalmanTrackcalo.CaloAlg.CalAreaConstants: [4.746e-3, 3.091e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraNuKalmanShowercalo.CaloAlg.CalAreaConstants: [4.746e-3, 3.091e-3, 4.688e-3]
 microboone_reco_data_producers.pandoraNuPMAcalo.CaloAlg.CalAreaConstants:        [4.746e-3, 3.091e-3, 4.688e-3]
 microboone_reco_data_producers.pmtrackcalo.CaloAlg.CalAreaConstants:             [4.746e-3, 3.091e-3, 4.688e-3]
 
