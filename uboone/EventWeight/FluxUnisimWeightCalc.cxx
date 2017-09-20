@@ -308,7 +308,7 @@ namespace evwgh {
 
     if(weight < 0) weight = 1; 
     if(weight > 30) weight = 30;
-    if(!(isfinite(weight))) weight = 30;
+    if(!(std::isfinite(weight))) weight = 30;
 
     if( (ntype == 0 || ntype == 1) && ptype == 1) weight = 1;
 
@@ -390,7 +390,7 @@ namespace evwgh {
 
     if(weight < 0) weight = 1; 
     if(weight > 30) weight = 30; 
-    if(!(isfinite(weight))){
+    if(!(std::isfinite(weight))){
       std::cout << "UniSim " <<  fParameter_list.at(0) << " : Failed to get a finite weight" << std::endl;      
       weight = 30;}
 
