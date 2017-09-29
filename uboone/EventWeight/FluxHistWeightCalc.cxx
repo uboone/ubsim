@@ -140,7 +140,7 @@ namespace evwgh {
 	double test = 1-(1-fRW[ptype][ntype][bin]/fCV[ptype][ntype][bin])*fWeightArray[i];
 	
 	// Guards against inifinite weights
-	if(isfinite(test)){ weight[inu][i] = test;}
+	if(std::isfinite(test)){ weight[inu][i] = test;}
 	else{weight[inu][i] = 1;}
 
       }
