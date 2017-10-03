@@ -33,6 +33,7 @@ art_make( BASENAME_ONLY
         canvas
         art_Utilities 
         canvas
+	lardataobj_RecoBase
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
         ${MF_MESSAGELOGGER}
         ${MF_UTILITIES}
