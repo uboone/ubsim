@@ -14,7 +14,6 @@ art_make( BASENAME_ONLY
         CRTDetSim_module.cc
         CRTDaqSim_module.cc
         CRTHitProducer_module.cc
-        CRTCoincidence_module.cc
         CRTCalibration_module.cc
         CRTTrackProducer_module.cc
 	CRTAuxFunctions.cc
@@ -127,14 +126,6 @@ simple_plugin(CRTCalibration "module"
         cetlib cetlib_except
     BASENAME_ONLY
           bernfebdaq-core_Overlays
-          art_Framework_Services_Optional
-          art_Framework_Services_Registry
-          art_Framework_Services_Optional_TFileService_service
-          ${ROOT_BASIC_LIB_LIST} )
-
-simple_plugin(CRTCoincidence "module"
-            CRT
-              bernfebdaq-core_Overlays
           art_Framework_Services_Optional
           art_Framework_Services_Registry
           art_Framework_Services_Optional_TFileService_service
