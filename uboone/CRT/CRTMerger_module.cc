@@ -33,47 +33,29 @@
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 
-crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset): fFileNames(pset.get<std::vector<std::string> >("InputFilenames")),
-  fSamDefname(pset.get<std::string>("SamDefname", "")),
-  fSamProject(pset.get<std::string>("SamProject", "")),
-  fSamStation(pset.get<std::string>("SamStation", "")),
-  fSamAppFamily(pset.get<std::string>("SamAppFamily", "art")),
-  fSamAppName(pset.get<std::string>("SamAppName", "mix")),
-  fSamAppVersion(pset.get<std::string>("SamAppVersion", "1")),
-  fSamUser(pset.get<std::string>("SamUser", "")),
-  fSamDescription(pset.get<std::string>("SamDescription", "sam-description")),
-  fSamFileLimit(pset.get<int>("SamFileLimit", 100)),
-  fSamSchema(pset.get<std::string>("SamSchema", "root"))
+crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset)//: fFileNames(pset.get<std::vector<std::string> >("InputFilenames"))
 {
 	std::cout<<"1 crt::CRTMerger::CRTMerger"<<std::endl;
+	
 	setenv("TZ", "CST+6CDT", 1);
 	tzset();
 	
-	setenv("IFDH_DATA_DIR","/uboone/data/users/kolahalb/MicroBooNE/",1);
+	//setenv("IFDH_DATA_DIR","/uboone/data/users/kolahalb/MicroBooNE/",1);
 	//std::cout<<"ifdh_data_dir "<<getenv("IFDH_DATA_DIR")<<std::endl;
 	
 	this->reconfigure(pset);
 	produces< std::vector<artdaq::Fragment> >();
 	fTag		= pset.get<art::InputTag> ("InputTagName");
 	_debug		= pset.get<bool>		 ("debug");
+	fTimeOffSet	= pset.get<std::vector< unsigned long > > ("test_t_offset");
+	previouscrtrootfile = "";
 	if ( ! tIFDH ) tIFDH = new ifdh_ns::ifdh;
 }
 
 crt::CRTMerger::~CRTMerger()
 {
 	//fIFDH->cleanup();
-	std::cout<<"8 crt::CRTMerger::~CRTmerger"<<std::endl;
-	if(!fSamProcessID.empty())
-	{
-		if(!fSamCurrentFileName.empty())
-		{
-			tIFDH->updateFileStatus(fSamProjectURI,
-			fSamProcessID,
-			fSamCurrentFileName,
-			"consumed");
-		}
-		tIFDH->endProcess(fSamProjectURI, fSamProcessID);
-	}
+	std::cout<<"4 crt::CRTMerger::~CRTmerger"<<std::endl;
 	
 	if ( ! tIFDH )
 	delete tIFDH;
@@ -83,33 +65,38 @@ void crt::CRTMerger::produce(art::Event& event)
 {
 	if (_debug)
 	{
-		std::cout <<"5 crt::CRTMerger::produce, NEW EVENT" << std::endl;
+		std::cout <<"3 crt::CRTMerger::produce, NEW EVENT" << std::endl;
 	}
 	
 	std::unique_ptr<std::vector<crt::MSetCRTFrag> > MergedCRTFragSet(new std::vector<crt::MSetCRTFrag>);
-	//std::unique_ptr<std::vector<artdaq::Fragment> > ThisFragment(new std::vector<artdaq::Fragment>);
-	//std::unique_ptr< std::vector <std::vector<artdaq::Fragment> > > VecofVecFrags(new std::vector<std::vector<artdaq::Fragment>>);
-	//std::unique_ptr<std::vector<artdaq::Fragment> > LastFragment(new std::vector<artdaq::Fragment>);
-	//std::unique_ptr<std::vector<artdaq::Fragment> > NextFragment(new std::vector<artdaq::Fragment>);
 	
 	std::unique_ptr<std::vector<artdaq::Fragment> > ThisFragSet(new std::vector<artdaq::Fragment>);
 	std::unique_ptr<std::vector<artdaq::Fragment> > LastFragSet(new std::vector<artdaq::Fragment>);
 	std::unique_ptr<std::vector<artdaq::Fragment> > NextFragSet(new std::vector<artdaq::Fragment>);
 	
+	std::unique_ptr< std::vector < std::vector <artdaq::Fragment> > > FragMatrix(new std::vector < std::vector <artdaq::Fragment> >);
+	
 	//For this event
-	//std::cout<<fMaxCount<<std::endl;
+	if(_debug)
+	std::cout<<fMaxCount<<std::endl;
+	
 	std::vector<artdaq::Fragment>  ThisFragment;
+	
+	// First find the art event time stamp
 	art::Timestamp evtTime = event.time();
 	
 	unsigned long evt_time_sec = evtTime.timeHigh();	
 	unsigned long evt_time_nsec = evtTime.timeLow();
+	
+	// Use the information for configuring SAM query about the coincident crt-binrary-raw files
 	unsigned long time_tpc = evt_time_sec*1000000000 + evt_time_nsec;
 	unsigned long time_tpc1= time_tpc/1000;
-	std::cout<<"time_tpc1 "<<time_tpc1<<std::endl;
 	
 	const char* tz = getenv("TZ");
-	std::string tzs(tz); std::cout<<"time-zone "<<tzs<<std::endl;
-	/*
+	std::string tzs(tz);
+	if (_debug)
+	std::cout<<"time-zone "<<tzs<<std::endl;
+	
 	if(tz != 0 && *tz != 0)
 	{
 		std::string tzs(tz);
@@ -124,16 +111,21 @@ void crt::CRTMerger::produce(art::Event& event)
 		// Timezone is not set.  Throw exception.
 		throw cet::exception("CRTMerger") << "Timezone not set.";
 	}
-	*/
+	
 	boost::posix_time::ptime const time_epoch(boost::gregorian::date(1970, 1, 1));
 	boost::posix_time::ptime this_event_time = time_epoch + boost::posix_time::microseconds(time_tpc1);
+	
+	if (_debug)
 	std::cout << boost::posix_time::to_iso_extended_string(this_event_time)<<std::endl;
+	
 	std::string stringTime = boost::posix_time::to_iso_extended_string(this_event_time);
 	stringTime = "'"+stringTime+"'";
+	
 	struct tm tm;
 	memset(&tm, 0, sizeof(tm));
 	tm.tm_isdst = -1;
 	
+	/*
 	strptime(stringTime.c_str(), "%Y-%m-%dT%H:%M:%S%Z", &tm);
 	int d = tm.tm_mday,
             m = tm.tm_mon + 1,
@@ -142,82 +134,132 @@ void crt::CRTMerger::produce(art::Event& event)
             M = tm.tm_min,
             s = tm.tm_sec;
         
-	std::cout<<"y "<<y<<"   m "<<m<<"   d "<<d<<"   h "<<h<<"   M "<<M<<"   s "<<s<<std::endl;
+	//std::cout<<"y "<<y<<"   m "<<m<<"   d "<<d<<"   h "<<h<<"   M "<<M<<"   s "<<s<<std::endl;
+	*/
 	//time_t tstart = mktime(&tm);
 	
-	//std::cout<<"TPC event time"<<event_t<<"   event time (s) "<<evt_time_sec<<"   event time (ns) "<<evt_time_nsec<<std::endl;
+	if (_debug)
+	std::cout<<"TPC event time (s) "<<evt_time_sec<<"   event time (ns) "<<evt_time_nsec<<std::endl;
 	
-	//At this stage, find out the CRT files that may be time co-incident
-	
-	//string filename = "hello.txt";
-	//string extension = boost::filesystem::extension(filename);
-	std::string teststring = "2017-06-29T16:09:57+00:00";
+	// At this stage, find out the crtdaq files that may be time co-incident
 	std::ostringstream dim;
 	dim<<"file_format "<<"crt-binaryraw"<<" and file_type "<<"data"<<" and start_time < "<<stringTime<<" and end_time > "<<stringTime;
+	
+	if (_debug)
 	std::cout<<"dim = "<<dim.str()<<std::endl;
+	
+	// List those crtdaq files:
 	std::vector< std::string > crtfiles = tIFDH->translateConstraints(dim.str());
 	
-	std::string testfn = "ProdRun20170604_001007-crt04.1.crtdaq";
-	std::ostringstream dim1;
-	dim1<<"file_format "<<"artroot"<<" and ischildof: (file_name "<<testfn<<")"<<std::endl;
-	std::cout<<"dim1 = "<<dim1.str()<<std::endl;
-	std::vector< std::string > crtrootfiles = tIFDH->translateConstraints(dim1.str());
-	std::cout<<crtrootfiles[0]<<std::endl;
-	
-	std::cout<<"# of legitimate CRT files "<<crtrootfiles.size()<<std::endl;
-	for(size_t i=0; i<crtfiles.size(); i++)
+	// Find the corresponding child artroot file
+	std::vector< std::string > crtrootfile;
+	for(unsigned k =0; k<crtfiles.size(); k++)
 	{
-		std::cout<<crtfiles[i]<<std::endl;
-		std::string schema = "gsiftp";
-		std::vector< std::string > crtdaqFile_url = tIFDH->locateFile(crtfiles[i], schema);
-		std::cout<<"gsiftp: "<<crtdaqFile_url[0]<<std::endl;
-		std::cout<<"ifdh_data_dir "<<getenv("IFDH_DATA_DIR")<<std::endl;
-		//TFile* f = TFile::Open(crtdaqFile_url[0],"");
-		//std::cout<<"url 1 "<<crtdaqFile_url[0]<<"\n"<<"url 2 "<<crtdaqFile_url[1]<<std::endl;
-		//std::string url_1 = crtdaqFile_url[0];
-		//std::string url_2 = crtdaqFile_url[1];
+		std::ostringstream dim1;
+		dim1<<"file_format "<<"artroot"<<" and ischildof: (file_name "<<crtfiles[k]<<")"<<std::endl;
 		
-		//std::string fetchedcrtdaqfile = (tIFDH->fetchInput(crtdaqFile_url[0]));
-		std::cout<<"i "<<i<<std::endl;
-		//std::cout<<"---> "<<fetchedcrtdaqfile<<std::endl;
+		if (_debug)
+		std::cout<<"dim1 = "<<dim1.str()<<std::endl;
 		
-		//url_1 = std::regex_replace(url_1, std::regex(R"(\([^()]*\))"), "/");
-		//url_1+=	crtfiles[i];
-		//url_2 = url_2 + "/" + crtfiles[i];
-		//std::cout<<"Modified URLs:\n "<<url_1<<"\n"<<url_2<<std::endl;
+		crtrootfile = tIFDH->translateConstraints(dim1.str());
 		
-		//std::string url_1 = crtdaqFile_url[0];
-		//auto begin = url_1.find_first_of("(");
-		//auto end   = url_1.find_last_of(")");
-		//if (std::string::npos!=begin && std::string::npos!=end && begin <= end)
-		//url_1.erase(begin, end-begin);
-		
-		//url_1.erase(url_1.begin()+url_1.find("("), url_1.begin()+url_1.find(")"));
-		//std::string str = "At(Robot,Room3)";
-		//str = std::regex_replace(str, std::regex("[^(]*)\\([^)]*\\)(.*)"),"/");
-		//std::cout<<"modilfied url_1 "<<str<<std::endl;
-		//url_1=url_1+"/"+crtfiles[i];
-		//std::string fileAddress = url_1;
-		//std::string fileAddress = "ftp://"+crtdaqFile_url[1]+"/"+crtfiles[i];
-		//std::cout<<"full address: "<<fileAddress<<std::endl;
-		//bernfebdaq_ReadEvents(fetchedcrtdaqfile,"output.root",100);
+		if (crtrootfile.size()>0)
+		{
+			if (_debug)
+			std::cout<<"found the child of the parent crtdaq file:"<<std::endl;
+			break;
+		}
 	}
-	std::cout<<"next"<<std::endl;
+	if (_debug)
+	std::cout<<"The child artroot file is "<<crtrootfile[0]<<std::endl;
+	
+	// Read off the root file by streaming over internet. Use xrootd URL
+	// This is alternative to use gsiftp URL. In that approach we use the URL to ifdh::fetchInput the crt file to local directory and keep it open as long as we make use of it
+	//xrootd URL
+	std::string schema = "root";
+	std::vector< std::string > crtrootFile_xrootd_url = tIFDH->locateFile(crtrootfile[0], schema);
+	std::cout<<"xrootd URL: "<<crtrootFile_xrootd_url[0]<<std::endl;
+	
+	// gallery, when fed the list of the xrootd URL, internally calls TFile::Open() to open the file-list
+	// In interactive mode, you have to get your proxy authenticated by issuing:
+	// voms-proxy-init -noregen -rfc -voms fermilab:/fermilab/uboone/Role=Analysis
+	// when you would like to launch a 'lar -c ... ... ...'
+	// In batch mode, this step is automatically done
+	
+	gallery::Event fCRTEvent(crtrootFile_xrootd_url);
+	std::cout<<"Opened the CRT root file from xrootd URL"<<std::endl;
+	
+	unsigned nCRT = 0;
+        for(fCRTEvent.toBegin(); !fCRTEvent.atEnd(); ++fCRTEvent)
+        {
+		auto const& TryCRT_frags = *(fCRTEvent.getValidHandle< std::vector<artdaq::Fragment> >(fTag));
+		std::vector< artdaq::Fragment > f;
+		f.clear();
+                for(auto iv=begin(TryCRT_frags); iv!=end(TryCRT_frags); ++iv)
+                {
+                        auto const& fg = *iv;
+                        f.emplace_back(fg);
+                }
+                FragMatrix->emplace_back(f);
+		nCRT++;
+        }
+	if (_debug)
+	std::cout<<"Filled FragMatrix, nCRT "<<nCRT<<std::endl;
+	
+	/*
+	///////////////////////////////////////////////////////////////////////////////////
+	////gsiftp URL
+	//std::string schema = "gsiftp";
+	//std::vector< std::string > crtrootFile_url = tIFDH->locateFile(crtrootfile[0], schema);
+	//std::cout<<"gsiftp URL: "<<crtrootFile_url[0]<<std::endl;
+	//
+	////std::cout<<"ifdh_data_dir "<<getenv("IFDH_DATA_DIR")<<std::endl;
+	
+	////std::string fetchedcrtrootfile = "";
+	////bool fetch = false;
+	
+	////std::cout<<"### "<<fTestFiles.size()<<std::endl;
+	
+	////if (previouscrtrootfile != "")
+	////{
+	////	std::cout<<"previouscrtrootfile: "<<previouscrtrootfile<<std::endl;
+	////	if (previouscrtrootfile==crtrootfile[0])
+	////	{
+	////		fetchedcrtrootfile = crtrootfile[0];
+	////		std::cout<<"fetchedcrtrootfile "<<fetchedcrtrootfile<<std::endl;
+	////		fetch = false;
+	////	}
+	////	else
+	////	fetch = true;
+	////}
+	////else
+	////std::cout<<"Need to fill fTestFiles through fetchInput"<<std::endl;
+	
+	////if ((fetchedcrtrootfile == "") | (fetch==true))
+	////fetchedcrtrootfile = (tIFDH->fetchInput(crtrootFile_url[0]));
+	
+	////fTestFiles.push_back(fetchedcrtrootfile);
+	//////////////////////////////////////////////////////////////////////////////////
+	////std::cout<<"# of legitimate CRT files "<<crtrootfile.size()<<std::endl;
+	*/
+	
 	unsigned int count = 0;
 	unsigned int n = 0;
 	//gallery::Event fCRTEvent(fFileNames);
-	gallery::Event fCRTEvent(fTestFiles);
+	
+	if (_debug)
+	std::cout<<"Start merging attempts"<<std::endl;
+	
 	for(fCRTEvent.toBegin(); !fCRTEvent.atEnd(); ++fCRTEvent)
 	{
 		int xxx = 0;
 		
 		auto const& crtFragSet = *(fCRTEvent.getValidHandle< std::vector<artdaq::Fragment> >(fTag));
 		n=0;
-		//for(auto const& i_crtFrag : crtFragSet)
+		
 		for(auto iv = begin(crtFragSet); iv != end(crtFragSet); ++iv)
 		{
 			auto const& i_crtFrag = *iv;
-			//std::cout<<"count "<<count<<", n "<<n<<std::endl;
 			bernfebdaq::BernZMQFragment bernfrag(i_crtFrag);
 			
 			auto i_Frag_metadata = bernfrag.metadata();
@@ -230,6 +272,10 @@ void crt::CRTMerger::produce(art::Event& event)
 			unsigned long time_CRT_end   = crt_bf_time_e*1000000000+crt_bf_time_end_ns;
 			
 			//std::cout<<"TPC (s) "<<evt_time_sec<<"     CRT(s) "<<crt_bf_time_s<<"     TPC (ns) "<<evt_time_nsec<<"     CRT_start(ns) "<<crt_bf_time_start_ns<<"     CRT_end(ns) "<<crt_bf_time_end_ns<<std::endl;
+			//std::cout<<"   TPC "<<total_TPC_time<<"   CRT_start "<<time_CRT_start<<"   CRT_end "<<time_CRT_end<<std::endl;
+			
+			//if (total_TPC_time < time_CRT_start)
+			//break;
 			////////////////////////////////////////////////////////////////////////////////////////////////////
 			if ((total_TPC_time>=time_CRT_start) && (total_TPC_time<=time_CRT_end))
                         {
@@ -245,14 +291,14 @@ void crt::CRTMerger::produce(art::Event& event)
 				//ThisFragSet->emplace_back(i_crtFrag);
 				xxx=1;
 				
-				artdaq::Fragment last_artdaqFrag = (count > 1) ? w[count-1][n]:i_crtFrag;
+				artdaq::Fragment last_artdaqFrag = (count > 1) ? FragMatrix->at(count-1)[n]:i_crtFrag;
 				bernfebdaq::BernZMQFragment last_bernfrag(last_artdaqFrag);
 				auto last_bernfrag_metadata = last_bernfrag.metadata();
 				if (_debug)
 				std::cout<<"last Frag: start "<<last_bernfrag_metadata->time_start_nanosec()<<", stop: "<<last_bernfrag_metadata->time_end_nanosec()<<std::endl;
 				LastFragSet->emplace_back(last_artdaqFrag);
 				
-				artdaq::Fragment next_artdaqFrag = (count < fMaxCount) ? w[count+1][n]:i_crtFrag;
+				artdaq::Fragment next_artdaqFrag = (count < nCRT) ? FragMatrix->at(count+1)[n]:i_crtFrag;
 				bernfebdaq::BernZMQFragment next_bernfrag(next_artdaqFrag);
 				auto next_bernfrag_metadata = next_bernfrag.metadata();
 				if (_debug)
@@ -277,14 +323,13 @@ void crt::CRTMerger::produce(art::Event& event)
 			break;
 		}
 		count++;
-	} // end CRT evt loop
+	}// end CRT evt loop
+	
 	if (_debug)
-	//std::cout<<"Set of Fragments: "<<ThisFragSet->size()<<std::endl;
 	std::cout<<"Set of Fragments: ("<<LastFragSet->size()<<", "<<ThisFragSet->size()<<", "<<NextFragSet->size()<<"), MergedCRTFragSet: "<<MergedCRTFragSet->size()<<std::endl;
-	//ec//std::cout << "Size of VecofVecFrags " << VecofVecFrags->size() << std::endl;
-	//event.put(std::move(VecofVecFrags));
+	
 	event.put(std::move(ThisFragSet));
-	//event.put(std::move(MergedCRTFragSet));
+	
 	if (_debug)
 	std::cout<<"---X---"<<std::endl;
 }
@@ -292,8 +337,34 @@ void crt::CRTMerger::produce(art::Event& event)
 void crt::CRTMerger::reconfigure(fhicl::ParameterSet const & pset)
 {
 	std::cout<<"2 crt::CRTMerger::reconfigure"<<std::endl;
+	
 	fTag = {pset.get<std::string>("InputTagName","crtdaq")};
 	fTimeWindow = pset.get<unsigned>("TimeWindow",5000000);
-	fCRTFile = pset.get< std::vector < std::string > >("InputFilenames");
+	
+	//fCRTFile = pset.get< std::vector < std::string > >("InputFilenames");
+	
+	//if ( ! fIFDH ) fIFDH = new ifdh_ns::ifdh;
+	//std::string fetchedfile(fIFDH->fetchInput(fFileNames[0]));
+	//fTestFiles.push_back(fetchedfile);
+	/*
+	gallery::Event testGallery4ifdh(fFileNames);
+	unsigned int N = 0;
+	for(testGallery4ifdh.toBegin(); !testGallery4ifdh.atEnd(); ++testGallery4ifdh)
+        {
+		auto const& TryCRT_frags = *(testGallery4ifdh.getValidHandle< std::vector<artdaq::Fragment> >(fTag));
+		N++;
+		std::vector< artdaq::Fragment > f;
+		for(auto iv=begin(TryCRT_frags); iv!=end(TryCRT_frags); ++iv)
+		{
+			auto const& fg = *iv;
+			f.push_back(fg);
+		}
+		w.push_back(f);
+	}
+	fMaxCount=N;
+	std::cout<<"fMaxCount "<<fMaxCount<<std::endl;
+	//if ( ! fIFDH )
+        //delete fIFDH;
+	*/
 }
 DEFINE_ART_MODULE(crt::CRTMerger)
