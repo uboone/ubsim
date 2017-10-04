@@ -1,7 +1,9 @@
 #include "dlprod_fclbase_analyzers.fcl"
 #include "standard_ana_uboone.fcl"
 
-process_name: Ana
+process_name: DLprod
+
+services.FileCatalogMetadata:  @local::art_file_catalog_data
 
 # Add larcv required services.
 
@@ -11,26 +13,17 @@ services.LArCVMetaMaker: {Enable: false}
 # Add larcv analyzer modules.
 
 physics.analyzers:  {
-		    @table::physics.analyzers
 		    @table::dlprod_analyzers
 		    }
 
-physics.analyzers.analysistree.SaveCryInfo:     false
-physics.analyzers.analysistree.SaveGenieInfo:   false
-physics.analyzers.analysistree.SaveGeantInfo:   false
-physics.analyzers.analysistree.SaveMCShowerInfo:false
-physics.analyzers.analysistree.SaveMCTrackInfo: false
-physics.analyzers.analysistree.SaveShowerInfo:  false
-physics.analyzers.analysistree.SaveCaloCosmics: true
-physics.analyzers.analysistree.SaveSWTriggerInfo: false
-
 # Define larcv analyzer sequence.
-physics.ana:   [ analysistree ]
+
+physics.ana:   [ ]
 physics.larcv: [ opreco, superaWholeView ]
 
 # Add larcv sequence to end_paths.
 
-physics.end_paths: [ @sequence::physics.end_paths, larcv ]
+physics.end_paths: [ larcv ]
 
 # Configuration for TFileMetadataMicroBooNE service.
 
@@ -43,4 +36,3 @@ microboone_tfile_metadata:
   dataTier:              [ "root-tuple", "larlite", "larcv" ]
   fileFormat:            [ "root", "root", "root" ]
 }
-

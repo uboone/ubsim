@@ -252,7 +252,7 @@ namespace supera {
 	  if(edep.y < ymin || edep.y > ymax) continue;
 	  if(edep.z < zmin || edep.z > zmax) continue;
 	  if(use_track_id &&
-	     std::abs(edep.trackID) < trackid_v.size() &&
+	     size_t(std::abs(edep.trackID)) < trackid_v.size() &&
 	     trackid_v[std::abs(edep.trackID)] <=0)
 	    continue;
 	  // Register
