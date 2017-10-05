@@ -111,13 +111,13 @@ microboone_reco_mcc8_producers:
   trajcluster:                    @local::microboone_trajcluster
 
   ### pandora cosmic pass
-  pandoraCosmic:                  @local::microboone_pandora
+  pandoraCosmic:                  @local::microboone_pandoraAllHitsCR
 
   ### mc producers
   mchitfinder:                    @local::standard_mchitfinder
 
   ### pandora core modules
-  pandoraNu:                      @local::microboone_pandora
+  pandoraNu:                      @local::microboone_pandoraAllHitsSliceNu
 
   ### pandora track3dkalmanhit
   pandoraCosmicKHit:              @local::microboone_track3Dkalmanhit
@@ -535,7 +535,6 @@ microboone_reco_mcc8_producers.trajcluster.TrajClusterAlg.HitFinderModuleLabel: 
 # Pandora Cosmic related
 microboone_reco_mcc8_producers.pandoraCosmic.GeantModuleLabel:                   "largeant"
 microboone_reco_mcc8_producers.pandoraCosmic.HitFinderModuleLabel:               "gaushit"
-microboone_reco_mcc8_producers.pandoraCosmic.ConfigFile:                         "PandoraSettings_MicroBooNE_Cosmic.xml"
 
 microboone_reco_mcc8_producers.pandoraCosmicKHit.UseClusterHits:                 false
 microboone_reco_mcc8_producers.pandoraCosmicKHit.UsePFParticleHits:              true
@@ -597,7 +596,6 @@ microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.EndTickPadding:          
 # Pandora neutrino pass related
 microboone_reco_mcc8_producers.pandoraNu.GeantModuleLabel:                       "largeant"
 microboone_reco_mcc8_producers.pandoraNu.HitFinderModuleLabel:                   "pandoraCosmicHitRemoval"
-microboone_reco_mcc8_producers.pandoraNu.ConfigFile:                             "PandoraSettings_MicroBooNE_Neutrino.xml"
 
 microboone_reco_mcc8_producers.pandoraNuKHit.UseClusterHits:                     false
 microboone_reco_mcc8_producers.pandoraNuKHit.UsePFParticleHits:                  true
