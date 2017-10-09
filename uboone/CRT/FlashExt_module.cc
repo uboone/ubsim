@@ -33,6 +33,8 @@
 #include "uboone/CRT/CRTProducts/CRTTrack.hh"
 #include "uboone/CRT/CRTAuxFunctions.hh"
 
+#include "uboone/RawData/utils/DAQHeaderTimeUBooNE.h"
+
 #include "TTree.h"
 #include "TH1F.h"
 #include "TH2F.h"
@@ -81,11 +83,14 @@ private:
   uint32_t frunNum;                //Run Number taken from event  
   uint32_t fsubRunNum;             //Subrun Number taken from event 
   std::string  data_label_flash_;
+  std::string  data_label_DAQHeader_;
   int verbose_;
 
 
   TTree*       fTree;
   TH1F* hFlashTimeDis;
+  TH1F* htmstp_diff;
+  TProfile* htmstp_diff_vs_event;
   
   //for Tree
   uint32_t fTriTim_sec;
@@ -105,6 +110,7 @@ crt::FlashExt::FlashExt(fhicl::ParameterSet const & p)
   :
   EDAnalyzer(p),
   data_label_flash_(p.get<std::string>("data_label_flash_")),
+  data_label_DAQHeader_(p.get<std::string>("data_label_DAQHeader_")),
   verbose_(p.get<int>("verbose"))//,
  // More initializers here.
 {
@@ -131,8 +137,63 @@ void crt::FlashExt::analyze(art::Event const & evt)
   art::Timestamp evtTime = evt.time();
   auto evt_time_sec = evtTime.timeHigh();
   auto evt_time_nsec = evtTime.timeLow();
-  fTriTim_sec = evtTime.timeHigh();
-  fTriTim_nsec = evtTime.timeLow();
+
+  //get DAQ Header
+  art::Handle< raw::DAQHeaderTimeUBooNE > rawHandle_DAQHeader;
+  evt.getByLabel(data_label_DAQHeader_, rawHandle_DAQHeader);
+
+  //check to make sure the data we asked for is valid                                                                                          
+  if(!rawHandle_DAQHeader.isValid()){
+    std::cout << "Run " << evt.run() << ", subrun " << evt.subRun()
+              << ", event " << evt.event() << " has zero"
+              << " DAQHeaderTimeUBooNE  " << " in with label " << data_label_DAQHeader_ << std::endl;
+    return;
+  }  
+
+  raw::DAQHeaderTimeUBooNE const& my_DAQHeader(*rawHandle_DAQHeader);
+
+  art::Timestamp evtTimeGPS = my_DAQHeader.gps_time();  
+  double evt_timeGPS_sec = evtTimeGPS.timeHigh();
+  double evt_timeGPS_nsec = evtTimeGPS.timeLow();
+  fTriTim_sec = evtTimeGPS.timeHigh();
+  fTriTim_nsec = evtTimeGPS.timeLow();
+
+  art::Timestamp evtTimeNTP = my_DAQHeader.ntp_time();  
+  double evt_timeNTP_sec = evtTimeNTP.timeHigh();
+  double evt_timeNTP_nsec = evtTimeNTP.timeLow();
+  
+  double timstp_diff = std::abs(evt_timeGPS_nsec - evt_timeNTP_nsec);
+  htmstp_diff->Fill(timstp_diff);
+  htmstp_diff_vs_event->Fill(fEvtNum,timstp_diff);
+
+  if(verbose_==1){ 
+  std::cout.precision(19);
+  std::cout<<"  GPS time nano_second:  "<<evt_timeGPS_nsec<<std::endl; 
+  std::cout<<"  NTP time nano_second:  "<<evt_timeNTP_nsec<<std::endl; 
+  
+  std::cout<<"  difference:  "<<evt_timeGPS_nsec - evt_timeNTP_nsec<<std::endl; 
+  std::cout<<"  ABS difference:  "<<abs(evt_timeGPS_nsec - evt_timeNTP_nsec)<<std::endl; 
+  std::cout<<"  timstp_diff:  "<<timstp_diff<<std::endl; 
+  getchar();
+  }
+  
+  if(verbose_==1){ 
+    std::cout<<"  GPS time second:  "<<evt_timeGPS_sec<<std::endl; 
+    std::cout<<"  GPS time nano_second:  "<<evt_timeGPS_nsec<<std::endl; 
+    std::cout<<"  NTP time second:  "<<evt_timeNTP_sec<<std::endl; 
+    std::cout<<"  NTP time nano_second:  "<<evt_timeNTP_nsec<<std::endl; 
+    std::cout<<"  event time second:  "<<evt_time_sec<<std::endl; 
+    std::cout<<"  event time nano_second:  "<<evt_time_nsec<<std::endl; 
+    std::cout<<"  difference between GPS and NTP:  "<<evt_timeGPS_nsec - evt_timeNTP_nsec<<" ns"<<std::endl; 
+    std::cout<<"  ABS difference between GPS and NTP:  "<<timstp_diff<<" ns"<<std::endl; 
+
+    if( (evt_time_sec==evt_timeGPS_sec) && (evt_time_nsec==evt_timeGPS_nsec))  std::cout<<" Event time type is: GPS  "<<std::endl; 
+    if( (evt_time_sec==evt_timeNTP_sec) && (evt_time_nsec==evt_timeNTP_nsec))  std::cout<<" Event time type is: NTP  "<<std::endl; 
+
+    getchar();
+  }
+
+
   
   //get Optical Flash
   art::Handle< std::vector<recob::OpFlash> > rawHandle_OpFlash;
@@ -156,19 +217,10 @@ void crt::FlashExt::analyze(art::Event const & evt)
     fZ = my_OpFlash.ZCenter();
     fPEflash = my_OpFlash.TotalPE();
     fTimFla = my_OpFlash.Time();
-    fAbsTimFla = (evt_time_sec*1e9) + evt_time_nsec + (Timeflash * 1000);
+    fAbsTimFla = (evt_timeGPS_sec*1e9) + evt_timeGPS_nsec + (Timeflash * 1000);
     fbeam = my_OpFlash.OnBeamTime();
 
-    /*
-    //    std::vector< double > pes = my_OpFlash.PEs();
-    fPEflash=0;
-    for (unsigned int j=0; j<32; j++){
-      int pe = my_OpFlash.PE(j);
-      //int pe = pes[j];
-      fPEflash += pe;
-      std::cout<<" pe:  "<<pe<<std::endl; 
-    }
-    */
+
 
     if(verbose_==1){ 
       std::cout.precision(19);
@@ -198,6 +250,15 @@ void crt::FlashExt::beginJob()
   hFlashTimeDis = tfs->make<TH1F>("hFlashTimDis","hFlashTimDis",3500,-3500,3500);
   hFlashTimeDis->GetXaxis()->SetTitle("Flash Time w.r.t. trigger (us)");
   hFlashTimeDis->GetYaxis()->SetTitle("Entries/bin");
+
+  htmstp_diff = tfs->make<TH1F>(" htmstp_diff"," htmstp_diff",20000,0,20000000);
+  htmstp_diff->GetXaxis()->SetTitle("abs(NTP - GPS)  (ns)");
+  htmstp_diff->GetYaxis()->SetTitle("Entries/bin");
+
+  htmstp_diff_vs_event = tfs->make<TProfile>(" htmstp_diff_vs_event"," htmstp_diff_vs_event",17000,0,17000,"s");
+  htmstp_diff_vs_event->GetXaxis()->SetTitle("Event ID");
+  htmstp_diff_vs_event->GetYaxis()->SetTitle("abs(NTP - GPS)  (ns)");
+
 
 }
 
