@@ -29,6 +29,8 @@
 #include "mcreco.fcl"
 #include "eventweight_microboone_BNBcorrectionOnly.fcl"
 
+#include "microboone_dlpmtprecuts.fcl"
+
 BEGIN_PROLOG
 
 microboone_reco_mcc8_services:
@@ -263,6 +265,9 @@ microboone_reco_mcc8_producers:
 
 microboone_reco_mcc8_filters:
 { 
+  #here are the common filters
+  opfiltercommonbnb: @local::microboone_common_op_precut_bnb
+  opfiltercommonext: @local::microboone_common_op_precut_ext
 }
 
 
@@ -811,6 +816,8 @@ microboone_reco_mcc8_producers.trajclusterTruthMatch.PFParticleModuleLabel: "tra
 microboone_reco_mcc8_producers.trajclusterTruthMatch.makeT0Assns: false
 microboone_reco_mcc8_producers.trajclusterTruthMatch.makePFParticleAssns: true
 
-
+#filters
+microboone_reco_mcc8_filters.opfiltercommonbnb.OpHitProducer: "ophitBeam"
+microboone_reco_mcc8_filters.opfiltercommonext.OpHitProducer: "ophitBeam"
 
 END_PROLOG
