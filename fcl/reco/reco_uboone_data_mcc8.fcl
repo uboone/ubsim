@@ -265,8 +265,13 @@ microboone_reco_data_analyzers:
 
 microboone_reco_data_filters:
 {
+  #these ones are older and while still defined not the common ones
   flashfilter:  @local::microboone_flashfilter
   dlpmtprecuts: @local::microboone_dlpmtprecuts
+
+  #here are the common filters
+  opfiltercommonbnb: @local::microboone_common_op_precut_bnb
+  opfiltercommonext: @local::microboone_common_op_precut_ext
 }
 
 
@@ -741,5 +746,7 @@ microboone_reco_data_producers.simpleFlashBeamLowPE.AlgoConfig.PEThreshold: 6
 
 microboone_reco_data_filters.flashfilter.OpFlashTag: "simpleFlashBeam"
 microboone_reco_data_filters.dlpmtprecuts.OpHitProducer: "ophitBeam"
+microboone_reco_data_filters.opfiltercommonbnb.OpHitProducer: "ophitBeam"
+microboone_reco_data_filters.opfiltercommonext.OpHitProducer: "ophitBeam"
 
 END_PROLOG
