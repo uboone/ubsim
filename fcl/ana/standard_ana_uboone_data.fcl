@@ -5,7 +5,6 @@ process_name: Ana
 services.FileCatalogMetadata:  @local::art_file_catalog_data
 
 physics.ana: [analysistree]
-physics.larcv: [opreco, superaWholeView]
 
 physics.analyzers.analysistree.SaveCryInfo:     false
 physics.analyzers.analysistree.SaveGenieInfo:   false
