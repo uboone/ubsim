@@ -2,8 +2,10 @@
 
 process_name: DataRecoStage1OpticalFilter
 
+physics.filters.opfiltercommon: @local::physics.filters.opfiltercommonext
+
 services.TFileService.fileName: "reco_stage_1_hist.root"
-physics.reco:         [ rns, @sequence::microboone_reco_data_optical, opfiltercommonext, @sequence::microboone_reco_data_signalprocessing]
+physics.reco:         [ rns, @sequence::microboone_reco_data_optical, opfiltercommon, @sequence::microboone_reco_data_signalprocessing]
 physics.trigger_paths: [ reco ]
 outputs.out1.fileName: "%ifb_%tc_reco1.root"
 outputs.out1.dataTier: "reconstructed"
