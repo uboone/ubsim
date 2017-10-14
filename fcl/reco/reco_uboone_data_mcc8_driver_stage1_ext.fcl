@@ -10,5 +10,3 @@ physics.trigger_paths: [ reco ]
 outputs.out1.fileName: "%ifb_%tc_reco1.root"
 outputs.out1.dataTier: "reconstructed"
 source.inputCommands: ["keep *_*_*_*", "drop *_*_*_Data*Reco*" ]
-
-physics.producers.opfiltercommon: @local::microboone_common_op_precut_ext
