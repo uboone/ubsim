@@ -94,7 +94,7 @@ physics.analyzers.analysistree.CosmicScoreThresholds:           [0.0]
 physics.analyzers.analysistree.GenieGenModuleLabel:             "generator"
 physics.analyzers.analysistree.POTModuleLabel:                  "generator"
 physics.analyzers.analysistree.CryGenModuleLabel:               "cry"
-physics.analyzers.analysistree.ShowerModuleLabel:               ["showerrecofuzzy","showerrecopandora"]
+physics.analyzers.analysistree.ShowerModuleLabel:               ["showerrecopandora","pandoraCosmic","pandoraNu"]
 physics.analyzers.analysistree.SWTriggerModuleLabel:            "swtrigger"
 
 physics.analyzers.analysistree.IgnoreMissingShowers:            true
