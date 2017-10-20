@@ -3,6 +3,8 @@
 ##
 
 #include "services_microboone.fcl"
+#include "beamdata_microboone.fcl"
+#include "beamdataquality.fcl"
 #include "caldata_microboone.fcl"
 #include "hitfindermodules_microboone.fcl"
 #include "cluster_microboone.fcl"
@@ -81,6 +83,9 @@ microboone_reco_data_producers:
 
   ### random number saver
   rns:                 { module_type: RandomNumberSaver }
+
+  ### Beam data merging
+  beamdata: @local::microboone_beamdata
 
   ### OpHit finders
   #ophitT   :                     @local::ub_ophitfinder_t
@@ -274,6 +279,9 @@ microboone_reco_data_filters:
   #here are the common filters
   opfiltercommonbnb: @local::microboone_common_op_precut_bnb
   opfiltercommonext: @local::microboone_common_op_precut_ext
+
+  # Beam data quality filter.
+  beamdataquality: @local::beam_data_quality
 }
 
 
