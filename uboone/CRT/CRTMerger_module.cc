@@ -36,7 +36,7 @@
 using namespace boost::posix_time;
 crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset)//: fFileNames(pset.get<std::vector<std::string> >("InputFilenames"))
 {
-	std::cout<<"1 crt::CRTMerger::CRTMerger"<<std::endl;
+	std::cout<<"crt::CRTMerger::CRTMerger"<<std::endl;
 	
 	setenv("TZ", "CST+6CDT", 1);
 	tzset();
@@ -56,7 +56,7 @@ crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset)//: fFileNames(pset.ge
 crt::CRTMerger::~CRTMerger()
 {
 	//fIFDH->cleanup();
-	std::cout<<"4 crt::CRTMerger::~CRTmerger"<<std::endl;
+	std::cout<<"crt::CRTMerger::~CRTmerger"<<std::endl;
 	
 	if ( ! tIFDH )
 	delete tIFDH;
@@ -66,16 +66,10 @@ void crt::CRTMerger::produce(art::Event& event)
 {
 	if (_debug)
 	{
-		std::cout <<"3 crt::CRTMerger::produce, NEW EVENT" << std::endl;
+		std::cout <<"crt::CRTMerger::produce, NEW EVENT" << std::endl;
 	}
 	
-	std::unique_ptr<std::vector<crt::MSetCRTFrag> > MergedCRTFragSet(new std::vector<crt::MSetCRTFrag>);
-	
-	std::unique_ptr<std::vector<artdaq::Fragment> > ThisFragSet(new std::vector<artdaq::Fragment>);
-	std::unique_ptr<std::vector<artdaq::Fragment> > LastFragSet(new std::vector<artdaq::Fragment>);
-	std::unique_ptr<std::vector<artdaq::Fragment> > NextFragSet(new std::vector<artdaq::Fragment>);
-	
-	std::unique_ptr< std::vector < std::vector <artdaq::Fragment> > > FragMatrix(new std::vector < std::vector <artdaq::Fragment> >);
+	std::unique_ptr< std::vector <artdaq::Fragment> > MergedSet (new std::vector <artdaq::Fragment>);
 	
 	//For this event
 	if(_debug)
@@ -144,6 +138,8 @@ void crt::CRTMerger::produce(art::Event& event)
 	
 	// Find the corresponding child artroot file
 	std::vector< std::string > crtrootfile;
+	std::vector< std::string > tmprootfile;
+	
 	for(unsigned k =0; k<crtfiles.size(); k++)
 	{
 		std::ostringstream dim1;
@@ -152,6 +148,11 @@ void crt::CRTMerger::produce(art::Event& event)
 		if (_debug)
 		std::cout<<"dim1 = "<<dim1.str()<<std::endl;
 		
+		tmprootfile = tIFDH->translateConstraints(dim1.str());
+		
+		if (tmprootfile.size()>0)
+		crtrootfile.push_back(tmprootfile[0]);
+		/*
 		crtrootfile = tIFDH->translateConstraints(dim1.str());
 		
 		if (crtrootfile.size()>0)
@@ -160,15 +161,20 @@ void crt::CRTMerger::produce(art::Event& event)
 			std::cout<<"found the child of the parent crtdaq file:"<<std::endl;
 			break;
 		}
+		*/
 	}
+	std::cout<<"total: "<<crtrootfile.size()<<std::endl;
+	
+	for(unsigned crf_index = 0; crf_index < crtrootfile.size(); crf_index++)
+	{
 	if (_debug)
-	std::cout<<"The child artroot file is "<<crtrootfile[0]<<std::endl;
+	std::cout<<"The child artroot file is "<<crtrootfile[crf_index]<<std::endl;
 	
 	// Read off the root file by streaming over internet. Use xrootd URL
 	// This is alternative to use gsiftp URL. In that approach we use the URL to ifdh::fetchInput the crt file to local directory and keep it open as long as we make use of it
 	//xrootd URL
 	std::string schema = "root";
-	std::vector< std::string > crtrootFile_xrootd_url = tIFDH->locateFile(crtrootfile[0], schema);
+	std::vector< std::string > crtrootFile_xrootd_url = tIFDH->locateFile(crtrootfile[crf_index], schema);
 	std::cout<<"xrootd URL: "<<crtrootFile_xrootd_url[0]<<std::endl;
 	
 	// gallery, when fed the list of the xrootd URL, internally calls TFile::Open() to open the file-list
@@ -225,7 +231,6 @@ void crt::CRTMerger::produce(art::Event& event)
 	std::cout<<"Start merging attempts"<<std::endl;
 	
 	unsigned int merging = 0;
-	std::unique_ptr< std::vector <artdaq::Fragment> > MergedSet (new std::vector <artdaq::Fragment>);
 	
 	for(fCRTEvent.toBegin(); !fCRTEvent.atEnd(); ++fCRTEvent)
 	{
@@ -295,7 +300,7 @@ void crt::CRTMerger::produce(art::Event& event)
 		}
 		++count;
 	}
-	
+	}
 	event.put(std::move(MergedSet));
 	
 	if (_debug)
@@ -304,7 +309,7 @@ void crt::CRTMerger::produce(art::Event& event)
 
 void crt::CRTMerger::reconfigure(fhicl::ParameterSet const & pset)
 {
-	std::cout<<"2 crt::CRTMerger::reconfigure"<<std::endl;
+	std::cout<<"crt::CRTMerger::reconfigure"<<std::endl;
 	
 	fTag = {pset.get<std::string>("InputTagName","crtdaq")};
 	fTimeWindow = pset.get<unsigned>("TimeWindow",5000000);
