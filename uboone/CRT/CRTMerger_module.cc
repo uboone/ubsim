@@ -29,10 +29,11 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include "boost/date_time/posix_time/posix_time.hpp"
+#include "boost/date_time/local_time_adjustor.hpp"
 #include <boost/date_time/c_local_time_adjustor.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
-
+using namespace boost::posix_time;
 crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset)//: fFileNames(pset.get<std::vector<std::string> >("InputFilenames"))
 {
 	std::cout<<"1 crt::CRTMerger::CRTMerger"<<std::endl;
@@ -85,7 +86,7 @@ void crt::CRTMerger::produce(art::Event& event)
 	// First find the art event time stamp
 	art::Timestamp evtTime = event.time();
 	
-	unsigned long evt_time_sec = evtTime.timeHigh();	
+	unsigned long evt_time_sec = evtTime.timeHigh()+fTimeOffSet[2];	
 	unsigned long evt_time_nsec = evtTime.timeLow();
 	
 	// Use the information for configuring SAM query about the coincident crt-binrary-raw files
@@ -114,29 +115,19 @@ void crt::CRTMerger::produce(art::Event& event)
 	
 	boost::posix_time::ptime const time_epoch(boost::gregorian::date(1970, 1, 1));
 	boost::posix_time::ptime this_event_time = time_epoch + boost::posix_time::microseconds(time_tpc1);
+	typedef boost::date_time::c_local_adjustor<ptime> local_adj;
+	ptime this_event_localtime = local_adj::utc_to_local(this_event_time);
+	std::cout<<"Local time of event: "<< boost::posix_time::to_iso_extended_string(this_event_localtime)<<std::endl;
 	
 	if (_debug)
 	std::cout << boost::posix_time::to_iso_extended_string(this_event_time)<<std::endl;
 	
-	std::string stringTime = boost::posix_time::to_iso_extended_string(this_event_time);
+	std::string stringTime = boost::posix_time::to_iso_extended_string(this_event_localtime);
 	stringTime = "'"+stringTime+"'";
 	
 	struct tm tm;
 	memset(&tm, 0, sizeof(tm));
 	tm.tm_isdst = -1;
-	
-	/*
-	strptime(stringTime.c_str(), "%Y-%m-%dT%H:%M:%S%Z", &tm);
-	int d = tm.tm_mday,
-            m = tm.tm_mon + 1,
-            y = tm.tm_year + 1900,
-            h = tm.tm_hour,
-            M = tm.tm_min,
-            s = tm.tm_sec;
-        
-	//std::cout<<"y "<<y<<"   m "<<m<<"   d "<<d<<"   h "<<h<<"   M "<<M<<"   s "<<s<<std::endl;
-	*/
-	//time_t tstart = mktime(&tm);
 	
 	if (_debug)
 	std::cout<<"TPC event time (s) "<<evt_time_sec<<"   event time (ns) "<<evt_time_nsec<<std::endl;
@@ -189,23 +180,6 @@ void crt::CRTMerger::produce(art::Event& event)
 	gallery::Event fCRTEvent(crtrootFile_xrootd_url);
 	std::cout<<"Opened the CRT root file from xrootd URL"<<std::endl;
 	
-	unsigned nCRT = 0;
-        for(fCRTEvent.toBegin(); !fCRTEvent.atEnd(); ++fCRTEvent)
-        {
-		auto const& TryCRT_frags = *(fCRTEvent.getValidHandle< std::vector<artdaq::Fragment> >(fTag));
-		std::vector< artdaq::Fragment > f;
-		f.clear();
-                for(auto iv=begin(TryCRT_frags); iv!=end(TryCRT_frags); ++iv)
-                {
-                        auto const& fg = *iv;
-                        f.emplace_back(fg);
-                }
-                FragMatrix->emplace_back(f);
-		nCRT++;
-        }
-	if (_debug)
-	std::cout<<"Filled FragMatrix, nCRT "<<nCRT<<std::endl;
-	
 	/*
 	///////////////////////////////////////////////////////////////////////////////////
 	////gsiftp URL
@@ -244,91 +218,85 @@ void crt::CRTMerger::produce(art::Event& event)
 	*/
 	
 	unsigned int count = 0;
-	unsigned int n = 0;
+	//unsigned int n = 0;
 	//gallery::Event fCRTEvent(fFileNames);
 	
 	if (_debug)
 	std::cout<<"Start merging attempts"<<std::endl;
 	
+	unsigned int merging = 0;
+	std::unique_ptr< std::vector <artdaq::Fragment> > MergedSet (new std::vector <artdaq::Fragment>);
+	
 	for(fCRTEvent.toBegin(); !fCRTEvent.atEnd(); ++fCRTEvent)
 	{
-		int xxx = 0;
+		auto const& artdaqFragSet = *(fCRTEvent.getValidHandle< std::vector<artdaq::Fragment> >(fTag));
+		auto iv = begin(artdaqFragSet);
 		
-		auto const& crtFragSet = *(fCRTEvent.getValidHandle< std::vector<artdaq::Fragment> >(fTag));
-		n=0;
+		auto const& i_crtFrag= *iv;
+		bernfebdaq::BernZMQFragment bernfrag(i_crtFrag);
+		auto i_Frag_metadata = bernfrag.metadata();
 		
-		for(auto iv = begin(crtFragSet); iv != end(crtFragSet); ++iv)
+                unsigned long crt_bf_time_s             = i_Frag_metadata->time_start_seconds();
+                unsigned long crt_bf_time_e             = i_Frag_metadata->time_end_seconds();
+                unsigned long crt_bf_time_start_ns      = i_Frag_metadata->time_start_nanosec();
+                unsigned long crt_bf_time_end_ns        = i_Frag_metadata->time_end_nanosec();
+                unsigned long total_TPC_time            = evt_time_sec*1000000000+evt_time_nsec;
+                unsigned long time_CRT_start            = crt_bf_time_s*1000000000+crt_bf_time_start_ns;
+                unsigned long time_CRT_end              = crt_bf_time_e*1000000000+crt_bf_time_end_ns;
+		
+                if ((total_TPC_time>=time_CRT_start) && (total_TPC_time<=time_CRT_end) && (merging != 2))
+                {
+                        std::cout<<"merging happens"<<std::endl;
+                        merging = 1;
+                }
+		
+		if (merging != 0)
+		std::cout<<count<<"     "<<merging<<"     "<<MergedSet->size()<<std::endl;
+		
+		if (merging == 0)
 		{
-			auto const& i_crtFrag = *iv;
-			bernfebdaq::BernZMQFragment bernfrag(i_crtFrag);
-			
-			auto i_Frag_metadata = bernfrag.metadata();
-			unsigned long crt_bf_time_s = i_Frag_metadata->time_start_seconds();
-			unsigned long crt_bf_time_e = i_Frag_metadata->time_end_seconds();
-			unsigned long crt_bf_time_start_ns = i_Frag_metadata->time_start_nanosec();
-			unsigned long crt_bf_time_end_ns = i_Frag_metadata->time_end_nanosec();
-			unsigned long total_TPC_time = evt_time_sec*1000000000+evt_time_nsec;
-			unsigned long time_CRT_start = crt_bf_time_s*1000000000+crt_bf_time_start_ns;
-			unsigned long time_CRT_end   = crt_bf_time_e*1000000000+crt_bf_time_end_ns;
-			
-			//std::cout<<"TPC (s) "<<evt_time_sec<<"     CRT(s) "<<crt_bf_time_s<<"     TPC (ns) "<<evt_time_nsec<<"     CRT_start(ns) "<<crt_bf_time_start_ns<<"     CRT_end(ns) "<<crt_bf_time_end_ns<<std::endl;
-			//std::cout<<"   TPC "<<total_TPC_time<<"   CRT_start "<<time_CRT_start<<"   CRT_end "<<time_CRT_end<<std::endl;
-			
-			//if (total_TPC_time < time_CRT_start)
-			//break;
-			////////////////////////////////////////////////////////////////////////////////////////////////////
-			if ((total_TPC_time>=time_CRT_start) && (total_TPC_time<=time_CRT_end))
-                        {
-				if (evt_time_sec != crt_bf_time_s)
-				{
-					xxx = 1;
-					if (_debug)
-					std::cout<<"escape 1"<<std::endl;
-					break;
-				}
-				if (_debug)
-				std::cout<<"merge:"<<evt_time_sec<<"     "<<crt_bf_time_s<<"    "<<evt_time_nsec<<"     ("<<crt_bf_time_start_ns<<", "<<crt_bf_time_end_ns<<")"<<std::endl;
-				//ThisFragSet->emplace_back(i_crtFrag);
-				xxx=1;
-				
-				artdaq::Fragment last_artdaqFrag = (count > 1) ? FragMatrix->at(count-1)[n]:i_crtFrag;
-				bernfebdaq::BernZMQFragment last_bernfrag(last_artdaqFrag);
-				auto last_bernfrag_metadata = last_bernfrag.metadata();
-				if (_debug)
-				std::cout<<"last Frag: start "<<last_bernfrag_metadata->time_start_nanosec()<<", stop: "<<last_bernfrag_metadata->time_end_nanosec()<<std::endl;
-				LastFragSet->emplace_back(last_artdaqFrag);
-				
-				artdaq::Fragment next_artdaqFrag = (count < nCRT) ? FragMatrix->at(count+1)[n]:i_crtFrag;
-				bernfebdaq::BernZMQFragment next_bernfrag(next_artdaqFrag);
-				auto next_bernfrag_metadata = next_bernfrag.metadata();
-				if (_debug)
-				std::cout<<"next Frag: start: "<<next_bernfrag_metadata->time_start_nanosec()<<", stop: "<<next_bernfrag_metadata->time_end_nanosec()<<std::endl;
-				NextFragSet->emplace_back(next_artdaqFrag);	
-				ThisFragSet->emplace_back(last_artdaqFrag);
-				ThisFragSet->emplace_back(i_crtFrag);
-				ThisFragSet->emplace_back(next_artdaqFrag);
-				//ThisFragSet->emplace_back(last_artdaqFrag);
-				//ThisFragSet->emplace_back(i_crtFrag);
-				//ThisFragSet->emplace_back(next_artdaqFrag);
-				crt::MSetCRTFrag testSet(last_artdaqFrag,i_crtFrag,next_artdaqFrag);
-				MergedCRTFragSet->emplace_back(testSet);
+			if (MergedSet->size()>0)
+			{
+				MergedSet->clear();
+				//LastFragSet->clear();
 			}
-			n++;
+			
+			for(auto i_f = begin(artdaqFragSet); i_f != end(artdaqFragSet); ++i_f)
+			{
+				auto const& ifrag = *i_f;
+				MergedSet->push_back(ifrag);
+				//LastFragSet->push_back(ifrag);
+			}
 		}
-		
-		if (xxx==1)
+		else if (merging == 1)
 		{
-			if (_debug)
-			std::cout<<"escape 2"<<std::endl;
+			std::cout<<"merging=1"<<std::endl;
+                        for(auto i_f = begin(artdaqFragSet); i_f != end(artdaqFragSet); ++i_f)
+                        {
+                                auto const& ifrag = *i_f;
+                                MergedSet->push_back(ifrag);
+				//ThisFragSet->push_back(ifrag);
+                        }
+			merging = 2;
+		}
+		else if (merging == 2)
+		{
+			std::cout<<"merging=2"<<std::endl;
+                        for(auto i_f = begin(artdaqFragSet); i_f != end(artdaqFragSet); ++i_f)
+                        {
+                                auto const& ifrag = *i_f;
+                                MergedSet->push_back(ifrag);
+				//NextFragSet->push_back(ifrag);
+                        }
 			break;
 		}
-		count++;
-	}// end CRT evt loop
+		else
+		{
+		}
+		++count;
+	}
 	
-	if (_debug)
-	std::cout<<"Set of Fragments: ("<<LastFragSet->size()<<", "<<ThisFragSet->size()<<", "<<NextFragSet->size()<<"), MergedCRTFragSet: "<<MergedCRTFragSet->size()<<std::endl;
-	
-	event.put(std::move(ThisFragSet));
+	event.put(std::move(MergedSet));
 	
 	if (_debug)
 	std::cout<<"---X---"<<std::endl;
