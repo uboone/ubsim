@@ -7,6 +7,7 @@
 #include "art/Framework/Services/System/FileCatalogMetadata.h"
 #include "art/Framework/Principal/Handle.h"
 #include "IFDH_service.h"
+#include "uboone/RawData/utils/DAQHeaderTimeUBooNE.h"
 
 #include <memory>
 #include <string>
@@ -34,7 +35,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 using namespace boost::posix_time;
-crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset)//: fFileNames(pset.get<std::vector<std::string> >("InputFilenames"))
+crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset): data_label_DAQHeader_(pset.get<std::string>("data_label_DAQHeader_"))
 {
 	std::cout<<"crt::CRTMerger::CRTMerger"<<std::endl;
 	
@@ -77,8 +78,25 @@ void crt::CRTMerger::produce(art::Event& event)
 	
 	std::vector<artdaq::Fragment>  ThisFragment;
 	
+	//get DAQ Header
+	art::Handle< raw::DAQHeaderTimeUBooNE > rawHandle_DAQHeader;
+	event.getByLabel(data_label_DAQHeader_, rawHandle_DAQHeader);
+	
+	if(!rawHandle_DAQHeader.isValid())
+	{
+		std::cout << "Run " << event.run() << ", subrun " << event.subRun()<< ", event " << event.event() << " has zero"<< " DAQHeaderTimeUBooNE  " << " in with label " << data_label_DAQHeader_ << std::endl;
+    		return;
+	}
+	
+	raw::DAQHeaderTimeUBooNE const& my_DAQHeader(*rawHandle_DAQHeader);
+	art::Timestamp evtTimeGPS = my_DAQHeader.gps_time();
+	art::Timestamp evtTimeNTP = my_DAQHeader.ntp_time();
+	
+	std::cout<<"evt_timeGPS_sec "<<evtTimeGPS.timeHigh()<<",  evt_timeGPS_nsec "<<evtTimeGPS.timeLow()<<",  evt_timeNTP_sec "<<evtTimeNTP.timeHigh()<<",  evt_timeNTP_nsec "<<evtTimeNTP.timeLow()<<std::endl;
+	
 	// First find the art event time stamp
-	art::Timestamp evtTime = event.time();
+	//art::Timestamp evtTime = event.time();
+	art::Timestamp evtTime = evtTimeGPS;
 	
 	unsigned long evt_time_sec = evtTime.timeHigh()+fTimeOffSet[2];	
 	unsigned long evt_time_nsec = evtTime.timeLow();

@@ -5,6 +5,7 @@ microboone_crt_merger:{
  module_type	: "CRTMerger"
  InputFilenames : ["/pnfs/uboone/scratch/users/kolahalb/bernzmq_artdaq_20170926T214604.root"]
  test_t_offset	: [1,2,3]
+ data_label_DAQHeader_: "daq"
  InputTagName	: "crtdaq"
  debug		: true
 }
