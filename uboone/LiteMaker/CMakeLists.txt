@@ -50,7 +50,8 @@ art_make( EXCLUDE LLMetaMaker_service.cc
 		   ${ROOT_BASIC_LIB_LIST}
 
           MODULE_LIBRARIES 	  		   
-		   uboonecode_uboone_LiteMaker	   
+		   uboonecode_uboone_LiteMaker
+		   uboone_RawData
 	      	   TFileMetadataMicroBooNE_service
 	      	   FileCatalogMetadataMicroBooNE_service
 		   LLMetaMaker_service

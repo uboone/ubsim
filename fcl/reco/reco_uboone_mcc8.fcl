@@ -29,6 +29,8 @@
 #include "mcreco.fcl"
 #include "eventweight_microboone_BNBcorrectionOnly.fcl"
 
+#include "microboone_dlpmtprecuts.fcl"
+
 BEGIN_PROLOG
 
 microboone_reco_mcc8_services:
@@ -137,6 +139,8 @@ microboone_reco_mcc8_producers:
   pandoraCosmicKHitcalo:          @local::microboone_calomc
   pandoraCosmicKHitpid:           @local::microboone_chi2pid
   pandoraCosmicKHitFlashMatch:    @local::microboone_beamflashtrackmatchtagger
+  pandoraCosmicKalmanTrackcalo:   @local::microboone_calomc
+  pandoraCosmicKalmanTrackpid:    @local::microboone_chi2pid
   pandoraTrackPFPartMatch:        @local::microboone_trackpfparticlematch
   pandoraCosmicHitRemoval:        @local::microboone_crhitremoval # Remove hits, based on PFP geometry and flashes
   pandoraCosmictag:               @local::microboone_cosmictracktagger
@@ -261,6 +265,9 @@ microboone_reco_mcc8_producers:
 
 microboone_reco_mcc8_filters:
 { 
+  #here are the common filters
+  opfiltercommonbnb: @local::microboone_common_op_precut_bnb
+  opfiltercommonext: @local::microboone_common_op_precut_ext
 }
 
 
@@ -341,6 +348,8 @@ microboone_reco_mcc8_pandoraCosmic: [    pandoraCosmic,
 					 pandoraCosmicMCSMu,
                                          pandoraCosmicKHitcalo,
                                          pandoraCosmicKHitpid,
+                                         pandoraCosmicKalmanTrackcalo,
+                                         pandoraCosmicKalmanTrackpid,
                                          pandoraCosmicPFPart,         # Tag cosmics using geometry and out-of-time
                                          pandoraCosmicKHitPFPart,
                                          pandoraCosmicFlashTag,       # Tag cosmics using optical onfo
@@ -560,6 +569,12 @@ microboone_reco_mcc8_producers.pandoraCosmicKHitcalo.SpacePointModuleLabel:     
 
 microboone_reco_mcc8_producers.pandoraCosmicKHitpid.CalorimetryModuleLabel:      "pandoraCosmicKHitcalo"
 microboone_reco_mcc8_producers.pandoraCosmicKHitpid.TrackModuleLabel:            "pandoraCosmicKHit"
+
+microboone_reco_mcc8_producers.pandoraCosmicKalmanTrackcalo.TrackModuleLabel:           "pandoraCosmicKalmanTrack"
+microboone_reco_mcc8_producers.pandoraCosmicKalmanTrackcalo.SpacePointModuleLabel:      "pandoraCosmicKalmanTrack"
+
+microboone_reco_mcc8_producers.pandoraCosmicKalmanTrackpid.CalorimetryModuleLabel:      "pandoraCosmicKalmanTrackcalo"
+microboone_reco_mcc8_producers.pandoraCosmicKalmanTrackpid.TrackModuleLabel:            "pandoraCosmicKalmanTrack"
 
 microboone_reco_mcc8_producers.pandoraCosmictag.TrackModuleLabel:                "pandoraCosmic"
 
@@ -798,6 +813,8 @@ microboone_reco_mcc8_producers.trajclusterTruthMatch.PFParticleModuleLabel: "tra
 microboone_reco_mcc8_producers.trajclusterTruthMatch.makeT0Assns: false
 microboone_reco_mcc8_producers.trajclusterTruthMatch.makePFParticleAssns: true
 
-
+#filters
+microboone_reco_mcc8_filters.opfiltercommonbnb.OpHitProducer: "ophitBeam"
+microboone_reco_mcc8_filters.opfiltercommonext.OpHitProducer: "ophitBeam"
 
 END_PROLOG
