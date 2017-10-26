@@ -17,7 +17,7 @@ services:
   RandomNumberGenerator: {} #ART native random number generator
   @table::microboone_full_services
 }
-services.BackTrackerService: @local::microboone_backtracker
+services.BackTrackerService: @local::microboone_backtrackerservice
 #services.PhotonVisibilityService: @local::standard_photonvisibilityservice
 
 #Start each new event with an empty event.
@@ -41,7 +41,6 @@ physics:
    generator:    @local::microboone_singlep
    largeant:     @local::microboone_largeant
    mcreco:       @local::standard_mcreco
-   backtrack:    @local::standard_backtrackerloader
    optdigitizer: @local::microboone_optical_adc_sim
    optfem:       @local::microboone_optical_fem_sim
    triggersim:   @local::ubtrigger_dark_bnb
@@ -64,7 +63,7 @@ physics:
 
  #define the producer and filter modules for this path, order matters, 
  #filters reject all following items.  see lines starting physics.producers below
- simulate: [ generator, largeant,  mcreco, stoppingmu , backtrack, optdigitizer, optfem, triggersim, optreadout, daq ]
+ simulate: [ generator, largeant,  mcreco, stoppingmu ,  optdigitizer, optfem, triggersim, optreadout, daq ]
  #filter1: [ stoppingmu ]
  analyzeIt:  [ largana ]
  #define the output stream, there could be more than one if using filters 
