@@ -15,6 +15,7 @@ services:
   message:      @local::microboone_message_services_prod_debug
   FileCatalogMetadata:  @local::art_file_catalog_mc
   BackTrackerService: @local::microboone_backtrackerservice
+  ParticleInventoryService: @local::standard_particleinventoryservice
   @table::microboone_services_reco
 }
 
