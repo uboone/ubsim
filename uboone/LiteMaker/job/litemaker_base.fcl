@@ -1,3 +1,4 @@
+BEGIN_PROLOG
 litemaker_base:
 {
   # module name
@@ -11,7 +12,7 @@ litemaker_base:
   # for SAM metadata
   stream: "empty"
   # boolean to enable "unique" filename ... suffix becomes YYYYMMDD_HHMMSS_MICROSECONDS.root
-  unique_filename: true
+  unique_filename: false
 
   # Producer names specified below would be looked up & stored in
   # the output larlite file. The key represents the data product
@@ -62,3 +63,4 @@ litemaker_base:
 
 
 }
+END_PROLOG
