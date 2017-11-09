@@ -1,10 +1,11 @@
 set( LARCV_LIB -L$ENV{LARCV_LIBDIR} -llarcv )
+set( LARLITE_LIB -L$ENV{LARLITE_LIBDIR} -lLArLite_Analysis -lLArLite_LArUtil -lLArLite_DataFormat -lLArLite_Base )
 
 set( UBOONECODE_LIB -L$ENV{UBOONECODE_LIB} )
 
-include_directories ( $ENV{LARCV_COREDIR} )
+include_directories ( $ENV{LARCV_COREDIR} $ENV{LARLITE_COREDIR} )
 
-link_libraries( ${LIB_NAME} -L$ENV{BOOST_LIB} -lboost_system ${ROOTLIB} ${LARCV_LIB}) # All execs need this.
+link_libraries( ${LIB_NAME} -L$ENV{BOOST_LIB} -lboost_system ${ROOTLIB} ${LARCV_LIB} ${LARLITE_LIB} ) # All execs need this.
 
 #add_subdirectory(job)
 
