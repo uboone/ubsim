@@ -1,0 +1,7 @@
+#include "standard_g4_uboone.fcl"
+
+process_name: G4BirksRecomb
+
+source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*","drop *_*_*_G4*"]
+
+services.LArG4Parameters.UseModBoxRecomb: false
