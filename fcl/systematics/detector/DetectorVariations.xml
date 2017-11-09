@@ -4,7 +4,8 @@
 
 <!-- Production Project -->
 <!DOCTYPE project [
-<!ENTITY release "v06_26_01_06">
+<!ENTITY relsim  "v06_26_01">
+<!ENTITY relreco "v06_26_01_06">
 <!ENTITY file_type "mc">
 <!ENTITY run_type "physics">
 <!-- CHANGE THE PROJECT NAME -->
@@ -19,7 +20,7 @@
 
 <job>
 
-<project name="&name;">
+<project name="&name;_G4DetSim">
 
   <!-- Project size -->
   <numevents>40000</numevents>
@@ -33,11 +34,95 @@
   <!-- <resource>DEDICATED,OPPORTUNISTIC</resource>  -->
   
   <!-- Project Version -->
-  <version>&prod_mode;_v06_26_01_06</version>
+  <version>&prod_mode;_v06_26_01</version>
 
   <!-- Larsoft information -->
   <larsoft>
-    <tag>&release;</tag>
+    <tag>&relsim;</tag>
+    <qual>e10:prof</qual>
+    <local>&tardir;/DetSysts.tar</local>
+  </larsoft>
+  
+  <check>0</check>
+  <copy>0</copy>
+
+  <!-- Project stages -->
+
+  <stage name="CV_G4">
+    <numjobs>749</numjobs>
+    <inputdef>&sam_def;</inputdef>
+    <defname>temp_detsyst_cv</defname>
+    <maxfilesperjob>1</maxfilesperjob>
+    <datatier>detector-simulated</datatier>
+    <memory>5000</memory>
+    <jobsub>--expected-lifetime=24h</jobsub>
+  </stage>  
+  
+  <stage name="nospacecharge_G4" base="CV_G4">
+    <fcl>standard_g4_noSCE_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/nospacecharge_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/nospacecharge_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/nospacecharge_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/nospacecharge_G4</workdir>
+    <defname>temp_detsyst_nospacecharge_G4</defname>
+  </stage>  
+
+  <stage name="enhancedexttpcvis_G4" base="CV_G4">
+    <fcl>standard_g4_spacecharge_EnhancedExtraTPCVis_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/enhancedexttpcvis_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/enhancedexttpcvis_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/enhancedexttpcvis_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/enhancedexttpcvis_G4</workdir>
+    <defname>temp_detsyst_enhancedexttpcvis_G4</defname>
+  </stage>  
+  
+  <stage name="lifetime10ms_G4" base="CV_G4">
+    <fcl>standard_g4_uboone_10msLt.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lifetime10ms_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lifetime10ms_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/lifetime10ms_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/lifetime10ms_G4</workdir>
+    <defname>temp_detsyst_lifetime10ms_G4</defname>
+  </stage>  
+
+<stage name="dl0_G4" base="CV_G4">
+    <fcl>standard_g4_uboone_DL0.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dl0_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dl0_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/dl0_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/dl0_G4</workdir>
+    <defname>temp_detsyst_dl0_G4</defname>
+  </stage>  
+
+<stage name="dt0_G4" base="CV_G4">
+    <fcl>standard_g4_uboone_DT0.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dt0_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dt0_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/dt0_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/dt0_G4</workdir>
+    <defname>temp_detsyst_dt0_G4</defname>
+  </stage> 
+</project>
+
+<project name="&name;_Reco">
+
+  <!-- Project size -->
+  <numevents>40000</numevents>
+  
+
+ <!-- Operating System -->
+  <os>SL6</os>
+
+  <!-- Batch resources -->
+  <resource>DEDICATED,OPPORTUNISTIC,OFFSITE</resource>
+  <!-- <resource>DEDICATED,OPPORTUNISTIC</resource>  -->
+  
+  <!-- Project Version -->
+  <version>&prod_mode;_v06_26_01_08</version>
+
+  <!-- Larsoft information -->
+  <larsoft>
+    <tag>&relreco;</tag>
     <qual>e10:prof</qual>
     <local>&tardir;/DetSysts.tar</local>
   </larsoft>
@@ -96,30 +181,6 @@
     <defname>temp_detsyst_deadSaturatedChannels</defname>
   </stage>  
 
-<!--
- <stage name="highshapingtime" base="CV">
-    <fcl>standard_detsim_highshapingtime_uboone.fcl</fcl>
-    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
- 
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/highshapingtime</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/highshapingtime</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/highshapingtime</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/highshapingtime</workdir>
-    <defname>temp_detsyst_highshapingtime</defname>
-  </stage>  
--->
-<!--
-  <stage name="lowgain" base="CV">
-    <fcl>standard_detsim_lowgain_uboone.fcl</fcl>
-    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
- 
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lowgain</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lowgain</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/lowgain</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/lowgain</workdir>
-    <defname>temp_detsyst_lowgain</defname>
-  </stage>  
--->
   <stage name="noPEnoise" base="CV">
     <fcl>standard_detsim_noPEnoise_uboone.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
@@ -154,10 +215,10 @@
   </stage>  
 
   <stage name="nospacecharge" base="CV">
-    <fcl>standard_g4_noSCE_uboone.fcl</fcl>
     <fcl>standard_detsim_CV_uboone.fcl</fcl> 
     <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
- 
+
+    <inputdef>temp_detsyst_nospacecharge_G4</inputdef>
     <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/nospacecharge</outdir>
     <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/nospacecharge</logdir>
     <bookdir>/uboone/data/&user_name;/book/&release;/&name;/nospacecharge</bookdir>
@@ -175,7 +236,70 @@
     <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/dicharge</workdir>
     <defname>temp_detsyst_dicharge</defname>
   </stage>  
+  
+  <stage name="enhancedexttpcvis" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+ 
+    <inputdef>temp_detsyst_enhancedexttpcvis_G4</inputdef>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/enhancedexttpcvis</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/enhancedexttpcvis</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/enhancedexttpcvis</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/enhancedexttpcvis</workdir>
+    <defname>temp_detsyst_enhancedexttpcvis</defname>
+  </stage>  
+
+<stage name="lifetime10ms" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+ 
+    <inputdef>temp_detsyst_lifetime10ms_G4</inputdef>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lifetime10ms</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lifetime10ms</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/lifetime10ms</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/lifetime10ms</workdir>
+    <defname>temp_detsyst_lifetime10ms</defname>
+  </stage>  
+
+<stage name="dl0" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+
+    <inputdef>temp_detsyst_dl0_G4</inputdef>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dl0</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dl0</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/dl0</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/dl0</workdir>
+    <defname>temp_detsyst_dl0</defname>
+  </stage>  
+
+<stage name="dt0" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+
+    <inputdef>temp_detsyst_dt0_G4</inputdef> 
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dt0</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dt0</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/dt0</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/dt0</workdir>
+    <defname>temp_detsyst_dt0</defname>
+  </stage>  
+
+<stage name="lightyeild" base="CV">
+  <fcl>standard_g4_CV_uboone.fcl</fcl> 
+  <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+  <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+
+    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lightyeild</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lightyeild</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/lightyeild</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/lightyeild</workdir>
+    <defname>temp_detsyst_lightyeild</defname>
+  </stage>  
+
+  
 
 </project>
+
 
 </job>
