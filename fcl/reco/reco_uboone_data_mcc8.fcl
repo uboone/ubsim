@@ -3,6 +3,8 @@
 ##
 
 #include "services_microboone.fcl"
+#include "beamdata_microboone.fcl"
+#include "beamdataquality.fcl"
 #include "caldata_microboone.fcl"
 #include "hitfindermodules_microboone.fcl"
 #include "cluster_microboone.fcl"
@@ -83,6 +85,9 @@ microboone_reco_data_producers:
   ### random number saver
   rns:                 { module_type: RandomNumberSaver }
 
+  ### Beam data merging
+  beamdata: @local::microboone_beamdata
+
   ### OpHit finders
   #ophitT   :                     @local::ub_ophitfinder_t
   #ophitFW  :                     @local::ub_ophitfinder_fw
@@ -145,6 +150,8 @@ microboone_reco_data_producers:
   pandoraCosmicKHitcalo:          @local::microboone_calodata
   pandoraCosmicKHitpid:           @local::microboone_chi2pid
   pandoraCosmicKHitFlashMatch:    @local::microboone_beamflashtrackmatchtagger
+  pandoraCosmicKalmanTrackcalo:   @local::microboone_calodata
+  pandoraCosmicKalmanTrackpid:    @local::microboone_chi2pid
   pandoraTrackPFPartMatch:        @local::microboone_trackpfparticlematch
   pandoraCosmicHitRemoval:        @local::microboone_crhitremoval # Remove hits, based on PFP geometry and flashes
   pandoraCosmictag:               @local::microboone_cosmictracktagger
@@ -266,8 +273,16 @@ microboone_reco_data_analyzers:
 
 microboone_reco_data_filters:
 {
+  #these ones are older and while still defined not the common ones
   flashfilter:  @local::microboone_flashfilter
   dlpmtprecuts: @local::microboone_dlpmtprecuts
+
+  #here are the common filters
+  opfiltercommonbnb: @local::microboone_common_op_precut_bnb
+  opfiltercommonext: @local::microboone_common_op_precut_ext
+
+  # Beam data quality filter.
+  beamdataquality: @local::beam_data_quality
 }
 
 
@@ -348,6 +363,8 @@ microboone_reco_data_pandoraCosmic: [    pandoraCosmic,
 					 pandoraCosmicMCSMu,
                                          pandoraCosmicKHitcalo,
                                          pandoraCosmicKHitpid,
+                                         pandoraCosmicKalmanTrackcalo,
+                                         pandoraCosmicKalmanTrackpid,
                                          pandoraCosmicPFPart,         # Tag cosmics using geometry and out-of-time
                                          pandoraCosmicKHitPFPart,
                                          pandoraCosmicFlashTag,       # Tag cosmics using optical info
@@ -543,6 +560,13 @@ microboone_reco_data_producers.pandoraCosmicKHitcalo.SpacePointModuleLabel:     
 microboone_reco_data_producers.pandoraCosmicKHitpid.CalorimetryModuleLabel:      "pandoraCosmicKHitcalo"
 microboone_reco_data_producers.pandoraCosmicKHitpid.TrackModuleLabel:            "pandoraCosmicKHit"
 
+microboone_reco_data_producers.pandoraCosmicKalmanTrackcalo.TrackModuleLabel:           "pandoraCosmicKalmanTrack"
+microboone_reco_data_producers.pandoraCosmicKalmanTrackcalo.SpacePointModuleLabel:      "pandoraCosmicKalmanTrack"
+
+microboone_reco_data_producers.pandoraCosmicKalmanTrackpid.CalorimetryModuleLabel:      "pandoraCosmicKalmanTrackcalo"
+microboone_reco_data_producers.pandoraCosmicKalmanTrackpid.TrackModuleLabel:            "pandoraCosmicKalmanTrack"
+
+
 microboone_reco_data_producers.pandoraCosmictag.TrackModuleLabel:                "pandoraCosmic"
 
 microboone_reco_data_producers.pandoraCosmiccalo.TrackModuleLabel:               "pandoraCosmic"
@@ -713,16 +737,17 @@ microboone_reco_data_producers.pmtrackT0RecoBeam.TrackProducer:           "pmtra
 #microboone_reco_data_producers.stitchkalmanhitT0RecoBeam.TrackProducer:   "stitchkalmanhit"
 #microboone_reco_data_producers.trackkalmanhitT0RecoBeam.TrackProducer:    "trackkalmanhit"
 
-#microboone_reco_data_producers.trackkalmanhitcalo.CaloAlg.CalAreaConstants:      [4.746e-3, 3.091e-3, 4.688e-3]
-#microboone_reco_data_producers.stitchkalmanhitcalo.CaloAlg.CalAreaConstants:     [4.746e-3, 3.091e-3, 4.688e-3]
-microboone_reco_data_producers.pandoraCosmiccalo.CaloAlg.CalAreaConstants:       [4.746e-3, 3.091e-3, 4.688e-3]
-microboone_reco_data_producers.pandoraCosmicKHitcalo.CaloAlg.CalAreaConstants:   [4.746e-3, 3.091e-3, 4.688e-3]
-microboone_reco_data_producers.pandoraNucalo.CaloAlg.CalAreaConstants:           [4.746e-3, 3.091e-3, 4.688e-3]
-microboone_reco_data_producers.pandoraNuKHitcalo.CaloAlg.CalAreaConstants:       [4.746e-3, 3.091e-3, 4.688e-3]
-microboone_reco_data_producers.pandoraNuKalmanTrackcalo.CaloAlg.CalAreaConstants: [4.746e-3, 3.091e-3, 4.688e-3]
-microboone_reco_data_producers.pandoraNuKalmanShowercalo.CaloAlg.CalAreaConstants: [4.746e-3, 3.091e-3, 4.688e-3]
-microboone_reco_data_producers.pandoraNuPMAcalo.CaloAlg.CalAreaConstants:        [4.746e-3, 3.091e-3, 4.688e-3]
-microboone_reco_data_producers.pmtrackcalo.CaloAlg.CalAreaConstants:             [4.746e-3, 3.091e-3, 4.688e-3]
+#microboone_reco_data_producers.trackkalmanhitcalo.CaloAlg.CalAreaConstants:      [4.746e-3, 4.7e-3, 4.688e-3]
+#microboone_reco_data_producers.stitchkalmanhitcalo.CaloAlg.CalAreaConstants:     [4.746e-3, 4.7e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraCosmiccalo.CaloAlg.CalAreaConstants:       [4.746e-3, 4.7e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraCosmicKHitcalo.CaloAlg.CalAreaConstants:   [4.746e-3, 4.7e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraCosmicKalmanTrackcalo.CaloAlg.CalAreaConstants:   [4.746e-3, 4.7e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraNucalo.CaloAlg.CalAreaConstants:           [4.746e-3, 4.7e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraNuKHitcalo.CaloAlg.CalAreaConstants:       [4.746e-3, 4.7e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraNuKalmanTrackcalo.CaloAlg.CalAreaConstants: [4.746e-3, 4.7e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraNuKalmanShowercalo.CaloAlg.CalAreaConstants: [4.746e-3, 4.7e-3, 4.688e-3]
+microboone_reco_data_producers.pandoraNuPMAcalo.CaloAlg.CalAreaConstants:        [4.746e-3, 4.7e-3, 4.688e-3]
+microboone_reco_data_producers.pmtrackcalo.CaloAlg.CalAreaConstants:             [4.746e-3, 4.7e-3, 4.688e-3]
 
 #Setup MuCS track taggers with extra 20 cm buffer which increases acceptance and accounts for scattering
 #microboone_reco_data_producers.MuCSTrackTaggertrackkalmanhit.BoxExtension: 20
@@ -740,5 +765,7 @@ microboone_reco_data_producers.simpleFlashBeamLowPE.AlgoConfig.PEThreshold: 6
 
 microboone_reco_data_filters.flashfilter.OpFlashTag: "simpleFlashBeam"
 microboone_reco_data_filters.dlpmtprecuts.OpHitProducer: "ophitBeam"
+microboone_reco_data_filters.opfiltercommonbnb.OpHitProducer: "ophitBeam"
+microboone_reco_data_filters.opfiltercommonext.OpHitProducer: "ophitBeam"
 
 END_PROLOG
