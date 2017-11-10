@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 
 <!-- Author: Joseph Zennamo, UChicago, jzennamo@uchicago.edu, Sep. 2017 -->
+<!-- JZ Updated Nov. 2017; Now Supports two MCC8 releases to correctly
+                           handle the LArG4 simulation for mainline MCC8
+                           production -->
 
 <!-- Production Project -->
 <!DOCTYPE project [
@@ -40,7 +43,7 @@
   <larsoft>
     <tag>&relsim;</tag>
     <qual>e10:prof</qual>
-    <local>&tardir;/DetSysts.tar</local>
+    <local>&tardir;/DetSyst_MCC8_G4.tar</local>
   </larsoft>
   
   <check>0</check>
@@ -49,13 +52,13 @@
   <!-- Project stages -->
 
   <stage name="CV_G4">
-    <numjobs>749</numjobs>
+    <numjobs>1</numjobs>
     <inputdef>&sam_def;</inputdef>
     <defname>temp_detsyst_cv</defname>
     <maxfilesperjob>1</maxfilesperjob>
     <datatier>detector-simulated</datatier>
-    <memory>5000</memory>
-    <jobsub>--expected-lifetime=24h</jobsub>
+    <memory>4000</memory>
+    <jobsub>--expected-lifetime=8h</jobsub>
   </stage>  
   
   <stage name="nospacecharge_G4" base="CV_G4">
@@ -124,7 +127,7 @@
   <larsoft>
     <tag>&relreco;</tag>
     <qual>e10:prof</qual>
-    <local>&tardir;/DetSysts.tar</local>
+    <local>&tardir;/DetSyst_MCC8_4.tar</local>
   </larsoft>
   
   <check>0</check>
@@ -139,7 +142,7 @@
     <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/CV</logdir>
     <bookdir>/uboone/data/&user_name;/book/&release;/&name;/CV</bookdir>
     <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/CV</workdir>
-    <numjobs>749</numjobs>
+    <numjobs>1</numjobs>
     <inputdef>&sam_def;</inputdef>
     <defname>temp_detsyst_cv</defname>
     <maxfilesperjob>1</maxfilesperjob>
