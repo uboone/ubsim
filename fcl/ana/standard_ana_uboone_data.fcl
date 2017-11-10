@@ -11,6 +11,6 @@ physics.analyzers.analysistree.SaveGenieInfo:   false
 physics.analyzers.analysistree.SaveGeantInfo:   false
 physics.analyzers.analysistree.SaveMCShowerInfo:false 
 physics.analyzers.analysistree.SaveMCTrackInfo: false 
-physics.analyzers.analysistree.SaveShowerInfo:  false 
+physics.analyzers.analysistree.SaveShowerInfo:  true
 physics.analyzers.analysistree.SaveCaloCosmics: true
 physics.analyzers.analysistree.SaveSWTriggerInfo: false
