@@ -67,9 +67,10 @@ namespace larcv {
     void finalize();
 
   private:
-
-    // std::string    _example_producer_name; // example of string to be filled with pset parameter
-
+    
+    int            _origin;                 // origin flag: example of pset parameter
+    //std::string    _chstatus_producer_name; // chstatus image container name: example of string to be filled with pset parameter
+    
   };
 
   /**

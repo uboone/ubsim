@@ -1,5 +1,5 @@
-#ifndef __SUPERALARFLOW_CXX__
-#define __SUPERALARFLOW_CXX__
+#ifndef __SUPERAEXAMPLETEMPLATE_CXX__
+#define __SUPERAEXAMPLETEMPLATE_CXX__
 
 #include "SuperaExampleTemplate.h"
 #include "Instance2Image.h"
@@ -11,13 +11,13 @@
 
 namespace larcv {
 
-  static SuperaLArFlowProcessFactory __global_SuperaLArFlowProcessFactory__;
+  static SuperaExampleTemplateProcessFactory __global_SuperaExampleTemplateProcessFactory__;
 
-  SuperaLArFlow::SuperaLArFlow(const std::string name)
+  SuperaExampleTemplate::SuperaExampleTemplate(const std::string name)
     : SuperaBase(name)
   {}
     
-  void SuperaLArFlow::configure(const PSet& cfg)
+  void SuperaExampleTemplate::configure(const PSet& cfg)
   {
     // We pass the cfg to our base classes
     // We will access to these parameters through inheritance
@@ -26,13 +26,14 @@ namespace larcv {
     supera::ImageMetaMaker::configure(cfg); // Stores image parameters
 
     // Example of grabbing a parameter from cfg
-    //_example_producer_name = cfg.get<std::string>("MyParameter");
+    _origin = cfg.get<int>("Origin");
+    //_chstatus_producer_name = cfg.get<std::string>("ChStatusImageProducer");
   }
 
-  void SuperaLArFlow::initialize()
+  void SuperaExampleTemplate::initialize()
   {}
 
-  bool SuperaLArFlow::process(IOManager& mgr)
+  bool SuperaExampleTemplate::process(IOManager& mgr)
   {
     // (necessary?)
     SuperaBase::process(mgr);
@@ -117,7 +118,7 @@ namespace larcv {
     }
 
     // We want to have access to the bad channel image we assume has been made by an upstream Supera modules
-    auto ev_chstatus = (EventChStatus*)(mgr.get_data(kProductChStatus,_chstatus_producer));
+    //auto ev_chstatus = (EventChStatus*)(mgr.get_data(kProductChStatus,_chstatus_producer_name));
 
     // Get container with data that associates charge seen on the wire with the particle that deposited that charge
     auto simch_data  = LArData<supera::LArSimCh_t>();
@@ -132,7 +133,7 @@ namespace larcv {
     return true;
   }
 
-  void SuperaLArFlow::finalize()
+  void SuperaExampleTemplate::finalize()
   {}
 
 }
