@@ -1,6 +1,6 @@
 #include "standard_g4_uboone.fcl"
 
-outputs.out1.fileName: "%ifb_%tc_g4_spacecharge.root"
+process_name: G4ExtraLight
 
 source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*","drop *_*_*_G4*"]
 
@@ -17,4 +17,4 @@ services.SpaceCharge.EnableSimEfieldSCE: true
 #  fcl file and photon-lookup library author J.Zennamo (jaz8600@fnal.gov)
 #
 
-services.PhotonVisibilityService.LibraryFile: "PhotonPropagation/LibraryData/uboone_photon_library_v6_70kV_EnhancedExtraTPCVis.root" 
+services.PhotonVisibilityService.LibraryFile: "uboone_photon_propagation/v01_00_00/PhotonPropagation/LibraryData/uboone_photon_library_v6_70kV_EnhancedExtraTPCVis.root" 
