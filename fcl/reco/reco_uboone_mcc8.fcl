@@ -261,6 +261,8 @@ microboone_reco_mcc8_producers:
   # PFParticles
   trajclusterTruthMatch:                  @local::standard_mctrutht0matching
 
+  # Hits only
+  gaushitTruthMatch:                      @local::standard_mctrutht0matching
 }
 
 microboone_reco_mcc8_filters:
@@ -415,29 +417,35 @@ microboone_reco_mcc8_truthmatch: [       pandoraCosmicKHitTruthMatch,
                                          trajclusterTruthMatch  ]
 
 microboone_reco_mcc8: [                  rns,
-                                         @sequence::microboone_reco_mcc8_mcreco,
-                                         @sequence::microboone_reco_mcc8_optical,
+                                         #@sequence::microboone_reco_mcc8_mcreco,
+                                         eventweight,
+					 @sequence::microboone_reco_mcc8_optical,
                                          @sequence::microboone_reco_mcc8_signalprocessing,
-                                         #@sequence::microboone_reco_mcc8_fuzzypath,
+                                         gaushitTruthMatch,
+					 #@sequence::microboone_reco_mcc8_fuzzypath,
                                          @sequence::microboone_reco_mcc8_pandora,
-                                         @sequence::microboone_reco_mcc8_ccpath,
-                                         @sequence::microboone_reco_mcc8_truthmatch]
+                                         @sequence::microboone_reco_mcc8_ccpath ]
+#                                         @sequence::microboone_reco_mcc8_truthmatch]
 
 microboone_reco_mcc8_stage1: [           rns,
-                                         @sequence::microboone_reco_mcc8_mcreco,
-                                         @sequence::microboone_reco_mcc8_optical,
-                                         @sequence::microboone_reco_mcc8_signalprocessing ]
+                                         #@sequence::microboone_reco_mcc8_mcreco,
+                                         eventweight,
+					 @sequence::microboone_reco_mcc8_optical,
+                                         @sequence::microboone_reco_mcc8_signalprocessing,
+					 gaushitTruthMatch ]
                                          #@sequence::microboone_reco_mcc8_fuzzypath ]
 
 microboone_reco_mcc8_stage2: [           rns,
                                          @sequence::microboone_reco_mcc8_pandora,
-                                         @sequence::microboone_reco_mcc8_ccpath,
-                                         @sequence::microboone_reco_mcc8_truthmatch]
+                                         @sequence::microboone_reco_mcc8_ccpath ]
+#                                         @sequence::microboone_reco_mcc8_truthmatch]
 
 microboone_reco_mcc8_core: [             rns,
-                                         @sequence::microboone_reco_mcc8_mcreco,
-                                         @sequence::microboone_reco_mcc8_optical,
-                                         @sequence::microboone_reco_mcc8_signalprocessing ]
+                                         #@sequence::microboone_reco_mcc8_mcreco,
+                                         eventweight,
+					 @sequence::microboone_reco_mcc8_optical,
+                                         @sequence::microboone_reco_mcc8_signalprocessing,
+					 gaushitTruthMatch ]
 
 microboone_reco_mcc8_2D: [               rns,
                                          #@sequence::microboone_reco_mcc8_fuzzycluster,
@@ -815,6 +823,15 @@ microboone_reco_mcc8_producers.trajclusterTruthMatch.ShowerModuleLabel: "trajclu
 microboone_reco_mcc8_producers.trajclusterTruthMatch.PFParticleModuleLabel: "trajcluster"
 microboone_reco_mcc8_producers.trajclusterTruthMatch.makeT0Assns: false
 microboone_reco_mcc8_producers.trajclusterTruthMatch.makePFParticleAssns: true
+
+# Hit only
+microboone_reco_mcc8_producers.gaushitTruthMatch.TrackModuleLabel: ""
+microboone_reco_mcc8_producers.gaushitTruthMatch.ShowerModuleLabel: ""
+microboone_reco_mcc8_producers.gaushitTruthMatch.PFParticleModuleLabel: ""
+microboone_reco_mcc8_producers.gaushitTruthMatch.makeT0Assns: false
+microboone_reco_mcc8_producers.gaushitTruthMatch.makePFParticleAssns: false
+microboone_reco_mcc8_producers.gaushitTruthMatch.makeHitAssns: true
+microboone_reco_mcc8_producers.gaushitTruthMatch.HitModuleLabel: "gaushit"
 
 #filters
 microboone_reco_mcc8_filters.opfiltercommonbnb.OpHitProducer: "ophitBeam"
