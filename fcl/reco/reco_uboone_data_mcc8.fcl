@@ -444,11 +444,15 @@ microboone_reco_data_MucSTags: [         #MuCSTrackTaggertrackkalmanhit,
                                          MuCSTrackTaggerpandoraCosmicKHit, 
                                          MuCSTrackTaggerpmtrack ]
 
-microboone_dqm_ana: [                    DQMHits,
+microboone_dqm_ana_stage1: [             DQMHits,
                                          DQMFlashes,
                                          DQMChannels,
-                                         DQMTPCBursts,
-                                         DQMGoodRuns ]
+                                         DQMTPCBursts ]
+
+microboone_dqm_ana_stage2: [             DQMGoodRuns ]
+
+microboone_dqm_ana: [                    @sequence::microboone_dqm_ana_stage1,
+		    			 @sequence::microboone_dqm_ana_stage2 ]
 
 ### Below we include overrides for the modules above
 ### These are for MCC 7
