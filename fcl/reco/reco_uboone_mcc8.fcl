@@ -262,7 +262,7 @@ microboone_reco_mcc8_producers:
   trajclusterTruthMatch:                  @local::standard_mctrutht0matching
 
   # Hits only
-  gaushitTruthMatch:                      @local::standard_mctrutht0matching
+  gaushitTruthMatch:                      @local::standard_mcparticlehitmatching
 }
 
 microboone_reco_mcc8_filters:
@@ -617,6 +617,8 @@ microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.AssnProducerLabels:      
 microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.CosmicTagThresholds:      [0.6,                   0.99                    ]
 microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.PFParticleProducerLabel:  "pandoraCosmic"
 microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.EndTickPadding:           75
+#microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.CopyHitMCParticleAssns:   true
+#microboone_reco_mcc8_producers.pandoraCosmicHitRemoval.HitMCParticleAssnLabel:   "gaushitTruthMatch"
 
 # Pandora neutrino pass related
 microboone_reco_mcc8_producers.pandoraNu.GeantModuleLabel:                       "largeant"
@@ -825,12 +827,6 @@ microboone_reco_mcc8_producers.trajclusterTruthMatch.makeT0Assns: false
 microboone_reco_mcc8_producers.trajclusterTruthMatch.makePFParticleAssns: true
 
 # Hit only
-microboone_reco_mcc8_producers.gaushitTruthMatch.TrackModuleLabel: ""
-microboone_reco_mcc8_producers.gaushitTruthMatch.ShowerModuleLabel: ""
-microboone_reco_mcc8_producers.gaushitTruthMatch.PFParticleModuleLabel: ""
-microboone_reco_mcc8_producers.gaushitTruthMatch.makeT0Assns: false
-microboone_reco_mcc8_producers.gaushitTruthMatch.makePFParticleAssns: false
-microboone_reco_mcc8_producers.gaushitTruthMatch.makeHitAssns: true
 microboone_reco_mcc8_producers.gaushitTruthMatch.HitModuleLabel: "gaushit"
 
 #filters
