@@ -828,6 +828,7 @@ microboone_reco_mcc8_producers.trajclusterTruthMatch.makePFParticleAssns: true
 
 # Hit only
 microboone_reco_mcc8_producers.gaushitTruthMatch.HitModuleLabel: "gaushit"
+microboone_reco_mcc8_producers.gaushitTruthMatch.MCParticleModuleLabel: "largeant"
 
 #filters
 microboone_reco_mcc8_filters.opfiltercommonbnb.OpHitProducer: "ophitBeam"
