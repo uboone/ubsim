@@ -27,7 +27,7 @@ namespace crt {
       uint16_t ts0_s_err;
       uint32_t ts0_ns;
       uint16_t ts0_ns_err;
-      uint32_t ts1_ns;
+      int32_t ts1_ns;
       uint16_t ts1_ns_err;
       int plane;
       double x_pos;
