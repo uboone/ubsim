@@ -7,7 +7,6 @@ include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 add_subdirectory(CRTProducts)
 add_subdirectory(CRTBernFEBDAQCore)
 
-###<<<<<<< HEAD
 art_make( BASENAME_ONLY
     EXCLUDE 
         CRTChannelMapAlg.cc 
@@ -20,6 +19,11 @@ art_make( BASENAME_ONLY
 	FlashExt_module.cc	
 	CRTAuxFunctions.cc
   	CRTMerger_module.cc
+	TimeExtraction_module.cc
+	MergeTest_module.cc
+	CRTConversionTestHits_module.cc	
+	mergeCRTHits_module.cc
+	CRTRawtoCRTHit_module.cc	
     LIBRARY_NAME  
         CRTData
     LIB_LIBRARIES
@@ -158,6 +162,49 @@ simple_plugin(CRTTrackProducer "module"
 simple_plugin(FlashExt "module"
             CRT
               bernfebdaq-core_Overlays
+          art_Framework_Services_Optional
+          art_Framework_Services_Registry
+          art_Framework_Services_Optional_TFileService_service
+          ${ROOT_BASIC_LIB_LIST} )
+
+simple_plugin(TimeExtraction "module"
+            CRT
+	  bernfebdaq-core_Overlays
+          art_Framework_Services_Optional
+          art_Framework_Services_Registry
+          art_Framework_Services_Optional_TFileService_service
+          ${ROOT_BASIC_LIB_LIST} )
+
+simple_plugin(MergeTest "module"
+            CRT
+	  bernfebdaq-core_Overlays
+          art_Framework_Services_Optional
+          art_Framework_Services_Registry
+          art_Framework_Services_Optional_TFileService_service
+          ${ROOT_BASIC_LIB_LIST} )
+
+
+simple_plugin(CRTConversionTestHits "module"
+            CRT
+	  bernfebdaq-core_Overlays
+          art_Framework_Services_Optional
+          art_Framework_Services_Registry
+          art_Framework_Services_Optional_TFileService_service
+          ${ROOT_BASIC_LIB_LIST} )
+
+simple_plugin(mergeCRTHits "module"
+            CRT
+	  bernfebdaq-core_Overlays
+          art_Framework_Services_Optional
+          art_Framework_Services_Registry
+          art_Framework_Services_Optional_TFileService_service
+          ${ROOT_BASIC_LIB_LIST} )
+
+
+
+simple_plugin(CRTRawtoCRTHit "module"
+            CRT
+	  bernfebdaq-core_Overlays
           art_Framework_Services_Optional
           art_Framework_Services_Registry
           art_Framework_Services_Optional_TFileService_service
