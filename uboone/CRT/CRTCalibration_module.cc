@@ -17,7 +17,7 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
-#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
+#include "CRTBernFEBDAQCore//Overlays/BernZMQFragment.hh"
 #include "artdaq-core/Data/Fragments.hh"
 
 #include "art/Framework/Services/Optional/TFileService.h"

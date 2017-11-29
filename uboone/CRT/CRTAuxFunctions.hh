@@ -6,7 +6,7 @@
 #include <map> 
 #include <vector> 
 
-#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
+#include "CRTBernFEBDAQCore/Overlays/BernZMQFragment.hh"
 #include "artdaq-core/Data/Fragments.hh"
 //#include "uboone/CRT/CRTProducts/CRTHit.hh"
 //#include "uboone/CRT/CRTProducts/CRTTrack.hh"

@@ -1,7 +1,7 @@
 #ifndef MSetCRTFrag_hh_
 #define MSetCRTFrag_hh_
 #include <cstdint>
-#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
+#include "../CRTBernFEBDAQCore/Overlays/BernZMQFragment.hh"
 namespace crt
 {
 	class MSetCRTFrag

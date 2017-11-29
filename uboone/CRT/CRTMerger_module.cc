@@ -3,7 +3,7 @@
 #include "uboone/CRT/CRTProducts/MSetCRTFrag.hh"
 #include "artdaq-core/Data/Fragments.hh"
 #include "gallery/Event.h"
-#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
+#include "CRTBernFEBDAQCore/Overlays/BernZMQFragment.hh"
 #include "art/Framework/Services/System/FileCatalogMetadata.h"
 #include "art/Framework/Principal/Handle.h"
 #include "IFDH_service.h"

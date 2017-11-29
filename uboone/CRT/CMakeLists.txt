@@ -5,6 +5,7 @@ include_directories( $ENV{NUTOOLS_INC} )
 include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 
 add_subdirectory(CRTProducts)
+add_subdirectory(CRTBernFEBDAQCore)
 
 ###<<<<<<< HEAD
 art_make( BASENAME_ONLY
@@ -179,3 +180,5 @@ install_fhicl()
 install_source()
 # in order to grab up files for use in production and also not demand cutting a new larbatch:
 install_scripts( EXTRAS extractor_dict_wCRT.py condor_lar_ec.sh crtdaq2root_conversion_project.xml  ) 
+
+
