@@ -1,0 +1,64 @@
+<!-- Production Project -->
+
+<!DOCTYPE project [
+<!ENTITY uBversion "echurch_CRT_v063600">
+<!ENTITY file_type "data">
+<!ENTITY run__type "physics">
+<!ENTITY proj_name "kb_crtdaq2Artroot">
+<!ENTITY file_path "/uboone/app/users/kolahalb/MicroBooNE/CRTStudy/CRT06_36_00/runs/crtdaq2artroot/">
+<!ENTITY projStage "full">
+]>
+
+<project name="&proj_name;">
+        <check>1</check>
+	
+        <!--<group>uboone</group>-->
+	
+        <!-- Project size -->
+        <numevents>1000000000</numevents>
+	
+        <!-- Operating System -->
+        <os>SL6</os>
+	
+	<disk>90GB</disk>
+	<memory>5000</memory>
+	
+        <!-- Batch resources -->
+        <resource>DEDICATED,OPPORTUNISTIC</resource>
+	
+	<script>&file_path;condor_lar_ec.sh</script>
+	
+	<!-- <jobsub> </jobsub> -->
+	
+        <!-- <maxfilesperjob>1</maxfilesperjob> -->
+	
+        <!-- Larsoft information -->
+        <larsoft>
+                <tag>&uBversion;</tag>
+                <qual>e14:debug</qual>
+		<local>/uboone/app/users/kolahalb/MicroBooNE/CRTStudy/CRT06_36_00/uBooNE/uBooNE4CRT.tar.gz</local>
+        </larsoft>
+	
+        <!-- Project stages -->
+	
+        <stage name="crtdaq2artroot_06_04_00">
+                <!--<fcldir>/uboone/app/users/kolahalb/MicroBooNE/Swizzler/crtdaq2artroot/uboonecode/srcs/uboonecode/fcl/utility</fcldir>-->
+		<fcl>read_bernzmq.fcl</fcl>
+		<inputlist>&file_path;crtdaq_06_04_00.txt</inputlist>
+                <maxfluxfilemb>0</maxfluxfilemb>
+		<outdir>/uboone/data/users/kolahalb/MicroBooNE/BinaryCRTtoArtroot/&proj_name;/&uBversion;/&projStage;_06_04_00</outdir>
+                <logdir>/uboone/data/users/kolahalb/MicroBooNE/BinaryCRTtoArtroot/&proj_name;/&uBversion;/&projStage;_06_04_00</logdir>
+                <workdir>/uboone/app/users/kolahalb/MicroBooNE/BinaryCRTtoArtroot/&proj_name;/&uBversion;/&projStage;_06_04_00</workdir>
+                <numjobs>1</numjobs>
+                <!-- <output>kb_test_${PROCESS}_%tc.root</output> -->
+                <datatier>raw</datatier>
+                <defname>crtdaq_to_artroot</defname>
+        </stage>
+	
+        <!-- file type -->
+        <filetype>&file_type;</filetype>
+	
+        <!-- run type -->
+        <runtype>&run__type;</runtype>
+	
+</project>
