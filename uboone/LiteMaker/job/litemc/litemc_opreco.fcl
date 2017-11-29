@@ -6,16 +6,16 @@ litemc_opreco.out_filename: "larlite_opreco.root"
 
 litemc_opreco.DataLookUpMap:
 {
-  #trigger:    ["triggersim"]
+  trigger:    ["triggersim"]
   swtrigger:    ["swtrigger"]
-  #opdigit:    ["saturation"]
+  #opdigit:    [] #"saturation"]
   ophit: ["ophitBeam","ophitCosmic"]
-  opflash: ["simpleFlashBeam","simpleFlashCosmic"]
+  opflash: ["simpleFlashBeam","simpleFlashCosmic"] #,"opflashBeam","opflashCosmic"]
 }
 
 litemc_opreco.AssociationLookUpMap:
 {
   ophit: ["ophitBeam","ophitCosmic"]
-  opflash: ["simpleFlashBeam","simpleFlashCosmic"]
+  opflash: ["simpleFlashBeam","simpleFlashCosmic"] #,"opflashBeam","opflashCosmic"]
 }
-litemc_opreco.AssLabelToSave: ["simpleFlashBeam","simpleFlashCosmic"]
+#litemc_opreco.AssLabelToSave: ["simpleFlashBeam","simpleFlashCosmic"] #,"opflashBeam","opflashCosmic"]
