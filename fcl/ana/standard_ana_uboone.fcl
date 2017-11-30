@@ -14,7 +14,8 @@ services:
   MemoryTracker:     { } # default is one
   message:      @local::microboone_message_services_prod_debug
   FileCatalogMetadata:  @local::art_file_catalog_mc
-  BackTracker: @local::microboone_backtracker
+  BackTrackerService: @local::microboone_backtrackerservice
+  ParticleInventoryService: @local::standard_particleinventoryservice
   @table::microboone_services_reco
 }
 
