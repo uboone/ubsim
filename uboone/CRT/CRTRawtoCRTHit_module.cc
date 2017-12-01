@@ -17,8 +17,8 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
-#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
-#include "bernfebdaq-core/Overlays/FragmentType.hh"
+//#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
+//#include "bernfebdaq-core/Overlays/FragmentType.hh"
 #include "artdaq-core/Data/Fragment.hh"
 
 #include "art/Framework/Services/Optional/TFileService.h"
@@ -34,7 +34,7 @@
 
 #include "uboone/CRT/CRTProducts/CRTHit.hh"
 #include "uboone/CRT/CRTProducts/CRTTrack.hh"
-#include "uboone/CRT/pair_builder_debug_6msts1.h"
+//#include "uboone/CRT/pair_builder_debug_6msts1.h"
 #include "uboone/CRT/CRTAuxFunctions.hh"
 
 #include "TH1F.h"
@@ -52,9 +52,100 @@
 
 #include <memory>
 
+#define MAX_TIME_PREBEAM 2000000 //ns before beam ts1
+#define MAX_TIME_PASTBEAM 4000000 //ns after beam ts1
+#define EVLEN 80        // event length of a raw event (80 for uBooNE)
+#define WAIT 0       // wait x us after sending
+#define EVSPERFEB 1024   // max events per feb per poll to buffer
+#define MAXFEBNR 256
+#define MSOVERLAP 10000000//50000
+#define MAX_TIME_DIFFERENCE 400   //Set the maximal timedifference between hits
+
+//define numbers to controll bufferstatus
+#define PROBUF_READY_TO_FILL  0
+#define PROBUF_FILLING        1
+#define PROBUF_READY_TO_SCALE 2
+#define PROBUF_SHIFT_SCALE    3
+#define SCANBUF_READY_TO_FILL 0
+#define SCANBUF_SCANNING      1
+
+#define FILTER_PAIR_MODE 3
+#define TS1_CORR 11
+
+#define STRIPW 10.8
+
 namespace crt {
   class CRTRawtoCRTHit;
+  struct EVENT_t;
+  struct EVENT_t_send;
+  struct EVENT_tpro;
+  struct EOP_EVENT_t;
+  struct SCAN_ORDER;
 }
+struct crt::EVENT_t{
+		uint16_t mac5;
+		uint16_t flags;
+    uint16_t lostcpu;
+    uint16_t lostfpga;
+		uint32_t ts0;
+		uint32_t ts1;
+		uint16_t adc[32];
+};
+struct crt::EVENT_t_send {
+		uint16_t mac5;
+		uint16_t flags;
+    uint16_t lostcpu;
+    uint16_t lostfpga;
+		uint32_t ts0;
+		uint32_t ts1;
+		uint16_t adc[32];
+    uint16_t recover;
+    uint32_t nrtrigger;
+    uint32_t nrtrigger_11;
+};
+struct crt::EVENT_tpro {
+		uint16_t mac5;
+		uint16_t flags;
+    uint16_t lostcpu;
+		uint16_t lostfpga;
+		uint32_t ts0;
+		uint32_t ts1;
+		uint16_t adc[32];
+		uint32_t ts0_scaled;
+    uint32_t ts1_scaled;
+		uint32_t sec;
+    uint32_t ts0_ref;
+    uint32_t ms;
+    uint16_t recover;
+    uint32_t nrtrigger;
+    uint32_t nrtrigger_11;
+};
+struct crt::EOP_EVENT_t {
+		uint16_t mac5; // ==0xFFFF
+		uint16_t flags; // ==0xFFFF
+		uint16_t lostcpu;
+		uint16_t lostfpga;
+		uint32_t ts0; // ==MAGICWORD32
+		uint32_t ts1; // ==MAGICWORD32
+    int nevsinpoll; 
+		uint32_t start_s;
+		uint32_t d1;
+		uint16_t start_ms;
+		uint16_t dd2;
+		uint32_t d2;
+		uint32_t end_s;
+		uint32_t d3;
+		uint16_t end_ms;
+};  // end-of-poll special event
+struct crt::SCAN_ORDER{
+  uint32_t sec;
+  int ref_nr;
+  uint32_t ts0_ref;
+  int flags;
+};
+
+
+
 
 class crt::CRTRawtoCRTHit : public art::EDProducer {
 public:
@@ -74,17 +165,118 @@ public:
   // Selected optional functions.
   void beginJob() override;
   void endJob() override;
+  
+  //pair_builder stuff here////////////////////////////////////////////////////////////////////
+  //pair functions
+  void make_pairs(const char * filename,const char * filename_store, int run_mode_, std::vector<crt::CRTHit>& allCRTHits);
+  int find_pairs(const char * filename,const char * filename_store,int run_mode);
+  void usage();   //gives you information how to run
+  void receive_data(); // receive data from zmq socket
+  void shift_scale(int mac, int ref_nr, int ts0_ref); //scale the timestamps and copy them for processing
+  void scale_buffer();  // scale the timestams
+  void scan_buffer_filter(int mac);  // scan/process all hits of the FEBs and searches for coincidences
+  void filter_buffer(int mac);
+  void scan_filter_buffer(int mac);
+  unsigned int my_abs(unsigned int, unsigned int);  //define absolutevalue for uint
+  //hit functions:
+  int XY_pair(int order,int mac3, int mac4);
+  int XYtracks_Top(int mac3, int mac4);
+  int XYtracks_Pipe(int mac3, int mac4);
+  int XYtracks_Feed(int mac3, int mac4);
+  int XYtracks_Bottom(int mac3, int mac4);
+
+  void InitReconst();
+  double getFineCoordExperim(int sL, int sR);
+  double TWCorrection(int max1ach, int max2ach);
+  double getHitT1(int mac1, int strip1,  int t1, int mac2, int strip2, int t2);
+  double getHitT2(int mac1, int strip1,  int t1, int mac2, int strip2, int t2);
+  double getHitDT(int mac1, int strip1,  int t1, int max1_ach, int mac2, int strip2,int t2, int max2_ach);
+  double getHitT(int mac1, int strip1,  int t1, int max1_ach, int mac2, int strip2,  int t2, int max2_ach);
+  double getHitX(int mac1, int strip1, int mac2, int strip2);
+  double getHitY(int mac1, int strip1, int mac2, int strip2);
+  double getHitZ(int mac1, int strip1, int mac2, int strip2);
+  
+  void make2DHit(int);
+  void check_storing(void);
+  
+  int send_bufnr, ready_to_fill, ready_to_scan;
+  //int ready_to_send[10],
+  FILE *data;
+  long size_ev;
+  long counter_tot;
+  long counter_old;
+  long stuck_event_counter;
+  crt::SCAN_ORDER order_buffer[MAXFEBNR+1]; //to scan the events with the lowest second number
+  //beamfilter variables
+  int last2_ms[MAXFEBNR+1];
+  int last1_ms[MAXFEBNR+1];
+  int number_ms[MAXFEBNR+1];
+
+  //beamfilter V2 variables
+  int ts1ref_buffer[100][100];
+  int ts1ref_counter[100];
+  uint32_t ts1ref_second[100];
+  uint32_t previous_sec_scan[MAXFEBNR+1];
+  uint32_t previous_sec_mac[MAXFEBNR+1];
+  uint32_t previous_sec_mac2[MAXFEBNR+1];
+
+  int ts0ref_counter[MAXFEBNR+1];
+  int nrwm1[MAXFEBNR+1], nrwm2[MAXFEBNR+1];
+  int run_mode; //choose the mode (filtering, pairfinding etz...)
+
+  int minus2_counter1, same_counter1;
+  
+  //crthit stuf
+  int refused;
+  double Xs[200][32];
+  double Ys[200][32];
+  double Zs[200][32];
+  int Exists[200];
+  double Dts[200];
+  //const static double inch=2.54; //inch in cm
+  int save_event;
+  //int verbose_;
+  //pair_builder ends stuff here////////////////////////////////////////////////////////////////////
 
 private:
 
   // Declare member data here.
 
   int verbose_;
-  crt::pair_builder pairAlgo;
+  //crt::pair_builder pairAlgo;
   std::vector<crt::CRTHit> allCRTHits;
 
   std::string fInputFile_;
   std::string fOutputFile_;
+  
+  //pair_builder stuff ///////////////////////////////////////////////////////////////////////////
+  int ev_counter_mac[MAXFEBNR+1];   //Number of events per module (mac) in the processing buffer
+  int ev_counter_scan[MAXFEBNR+1];  //Number of events per module (mac) in the scanning buffer
+  int ev_counter_filter_scan[MAXFEBNR+1];  //Number of events per module (mac) in the scanning buffer
+  int ev_counter_filter[MAXFEBNR+1];
+  
+  uint32_t act_time[2][MAXFEBNR+1];    //number to read out the second and ms out of received special event [0]:sec, [1]:ms [][mac]:module [][MAXFEBNR]:time last poll
+  uint32_t previous_sec, previous_ms;
+  uint32_t previous2_sec;
+  int event_time_diff[MAXFEBNR+1];
+  int event_time_diff_old[MAXFEBNR+1];
+  
+  crt::EVENT_t evbuf[MAXFEBNR*EVSPERFEB+1];    //buffer to receive events (same structure as the receiving events)
+  crt::EVENT_tpro evbuf_pro[MAXFEBNR+1][4*EVSPERFEB+1];  //buffer for processing (add the second, millisecond from sepcial events)
+  crt::EVENT_tpro evbuf_scan[MAXFEBNR+1][4*EVSPERFEB+1]; //buffer for scanning for coincidences (same structure as the buffer for processing)
+  crt::EVENT_tpro evbuf_filter[MAXFEBNR+1][4*EVSPERFEB+1];
+  crt::EVENT_tpro evbuf_filter_scan[MAXFEBNR+1][4*EVSPERFEB+1];
+  crt::EVENT_t_send beam_ev[10][4*EVSPERFEB+1];    //buffer to send out the coincidences (structure idealy same as the received events)
+  crt::EVENT_t ts0_ref_event[2];
+  crt::EVENT_t_send ts0_ref_event_buffer[MAXFEBNR+1][2];
+  crt::EVENT_t_send coincidence[10][MAXFEBNR+1];    //buffer to send out the coincidences (structure idealy same as the received events)
+  crt::EOP_EVENT_t refevent;
+  FILE *file_store;
+  std::vector<crt::CRTHit>  allmyCRTHits;
+  int total_hits=0;
+  int EndOfFile;
+  
+  ///////////////////////////////////////////////////////////////////////////////////////////////
 
 };
 
@@ -98,36 +290,68 @@ crt::CRTRawtoCRTHit::CRTRawtoCRTHit(fhicl::ParameterSet const & p)
   produces< std::vector<crt::CRTHit>   >();
   fInputFile_ = p.get<std::string>("InputFileName");
   fOutputFile_ = p.get<std::string>("OutputFileName");
+  run_mode = p.get<int>("run_mode");
+  
 }
 
 
 void crt::CRTRawtoCRTHit::beginJob()
 {
+  InitReconst();
   // Implementation of optional member function here.
-  
-  //char * input;
-  //char * output;
-  std::cout <<"Proccessing file ..." << std::endl;
-  
-  //  const char * tmp1="/uboone/app/users/tmettler/crt_source/data/ProdRun20170604_001007-crt04.1.crtdaq.part";
-  //const char * tmp2="/uboone/app/users/tmettler/crt_source/data/ProdRun20170604_001007-crt04.1.crtdaq.part.pairs";
-  
-  //  char *input = strdup(tmp1);
-  //char *output = strdup(tmp2);
   const char *input = fInputFile_.c_str();
   const char *output = fOutputFile_.c_str();
+  
+  data=fopen(input,"r");
+  fseek(data, 0, SEEK_END); // seek to end of file
+	long size = ftell(data); // get current file pointer
+	fseek(data, 0, SEEK_SET); // seek back to beginning of file
+	size_ev=size/sizeof(EVENT_t);		//number of total events
+	//size_ev=100000;
+	printf("Total Number of events: %ld\n",size_ev);
+	file_store=fopen(output,"wb");
+	//run_mode=3;
+  
   std::cout <<input<< std::endl;
   std::cout <<"and writing output "<< std::endl;
   std::cout <<output<< std::endl;  
-
-  //  int crt::pair_builder::make_pairs(const char * filename,const char * filename_store, int run_mode_, std::vector<crt::CRT_hit>& allCRTHitstmp){
-  pairAlgo.make_pairs(input, output, 3, allCRTHits);
-
-  //  pairAlgo.find_pairs(input, output,11);
-  //pairAlgo.find_pairs("/uboone/app/users/tmettler/crt_source/data/ProdRun20170604_001007-crt04.1.crtdaq.part", "/uboone/app/users/tmettler/crt_source/data/ProdRun20170604_001007-crt04.1.crtdaq.part.pairs",3);
-  std::cout<<" "<<std::endl;
-  std::cout << "Proccessing file ... DONE!: " << std::endl;
-  std::cout<<"allCRTHits.size():  "<<allCRTHits.size()<<std::endl;
+  std::cout <<"Run in mode (3=only beam, 11=all): "<< run_mode << std::endl; 
+  //set all hit counters (from scan buffer and pro buffer) to 0
+  for(int i=0;i<MAXFEBNR+1;i++){
+    ev_counter_mac[i]=0;
+    ev_counter_scan[i]=0;
+    ev_counter_filter[i]=0;
+    order_buffer[i].flags=1;
+    nrwm1[i]=0;
+    nrwm2[i]=0;
+    ts0ref_counter[i]=0;
+    ev_counter_filter_scan[i]=0;
+    event_time_diff[i]=0;
+    event_time_diff_old[i]=0;
+    previous_sec_scan[i]=0;
+    previous_sec_mac[i]=0;
+    number_ms[i]=0;
+    last1_ms[i]=0;
+    last2_ms[i]=0;
+  }
+  previous_sec=0;
+  previous_ms=0;
+  save_event=0;
+  for(int i=0; i<100;i++){
+    ts1ref_counter[i]=0;
+    ts1ref_second[i]=0;
+    send_bufnr=0;
+    counter_tot=0;
+    counter_old=0;
+    stuck_event_counter=0;
+    minus2_counter1=0;
+    same_counter1=0;
+    verbose_=0;
+    EndOfFile=0;
+  }
+  ready_to_fill=PROBUF_READY_TO_FILL;
+  ready_to_scan=SCANBUF_READY_TO_FILL;
+  
 }
 
 
@@ -135,7 +359,108 @@ void crt::CRTRawtoCRTHit::beginJob()
 
 void crt::CRTRawtoCRTHit::produce(art::Event & evt)
 {
+  //std::cout<<"produce event    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" <<std::endl;
   // Implementation of required member function here.
+  while(save_event!=1 && EndOfFile==0){   //endless loop over all events receiving   
+    //If one pro buffer is full->scan the whole buffer without scaling, else print status of buffer
+    for(int i=0;i<MAXFEBNR;i++){
+      if(ev_counter_mac[i]>(4*EVSPERFEB)){  //test if there is an overflow in the receiving buffer
+        //error++; 
+        printf("pro buffer scaned and reseted without scaling of %d...\n",i);
+        shift_scale(i, 4*EVSPERFEB, 1e9);
+        ready_to_fill=PROBUF_READY_TO_FILL;
+        ev_counter_mac[i]=0;  //if one buffer is overload, it is scaled w/out scaling...
+      }
+      else if(ev_counter_mac[i]!=0){ //if everything if fine, print the number of events in the buffers
+        //printf("fill status of %d: %d - %d\n",i,ev_counter_mac[i], ev_counter_scan[i]);
+      }
+    }
+    //receive new data
+    if(ready_to_fill==PROBUF_READY_TO_FILL){
+      ready_to_fill=PROBUF_FILLING;
+      if(counter_tot>size_ev) save_event=1;
+      receive_data();}
+    //scale and scan the new data
+    if(ready_to_fill==PROBUF_READY_TO_SCALE){
+      ready_to_fill=PROBUF_SHIFT_SCALE;
+      scale_buffer();   //in case more than one second is in the buffer
+      if(save_event!=1) scale_buffer();   //scale_buffer should then be used more than ones
+      //scale_buffer();   //only one is needed for polltimes<1 sec
+    }
+    else{ printf("pro buffer is in use... \n");
+         //error++;
+        }
+    while(ready_to_fill!=PROBUF_READY_TO_SCALE && ready_to_fill!=PROBUF_READY_TO_FILL){
+      //wait...
+    }
+  }
+  if(EndOfFile==1){
+    for(int i=0; i<MAXFEBNR; i++){
+      shift_scale(i, ev_counter_mac[i], 1e9);
+    }
+    EndOfFile=2;
+    //std::cout << " End: "<< EndOfFile<<std::endl;
+   //shift_scale(int mac, int ref_nr, int ts0_ref);
+  }   
+  else if(EndOfFile==2){
+      if((allmyCRTHits[allmyCRTHits.size()-1].ts0_s-allmyCRTHits[0].ts0_s)>1){
+      save_event=1;
+      uint32_t this_sec=allmyCRTHits[0].ts0_s;
+      int hit_counter=0;
+      for(unsigned int i=0; i<allmyCRTHits.size(); i++){
+        if(allmyCRTHits[i].ts0_s==this_sec){
+          allCRTHits.push_back(allmyCRTHits[i]);
+          hit_counter++;
+        }
+      }
+      int stop=allmyCRTHits.size();
+      for(int i=0; i<stop; i++){
+        if(allmyCRTHits[i].ts0_s==this_sec){
+          allmyCRTHits.erase (allmyCRTHits.begin()+i);
+          i--;
+          stop--;
+        }  
+      }
+      total_hits+=hit_counter;
+      //std::cout<<"found: " << hit_counter << " of " << total_hits << " int the second: "<< this_sec  << " End: "<< EndOfFile<<std::endl;
+    }
+    EndOfFile=3;
+  }
+  else if(EndOfFile==3){
+      if((allmyCRTHits[allmyCRTHits.size()-1].ts0_s-allmyCRTHits[0].ts0_s)>0){
+      save_event=1;
+      uint32_t this_sec=allmyCRTHits[0].ts0_s;
+      int hit_counter=0;
+      for(unsigned int i=0; i<allmyCRTHits.size(); i++){
+        if(allmyCRTHits[i].ts0_s==this_sec){
+          allCRTHits.push_back(allmyCRTHits[i]);
+          hit_counter++;
+        }
+      }
+      int stop=allmyCRTHits.size();
+      for(int i=0; i<stop; i++){
+        if(allmyCRTHits[i].ts0_s==this_sec){
+          allmyCRTHits.erase (allmyCRTHits.begin()+i);
+          i--;
+          stop--;
+        }  
+      }
+      total_hits+=hit_counter;
+      //std::cout<<"found: " << hit_counter << " of " << total_hits << " int the second: "<< this_sec << " End: "<< EndOfFile<< std::endl;
+    }
+    EndOfFile=4;
+  }
+  else if(EndOfFile==4){
+    int hit_counter=0;
+    for(unsigned int i=0; i<allmyCRTHits.size(); i++){
+      allCRTHits.push_back(allmyCRTHits[i]);
+      hit_counter++;
+    }
+    total_hits+=hit_counter;
+     //uint32_t this_sec=allmyCRTHits[0].ts0_s;
+    //std::cout<<"found: " << hit_counter << " of " << total_hits << " int the second: "<< this_sec << " End: "<< EndOfFile << std::endl;
+    EndOfFile=5;
+  }
   
   std::unique_ptr<std::vector<crt::CRTHit> > CRTHiteventCol(new std::vector<crt::CRTHit>); //collection of CRTHits 
   
@@ -163,7 +488,8 @@ void crt::CRTRawtoCRTHit::produce(art::Event & evt)
   */
   
   evt.put(std::move(CRTHiteventCol));
-  
+  allCRTHits.erase(allCRTHits.begin(), allCRTHits.end());
+  save_event=0;
   if(verbose_==1){
     std::cout<<" "<<std::endl;
     std::cout<<"allCRTHits.size():  "<<allCRTHits.size()<<std::endl;
@@ -177,5 +503,812 @@ void crt::CRTRawtoCRTHit::endJob()
 {
   // Implementation of optional member function here.
 }
+
+//receive a poll of hits from the modules//////////////////////////////////////////////////////
+void crt::CRTRawtoCRTHit::receive_data(){
+  //std::cout<<"receive data" <<std::endl;
+  int mac=0;
+  for(int i=0;i<1000;i++){
+    if(fread(&evbuf[i],sizeof(EVENT_t),1,data)<=0){EndOfFile=1; break;}
+  }
+  int received_events=1000;
+  counter_tot+=received_events;
+  if(counter_tot-counter_old>10000){
+   //printf("\rprocessed: %ld/%ld (%ld%%), stuckt events: %ld (%.2f permill), second assignement: same: %d, lost: %d", counter_tot, size_ev, 100*counter_tot/size_ev, stuck_event_counter, 1000*(float)stuck_event_counter/(counter_tot-1000), same_counter1,minus2_counter1);
+    counter_old=counter_tot;
+  }
+  int reassign=0;//control number for changes in second assignement
+  int check=0;//control number for print outs in second assignement
+  int all_fine=0;//control number if the jump happened after a reference pulse
+	
+  for(int i=0; i<received_events; i++){
+    //prereassign=0;
+    if(evbuf[i].mac5==0xFFFF){    //reads the spezial event
+      memcpy(&refevent,&evbuf[i].mac5,sizeof(EOP_EVENT_t));
+      previous_sec=act_time[0][MAXFEBNR];
+      previous_ms=act_time[1][MAXFEBNR];
+      act_time[0][MAXFEBNR]=(int)refevent.end_s;
+      act_time[1][MAXFEBNR]=(int)refevent.end_ms;
+      if(verbose_!=0){
+        printf("%d\n",i);
+				printf("pre+2: %d, %d, %d\n",previous_sec_mac2[mac], previous_sec_mac[mac], act_time[0][mac]);
+				printf("start: sec: %10d, ts0: %10d, mac: %d, flags: %2d\n",act_time[0][mac],evbuf[i-1].ts0,evbuf[i-1].mac5, evbuf[i-1].flags);
+				printf("start: sec: %10d, ts0: %10d, mac: %d, flags: %2d\n", evbuf_pro[evbuf[i-1].mac5][ev_counter_mac[evbuf[i-1].mac5]-1].sec,evbuf_pro[evbuf[i-1].mac5][ev_counter_mac[evbuf[i-1].mac5]-1].ts0,evbuf_pro[evbuf[i-1].mac5][ev_counter_mac[evbuf[i-1].mac5]-1].mac5, evbuf_pro[evbuf[i-1].mac5][ev_counter_mac[evbuf[i-1].mac5]-1].flags); 
+				printf("Start: sec: %10d, mil: %10d millisec\n",(int)refevent.start_s, refevent.start_ms);
+				printf("\n");
+				printf("End:   sec: %10d, mil: %10d millisec\n",(int)refevent.end_s, refevent.end_ms);
+				printf("\n");
+      }
+      for(int febnr=0;febnr<MAXFEBNR;febnr++){
+        if(ev_counter_mac[febnr]>0){
+          if(evbuf_pro[febnr][ev_counter_mac[febnr]-1].sec!=act_time[0][MAXFEBNR]){
+            if((evbuf_pro[febnr][ev_counter_mac[febnr]-1].ts0<8e8) && (act_time[1][MAXFEBNR]<800) && (act_time[1][MAXFEBNR]>100)){
+              if(verbose_!=0){
+                printf("\nERROR!!!!      act-1=ev_sec    !!!!!!, mac= %d, lostcpu: %d\n", febnr, evbuf_pro[febnr][ev_counter_mac[febnr]-1].lostcpu );
+                printf("start: sec: %10d, ts0: %10d, mac: %d, flags: %2d\n", evbuf_pro[febnr][ev_counter_mac[febnr]-1].sec,evbuf_pro[febnr][ev_counter_mac[febnr]-1].ts0,evbuf_pro[febnr][ev_counter_mac[febnr]-1].mac5, evbuf_pro[febnr][ev_counter_mac[febnr]-1].flags); 
+                printf("End:   sec: %10d, mil: %10d millisec\n",(int)refevent.end_s, refevent.end_ms);
+              }
+              for(int corr=0; corr<ev_counter_mac[febnr]; corr++){
+                evbuf_pro[febnr][corr].recover=11;
+                evbuf_pro[febnr][corr].sec=act_time[0][MAXFEBNR];
+                act_time[0][febnr]=act_time[0][MAXFEBNR];
+              }
+	      
+            }
+            else if((evbuf_pro[febnr][ev_counter_mac[febnr]-1].ts0>8e8) && (act_time[1][MAXFEBNR]<800) && (evbuf_pro[febnr][ev_counter_mac[febnr]-1].sec>act_time[0][MAXFEBNR])){
+              //we have a big prolem here act+2=ev_sec
+              if(verbose_!=0){
+                printf("\nERROR!!!!      act+2=ev_sec    !!!!!!, mac= %d, lostcpu: %d\n", febnr, evbuf_pro[febnr][ev_counter_mac[febnr]-1].lostcpu );
+                printf("start: sec: %10d, ts0: %10d, mac: %d, flags: %2d\n", evbuf_pro[febnr][ev_counter_mac[febnr]-1].sec,evbuf_pro[febnr][ev_counter_mac[febnr]-1].ts0,evbuf_pro[febnr][ev_counter_mac[febnr]-1].mac5, evbuf_pro[febnr][ev_counter_mac[febnr]-1].flags); 
+                printf("End:   sec: %10d, mil: %10d millisec\n",(int)refevent.end_s, refevent.end_ms);
+              }
+              for(int corr=0; corr<ev_counter_mac[febnr]; corr++){
+                evbuf_pro[febnr][corr].recover=12;
+                evbuf_pro[febnr][corr].sec=act_time[0][MAXFEBNR];
+                act_time[0][febnr]=act_time[0][MAXFEBNR];
+              }
+            }
+            else if((evbuf_pro[febnr][ev_counter_mac[febnr]-1].ts0<8e8) && (act_time[1][MAXFEBNR]>800) && (evbuf_pro[febnr][ev_counter_mac[febnr]-1].sec<act_time[0][MAXFEBNR])){
+              //we have a big prolem here act-2=ev_sec
+              if(verbose_!=0){
+                printf("\nERROR!!!!      act-2=ev_sec    !!!!!!, mac= %d, lostcpu: %d\n", febnr, evbuf_pro[febnr][ev_counter_mac[febnr]-1].lostcpu );
+                printf("start: sec: %10d, ts0: %10d, mac: %d, flags: %2d\n", evbuf_pro[febnr][ev_counter_mac[febnr]-1].sec,evbuf_pro[febnr][ev_counter_mac[febnr]-1].ts0,evbuf_pro[febnr][ev_counter_mac[febnr]-1].mac5, evbuf_pro[febnr][ev_counter_mac[febnr]-1].flags); 
+                printf("End:   sec: %10d, mil: %10d millisec\n",(int)refevent.end_s, refevent.end_ms);
+              }
+              for(int corr=0; corr<ev_counter_mac[febnr]; corr++){
+                evbuf_pro[febnr][corr].recover=13;
+                evbuf_pro[febnr][corr].sec=act_time[0][MAXFEBNR];
+                act_time[0][febnr]=act_time[0][MAXFEBNR];
+              }
+            }
+          } 
+        } 
+      }
+    }
+    else {
+      //add the second to the events and copy the buffer into another
+      mac=evbuf[i].mac5; 
+      check=0;
+      reassign=0;
+      if(ev_counter_mac[mac]>0 && (evbuf_pro[mac][ev_counter_mac[mac]-1].flags==3 || evbuf_pro[mac][ev_counter_mac[mac]-1].flags==1 || evbuf_pro[mac][ev_counter_mac[mac]-1].lostcpu==99)){ //check for jump, excluding all ref_events
+        if(my_abs(event_time_diff[mac],(evbuf[i].ts0-evbuf[i].ts1))>500){ // the jump ha to be bigger than 500
+          all_fine=0;
+          //check for what referent event was missed or if it was a stucked event...
+          if(my_abs(event_time_diff[mac],(evbuf[i].ts0-evbuf[i].ts1)-1e9)<30000){ //check if ts0_ref was missed 30us > dead time FEB
+            evbuf[i].lostcpu=1;
+            if(evbuf_pro[mac][ev_counter_mac[mac]-1].flags==5 || evbuf_pro[mac][ev_counter_mac[mac]-1].flags==7) all_fine=1;
+            if(all_fine!=1){
+              if(previous_sec==act_time[0][MAXFEBNR]) act_time[0][mac]=act_time[0][MAXFEBNR]+1; //check if already poll of new second
+              else act_time[0][mac]=act_time[0][MAXFEBNR];
+              if(act_time[0][mac]==previous_sec_mac[mac]){reassign=1; check=2;}
+              if(act_time[0][mac]==previous_sec_mac[mac]+2){
+                reassign=3;
+                check=2;
+              }
+              if(evbuf_pro[mac][ev_counter_mac[mac]-1].sec==act_time[0][mac] && reassign!=1) {same_counter1++;check=1;}
+              if(my_abs(evbuf_pro[mac][ev_counter_mac[mac]-1].sec,act_time[0][mac])>1&& reassign!=3) {
+                reassign=3;
+                act_time[0][mac]--;
+                minus2_counter1++;
+                check=2;}
+              ts0ref_counter[mac]++;
+              //assign new event at the right place with ts0 = 1e9 (no scaling)
+              evbuf_pro[mac][ev_counter_mac[mac]].sec=act_time[0][mac];
+              evbuf_pro[mac][ev_counter_mac[mac]].ms=act_time[1][MAXFEBNR];
+              evbuf_pro[mac][ev_counter_mac[mac]].mac5=mac;
+              evbuf_pro[mac][ev_counter_mac[mac]].flags=7;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts0=1e9;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts1=evbuf_pro[mac][ev_counter_mac[mac]-1].ts1+(1e9-evbuf_pro[mac][ev_counter_mac[mac]-1].ts0);
+              for(int j=0; j<32;j++) evbuf_pro[mac][ev_counter_mac[mac]].adc[j]=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts0_scaled=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts0_ref=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].lostcpu=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].lostfpga=0;
+              ev_counter_mac[mac]++;
+            }
+          }
+          else if(my_abs(event_time_diff_old[mac],(evbuf[i].ts0+1e9-evbuf[i].ts1))<30000){ //check if ts0_ref was missed 30us > dead time FEB
+            evbuf[i].lostcpu=2;
+            if(evbuf_pro[mac][ev_counter_mac[mac]-1].flags==5 || evbuf_pro[mac][ev_counter_mac[mac]-1].flags==7) all_fine=1;
+            if(all_fine!=1){
+              if(previous_sec==act_time[0][MAXFEBNR]) act_time[0][mac]=act_time[0][MAXFEBNR]+1; //check if already poll of new second
+              else act_time[0][mac]=act_time[0][MAXFEBNR];
+              if(act_time[0][mac]==previous_sec_mac[mac]){reassign=1; check=2;}
+              if(act_time[0][mac]==previous_sec_mac[mac]+2){
+                reassign=3;
+                check=2;
+              }
+              if(evbuf_pro[mac][ev_counter_mac[mac]-1].sec==act_time[0][mac] && reassign!=1) {same_counter1++;check=1;}
+              if(my_abs(evbuf_pro[mac][ev_counter_mac[mac]-1].sec,act_time[0][mac])>1&& reassign!=3) {
+                reassign=3;
+                act_time[0][mac]--;
+                minus2_counter1++;
+                check=2;}
+              ts0ref_counter[mac]++;
+              //assign new event at the right place with ts0 = 1e9 (no scaling)
+              evbuf_pro[mac][ev_counter_mac[mac]].sec=act_time[0][mac];
+              evbuf_pro[mac][ev_counter_mac[mac]].ms=act_time[1][MAXFEBNR];
+              evbuf_pro[mac][ev_counter_mac[mac]].mac5=mac;
+              evbuf_pro[mac][ev_counter_mac[mac]].flags=7;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts0=1e9;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts1=evbuf_pro[mac][ev_counter_mac[mac]-1].ts1+(1e9-evbuf_pro[mac][ev_counter_mac[mac]-1].ts0);
+              for(int j=0; j<32;j++) evbuf_pro[mac][ev_counter_mac[mac]].adc[j]=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts0_scaled=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts0_ref=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].lostcpu=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].lostfpga=0;
+              ev_counter_mac[mac]++;
+            }
+          }
+          else if((evbuf[i].ts1<(evbuf[i].ts0-evbuf_pro[mac][ev_counter_mac[mac]-1].ts0+20)&& evbuf[i].ts0<(evbuf_pro[mac][ev_counter_mac[mac]-1].ts0+1e8))){ //check if ts1_ref 
+            evbuf[i].lostcpu=3;
+            if(evbuf_pro[mac][ev_counter_mac[mac]-1].flags==10 || evbuf_pro[mac][ev_counter_mac[mac]-1].flags==11) all_fine=1;
+            if(all_fine!=1){
+              if(my_abs(evbuf[i].ts0,(evbuf_pro[mac][ev_counter_mac[mac]-1].ts0-evbuf[i].ts1))<20) evbuf_pro[mac][ev_counter_mac[mac]-1].flags=11; //1. check if there is an event with wrong assigned flag
+              else if((evbuf[i].ts0-evbuf_pro[mac][ev_counter_mac[mac]-1].ts0)<1e7){  //2. if no event is there add new event
+              evbuf_pro[mac][ev_counter_mac[mac]].sec=act_time[0][mac];
+              evbuf_pro[mac][ev_counter_mac[mac]].ms=act_time[1][MAXFEBNR];
+              evbuf_pro[mac][ev_counter_mac[mac]].mac5=mac;
+              evbuf_pro[mac][ev_counter_mac[mac]].flags=11;//evbuf[i].flags | 0x100;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts0=evbuf[i].ts0-evbuf[i].ts1;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts1=evbuf_pro[mac][ev_counter_mac[mac]-1].ts1+(evbuf[i].ts0-evbuf[i].ts1-evbuf_pro[mac][ev_counter_mac[mac]-1].ts0);
+              for(int j=0; j<32;j++) evbuf_pro[mac][ev_counter_mac[mac]].adc[j]=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts0_scaled=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].ts0_ref=0;    //not really used
+              evbuf_pro[mac][ev_counter_mac[mac]].lostcpu=0;
+              evbuf_pro[mac][ev_counter_mac[mac]].lostfpga=0;
+              ev_counter_mac[mac]++;}
+              else {evbuf[i].lostcpu=99; stuck_event_counter++;}
+            }
+          }
+          else {  //it has to be a stucked event. Count them for statistic, asign something special to it...
+            evbuf[i].lostcpu=99;
+            stuck_event_counter++;
+          }
+        }
+        else{
+          if(evbuf_pro[mac][ev_counter_mac[mac]-1].lostcpu==99) evbuf[i].lostcpu=10;
+        }
+      }
+
+      //fill the aktual event normal (if a jump happend, an event before is inserted if a ref was missed...)
+      if((evbuf[i].flags==7 || evbuf[i].flags==5) && (evbuf[i].lostcpu!=99&&evbuf[i].lostcpu!=10)){
+        previous_sec_mac2[mac]=previous_sec_mac[mac];
+        previous_sec_mac[mac]=act_time[0][mac];
+        if(previous_sec==act_time[0][MAXFEBNR]) act_time[0][mac]=act_time[0][MAXFEBNR]+1;
+        else act_time[0][mac]=act_time[0][MAXFEBNR];
+        if(act_time[0][mac]==previous_sec_mac[mac]){reassign=1; check=2;}
+        if(act_time[0][mac]==previous_sec_mac[mac]+2){
+          if(act_time[1][MAXFEBNR]>200) act_time[0][mac]--;
+          reassign=2;
+          check=2;
+        }
+        ts0ref_counter[mac]++;
+        if(evbuf_pro[mac][ev_counter_mac[mac]-1].sec==act_time[0][mac] && reassign!=1){
+          same_counter1++;
+          check=1;
+        }
+        if(my_abs(evbuf_pro[mac][ev_counter_mac[mac]-1].sec,act_time[0][mac])>1&& reassign!=2) {
+          reassign=2;
+          act_time[0][mac]--;
+          minus2_counter1++;
+          check=2;}
+      }
+	    if((evbuf[i].flags==7 || evbuf[i].flags==5)&&(evbuf[i].lostcpu==99||evbuf[i].lostcpu==10)) ts0ref_counter[mac]++;
+      evbuf_pro[mac][ev_counter_mac[mac]].sec=act_time[0][mac];
+      evbuf_pro[mac][ev_counter_mac[mac]].ms=act_time[1][MAXFEBNR];
+      evbuf_pro[mac][ev_counter_mac[mac]].mac5=mac;
+      evbuf_pro[mac][ev_counter_mac[mac]].flags=evbuf[i].flags;
+      evbuf_pro[mac][ev_counter_mac[mac]].ts0=evbuf[i].ts0;
+      evbuf_pro[mac][ev_counter_mac[mac]].ts1=evbuf[i].ts1;
+      for(int j=0; j<32;j++) evbuf_pro[mac][ev_counter_mac[mac]].adc[j]=evbuf[i].adc[j];
+      evbuf_pro[mac][ev_counter_mac[mac]].ts0_scaled=0;
+      evbuf_pro[mac][ev_counter_mac[mac]].ts0_ref=0;    //not really used
+	    evbuf_pro[mac][ev_counter_mac[mac]].recover=0;  
+      evbuf_pro[mac][ev_counter_mac[mac]].lostcpu=evbuf[i].lostcpu;
+      evbuf_pro[mac][ev_counter_mac[mac]].lostfpga=evbuf[i].lostfpga;
+      evbuf_pro[mac][ev_counter_mac[mac]].nrtrigger_11=ts0ref_counter[mac];
+      ev_counter_mac[mac]++;
+      if(reassign==1){
+        for(int z=0; z<ev_counter_mac[mac]-1;z++){
+          evbuf_pro[mac][z].sec=evbuf_pro[mac][z].sec-1;
+		      evbuf_pro[mac][z].recover=1;
+        }
+        check=1;
+      }
+      if(reassign==2){
+        if(act_time[1][MAXFEBNR]<200){
+            for(int z=0; z<ev_counter_mac[mac]-1;z++){
+              evbuf_pro[mac][z].sec=evbuf_pro[mac][z].sec+1;
+              evbuf_pro[mac][z].recover=2;
+            }
+            if(evbuf_pro[mac][ev_counter_mac[mac]].flags!=5 || evbuf_pro[mac][ev_counter_mac[mac]].flags!=7) evbuf_pro[mac][ev_counter_mac[mac]].sec+=1;
+        }
+		    check=2;
+      }
+      
+      if(reassign==3){
+        for(int z=0; z<ev_counter_mac[mac]-1;z++){
+          evbuf_pro[mac][z].recover=3;
+        }
+      }
+      
+      if(verbose_!=0){ //just printouts if needed... Row of events read in...
+        printf("check: %d\n", check);
+        printf("End:	%d seconds	%d millisec\n",act_time[0][MAXFEBNR], act_time[1][MAXFEBNR]);
+		    printf("pre: %d: %d, %d, %d\n",reassign,previous_sec_mac2[mac], previous_sec_mac[mac], act_time[0][mac]);
+        int sum=0, sum1=0, sum2=0, sum3=0, sum4=0;
+        for(int amp=0; amp<32;amp++){
+          sum+=evbuf[i].adc[amp];
+          sum1+=evbuf_pro[mac][ev_counter_mac[mac]].adc[amp];
+          sum3+=evbuf_pro[mac][ev_counter_mac[mac]-1].adc[amp];
+          sum4+=evbuf_pro[mac][ev_counter_mac[mac]-2].adc[amp];
+          sum2+=evbuf[i+1].adc[amp];
+        }
+        for(int z=ev_counter_mac[mac]-5; z<ev_counter_mac[mac];z++){
+          printf("jump: %3d: mac: %2d, flags: %2d, ts0: %10d, ts1: %10d, sec: %10d  dt: %d, lostcpu: %d\n", z,evbuf_pro[mac][z].mac5, evbuf_pro[mac][z].flags, evbuf_pro[mac][z].ts0,evbuf_pro[mac][z].ts1,evbuf_pro[mac][z].sec, evbuf_pro[mac][z].ts0-evbuf_pro[mac][z].ts1, evbuf_pro[mac][z].lostcpu ); 
+         }
+        printf("jump+1: mac: %d, flags: %2d, ts0: %10d, ts1: %10d, sum adc: %5d sec: %10d, dt: %d\n", evbuf[i+1].mac5, evbuf[i+1].flags, evbuf[i+1].ts0,evbuf[i+1].ts1, sum2,0, evbuf[i+1].ts0-evbuf[i+1].ts1); 
+        printf("jump+2: mac: %d, flags: %2d, ts0: %10d, ts1: %10d, sum adc: %5d sec: %10d, dt: %d\n", evbuf[i+2].mac5, evbuf[i+2].flags, evbuf[i+2].ts0,evbuf[i+2].ts1, sum2,0, evbuf[i+2].ts0-evbuf[i+2].ts1); 
+        printf("jump+3: mac: %d, flags: %2d, ts0: %10d, ts1: %10d, sum adc: %5d sec: %10d, dt: %d\n", evbuf[i+3].mac5, evbuf[i+3].flags, evbuf[i+3].ts0,evbuf[i+3].ts1, sum2,0,evbuf[i+3].ts0-evbuf[i+3].ts1); 
+        printf("jump+4: mac: %d, flags: %2d, ts0: %10d, ts1: %10d, sum adc: %5d sec: %10d, dt: %d\n", evbuf[i+4].mac5, evbuf[i+4].flags, evbuf[i+4].ts0,evbuf[i+4].ts1, sum2,0,evbuf[i+4].ts0-evbuf[i+4].ts1);
+        printf("\n");
+      }
+      if(evbuf[i].flags!=99) { //if the last one was not a stucked event, calculate the ts0-ts1 new...
+        if(abs(event_time_diff[mac]-event_time_diff_old[mac])>50) event_time_diff_old[mac]=event_time_diff[mac];
+        event_time_diff[mac]=evbuf[i].ts0-evbuf[i].ts1;
+      }
+    }
+  }
+  ready_to_fill=PROBUF_READY_TO_SCALE;
+}
+//searches referent events (produced throw PPS) and process them further/////////////////////////////
+void crt::CRTRawtoCRTHit::scale_buffer(){
+  //std::cout<<"scale data" <<std::endl;
+  for(int j=0;j<MAXFEBNR;j++){ //loop over all planes
+   for(int i=0;i<ev_counter_mac[j];i++){  
+    if(evbuf_pro[j][i].flags==5 || evbuf_pro[j][i].flags==7){ //search a time ref event
+      if(ready_to_scan==SCANBUF_READY_TO_FILL){
+        order_buffer[j].sec=evbuf_pro[j][i].sec;
+        order_buffer[j].ref_nr=i;
+        order_buffer[j].ts0_ref=evbuf_pro[j][i].ts0;
+        order_buffer[j].flags=0;
+      }
+      else {printf("Buffer not ready to scan!!\n"); 
+           }
+      i=ev_counter_mac[j];  //to go of the for loop
+      break;
+    }
+   }   
+  }
+  //the following part looks that the buffers with sec<sec_max is scaned first/////
+  uint32_t sec_max=0;
+  for(int j=0;j<MAXFEBNR+1;j++){  //find max_sec
+    if(order_buffer[j].flags==0 && order_buffer[j].sec>sec_max) sec_max=order_buffer[j].sec;
+  } 
+  //Scan the buffer first with second < max_second in the buffer
+  for(int j=0;j<MAXFEBNR+1;j++){  //scale/scan all seconds < max_sec
+    if(order_buffer[j].flags==0 && order_buffer[j].sec <sec_max){
+      ready_to_scan=SCANBUF_SCANNING;
+	  //if((sec_max-order_buffer[j].sec)>1) printf("\nsec1: %d, sec_max: %d\n",order_buffer[j].sec,sec_max);
+      shift_scale(j,order_buffer[j].ref_nr,order_buffer[j].ts0_ref);
+      order_buffer[j].ts0_ref=0;
+      order_buffer[j].flags=1;
+    }
+  }
+  for(int j=0;j<MAXFEBNR+1;j++){  //scan seconds with max_sec
+   if(order_buffer[j].flags==0){
+     ready_to_scan=SCANBUF_SCANNING;
+     shift_scale(j,order_buffer[j].ref_nr,order_buffer[j].ts0_ref);
+     order_buffer[j].ts0_ref=0;
+     order_buffer[j].flags=1;
+   }
+  }
+  ready_to_fill=PROBUF_READY_TO_FILL;
+}
+//if a hole second is in the processing buffer the hits are copyed and scaled for scanning//////////////////////////////////////
+void crt::CRTRawtoCRTHit::shift_scale(int mac, int ref_nr, int ts0_ref){ //scale all events and store them in the scan buffer
+  //std::cout<<"shift scale data" <<std::endl;
+  for(int i=0; i< number_ms[mac];i++){
+    evbuf_scan[mac][i]=evbuf_scan[mac][ev_counter_scan[mac]-number_ms[mac]+i];
+  }
+  for(int i=0;i<ref_nr;i++){ //loop over all hits of a plane
+   evbuf_scan[mac][i+number_ms[mac]]=evbuf_pro[mac][i];    //shift the hit from the pro to the scan buffer
+   long scale0=((evbuf_pro[mac][i].ts0*1e9)/ts0_ref+0.5);  //calculate the scaling factor
+   long scale1=((evbuf_pro[mac][i].ts1*1e9)/ts0_ref+0.5);  //calculate the scaling factor
+   evbuf_scan[mac][i+number_ms[mac]].ts0_scaled=(int)scale0;    //store the scaled value
+   evbuf_scan[mac][i+number_ms[mac]].ts1_scaled=(int)scale1;    //store the scaled value
+   //evbuf_scan[mac][i+number_ms[mac]].ts0_scaled=evbuf_pro[mac][i].ts0;    //store the scaled value
+   //evbuf_scan[mac][i+number_ms[mac]].ts1_scaled=evbuf_pro[mac][i].ts1;    //store the scaled value
+   evbuf_scan[mac][i+number_ms[mac]].ts0_ref=ts0_ref; 
+ }
+ for(int i=ref_nr+1;i<ev_counter_mac[mac];i++){ //shift the rest to the beginnig of the pro buffer
+  evbuf_pro[mac][i-ref_nr-1]=evbuf_pro[mac][i];
+ }
+ ev_counter_mac[mac]=ev_counter_mac[mac]-ref_nr-1;  //set the hit counter of the pro buffer
+ ev_counter_scan[mac]=ref_nr+number_ms[mac]; //set the hit counter of the scan buffer
+ if(run_mode==FILTER_PAIR_MODE || run_mode==TS1_CORR) { //filters first only beam events and then eventuall looking  for pairs
+	 filter_buffer(mac);
+	 scan_buffer_filter(mac); 
+ }
+}
+void crt::CRTRawtoCRTHit::scan_buffer_filter(int mac){  //scan over all events of one plane over one sec and search all possible coincidences
+  //std::cout<<"scan filter data" <<std::endl;
+  last2_ms[mac]=0;
+  uint32_t second = evbuf_scan[mac][ev_counter_scan[mac]-1].sec;
+  if(ts1ref_second[second%100]!=second){
+    ts1ref_counter[second%100]=0;
+    ts1ref_second[second%100]=second;
+  }
+  if(verbose_!=0){
+    if(previous_sec_scan[mac]==second) printf("\nequal seconds in %d: presecond: %d, this second: %d\n", mac,previous_sec_scan[mac], second);
+    if(second-previous_sec_scan[mac]>1) printf("\nlost second in %d: presecond: %d, this second: %d\n", mac,previous_sec_scan[mac], second);
+  }
+  previous_sec_scan[mac]=second;
+  int filter_counter=0;
+  for(int i=last1_ms[mac];i<ev_counter_scan[mac];i++){
+    //copy events in buffer for filtering
+    evbuf_filter[mac][filter_counter]=evbuf_scan[mac][i];
+    filter_counter++;
+    //set last2_ms
+    if(evbuf_scan[mac][i].ts0>=(1e9-2*MSOVERLAP) && i>number_ms[mac]){
+      if(last2_ms[mac]==0){
+        last2_ms[mac]=i;
+      }
+    }
+    //set last1_ms
+    if((evbuf_scan[mac][i].ts0>=(1e9-MSOVERLAP) && i>number_ms[mac])||i==(ev_counter_scan[mac]-1)){
+      if(last2_ms[mac]==0) last2_ms[mac]=i;
+      last1_ms[mac]=i;
+      number_ms[mac]=ev_counter_scan[mac]-last2_ms[mac];
+      last1_ms[mac]=last1_ms[mac]-last2_ms[mac];
+      break;
+    }
+    if(evbuf_scan[mac][i].flags==10 || evbuf_scan[mac][i].flags==11){
+      int new_ts1ref=1;
+      for(int j=0;j<ts1ref_counter[second%100];j++){
+        if(my_abs(evbuf_scan[mac][i].ts0,ts1ref_buffer[second%100][j])<20000) new_ts1ref++;
+      }
+      if(new_ts1ref==1){
+        ts1ref_buffer[second%100][ts1ref_counter[second%100]]=evbuf_scan[mac][i].ts0;
+        ts1ref_counter[second%100]++;
+      }
+    }
+  }
+  ready_to_scan=SCANBUF_READY_TO_FILL;
+  ev_counter_filter[mac]=filter_counter;
+}
+void crt::CRTRawtoCRTHit::filter_buffer(int mac){
+  //std::cout<<"filter data" <<std::endl;
+  int second = evbuf_filter[mac][ev_counter_filter[mac]-1].sec;
+  int beam_ev_counter=0, ts1_ref_counter=0;
+  uint32_t ts1_ref_approved[100][2];
+  int approved_ts1ref=0;
+  for(int i=0; i<ev_counter_filter[mac];i++){
+    for(int j=0;j<ts1ref_counter[second%100];j++){
+      if(my_abs((evbuf_filter[mac][i].ts0_scaled),ts1ref_buffer[second%100][j])<200){
+        //check if ts1_ref is also an event without flags in this second
+        nrwm1[mac]++;
+        ts1_ref_approved[approved_ts1ref][1]=0; //0= not recovered
+        ts1_ref_approved[approved_ts1ref][0]=ts1ref_buffer[second%100][j];
+        if(evbuf_filter[mac][i].flags!=11) {
+          evbuf_filter[mac][i].flags = evbuf_filter[mac][i].flags | 0x100;
+          ts1_ref_approved[approved_ts1ref][1]=1;}//1= recovered
+        else nrwm2[mac]++;
+        approved_ts1ref++;
+      }
+    }
+  }
+  if(run_mode==TS1_CORR){ //just assigne new ts1 for all events 6ms for beam trigger event.
+    for(int i=0; i<ev_counter_filter[mac];i++){
+      for(int j=0;j<approved_ts1ref;j++){
+        if((ts1_ref_approved[j][0]-evbuf_filter[mac][i].ts0_scaled)<6e6 && (ts1_ref_approved[j][0]>evbuf_filter[mac][i].ts0_scaled)){     
+            evbuf_filter[mac][i].ts1=4e9+ts1_ref_approved[j][0]-evbuf_filter[mac][i].ts0;
+        }
+      }
+    }
+    for(int i=0; i<ev_counter_filter[mac];i++){
+      evbuf_filter_scan[mac][i]=evbuf_filter[mac][i];
+      evbuf_filter_scan[mac][i].nrtrigger=nrwm2[mac];
+    }
+  }
+  
+  if(run_mode==FILTER_PAIR_MODE){
+    for(int i=0; i<ev_counter_filter[mac];i++){
+      for(int j=0;j<approved_ts1ref;j++){
+        if(((ts1_ref_approved[j][0]>evbuf_filter[mac][i].ts0_scaled) && (ts1_ref_approved[j][0]-evbuf_filter[mac][i].ts0_scaled)<MAX_TIME_PREBEAM) ||
+           ((ts1_ref_approved[j][0]<=evbuf_filter[mac][i].ts0_scaled) && (evbuf_filter[mac][i].ts0_scaled-ts1_ref_approved[j][0])<MAX_TIME_PASTBEAM)){
+
+          evbuf_filter_scan[mac][beam_ev_counter]=evbuf_filter[mac][i];
+          if(ts1_ref_approved[j][1]==1) evbuf_filter_scan[mac][beam_ev_counter].recover+=10;
+          if((evbuf_filter[mac][i].ts0_scaled+1e9*(evbuf_filter[mac][i].sec-second))<ts1_ref_approved[j][0]){
+            evbuf_filter_scan[mac][beam_ev_counter].ts1=4e9+ts1_ref_approved[j][0]-evbuf_filter[mac][i].ts0;}
+          else evbuf_filter_scan[mac][beam_ev_counter].ts1=evbuf_filter[mac][i].ts1;
+          evbuf_filter_scan[mac][beam_ev_counter].nrtrigger=nrwm1[mac];
+          beam_ev_counter++;
+          break;
+        }
+      }
+      if(evbuf_filter[mac][i].flags==11 || evbuf_filter[mac][i].flags==10) {
+        ts1_ref_counter++;
+      }
+    }
+  }
+  if(run_mode==FILTER_PAIR_MODE) {
+    ev_counter_filter_scan[mac]=beam_ev_counter;
+	  scan_filter_buffer(mac); 
+ }
+  
+  if(run_mode==TS1_CORR) { //scan all for pairs, with corrected ts1...
+    ev_counter_filter_scan[mac]=ev_counter_filter[mac];
+	  scan_filter_buffer(mac); 
+  } 
+}
+//scanned all hits of one module and looks for time coincidences in the second of all other modules/////////////////////////////////////////
+void crt::CRTRawtoCRTHit::scan_filter_buffer(int mac){  //scan over all events of one plane over one sec and search all possible coincidences
+  //std::cout<<"scan for pairs data" <<std::endl;
+  long time1, time2;
+  long delta;
+  for(int i=0;i<ev_counter_filter_scan[mac];i++){
+    if(run_mode!=TS1_CORR || !(i>20 && evbuf_filter_scan[mac][i].ts0 > (1e9-MSOVERLAP))){  
+    time1=evbuf_filter_scan[mac][i].ts0_scaled;
+    for(int j=0;j<MAXFEBNR;j++){
+        if(j!=mac){
+        for(int k=0;k<ev_counter_filter_scan[j];k++){
+          if(run_mode!=TS1_CORR || !(k>20 && evbuf_filter_scan[j][k].ts0 > (1e9-MSOVERLAP))){  
+           time2=evbuf_filter_scan[j][k].ts0_scaled;
+           delta=time2-time1;
+
+           if((abs(delta)<MAX_TIME_DIFFERENCE)&&((evbuf_filter_scan[j][k].flags==3 && evbuf_filter_scan[mac][i].flags==3)||(evbuf_filter_scan[j][k].flags==1 && evbuf_filter_scan[mac][i].flags==1))){
+             //while(ready_to_send[send_bufnr]){ printf("wait bufnr: %d writting!\n", send_bufnr); }
+             coincidence[send_bufnr][0].mac5=evbuf_filter_scan[mac][i].mac5;
+             coincidence[send_bufnr][0].flags=evbuf_filter_scan[mac][i].flags;
+             coincidence[send_bufnr][0].lostcpu=evbuf_filter_scan[mac][i].lostcpu;
+             coincidence[send_bufnr][0].lostfpga=evbuf_filter_scan[mac][i].lostfpga;
+             coincidence[send_bufnr][0].ts0=evbuf_filter_scan[mac][i].ts0_scaled;
+             coincidence[send_bufnr][0].ts1=evbuf_filter_scan[mac][i].ts1;
+             for(int amp=0;amp<32;amp++) coincidence[send_bufnr][0].adc[amp]=evbuf_filter_scan[mac][i].adc[amp];
+             coincidence[send_bufnr][0].recover=evbuf_filter_scan[mac][i].recover;
+             coincidence[send_bufnr][0].nrtrigger=evbuf_filter_scan[mac][i].nrtrigger;
+             coincidence[send_bufnr][0].nrtrigger_11=evbuf_filter_scan[mac][i].nrtrigger_11;
+
+             coincidence[send_bufnr][1].mac5=evbuf_filter_scan[j][k].mac5;
+             coincidence[send_bufnr][1].flags=evbuf_filter_scan[j][k].flags;
+             coincidence[send_bufnr][1].lostcpu=evbuf_filter_scan[j][k].lostcpu;
+             coincidence[send_bufnr][1].lostfpga=evbuf_filter_scan[j][k].lostfpga;
+             coincidence[send_bufnr][1].ts0=evbuf_filter_scan[j][k].ts0_scaled;
+             coincidence[send_bufnr][1].ts1=evbuf_filter_scan[j][k].ts1;
+             for(int amp=0;amp<32;amp++) coincidence[send_bufnr][1].adc[amp]=evbuf_filter_scan[j][k].adc[amp];
+             coincidence[send_bufnr][1].recover=evbuf_filter_scan[j][k].recover;
+             coincidence[send_bufnr][1].nrtrigger=evbuf_filter_scan[j][k].nrtrigger;
+             coincidence[send_bufnr][1].nrtrigger_11=evbuf_filter_scan[j][k].nrtrigger_11;
+
+             coincidence[send_bufnr][2].mac5=0xFFFF;
+             coincidence[send_bufnr][2].flags=2;
+             coincidence[send_bufnr][2].ts0=evbuf_filter_scan[mac][i].sec;
+             coincidence[send_bufnr][2].ts1=evbuf_filter_scan[j][k].sec;
+             for(int amp=0;amp<32;amp++) coincidence[send_bufnr][2].adc[amp]=0;
+             coincidence[send_bufnr][2].adc[0]=evbuf_filter_scan[mac][i].ms;
+             coincidence[send_bufnr][2].adc[1]=evbuf_filter_scan[j][k].ms;
+             coincidence[send_bufnr][2].recover=abs(i-j);
+             int buf_to_send=send_bufnr;
+             make2DHit(buf_to_send);
+           }
+          }
+        } //end loop through all events of feb j
+       }
+      }//end loop over all febs
+ }
+  }
+  ready_to_scan=SCANBUF_READY_TO_FILL;
+}
+unsigned int crt::CRTRawtoCRTHit::my_abs(unsigned int a, unsigned int b){
+  unsigned int c=0;
+  if(a<b) c=b-a;
+  else c=a-b;
+  return c;
+}
+int crt::CRTRawtoCRTHit::XY_pair(int pos, int mac1, int mac2){
+  switch(pos){
+    case 3: return XYtracks_Top(mac1,mac2); break;
+    case 2: return XYtracks_Pipe(mac1,mac2); break;
+    case 1: return XYtracks_Feed(mac1,mac2); break;
+    case 0: return XYtracks_Bottom(mac1,mac2); break;
+  }
+ return 0;
+  
+}
+int crt::CRTRawtoCRTHit::XYtracks_Bottom(int mac3, int mac4){
+  int check1=0;
+  if(mac3==0||mac4==0) {refused++; return 0;}
+  if(mac3==22 || mac3==23 ||mac3==24||mac3==12){
+    if(mac4==11 || mac4==14 ||mac4==17||mac4==18||mac4==19){
+      check1=1;}
+  }
+  if(mac3==11 || mac3==14 ||mac3==17||mac3==18||mac3==19){
+    if(mac4==22 || mac4==23 ||mac4==24||mac4==12){
+      check1=1;}
+  } 
+  if(check1==1) return 1;
+  else {refused++; return 0;}
+}
+int crt::CRTRawtoCRTHit::XYtracks_Top(int mac1, int mac2){
+  int check2=0;
+  if(mac1==0||mac2==0) {refused++; return 0;}
+  if(mac1==109 || mac1==105 ||mac1==106||mac1==107  ||mac1==125  ||mac1==126  ||mac1==128  ||mac1==111  ||mac1==112  ||mac1==108  ||mac1==124  ||mac1==123  ||mac1==122){
+    if(mac2==113 || mac2==114 ||mac2==115||mac2==116  ||mac2==117  ||mac2==118  ||mac2==127  ||mac2==121  ||mac2==120  ||mac2==119  ||mac2==129){
+      check2=1;}
+  }
+  if(mac1==113 || mac1==114 ||mac1==115||mac1==116  ||mac1==117  ||mac1==118  ||mac1==127  ||mac1==121  ||mac1==120  ||mac1==119  ||mac1==129){
+    if(mac2==109 || mac2==105 ||mac2==106||mac2==107  ||mac2==125  ||mac2==126  ||mac2==128  ||mac2==111  ||mac2==112  ||mac2==108  ||mac2==124  ||mac2==123  ||mac2==122){
+      check2=1;}
+  }
+  if(check2==1) return 1;
+  else {refused++; return 0;}
+}
+int crt::CRTRawtoCRTHit::XYtracks_Feed(int mac3, int mac4){
+  int check1=0;  
+  if(mac3==0||mac4==0) {refused++; return 0;}
+  if(mac3==52||mac3==31||mac3==29||mac3==28||mac3==27||mac3==26||mac3==30){
+    if(mac4==60||mac4==58||mac4==56||mac4==61||mac4==59||mac4==57){
+      check1=1;}
+  }
+  if(mac3==60||mac3==58||mac3==56||mac3==61||mac3==59||mac3==57){
+    if(mac4==52||mac4==31||mac4==29||mac4==28||mac4==27||mac4==26||mac4==30){
+      check1=1;}
+  }
+  if(check1==1) return 1;
+  else {refused++; return 0;} 
+}
+int crt::CRTRawtoCRTHit::XYtracks_Pipe(int mac1, int mac2){
+  int check2=0;
+  if(mac1==0||mac2==0) {refused++; return 0;}
+  if(mac1==37||mac1==33||mac1==34||mac1==35||mac1==36||mac1==32||mac1==38||mac1==39||mac1==40||mac1==41||mac1==42||mac1==43||mac1==44 ||mac1==45){
+    if(mac2==53||mac2==54||mac2==55||mac2==15||mac2==16||mac2==20||mac2==21||mac2==46||mac2==47||mac2==48||mac2==49||mac2==50||mac2==51){
+      check2=1;}
+  }
+  if(mac1==53||mac1==54||mac1==55||mac1==15||mac1==16||mac1==20||mac1==21||mac1==46||mac1==47||mac1==48||mac1==49||mac1==50||mac1==51){
+    if(mac2==37||mac2==33||mac2==34||mac2==35||mac2==36||mac2==32||mac2==38||mac2==39||mac2==40||mac2==41||mac2==42||mac2==43||mac2==44 ||mac2==45){
+      check2=1;}
+  }
+  if(check2==1) return 1;
+  else {refused++; return 0;} 
+}
+void crt::CRTRawtoCRTHit::InitReconst(){
+  printf("initializing the data!\n");
+ double x, y, z, dt; //pos
+ int id;//ind;
+ int pl,ch,a,b,c;
+  for(int m=0;m<200;m++) for(int c=0;c<32;c++) {Xs[m][c]=0;Ys[m][c]=0;Zs[m][c]=0;Dts[m]=0;Exists[m]=0;} 
+  std::ifstream in;
+  in.open("/uboone/app/users/dlorca/testberncode_june/larsoft_v06_36_00/srcs/uboonecode/uboone/CRT/CRTpositionsSiPM-V8.txt");
+  //in.open("CRTpositionsSiPM-V8.txt");
+  if (in.is_open()){
+    std::cout << "initializing position" << std::endl;
+    while (!in.eof()) {
+      in>>id>>x>>y>>z>>a>>b>>c;
+      pl=id/100; ch=(id-100*int(pl));
+      Xs[pl][ch]=x;
+      Ys[pl][ch]=y;
+      Zs[pl][ch]=z;
+    }      
+    in.close();
+  }
+   else
+  {
+    std::cout << "Error opening position file";
+  }
+  
+  std::ifstream in1;
+  in1.open("/uboone/app/users/dlorca/testberncode_june/larsoft_v06_36_00/srcs/uboonecode/uboone/CRT/FEB_CableDelay-V8.txt");
+  //in1.open("FEB_CableDelay-V8.txt");
+  if (in1.is_open()){
+    std::cout << "initializing delay" << std::endl;
+    while (!in1.eof()) {
+      in1>>pl>>dt;
+      Dts[pl]=dt;
+      Exists[pl]=1;
+    }      
+    in1.close();
+    }
+   else
+   {
+    std::cout << "Error opening cabledelay file";
+   }
+  
+}
+double crt::CRTRawtoCRTHit::getFineCoordExperim(int sL, int sR){
+ double ret;
+if(sL==0) sL=1;
+ret=STRIPW/2.*atan(log(1.*sR/sL));
+return ret;
+}
+double crt::CRTRawtoCRTHit::TWCorrection(int max1ach, int max2ach) {
+ return 4*log(max2ach/max1ach);
+}
+double crt::CRTRawtoCRTHit::getHitT1(int mac1, int strip1,  int t1, int mac2, int strip2, int t2){ 
+  double ret=0;
+  double L=0;
+  if(Xs[mac2][0]!=Xs[mac2][2]) L=Xs[mac2][strip2*2]-Xs[mac1][0]; //coord along the strip minus SiPM position
+  if(Ys[mac2][0]!=Ys[mac2][2]) L=Ys[mac2][strip2*2]-Ys[mac1][0]; //coord along the strip minus SiPM position
+  if(Zs[mac2][0]!=Zs[mac2][2]) L=Zs[mac2][strip2*2]-Zs[mac1][0]; //coord along the strip minus SiPM position
+  if(L<0) L=-L;
+  ret=t1-L*6.2/100.; //protagation along the fiber correction, 6.2 ns/m
+  ret=ret+Dts[mac1]; //ref PPS cable 
+  return ret;
+}
+double crt::CRTRawtoCRTHit::getHitT2(int mac1, int strip1,  int t1, int mac2, int strip2, int t2){ 
+  double ret=0; 
+  double L=0;
+  if(Xs[mac1][0]!=Xs[mac1][2]) L=Xs[mac1][strip1*2]-Xs[mac2][0]; //coord along the strip minus SiPM position
+  if(Ys[mac1][0]!=Ys[mac1][2]) L=Ys[mac1][strip1*2]-Ys[mac2][0]; //coord along the strip minus SiPM position
+  if(Zs[mac1][0]!=Zs[mac1][2]) L=Zs[mac1][strip1*2]-Zs[mac2][0]; //coord along the strip minus SiPM position
+  if(L<0) L=-L;
+  ret=t2-L*6.2/100.; //protagation along the fiber correction,6.2 ns/m
+  ret=ret+Dts[mac2];//ref PPS cable  
+  return ret;
+}
+double crt::CRTRawtoCRTHit::getHitDT(int mac1, int strip1,  int t1, int max1_adc, int mac2, int strip2,int t2, int max2_adc){ 
+ return getHitT2(mac1,strip1,t1,mac2,strip2,t2)-getHitT1(mac1,strip1,t1,mac2,strip2,t2)+4*log((double)max2_adc/8178)-4*log((double)max1_adc/8178);
+}
+double crt::CRTRawtoCRTHit::getHitT(int mac1, int strip1,  int t1, int max1_adc, int mac2, int strip2,  int t2, int max2_adc){ 
+ return (getHitT2(mac1,strip1,t1,mac2,strip2,t2)+getHitT1(mac1,strip1,t1,mac2,strip2,t2)+4*log((double)max1_adc/8178)+4*log((double)max2_adc/8178))/2.;
+}
+double crt::CRTRawtoCRTHit::getHitX(int mac1, int strip1, int mac2, int strip2){ 
+  double ret=0; 
+  //printf("xs11: %f, Xs12: %f\n", Xs[mac1][0],Xs[mac1][2]);
+  //printf("xs21: %f, Xs22: %f\n", Xs[mac1][0],Xs[mac1][2]);
+  if(Xs[mac1][0]!=Xs[mac1][2]) ret=(Xs[mac1][strip1*2]+Xs[mac1][strip1*2+1])/2.;
+  else if(Xs[mac2][0]!=Xs[mac2][2]) ret=(Xs[mac2][strip2*2]+Xs[mac2][strip2*2+1])/2.;
+  else ret=(Xs[mac2][strip2*2]+Xs[mac1][strip1*2])/2;
+  //printf("ret2: %f\n", ret);
+  return ret;
+}
+double crt::CRTRawtoCRTHit::getHitY(int mac1, int strip1, int mac2, int strip2){ 
+  double ret=0; 
+  if(Ys[mac1][0]!=Ys[mac1][2]) ret=(Ys[mac1][strip1*2]+Ys[mac1][strip1*2+1])/2.;
+  else if(Ys[mac2][0]!=Ys[mac2][2]) ret=(Ys[mac2][strip2*2]+Ys[mac2][strip2*2+1])/2.;
+  else ret=(Ys[mac2][strip2*2]+Ys[mac1][strip1*2])/2;
+  return ret;
+}
+double crt::CRTRawtoCRTHit::getHitZ(int mac1, int strip1, int mac2, int strip2){ 
+  double ret=0; 
+  if(Zs[mac1][0]!=Zs[mac1][2]) ret=(Zs[mac1][strip1*2]+Zs[mac1][strip1*2+1])/2.;
+  else if(Zs[mac2][0]!=Zs[mac2][2]) ret=(Zs[mac2][strip2*2]+Zs[mac2][strip2*2+1])/2.;
+  else ret=(Zs[mac2][strip2*2]+Zs[mac1][strip1*2])/2;
+  return ret;
+}
+void crt::CRTRawtoCRTHit::make2DHit(int bufnr){
+  //std::cout<<"make 2D hit" <<std::endl;
+  uint32_t first_second=0;
+  crt::CRTHit crt2Dhit;
+  if(coincidence[bufnr][2].ts0>1 && coincidence[bufnr][2].ts0<first_second) first_second=coincidence[bufnr][2].ts0;
+  int XY = 0;
+    crt2Dhit.plane=-1;
+    if(XY_pair(0, coincidence[bufnr][0].mac5, coincidence[bufnr][1].mac5)){ XY=1; crt2Dhit.plane=0;}
+    else if(XY_pair(1, coincidence[bufnr][0].mac5, coincidence[bufnr][1].mac5)){ XY=1; crt2Dhit.plane=1;}
+    else if(XY_pair(2, coincidence[bufnr][0].mac5, coincidence[bufnr][1].mac5)){ XY=1; crt2Dhit.plane=2;}
+    else if(XY_pair(3, coincidence[bufnr][0].mac5, coincidence[bufnr][1].mac5)){ XY=1; crt2Dhit.plane=3;}
+  if(XY && coincidence[bufnr][2].ts0!=0){
+    //if(XY){
+    int max1_ach=0, max1_nch=0, max2_ach=0, max2_nch=0;  //max1_adc=0,  max2_adc=0
+
+    crt2Dhit.feb_id.push_back(coincidence[bufnr][0].mac5);
+    crt2Dhit.feb_id.push_back(coincidence[bufnr][1].mac5);
+
+    std::vector<std::pair<int,double> > vec_pes_tevt;
+    std::vector<std::pair<int,double> > vec_pes_st;
+
+    for(size_t i_chan=0; i_chan<32; ++i_chan){
+      /*int key_tevt = coincidence[bufnr][0].mac5*100+i_chan;
+      std::pair<double,double> gain_tevt = crt::auxfunctions::getGain(key_tevt, SiPMgain);
+      std::pair<double,double> pedestal_tevt = crt::auxfunctions::getGain(key_tevt, SiPMpedestal);
+      double pes_tevt = ( (coincidence[bufnr][0].adc[i_chan]) - pedestal_tevt.first) / gain_tevt.first;*/
+      double pes_tevt =  (double)coincidence[bufnr][0].adc[i_chan];
+      std::pair<int,double> pair_tevt = std::make_pair(i_chan,pes_tevt);
+      vec_pes_tevt.push_back(pair_tevt);
+
+      /*int key_st = feb_st*100+i_chan;
+      std::pair<double,double> gain_st = crt::auxfunctions::getGain(key_st, SiPMgain);
+      std::pair<double,double> pedestal_st = crt::auxfunctions::getGain(key_st, SiPMpedestal);
+      double pes_st = ( coincidence[bufnr][1].adc[i_chan] - pedestal_st.first) / gain_st.first;*/
+      double pes_st =  (double)coincidence[bufnr][1].adc[i_chan];
+      std::pair<int,double> pair_st = std::make_pair(i_chan,pes_st);
+      vec_pes_st.push_back(pair_st);
+    }
+
+
+    std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap_hit;
+    pesmap_hit[coincidence[bufnr][0].mac5] = vec_pes_tevt;
+    pesmap_hit[coincidence[bufnr][1].mac5] = vec_pes_st;
+    crt2Dhit.pesmap = pesmap_hit;
+
+
+    crt2Dhit.peshit=0;
+    crt2Dhit.ts0_s=coincidence[bufnr][2].ts0;
+    crt2Dhit.ts0_s_err=0;
+    
+    int ch[16];
+    for(int j=0;j<16;j++){ //set max_ach + max__nch
+      ch[j]=0;
+      ch[j]=coincidence[bufnr][0].adc[j*2]+coincidence[bufnr][0].adc[j*2+1];
+      if(ch[j]>max1_ach) {max1_ach=ch[j]; max1_nch=j;}
+      ch[j]=0;
+      ch[j]=coincidence[bufnr][1].adc[j*2]+coincidence[bufnr][1].adc[j*2+1];
+      if(ch[j]>max2_ach) {max2_ach=ch[j]; max2_nch=j;}
+    }
+    int ts1_local1=0, ts1_local2=0;
+    if(coincidence[bufnr][0].ts1>4e9){ ts1_local1=-(coincidence[bufnr][0].ts1-4e9);}
+    else ts1_local1=coincidence[bufnr][0].ts1;
+    if(coincidence[bufnr][1].ts1>4e9){ ts1_local2=-(coincidence[bufnr][1].ts1-4e9);}
+    else ts1_local2=coincidence[bufnr][1].ts1;
+    crt2Dhit.ts0_ns=getHitT(coincidence[bufnr][0].mac5, max1_nch,  coincidence[bufnr][0].ts0, max1_ach, coincidence[bufnr][1].mac5, max2_nch,  coincidence[bufnr][1].ts0, max2_ach);
+    crt2Dhit.ts0_ns_err=abs((coincidence[bufnr][0].ts0+coincidence[bufnr][0].ts0)/2-crt2Dhit.ts0_ns);
+    crt2Dhit.ts1_ns=getHitT(coincidence[bufnr][0].mac5, max1_nch,  ts1_local1, max1_ach, coincidence[bufnr][1].mac5, max2_nch,  ts1_local2, max2_ach);
+    crt2Dhit.ts1_ns_err=abs((ts1_local1+ts1_local2)/2-crt2Dhit.ts1_ns);
+
+    crt2Dhit.x_pos= getHitX(coincidence[bufnr][0].mac5, max1_nch, coincidence[bufnr][1].mac5, max2_nch);
+    crt2Dhit.x_err=1;
+    crt2Dhit.y_pos= getHitY(coincidence[bufnr][0].mac5, max1_nch, coincidence[bufnr][1].mac5, max2_nch);
+    crt2Dhit.y_err=1;
+    crt2Dhit.z_pos= getHitZ(coincidence[bufnr][0].mac5, max1_nch, coincidence[bufnr][1].mac5, max2_nch);
+    crt2Dhit.z_err=1;
+
+		if(verbose_!=0){
+			printf("max1_ach: %d, max1_nch %d, max2_ach: %d, max2_nch: %d\n", max1_ach,max1_nch, max2_ach, max2_nch);
+			printf("ids: %d, %d, x: %f, y: %f, z: %f, plane: %d\n", crt2Dhit.feb_id[0], crt2Dhit.feb_id[1], crt2Dhit.x_pos, crt2Dhit.y_pos, crt2Dhit.z_pos, crt2Dhit.plane);
+			printf("ts0: %d, ts1: %d, sec: %d\n", crt2Dhit.ts0_s, crt2Dhit.ts1_ns, crt2Dhit.ts0_s);
+		}
+    //something like this here:
+    allmyCRTHits.push_back(crt2Dhit);
+    if(allmyCRTHits.size()>2) check_storing();
+    //crt2Dhit.feb_id.clear(); 
+	}
+}
+void crt::CRTRawtoCRTHit::check_storing(){
+  //std::cout<<"check store data" <<std::endl;
+  if((allmyCRTHits[allmyCRTHits.size()-1].ts0_s-allmyCRTHits[0].ts0_s)>2){
+    save_event=1;
+    uint32_t this_sec=allmyCRTHits[0].ts0_s;
+    int hit_counter=0;
+    for(unsigned int i=0; i<allmyCRTHits.size(); i++){
+      if(allmyCRTHits[i].ts0_s==this_sec){
+        allCRTHits.push_back(allmyCRTHits[i]);
+        hit_counter++;
+      }
+    }
+    int stop=allmyCRTHits.size();
+    for(int i=0; i<stop; i++){
+      if(allmyCRTHits[i].ts0_s==this_sec){
+        allmyCRTHits.erase (allmyCRTHits.begin()+i);
+        i--;
+        stop--;
+      }  
+    }
+    total_hits+=hit_counter;
+    //std::cout<<"found: " << hit_counter << " of " << total_hits << " int the second: "<< this_sec <<std::endl;
+  }
+}
+
 
 DEFINE_ART_MODULE(crt::CRTRawtoCRTHit)

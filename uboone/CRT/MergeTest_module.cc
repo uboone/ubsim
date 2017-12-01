@@ -24,7 +24,7 @@
 #include "lardataobj/AnalysisBase/CosmicTag.h"
 #include "lardata/Utilities/AssociationUtil.h"
 
-#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
+//#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
 #include "artdaq-core/Data/Fragments.hh"
 
 #include "art/Framework/Services/Optional/TFileService.h"
