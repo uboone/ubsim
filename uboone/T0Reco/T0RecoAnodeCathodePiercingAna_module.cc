@@ -227,8 +227,6 @@ void T0RecoAnodeCathodePiercingAna::beginJob()
   _2dhit_tree->Branch("_rc_z_end",&_rc_z_end,"rc_z_end/D");
   _2dhit_tree->Branch("_t0",&_t0,"t0/D");
 
-  fResolution = 10; // cm
-
   // Use '_detp' to find 'efield' and 'temp'
   auto const* _detp = lar::providerFrom<detinfo::DetectorPropertiesService>();
   double efield = _detp -> Efield();
