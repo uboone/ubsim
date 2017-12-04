@@ -261,6 +261,10 @@ microboone_reco_mcc8_producers:
   # PFParticles
   trajclusterTruthMatch:                  @local::standard_mctrutht0matching
 
+  # Hits only
+  gaushitTruthMatch:                      @local::standard_mcparticlehitmatching
+  crHitRemovalTruthMatch:                 @local::standard_mcparticlehitmatching
+  trajclusterTruthMatch:                  @local::standard_mcparticlehitmatching
 }
 
 microboone_reco_mcc8_filters:
@@ -284,7 +288,7 @@ microboone_reco_mcc8_optical: [ saturation,
 
 microboone_reco_mcc8_signalprocessing: [ #digitfilter,
                                          wcNoiseFilter,
-					 caldata,
+					                               caldata,
                                          gaushit ]
 
 microboone_reco_mcc8_fuzzycluster: [     #fuzzycluster ]
@@ -327,7 +331,7 @@ microboone_reco_mcc8_cctracks: [         #trackkalmanhitcc,
                                          pmtrack,
                                          pmtracktag,
                                          pmtrackContTag,
-					 pmtrackMCSMu,
+					                               pmtrackMCSMu,
                                          pmtrackT0Reco,
                                          pmtrackT0RecoLoose,
                                          pmtrackT0RecoBeam,
@@ -335,7 +339,8 @@ microboone_reco_mcc8_cctracks: [         #trackkalmanhitcc,
                                          pmtrackpid]
 
 microboone_reco_mcc8_ccpath: [           @sequence::microboone_reco_mcc8_clustercrawler,
-                                         @sequence::microboone_reco_mcc8_cctracks ]
+                                         @sequence::microboone_reco_mcc8_cctracks,
+                                         trajclusterTruthMatch ]
 
 microboone_reco_mcc8_pandoraCosmic: [    pandoraCosmic,
                                          pandoraCosmicKHit,
@@ -345,7 +350,7 @@ microboone_reco_mcc8_pandoraCosmic: [    pandoraCosmic,
                                          pandoraCosmicKHitT0RecoLoose,
                                          pandoraCosmicKHitT0RecoBeam,
 #                                         pandoraCosmicPMA,
-					 pandoraCosmicMCSMu,
+					                               pandoraCosmicMCSMu,
                                          pandoraCosmicKHitcalo,
                                          pandoraCosmicKHitpid,
                                          pandoraCosmicKalmanTrackcalo,
@@ -394,6 +399,7 @@ microboone_reco_mcc8_pandoraNu: [        pandoraNu,
 
 
 microboone_reco_mcc8_pandora: [          @sequence::microboone_reco_mcc8_pandoraCosmic,
+                                         crHitRemovalTruthMatch,
                                          @sequence::microboone_reco_mcc8_pandoraNu ]
 
 microboone_reco_mcc8_mcreco: [           mchitfinder,
@@ -415,29 +421,35 @@ microboone_reco_mcc8_truthmatch: [       pandoraCosmicKHitTruthMatch,
                                          trajclusterTruthMatch  ]
 
 microboone_reco_mcc8: [                  rns,
-                                         @sequence::microboone_reco_mcc8_mcreco,
-                                         @sequence::microboone_reco_mcc8_optical,
+                                         #@sequence::microboone_reco_mcc8_mcreco,
+                                         eventweight,
+					                               @sequence::microboone_reco_mcc8_optical,
                                          @sequence::microboone_reco_mcc8_signalprocessing,
-                                         #@sequence::microboone_reco_mcc8_fuzzypath,
+                                         gaushitTruthMatch,
+					                               #@sequence::microboone_reco_mcc8_fuzzypath,
                                          @sequence::microboone_reco_mcc8_pandora,
-                                         @sequence::microboone_reco_mcc8_ccpath,
-                                         @sequence::microboone_reco_mcc8_truthmatch]
+                                         @sequence::microboone_reco_mcc8_ccpath ]
+#                                         @sequence::microboone_reco_mcc8_truthmatch]
 
 microboone_reco_mcc8_stage1: [           rns,
-                                         @sequence::microboone_reco_mcc8_mcreco,
-                                         @sequence::microboone_reco_mcc8_optical,
-                                         @sequence::microboone_reco_mcc8_signalprocessing ]
+                                         #@sequence::microboone_reco_mcc8_mcreco,
+                                         eventweight,
+					                               @sequence::microboone_reco_mcc8_optical,
+                                         @sequence::microboone_reco_mcc8_signalprocessing,
+					                               gaushitTruthMatch ]
                                          #@sequence::microboone_reco_mcc8_fuzzypath ]
 
 microboone_reco_mcc8_stage2: [           rns,
                                          @sequence::microboone_reco_mcc8_pandora,
-                                         @sequence::microboone_reco_mcc8_ccpath,
-                                         @sequence::microboone_reco_mcc8_truthmatch]
+                                         @sequence::microboone_reco_mcc8_ccpath ]
+#                                         @sequence::microboone_reco_mcc8_truthmatch]
 
 microboone_reco_mcc8_core: [             rns,
-                                         @sequence::microboone_reco_mcc8_mcreco,
-                                         @sequence::microboone_reco_mcc8_optical,
-                                         @sequence::microboone_reco_mcc8_signalprocessing ]
+                                         #@sequence::microboone_reco_mcc8_mcreco,
+                                         eventweight,
+					                               @sequence::microboone_reco_mcc8_optical,
+                                         @sequence::microboone_reco_mcc8_signalprocessing,
+					                               gaushitTruthMatch ]
 
 microboone_reco_mcc8_2D: [               rns,
                                          #@sequence::microboone_reco_mcc8_fuzzycluster,
@@ -816,6 +828,19 @@ microboone_reco_mcc8_producers.trajclusterTruthMatch.ShowerModuleLabel: "trajclu
 microboone_reco_mcc8_producers.trajclusterTruthMatch.PFParticleModuleLabel: "trajcluster"
 microboone_reco_mcc8_producers.trajclusterTruthMatch.makeT0Assns: false
 microboone_reco_mcc8_producers.trajclusterTruthMatch.makePFParticleAssns: true
+
+# Hit only
+microboone_reco_mcc8_producers.gaushitTruthMatch.HitParticleAssociations:                        @local::DirectHitParticleAssnsTool
+microboone_reco_mcc8_producers.gaushitTruthMatch.HitParticleAssociations.HitModuleLabel:         "gaushit"
+microboone_reco_mcc8_producers.gaushitTruthMatch.HitParticleAssociations.MCParticleModuleLabel:  "largeant"
+
+microboone_reco_mcc8_producers.crHitRemovalTruthMatch.HitParticleAssociations:                   @local::IndirectHitParticleAssnsTool
+microboone_reco_mcc8_producers.crHitRemovalTruthMatch.HitParticleAssociations.HitPartAssnsLabel: "gaushitTruthMatch"
+microboone_reco_mcc8_producers.crHitRemovalTruthMatch.HitParticleAssociations.HitModuleLabel:    "pandoraCosmicHitRemoval"
+
+microboone_reco_mcc8_producers.trajclusterTruthMatch.HitParticleAssociations:                    @local::IndirectHitParticleAssnsTool
+microboone_reco_mcc8_producers.trajclusterTruthMatch.HitParticleAssociations.HitPartAssnsLabel:  "gaushitTruthMatch"
+microboone_reco_mcc8_producers.trajclusterTruthMatch.HitParticleAssociations.HitModuleLabel:     "trajcluster"
 
 #filters
 microboone_reco_mcc8_filters.opfiltercommonbnb.OpHitProducer: "ophitBeam"
