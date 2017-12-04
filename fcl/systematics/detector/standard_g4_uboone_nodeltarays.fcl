@@ -2,6 +2,8 @@
 
 process_name: G4NoDeltaRays
 
+outputs.out1.fileName: "detsyst_%tc_g4_nodeltarays.root"
+
 source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*","drop *_*_*_G4*"]
 
 physics.producers.largeant.GeantCommandFile: "noDeltaLArG4.mac"

@@ -2,6 +2,8 @@
 
 process_name: DetsimWithDIC
 
+outputs.out1.fileName: "%ifb_%tc_detsim_withDIC.root"
+
 source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*" ]
 
 services.SignalShapingServiceMicroBooNE.YZdependentResponse:  false
@@ -15,3 +17,8 @@ services.SignalShapingServiceMicroBooNE.DefaultEField:       0.5
 services.SignalShapingServiceMicroBooNE.DefaultTemperature:  87.0
 services.SignalShapingServiceMicroBooNE.FilterWidthCorrectionFactor:  [ 0.738, 0.738, 0.738 ]
 services.SignalShapingServiceMicroBooNE.FieldRespAmpVec: [0.88, 0.70, 1.0]
+
+services.DetectorPropertiesService.NumberTimeSamples: 9600
+services.DetectorPropertiesService.ReadOutWindowSize: 9600
+services.DetectorClocksService.InheritClockConfig:    false
+services.DetectorClocksService.TriggerOffsetTPC:      -1600
