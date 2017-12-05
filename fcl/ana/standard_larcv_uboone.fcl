@@ -33,7 +33,7 @@ physics.analyzers:  {
 
 # Define larcv analyzer sequence.
 
-physics.larcv: [ opreco, reco2d, mcinfo, superaWholeViewMC ]
+physics.larcv: [ opreco, reco2d, superaWholeViewMC ]
 
 # Add larcv sequence to end_paths.
 
@@ -43,11 +43,10 @@ physics.end_paths: [ larcv ]
 
 microboone_tfile_metadata:
 {
-  JSONFileName:	[ "larlite_mcinfo.root.json",
-                  "larlite_opreco.root.json",
+  JSONFileName:	[ "larlite_opreco.root.json",
                   "larlite_reco2d.root.json",
                   "larcv.root.json" ]
-  GenerateTFileMetadata: [ true, true, true, true ]
-  dataTier:              [ "larlite", "larlite", "larlite", "larcv" ]
-  fileFormat:            [ "root", "root", "root", "root" ]
+  GenerateTFileMetadata: [ true, true, true ]
+  dataTier:              [ "larlite", "larlite", "larcv" ]
+  fileFormat:            [ "root", "root", "root" ]
 }

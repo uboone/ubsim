@@ -9,4 +9,3 @@ physics.producers.pandoraCosmicHitRemoval.HitMCParticleAssnLabel: "gaushitTruthM
 outputs.out1.outputCommands: [ "keep *_*_*_*",
    		               "drop sim::SimChannels_*_*_*",
 		               "drop raw::RawDigits_*_*_*" ]
-

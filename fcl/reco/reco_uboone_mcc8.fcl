@@ -30,6 +30,7 @@
 #include "eventweight_microboone_BNBcorrectionOnly.fcl"
 
 #include "microboone_dlpmtprecuts.fcl"
+#include "dlprod_fclbase_analyzers.fcl"
 
 BEGIN_PROLOG
 
@@ -267,6 +268,13 @@ microboone_reco_mcc8_producers:
   trajclusterTruthMatch:                  @local::standard_mcparticlehitmatching
 }
 
+microboone_reco_mcc8_analyzers:
+{
+  # Larlite mc information.
+  # This needs to run in reco stage because it uses SimChannel data product.
+  dlprodMcinfo: @local::dlprod_analyzers.mcinfo
+}
+
 microboone_reco_mcc8_filters:
 { 
   #here are the common filters
@@ -460,6 +468,7 @@ microboone_reco_mcc8_3D: [               rns,
                                          @sequence::microboone_reco_mcc8_cctracks,
                                          @sequence::microboone_reco_mcc8_pandora ]
 
+microboone_dlprod_ana_stage1: [          dlprodMcinfo ]
 
 ### Below we include overrides for the modules above
 ### These are for MCC 7
