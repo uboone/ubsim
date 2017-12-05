@@ -12,10 +12,10 @@ outputs.out1.dataTier: "reconstructed"
 source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McReco*" ]
 
 
-services.DetectorPropertiesService.NumberTimeSamples: 9600
-services.DetectorPropertiesService.ReadOutWindowSize: 9600
-services.DetectorClocksService.InheritClockConfig:    false
-services.DetectorClocksService.TriggerOffsetTPC:      -1600
+#services.DetectorPropertiesService.NumberTimeSamples: 9600
+#services.DetectorPropertiesService.ReadOutWindowSize: 9600
+#services.DetectorClocksService.InheritClockConfig:    false
+#services.DetectorClocksService.TriggerOffsetTPC:      -1600
 
 outputs.out1.outputCommands: [ "keep *_*_*_*",
                                "drop sim::SimChannel_*_*_*",

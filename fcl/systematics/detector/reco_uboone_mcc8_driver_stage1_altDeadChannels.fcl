@@ -14,7 +14,7 @@ services.ChannelStatusService.ChannelStatusProvider.DatabaseRetrievalAlg.DBUrl: 
 services.ChannelStatusService.ChannelStatusProvider.DatabaseRetrievalAlg.DBFolderName: "channelstatus_mcc8_altdeadchannels"
 services.ChannelStatusService.ChannelStatusProvider.DatabaseRetrievalAlg.DBTag: "v1r0"
 
-services.DetectorPropertiesService.NumberTimeSamples: 9600
-services.DetectorPropertiesService.ReadOutWindowSize: 9600
-services.DetectorClocksService.InheritClockConfig:    false
-services.DetectorClocksService.TriggerOffsetTPC:      -1600
+#services.DetectorPropertiesService.NumberTimeSamples: 9600
+#services.DetectorPropertiesService.ReadOutWindowSize: 9600
+#services.DetectorClocksService.InheritClockConfig:    false
+#services.DetectorClocksService.TriggerOffsetTPC:      -1600

@@ -13,8 +13,8 @@ source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McReco*" ]
 services.SignalShapingServiceMicroBooNE.FieldResponseFVersion:  [ "v3.13", "v3.13" ]
 
 
-services.DetectorPropertiesService.NumberTimeSamples: 9600
-services.DetectorPropertiesService.ReadOutWindowSize: 9600
-services.DetectorClocksService.InheritClockConfig:    false
-services.DetectorClocksService.TriggerOffsetTPC:      -1600
+#services.DetectorPropertiesService.NumberTimeSamples: 9600
+#services.DetectorPropertiesService.ReadOutWindowSize: 9600
+#services.DetectorClocksService.InheritClockConfig:    false
+#services.DetectorClocksService.TriggerOffsetTPC:      -1600
 
