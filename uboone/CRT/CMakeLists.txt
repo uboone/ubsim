@@ -6,6 +6,7 @@ include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 
 add_subdirectory(CRTProducts)
 add_subdirectory(CRTBernFEBDAQCore)
+#add_subdirectory(CRTBinarySource)
 
 art_make( BASENAME_ONLY
     EXCLUDE 
@@ -22,7 +23,8 @@ art_make( BASENAME_ONLY
 	TimeExtraction_module.cc
 	MergeTest_module.cc
 	mergeCRTHits_module.cc
-	CRTRawtoCRTHit_module.cc	
+	#CRTRawtoCRTHit_module.cc	
+	CRTRawtoCRTHit_source.cc	
     LIBRARY_NAME  
         CRTData
     LIB_LIBRARIES
@@ -193,7 +195,7 @@ simple_plugin(mergeCRTHits "module"
 
 
 
-simple_plugin(CRTRawtoCRTHit "module"
+simple_plugin(CRTRawtoCRTHit "source"
             CRT
 	  bernfebdaq-core_Overlays
           art_Framework_Services_Optional
