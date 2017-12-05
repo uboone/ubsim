@@ -55,8 +55,8 @@
 #include <vector>
 #include <map>
 #include <utility>
-
 #include <memory>
+#include <iomanip> // needed to use manipulators with parameters (precision, width)
 
 #define MAX_TIME_PREBEAM 2000000 //ns before beam ts1
 #define MAX_TIME_PASTBEAM 4000000 //ns after beam ts1
@@ -150,16 +150,6 @@ struct crt::SCAN_ORDER{
   int flags;
 };
 
-
-////////////////////////////////////////////////////////////////////////
-// Any declarations of specializations of Source traits (see
-// art/Framework/IO/Sources/SourceTraits.h) should go here.
-//
-// ...
-//
-////////////////////////////////////////////////////////////////////////
-
-// Definition of detail class.
 class crt::CRTRawInputDetail {
   
 public:
@@ -191,7 +181,7 @@ private:
   std::vector<art::Timestamp>                 fInputStreamLastPullTime;
   
   //pair_builder stuff here////////////////////////////////////////////////////////////////////
-  //pair functions
+  //pair functions///////////////////////////////////////
   void receive_data(); // receive data from zmq socket
   void shift_scale(int mac, int ref_nr, int ts0_ref); //scale the timestamps and copy them for processing
   void scale_buffer();  // scale the timestams
@@ -199,7 +189,7 @@ private:
   void filter_buffer(int mac);
   void scan_filter_buffer(int mac);
   unsigned int my_abs(unsigned int, unsigned int);  //define absolutevalue for uint
-  //hit functions:
+  //hit functions://////////////////////////////////////
   int XY_pair(int order,int mac3, int mac4);
   int XYtracks_Top(int mac3, int mac4);
   int XYtracks_Pipe(int mac3, int mac4);
@@ -207,9 +197,9 @@ private:
   int XYtracks_Bottom(int mac3, int mac4);
   void make2DHit();
   void check_storing();
+  ////////////////////////////////////////////////////
   
-  //pair_builder variables
-  //int send_bufnr;
+  //pair_builder variables////////////////////////////
   int ready_to_fill, ready_to_scan; //controll numbers to make sure buffers are ready for r/w.
   FILE *data1;
   FILE *data2;
@@ -219,18 +209,17 @@ private:
   
   long size_ev;  // saves total numbers of raw CRT events for printing
   crt::SCAN_ORDER order_buffer[MAXFEBNR+1]; //to scan the events with the lowest second number
-  //beamfilter variables
+  //beamfilter variables////////////
   int last2_ms[MAXFEBNR+1]; // index of event with ts0 > 2*MSOVERLAP in buffer
   int last1_ms[MAXFEBNR+1]; // index of event with ts0 > 1*MSOVERLAP in buffer
   int number_ms[MAXFEBNR+1]; // # of events with ts0 > 1*MSOVERLAP
-
-  //beamfilter variables
+  //beamfilter variables////////////
   int ts1ref_buffer[100][100];
   int ts1ref_counter[100];
   uint32_t ts1ref_second[100];
   uint32_t previous_sec_mac[MAXFEBNR+1];
   uint32_t previous_sec_mac2[MAXFEBNR+1];
-
+  //////////////////////////////////
   int ts0ref_counter[MAXFEBNR+1];
   int ts1_ref_counter[MAXFEBNR+1]; // nrwm2[MAXFEBNR+1];
   int run_mode_; //choose the mode (filtering, pairfinding etz...)
@@ -238,20 +227,10 @@ private:
   int event_counter;
   int fOffset_;
   int NrFiles_;
-  
-
-  //crthit stuf
-  int refused;
-  double Xs[200][32];
-  double Ys[200][32];
-  double Zs[200][32];
-  int Exists[200];
-  double Dts[200];
   int save_event;
   //pair_builder ends stuff here////////////////////////////////////////////////////////////////////
 
   std::vector<crt::CRTHit> allCRTHits;
-  //std::string fInputFile_;
   std::string fSourceFile_;
   std::string  SiPMpositions_;
   std::string  FEBDelays_;
@@ -263,18 +242,21 @@ private:
   std::map<int, std::pair<double,double> > SiPMgain; //key = FEB*100+ch
   std::map<int, std::pair<double,double> > SiPMpedestal; //key = FEB*100+ch
   
-  //pair_builder stuff ///////////////////////////////////////////////////////////////////////////
+  //pair_builder buffers ///////////////////////////////////////////////////////////////////////////
+  // ev counters////////////////////
   int ev_counter_mac[MAXFEBNR+1];   //Number of events per module (mac) in the processing buffer
   int ev_counter_scan[MAXFEBNR+1];  //Number of events per module (mac) in the scanning buffer
   int ev_counter_filter_scan[MAXFEBNR+1];  //Number of events per module (mac) in the scanning buffer
   int ev_counter_filter[MAXFEBNR+1];
-  
+  //////////////////////////////////
   uint32_t act_time[2][MAXFEBNR+1];    //number to read out the second and ms out of received special event [0]:sec, [1]:ms [][mac]:module [][MAXFEBNR]:time last poll
   uint32_t previous_sec;// previous_ms;
   uint32_t previous2_sec;
   int event_time_diff[MAXFEBNR+1];
   int event_time_diff_old[MAXFEBNR+1];
-  
+  uint32_t event_ts0;
+  uint32_t event_ts1;
+  // ev buffers//////////////////////
   crt::EVENT_t evbuf[MAXFEBNR*EVSPERFEB+1];    //buffer to receive events (same structure as the receiving events)
   crt::EVENT_tpro evbuf_pro[MAXFEBNR+1][4*EVSPERFEB+1];  //buffer for processing (add the second, millisecond from sepcial events)
   crt::EVENT_tpro evbuf_scan[MAXFEBNR+1][4*EVSPERFEB+1]; //buffer for scanning for coincidences (same structure as the buffer for processing)
@@ -290,9 +272,9 @@ private:
   int EndOfFile;
   ///////////////////////////////////////////////////////////////////////////////////////////////
 
-  //tree stuff: /////////////////////////////////////////////////////////////////////////////////
+  //Quality Plot and Tree entries: /////////////////////////////////////////////////////////////////////////////////
   art::ServiceHandle<art::TFileService> tfs;
-  //quallity plots
+  //quallity plots///////////////////////////
   TH2F* HitDistBot;
   TH2F* HitDistFT;
   TH2F* HitDistPipe;
@@ -305,7 +287,10 @@ private:
   TH2F* FEBvsFEB;
   TH1F* TimeDiff;
   TH1F* BeamTime;
-  //quallity plots
+  
+  TH1F* hPES;
+  TH1F* hPEStot;
+  //tree entries/////////////////////////////
   TTree*       my_tree_;
   double xtot=-10000., ytot=-10000., ztot=-10000.;
   double xerr=-10000., yerr=-10000., zerr=-10000.;
@@ -316,12 +301,7 @@ private:
   double td = -1e19;
   double pestot = -1e19;
   std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
-
-  TH1F* hPES;
-  TH1F* hPEStot;
   ////////////////////////////////////////////////////////////////////////////////////////////////
-  
-  
 };
 
 
@@ -355,7 +335,7 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
   crt::auxfunctions::FillFEBDel(FEBDelays_, FEBDel); //key = FEB  //fill FEB delays
   crt::auxfunctions::FillGain(CRTGains_, SiPMgain); //key = FEB*100+ch  //fill sipms gain
   crt::auxfunctions::FillGain(CRTPedestals_, SiPMpedestal); //key = FEB*100+ch  //same for pedestals 
-
+  
   std::cout <<"Run in mode (3=only beam, 11=all): "<< run_mode_ << std::endl; 
   //set all hit counters (from scan buffer and pro buffer) to 0
   for(int i=0;i<MAXFEBNR+1;i++){
@@ -368,6 +348,8 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
     ev_counter_filter_scan[i]=0;
     event_time_diff[i]=0;
     event_time_diff_old[i]=0;
+    event_ts0=0;
+    event_ts1=0;
     previous_sec_mac[i]=0;
     number_ms[i]=0;
     last1_ms[i]=0;
@@ -462,6 +444,7 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
   //end tree stuff /////////////////////////////////////////////////////////////////////////////////////////////
   
   fb = new art::FileBlock(art::FileFormatVersion(1, "RawEvent2011"), filename);
+  //load raw file names: 4 files only for Testing!!!!!!!!!!!!
   fInputStreamList.open(filename.c_str(),std::ios_base::in);
   if(NrFiles_==1){
     std::string input_temp1;
@@ -481,7 +464,6 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
     read_events2=0;
     read_events3=0;
     read_events4=0;
-    
   }
   if(NrFiles_==4){
     std::string input_temp1;
@@ -532,11 +514,10 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
     read_events1=(double)size1/size4*read_events4+0.5;
     read_events2=(double)size2/size4*read_events4+0.5;
     read_events3=(double)size3/size4*read_events4+0.5;
-
-    std::cout << size1 << " - " <<read_events1<< std::endl;
-    std::cout << size2 << " - " <<read_events2<< std::endl;
-    std::cout << size3 << " - " <<read_events3<< std::endl;
-    std::cout << size4 << " - " <<read_events4<< std::endl;
+    //std::cout << size1 << " - " <<read_events1<< std::endl;
+    //std::cout << size2 << " - " <<read_events2<< std::endl;
+    //std::cout << size3 << " - " <<read_events3<< std::endl;
+    //std::cout << size4 << " - " <<read_events4<< std::endl;
   }
 }
 
@@ -550,6 +531,7 @@ void crt::CRTRawInputDetail::closeCurrentFile()
 
 bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::SubRunPrincipal const* const inSR,
 				      art::RunPrincipal*& outR, art::SubRunPrincipal*& outSR, art::EventPrincipal*& outE){
+  //main loop until all 2d hits of a second are found //////////////////////////////////////////////
   while(save_event!=1 && EndOfFile==0){   //endless loop over all events receiving   
     //If one pro buffer is full->scan the whole buffer without scaling, else print status of buffer
     for(int i=0;i<MAXFEBNR;i++){
@@ -575,7 +557,9 @@ bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::S
     else{ printf("pro buffer is in use... \n");}
     while(ready_to_fill!=PROBUF_READY_TO_SCALE && ready_to_fill!=PROBUF_READY_TO_FILL){ printf("Error, Buffers not ready!... \n");}
   }
-  //for the end of the file is reached: process everything in the buffer w/o scaling and look for events in the last seconds
+  //end main loop////////////////////////////////////////////////////////////////////////////////////////
+  
+  //for the end of the file is reached: process everything in the buffer w/o scaling and look for events in the last seconds///
   if(EndOfFile==1){ //process everything in the buffer without scaling (not total seconds)
     for(int i=0; i<MAXFEBNR; i++){
       shift_scale(i, ev_counter_mac[i], 1e9);
@@ -615,7 +599,8 @@ bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::S
       uint32_t this_sec=allmyCRTHits[0].ts0_s;
       std::cout<<"Found: " << hit_counter << " of " << total_hits << " int the second: "<< this_sec << " End: "<< EndOfFile << std::endl << " no more hits in the file" << std::endl;
     }
-  }
+  }//end of end of file treatment///////////////////////////////////////////////////////////////////////////////////////////////
+  
   //write the event...///////////////////////////////////////////
   std::unique_ptr<std::vector<crt::CRTHit> > CRTHiteventCol(new std::vector<crt::CRTHit>); //collection of CRTHits 
   for(std::vector<int>::size_type i = 0; i != allCRTHits.size(); i++){
@@ -633,7 +618,7 @@ bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::S
     }
   }
   
-  uint64_t const& v_crt_time = allCRTHits[0].ts0_s; // add here the second???? //first second on run????
+  uint64_t const& v_crt_time = allCRTHits[0].ts0_s;//e.first; //how to add here the second???? //first second on run????
   size_t run_num = 1;
   size_t subrun_num = 1;
   if(run_num!=fPrevRunNumber){
@@ -648,19 +633,19 @@ bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::S
     }
   outE = fSourceHelper.makeEventPrincipal(run_num, subrun_num, fEventNumber++, v_crt_time);
   event_counter++;
-  std::cout<<"Wrote event Nr: "<< event_counter <<std::endl;
-  
+  std::cout<<"wrote event Nr: "<< event_counter <<std::endl;
+  //evt.put(std::move(CRTHiteventCol));
   art::put_product_in_principal(std::move(CRTHiteventCol),*outE, fModuleLabel, fInstanceLabel);
   allCRTHits.erase(allCRTHits.begin(), allCRTHits.end());
   save_event=0;
   if(verbose_==1){
     std::cout<<" "<<std::endl;
     std::cout<<"allCRTHits.size():  "<<allCRTHits.size()<<std::endl;
-  } ///////////////////////////////////////////////////////
+  } //end write event/////////////////////////////////////////////////////
   return true;
 }
 
-//receive a poll of hits from the modules//////////////////////////////////////////////////////
+//read hits from the modules//////////////////////////////////////////////////////
 void crt::CRTRawInputDetail::receive_data(){
   //std::cout<<"receive data" <<std::endl;
   int mac=0;
@@ -745,11 +730,12 @@ void crt::CRTRawInputDetail::receive_data(){
       //add the second to the events and copy the buffer into another
       mac=evbuf[i].mac5; 
       reassign=0;
-      if(ev_counter_mac[mac]>0 && (evbuf_pro[mac][ev_counter_mac[mac]-1].flags==3 || evbuf_pro[mac][ev_counter_mac[mac]-1].flags==1 || evbuf_pro[mac][ev_counter_mac[mac]-1].lostcpu==99)){ //check for jump, excluding all ref_events
-        if(abs(event_time_diff[mac]-evbuf[i].ts0+evbuf[i].ts1)>500){ // the jump has to be bigger than 500
+      int event_time_diff_now=evbuf[i].ts0-evbuf[i].ts1;
+      if(ev_counter_mac[mac]>1 && (evbuf_pro[mac][ev_counter_mac[mac]-1].flags==3 || evbuf_pro[mac][ev_counter_mac[mac]-1].flags==1 || evbuf_pro[mac][ev_counter_mac[mac]-1].recover==99)){ //check for jump, excluding all ref_events
+        if(std::abs(event_time_diff[mac]-event_time_diff_now)>500){ // the jump has to be bigger than 500
           all_fine=0;
           //check for what referent event was missed or if it was a stucked event...
-          if(abs(event_time_diff[mac]-(evbuf[i].ts0-evbuf[i].ts1)-1e9)<30000){ //check if ts0_ref was missed 30us > dead time FEB
+          if(std::abs(event_time_diff[mac]-event_time_diff_now-1e9)<30000){ //check if ts0_ref was missed 30us > dead time FEB
             if(evbuf_pro[mac][ev_counter_mac[mac]-1].flags==5 || evbuf_pro[mac][ev_counter_mac[mac]-1].flags==7) all_fine=1;
             if(all_fine!=1){
               if(previous_sec==act_time[0][MAXFEBNR]) act_time[0][mac]=act_time[0][MAXFEBNR]+1; //check if already poll of new second
@@ -777,12 +763,11 @@ void crt::CRTRawInputDetail::receive_data(){
             }
           } //    (evbuf[i].ts1>(evbuf[i].ts0-evbuf_pro[mac][ev_counter_mac[mac]-1].ts0-20)))){//     && evbuf[i].ts0<(evbuf_pro[mac][ev_counter_mac[mac]-1].ts0+1e8) 
           //more analyse is needed here!!!
-          else if(evbuf[i].ts1<(evbuf[i].ts0-evbuf_pro[mac][ev_counter_mac[mac]-1].ts0+20) && evbuf[i].ts0<(evbuf_pro[mac][ev_counter_mac[mac]-1].ts0+1e8)  ){ //check if ts1_ref 
-            evbuf[i].lostcpu=3;
+          else if(evbuf[i].ts1<(evbuf[i].ts0-event_ts0+20) && evbuf[i].ts0>event_ts0 && evbuf[i].ts1<event_ts1){ //check if ts1_ref 
             if(evbuf_pro[mac][ev_counter_mac[mac]-1].flags==10 || evbuf_pro[mac][ev_counter_mac[mac]-1].flags==11) all_fine=1;
             if(all_fine!=1){
-              if(my_abs(evbuf[i].ts0,(evbuf_pro[mac][ev_counter_mac[mac]-1].ts0-evbuf[i].ts1))<20){evbuf_pro[mac][ev_counter_mac[mac]-1].flags=11;} //1. check if there is an event with wrong assigned flag
-              else if((evbuf[i].ts0-evbuf_pro[mac][ev_counter_mac[mac]-1].ts0)<1e7){  //2. if no event is there add new event
+              if(my_abs(evbuf[i].ts0,(event_ts0+evbuf[i].ts1))<20){evbuf_pro[mac][ev_counter_mac[mac]-1].flags=11;} //1. check if there is an event with wrong assigned flag
+              else if((evbuf[i].ts0-event_ts0)<1e8){  //2. if no event is there add new event; check if stucked event...
                 evbuf_pro[mac][ev_counter_mac[mac]].sec=act_time[0][mac];
                 evbuf_pro[mac][ev_counter_mac[mac]].ms=act_time[1][MAXFEBNR];
                 evbuf_pro[mac][ev_counter_mac[mac]].mac5=mac;
@@ -795,7 +780,7 @@ void crt::CRTRawInputDetail::receive_data(){
                 evbuf_pro[mac][ev_counter_mac[mac]].lostcpu=0;
                 evbuf_pro[mac][ev_counter_mac[mac]].lostfpga=0;
                 ev_counter_mac[mac]++;
-                //std::cout << "fount ts1_ref and inserted it..." << evbuf[i].ts1 << " ts1 "<< evbuf[i].ts0 << " ts0 "<< evbuf_pro[mac][ev_counter_mac[mac]-1].ts1 << " ts1old "<< evbuf_pro[mac][ev_counter_mac[mac]-1].ts0 << " ts0_old" << std::endl;
+                //std::cout << "fount ts1_ref and inserted it..." <<  std::setw(9)<< evbuf[i].ts1 << " ts1 "<<  std::setw(9)<< event_ts1 << " ts1old "<<  std::setw(9)<< evbuf[i].ts0 << " ts0 "<<  std::setw(9)<< event_ts0<< " ts0_old" << std::endl;
               }
             }
           }
@@ -803,13 +788,9 @@ void crt::CRTRawInputDetail::receive_data(){
             evbuf[i].lostcpu=99;
           }
         }
-        else{
-          if(evbuf_pro[mac][ev_counter_mac[mac]-1].lostcpu==99) evbuf[i].lostcpu=0;
-        }
       }
-
       //fill the aktual event normal (if a jump happend, an event before is inserted if a ref was missed...)
-      if((evbuf[i].flags==7 || evbuf[i].flags==5) && (evbuf[i].lostcpu!=99&&evbuf[i].lostcpu!=10)){
+      if((evbuf[i].flags==7 || evbuf[i].flags==5) && (evbuf[i].lostcpu!=99)){
         previous_sec_mac2[mac]=previous_sec_mac[mac];
         previous_sec_mac[mac]=act_time[0][mac];
         if(previous_sec==act_time[0][MAXFEBNR]) act_time[0][mac]=act_time[0][MAXFEBNR]+1;
@@ -825,7 +806,8 @@ void crt::CRTRawInputDetail::receive_data(){
           act_time[0][mac]--;
         }
       }
-	    if((evbuf[i].flags==7 || evbuf[i].flags==5)&&(evbuf[i].lostcpu==99||evbuf[i].lostcpu==10)) ts0ref_counter[mac]++;
+	    if((evbuf[i].flags==7 || evbuf[i].flags==5)&&(evbuf[i].lostcpu==99)) ts0ref_counter[mac]++;
+      
       evbuf_pro[mac][ev_counter_mac[mac]].sec=act_time[0][mac];
       evbuf_pro[mac][ev_counter_mac[mac]].ms=act_time[1][MAXFEBNR];
       evbuf_pro[mac][ev_counter_mac[mac]].mac5=mac;
@@ -835,11 +817,15 @@ void crt::CRTRawInputDetail::receive_data(){
       for(int j=0; j<32;j++) evbuf_pro[mac][ev_counter_mac[mac]].adc[j]=evbuf[i].adc[j];
       evbuf_pro[mac][ev_counter_mac[mac]].ts0_scaled=0;
       evbuf_pro[mac][ev_counter_mac[mac]].ts0_ref=0;    //not really used
-	    evbuf_pro[mac][ev_counter_mac[mac]].recover=0;  
+	    evbuf_pro[mac][ev_counter_mac[mac]].recover=0;
       evbuf_pro[mac][ev_counter_mac[mac]].lostcpu=evbuf[i].lostcpu;
+      if(evbuf[i].lostcpu==99){
+        evbuf_pro[mac][ev_counter_mac[mac]].lostcpu=0;
+        evbuf_pro[mac][ev_counter_mac[mac]].recover=9;}    
       evbuf_pro[mac][ev_counter_mac[mac]].lostfpga=evbuf[i].lostfpga;
       evbuf_pro[mac][ev_counter_mac[mac]].nrtrigger_11=ts0ref_counter[mac];
       ev_counter_mac[mac]++;
+      
       if(reassign==1){
         for(int z=0; z<ev_counter_mac[mac]-1;z++){
           evbuf_pro[mac][z].sec=evbuf_pro[mac][z].sec-1;
@@ -855,37 +841,17 @@ void crt::CRTRawInputDetail::receive_data(){
             if(evbuf_pro[mac][ev_counter_mac[mac]].flags!=5 || evbuf_pro[mac][ev_counter_mac[mac]].flags!=7) evbuf_pro[mac][ev_counter_mac[mac]].sec+=1;
         }
       }
-      
       if(reassign==3){
         for(int z=0; z<ev_counter_mac[mac]-1;z++){
           evbuf_pro[mac][z].recover=3;
         }
       }
       
-      if(verbose_!=0){ //just printouts if needed... Row of events read in...
-        //printf("check: %d\n", check);
-        printf("End:	%d seconds	%d millisec\n",act_time[0][MAXFEBNR], act_time[1][MAXFEBNR]);
-		    printf("pre: %d: %d, %d, %d\n",reassign,previous_sec_mac2[mac], previous_sec_mac[mac], act_time[0][mac]);
-        int sum=0, sum1=0, sum2=0, sum3=0, sum4=0;
-        for(int amp=0; amp<32;amp++){
-          sum+=evbuf[i].adc[amp];
-          sum1+=evbuf_pro[mac][ev_counter_mac[mac]].adc[amp];
-          sum3+=evbuf_pro[mac][ev_counter_mac[mac]-1].adc[amp];
-          sum4+=evbuf_pro[mac][ev_counter_mac[mac]-2].adc[amp];
-          sum2+=evbuf[i+1].adc[amp];
-        }
-        for(int z=ev_counter_mac[mac]-5; z<ev_counter_mac[mac];z++){
-          printf("jump: %3d: mac: %2d, flags: %2d, ts0: %10d, ts1: %10d, sec: %10d  dt: %d, lostcpu: %d\n", z,evbuf_pro[mac][z].mac5, evbuf_pro[mac][z].flags, evbuf_pro[mac][z].ts0,evbuf_pro[mac][z].ts1,evbuf_pro[mac][z].sec, evbuf_pro[mac][z].ts0-evbuf_pro[mac][z].ts1, evbuf_pro[mac][z].lostcpu ); 
-         }
-        printf("jump+1: mac: %d, flags: %2d, ts0: %10d, ts1: %10d, sum adc: %5d sec: %10d, dt: %d\n", evbuf[i+1].mac5, evbuf[i+1].flags, evbuf[i+1].ts0,evbuf[i+1].ts1, sum2,0, evbuf[i+1].ts0-evbuf[i+1].ts1); 
-        printf("jump+2: mac: %d, flags: %2d, ts0: %10d, ts1: %10d, sum adc: %5d sec: %10d, dt: %d\n", evbuf[i+2].mac5, evbuf[i+2].flags, evbuf[i+2].ts0,evbuf[i+2].ts1, sum2,0, evbuf[i+2].ts0-evbuf[i+2].ts1); 
-        printf("jump+3: mac: %d, flags: %2d, ts0: %10d, ts1: %10d, sum adc: %5d sec: %10d, dt: %d\n", evbuf[i+3].mac5, evbuf[i+3].flags, evbuf[i+3].ts0,evbuf[i+3].ts1, sum2,0,evbuf[i+3].ts0-evbuf[i+3].ts1); 
-        printf("jump+4: mac: %d, flags: %2d, ts0: %10d, ts1: %10d, sum adc: %5d sec: %10d, dt: %d\n", evbuf[i+4].mac5, evbuf[i+4].flags, evbuf[i+4].ts0,evbuf[i+4].ts1, sum2,0,evbuf[i+4].ts0-evbuf[i+4].ts1);
-        printf("\n");
-      }
-      if(evbuf[i].lostcpu!=99) { //if the last one was not a stucked event, calculate the ts0-ts1 new...
-        if(abs(event_time_diff[mac]-event_time_diff_old[mac])>50) event_time_diff_old[mac]=event_time_diff[mac];
+      if(evbuf[i].lostcpu!=99 || 1) { //if the last one was not a stucked event, calculate the ts0-ts1 new...
+        if(std::abs(event_time_diff[mac]-event_time_diff_old[mac])>50) event_time_diff_old[mac]=event_time_diff[mac];
         event_time_diff[mac]=evbuf[i].ts0-evbuf[i].ts1;
+        event_ts0=evbuf[i].ts0;
+        event_ts1=evbuf[i].ts1;
       }
     }
   }
@@ -1008,7 +974,7 @@ void crt::CRTRawInputDetail::filter_buffer(int mac){
   int approved_ts1ref=0;
   for(int i=0; i<ev_counter_filter[mac];i++){
     for(int j=0;j<ts1ref_counter[second%100];j++){
-      if(my_abs((evbuf_filter[mac][i].ts0_scaled),ts1ref_buffer[second%100][j])<200){
+      if(my_abs((evbuf_filter[mac][i].ts0_scaled),ts1ref_buffer[second%100][j])<20){
         //check if ts1_ref is also an event without flags in this second
         ts1_ref_counter[mac]++;
         ts1_ref_approved[approved_ts1ref][1]=0; //0= not recovered
@@ -1067,7 +1033,8 @@ void crt::CRTRawInputDetail::scan_filter_buffer(int mac){  //scan over all event
   long time1, time2;
   long delta;
   for(int i=0;i<ev_counter_filter_scan[mac];i++){
-    if(run_mode_!=TS1_CORR || !(i>20 && evbuf_filter_scan[mac][i].ts0 > (1e9-MSOVERLAP))){  
+    if(run_mode_!=TS1_CORR || !(i>20 && evbuf_filter_scan[mac][i].ts0 > (1e9-MSOVERLAP))){ 
+    //printf("jump: %3d: mac: %2d, flags: %2d, ts0: %10d, ts1: %10d, sec: %10d  dt: %d, lostcpu: %d\n", i,evbuf_filter_scan[mac][i].mac5, evbuf_filter_scan[mac][i].flags, evbuf_filter_scan[mac][i].ts0,evbuf_filter_scan[mac][i].ts1,evbuf_filter_scan[mac][i].sec, evbuf_filter_scan[mac][i].ts0-evbuf_filter_scan[mac][i].ts1, evbuf_filter_scan[mac][i].lostcpu ); 
     time1=evbuf_filter_scan[mac][i].ts0_scaled;
     for(int j=0;j<MAXFEBNR;j++){
         if(j!=mac){
@@ -1076,7 +1043,7 @@ void crt::CRTRawInputDetail::scan_filter_buffer(int mac){  //scan over all event
            time2=evbuf_filter_scan[j][k].ts0_scaled;
            delta=time2-time1;
 
-           if((abs(delta)<MAX_TIME_DIFFERENCE)&&((evbuf_filter_scan[j][k].flags==3 && evbuf_filter_scan[mac][i].flags==3)||(evbuf_filter_scan[j][k].flags==1 && evbuf_filter_scan[mac][i].flags==1))){
+           if((std::abs(delta)<MAX_TIME_DIFFERENCE)&&((evbuf_filter_scan[j][k].flags==3 && evbuf_filter_scan[mac][i].flags==3)||(evbuf_filter_scan[j][k].flags==1 && evbuf_filter_scan[mac][i].flags==1))){
              coincidence[0].mac5=evbuf_filter_scan[mac][i].mac5;
              coincidence[0].flags=evbuf_filter_scan[mac][i].flags;
              coincidence[0].lostcpu=evbuf_filter_scan[mac][i].lostcpu;
@@ -1106,7 +1073,7 @@ void crt::CRTRawInputDetail::scan_filter_buffer(int mac){  //scan over all event
              for(int amp=0;amp<32;amp++) coincidence[2].adc[amp]=0;
              coincidence[2].adc[0]=evbuf_filter_scan[mac][i].ms;
              coincidence[2].adc[1]=evbuf_filter_scan[j][k].ms;
-             coincidence[2].recover=abs(i-j);
+             coincidence[2].recover=std::abs(i-j);
              make2DHit();
            }
          }
@@ -1135,7 +1102,7 @@ int crt::CRTRawInputDetail::XY_pair(int pos, int mac1, int mac2){
 }
 int crt::CRTRawInputDetail::XYtracks_Bottom(int mac3, int mac4){
   int check1=0;
-  if(mac3==0||mac4==0) {refused++; return 0;}
+  if(mac3==0||mac4==0) {return 0;}
   if(mac3==22 || mac3==23 ||mac3==24||mac3==12){
     if(mac4==11 || mac4==14 ||mac4==17||mac4==18||mac4==19){
       check1=1;}
@@ -1145,11 +1112,11 @@ int crt::CRTRawInputDetail::XYtracks_Bottom(int mac3, int mac4){
       check1=1;}
   } 
   if(check1==1) return 1;
-  else {refused++; return 0;}
+  else {return 0;}
 }
 int crt::CRTRawInputDetail::XYtracks_Top(int mac1, int mac2){
   int check2=0;
-  if(mac1==0||mac2==0) {refused++; return 0;}
+  if(mac1==0||mac2==0) {return 0;}
   if(mac1==109 || mac1==105 ||mac1==106||mac1==107  ||mac1==125  ||mac1==126  ||mac1==128  ||mac1==111  ||mac1==112  ||mac1==108  ||mac1==124  ||mac1==123  ||mac1==122){
     if(mac2==113 || mac2==114 ||mac2==115||mac2==116  ||mac2==117  ||mac2==118  ||mac2==127  ||mac2==121  ||mac2==120  ||mac2==119  ||mac2==129){
       check2=1;}
@@ -1159,11 +1126,11 @@ int crt::CRTRawInputDetail::XYtracks_Top(int mac1, int mac2){
       check2=1;}
   }
   if(check2==1) return 1;
-  else {refused++; return 0;}
+  else {return 0;}
 }
 int crt::CRTRawInputDetail::XYtracks_Feed(int mac3, int mac4){
   int check1=0;  
-  if(mac3==0||mac4==0) {refused++; return 0;}
+  if(mac3==0||mac4==0) {return 0;}
   if(mac3==52||mac3==31||mac3==29||mac3==28||mac3==27||mac3==26||mac3==30){
     if(mac4==60||mac4==58||mac4==56||mac4==61||mac4==59||mac4==57){
       check1=1;}
@@ -1173,11 +1140,11 @@ int crt::CRTRawInputDetail::XYtracks_Feed(int mac3, int mac4){
       check1=1;}
   }
   if(check1==1) return 1;
-  else {refused++; return 0;} 
+  else {return 0;} 
 }
 int crt::CRTRawInputDetail::XYtracks_Pipe(int mac1, int mac2){
   int check2=0;
-  if(mac1==0||mac2==0) {refused++; return 0;}
+  if(mac1==0||mac2==0) {return 0;}
   if(mac1==37||mac1==33||mac1==34||mac1==35||mac1==36||mac1==32||mac1==38||mac1==39||mac1==40||mac1==41||mac1==42||mac1==43||mac1==44 ||mac1==45){
     if(mac2==53||mac2==54||mac2==55||mac2==15||mac2==16||mac2==20||mac2==21||mac2==46||mac2==47||mac2==48||mac2==49||mac2==50||mac2==51){
       check2=1;}
@@ -1187,26 +1154,65 @@ int crt::CRTRawInputDetail::XYtracks_Pipe(int mac1, int mac2){
       check2=1;}
   }
   if(check2==1) return 1;
-  else {refused++; return 0;} 
+  else {return 0;} 
 }
 
 void crt::CRTRawInputDetail::make2DHit(){
   //std::cout<<"make 2D hit" <<std::endl;
-  uint32_t first_second=0;
+  //if(coincidence[0].lostcpu==99||coincidence[1].lostcpu==99) std::cout << "hits with stucked event!!!!!!!" << std::endl;
   crt::CRTHit crt2Dhit;
-  if(coincidence[2].ts0>1 && coincidence[2].ts0<first_second) first_second=coincidence[2].ts0;
-  int XY = 0;
-  crt2Dhit.plane=-1;
-  if(XY_pair(0, coincidence[0].mac5, coincidence[1].mac5)){ XY=1; crt2Dhit.plane=0;}
-  else if(XY_pair(1, coincidence[0].mac5, coincidence[1].mac5)){ XY=1; crt2Dhit.plane=1;}
-  else if(XY_pair(2, coincidence[0].mac5, coincidence[1].mac5)){ XY=1; crt2Dhit.plane=2;}
-  else if(XY_pair(3, coincidence[0].mac5, coincidence[1].mac5)){ XY=1; crt2Dhit.plane=3;}
-  if(XY && coincidence[2].ts0!=0){
-    //if(XY){
-    int max1_ach=0, max1_nch=0, max2_ach=0, max2_nch=0;// max1_adc=0,  max2_adc=0;
+  int max1_ach=0, max1_nch=0, max2_ach=0, max2_nch=0;// max1_adc=0,  max2_adc=0;
+  
+  int ch[16];
+  for(int j=0;j<16;j++){ //set max_ach + max__nch
+    ch[j]=0;
+    ch[j]=coincidence[0].adc[j*2]+coincidence[0].adc[j*2+1];
+    if(ch[j]>max1_ach) {max1_ach=ch[j]; max1_nch=j;}
+    ch[j]=0;
+    ch[j]=coincidence[1].adc[j*2]+coincidence[1].adc[j*2+1];
+    if(ch[j]>max2_ach) {max2_ach=ch[j]; max2_nch=j;}
+  }
+  uint16_t max_temp1_tevt=coincidence[0].adc[max1_nch*2];
+  uint16_t max_temp2_tevt=coincidence[0].adc[max1_nch*2+1];
+  int key_tevt1 = coincidence[0].mac5*100+max1_nch*2;
+  int key_tevt2 = coincidence[0].mac5*100+max1_nch*2+1;
 
+  std::pair<double,double> gain_tevt1 = crt::auxfunctions::getGain(key_tevt1, SiPMgain); 
+  std::pair<double,double> pedestal_tevt1 = crt::auxfunctions::getGain(key_tevt1, SiPMpedestal);
+  double pesmax_tevt1 = (max_temp1_tevt - pedestal_tevt1.first) / gain_tevt1.first;
+  std::vector<double> pos_tevt1 = crt::auxfunctions::getPos(key_tevt1, sensor_pos);
+
+  
+  int key_st1 = coincidence[1].mac5*100+2*max2_nch;
+  int key_st2 = coincidence[1].mac5*100+2*max2_nch+1;
+  uint16_t max_temp1_st=coincidence[1].adc[max2_nch*2];
+  uint16_t max_temp2_st=coincidence[1].adc[max2_nch*2+1];
+
+  std::pair<double,double> gain_st1 = crt::auxfunctions::getGain(key_st1, SiPMgain);
+  std::pair<double,double> pedestal_st1 = crt::auxfunctions::getGain(key_st1, SiPMpedestal);
+  double pesmax_st1 = (max_temp1_st - pedestal_st1.first) / gain_st1.first;                                                                 
+  std::vector<double> pos_st1 = crt::auxfunctions::getPos(key_st1, sensor_pos);
+
+  //pos vector/ 0=x 1=y 2=z 3=plane 4=layer 5=orientation;   //clean up!!! after MC
+  if( (pos_tevt1[3]==pos_st1[3] ) && (pos_tevt1[4]!=pos_st1[4]) 
+		&& ( (std::abs(pos_tevt1[4]-pos_st1[4])<2) || ((pos_tevt1[3]==2) && (pos_tevt1[4]==0 && pos_st1[4]==2)) || ((pos_tevt1[3]==2) && (pos_tevt1[4]==2 && pos_st1[4]==0)) )
+    && (pos_tevt1[5]!=pos_st1[5])){
+    
+    std::pair<double,double> gain_tevt2 = crt::auxfunctions::getGain(key_tevt2, SiPMgain);
+    std::pair<double,double> pedestal_tevt2 = crt::auxfunctions::getGain(key_tevt2, SiPMpedestal);
+    double pesmax_tevt2 = (max_temp2_tevt - pedestal_tevt2.first) / gain_tevt2.first;
+    std::vector<double> pos_tevt2 = crt::auxfunctions::getPos(key_tevt2, sensor_pos);
+    
+    std::pair<double,double> gain_st2 = crt::auxfunctions::getGain(key_st2, SiPMgain);
+    std::pair<double,double> pedestal_st2 = crt::auxfunctions::getGain(key_st2, SiPMpedestal);
+    double pesmax_st2 = (max_temp2_st - pedestal_st2.first) / gain_st2.first;
+    std::vector<double> pos_st2 = crt::auxfunctions::getPos(key_st2, sensor_pos);
+    
+    
     crt2Dhit.feb_id.push_back(coincidence[0].mac5);
     crt2Dhit.feb_id.push_back(coincidence[1].mac5);
+    
+    crt2Dhit.plane = pos_tevt1[3]; 
 
     std::vector<std::pair<int,double> > vec_pes_tevt;
     std::vector<std::pair<int,double> > vec_pes_st;
@@ -1227,60 +1233,18 @@ void crt::CRTRawInputDetail::make2DHit(){
       //double pes_st =  (double)coincidence[1].adc[i_chan];
       std::pair<int,double> pair_st = std::make_pair(i_chan,pes_st);
       vec_pes_st.push_back(pair_st);
-      
     }
+    
     std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap_hit;
     pesmap_hit[coincidence[0].mac5] = vec_pes_tevt;
     pesmap_hit[coincidence[1].mac5] = vec_pes_st;
     crt2Dhit.pesmap = pesmap_hit;
-
-    int ch[16];
-    for(int j=0;j<16;j++){ //set max_ach + max__nch
-      ch[j]=0;
-      ch[j]=coincidence[0].adc[j*2]+coincidence[0].adc[j*2+1];
-      if(ch[j]>max1_ach) {max1_ach=ch[j]; max1_nch=j;}
-      ch[j]=0;
-      ch[j]=coincidence[1].adc[j*2]+coincidence[1].adc[j*2+1];
-      if(ch[j]>max2_ach) {max2_ach=ch[j]; max2_nch=j;}
-    }
-    uint16_t max_temp1_tevt=coincidence[0].adc[max1_nch*2];
-    uint16_t max_temp2_tevt=coincidence[0].adc[max1_nch*2+1];
-    //if(coincidence[0].adc[max1_nch*2]<coincidence[0].adc[max1_nch*2+1]){ 
-    
-    int key_tevt1 = coincidence[0].mac5*100+max1_nch*2;
-    int key_tevt2 = coincidence[0].mac5*100+max1_nch*2+1;
-
-    std::pair<double,double> gain_tevt1 = crt::auxfunctions::getGain(key_tevt1, SiPMgain); 
-    std::pair<double,double> pedestal_tevt1 = crt::auxfunctions::getGain(key_tevt1, SiPMpedestal);
-    double pesmax_tevt1 = (max_temp1_tevt - pedestal_tevt1.first) / gain_tevt1.first;
-    std::vector<double> pos_tevt1 = crt::auxfunctions::getPos(key_tevt1, sensor_pos);
-
-    std::pair<double,double> gain_tevt2 = crt::auxfunctions::getGain(key_tevt2, SiPMgain);
-    std::pair<double,double> pedestal_tevt2 = crt::auxfunctions::getGain(key_tevt2, SiPMpedestal);
-    double pesmax_tevt2 = (max_temp2_tevt - pedestal_tevt2.first) / gain_tevt2.first;
-    std::vector<double> pos_tevt2 = crt::auxfunctions::getPos(key_tevt2, sensor_pos);
 
     double LBar = 10.8;
 	  if(pos_tevt1[3]==3) LBar = 11.2;//for top	       
     std::vector<double> interpos_tevt = crt::auxfunctions::inter_X(pesmax_tevt1, pos_tevt1, pesmax_tevt2, pos_tevt2, LBar);
     double interpos_tevt_err = crt::auxfunctions::inter_X_error(pesmax_tevt1, pesmax_tevt2, LBar);
 
-    int key_st1 = coincidence[1].mac5*100+2*max2_nch;
-    int key_st2 = coincidence[1].mac5*100+2*max2_nch+1;
-    
-    uint16_t max_temp1_st=coincidence[1].adc[max2_nch*2];
-    uint16_t max_temp2_st=coincidence[1].adc[max2_nch*2+1];
-
-    std::pair<double,double> gain_st1 = crt::auxfunctions::getGain(key_st1, SiPMgain);
-    std::pair<double,double> pedestal_st1 = crt::auxfunctions::getGain(key_st1, SiPMpedestal);
-    double pesmax_st1 = (max_temp1_st - pedestal_st1.first) / gain_st1.first;                                                                 
-    std::vector<double> pos_st1 = crt::auxfunctions::getPos(key_st1, sensor_pos);
-
-    std::pair<double,double> gain_st2 = crt::auxfunctions::getGain(key_st2, SiPMgain);
-    std::pair<double,double> pedestal_st2 = crt::auxfunctions::getGain(key_st2, SiPMpedestal);
-    double pesmax_st2 = (max_temp2_st - pedestal_st2.first) / gain_st2.first;
-    std::vector<double> pos_st2 = crt::auxfunctions::getPos(key_st2, sensor_pos);
-    
 	  LBar = 10.8;
     if(pos_st1[3]==3) LBar = 11.2;//for top	  
     std::vector<double> interpos_st = crt::auxfunctions::inter_X(pesmax_st1, pos_st1, pesmax_st2, pos_st2, LBar);
@@ -1336,9 +1300,9 @@ void crt::CRTRawInputDetail::make2DHit(){
     beam_time_ns=(beam1_time_ns+beam2_time_ns)/2;
     
     crt2Dhit.ts0_ns=hit_time_ns;
-    crt2Dhit.ts0_ns_err=abs((coincidence[0].ts0+coincidence[0].ts0)/2-crt2Dhit.ts0_ns);
+    crt2Dhit.ts0_ns_err=std::abs((coincidence[0].ts0+coincidence[0].ts0)/2-crt2Dhit.ts0_ns);
     crt2Dhit.ts1_ns=beam_time_ns;
-    crt2Dhit.ts1_ns_err=abs((ts1_local1+ts1_local2)/2-crt2Dhit.ts1_ns);
+    crt2Dhit.ts1_ns_err=std::abs((ts1_local1+ts1_local2)/2-crt2Dhit.ts1_ns);
 
     crt2Dhit.x_pos= xtot;
     crt2Dhit.x_err=sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );
