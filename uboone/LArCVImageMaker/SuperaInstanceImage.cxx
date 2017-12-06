@@ -21,6 +21,7 @@ namespace larcv {
     supera::ParamsImage2D::configure(cfg);
     supera::ImageMetaMaker::configure(cfg);
     _origin = cfg.get<unsigned short>("Origin",0);
+    m_ancestor_label = cfg.get<std::string>("AncestorImageLabel");
   }
 
   void SuperaInstanceImage::initialize()
@@ -43,6 +44,7 @@ namespace larcv {
       LARCV_CRITICAL() << "Meta not created!" << std::endl;
       throw larbys();
     }
+
     auto ev_image = (EventImage2D*)(mgr.get_data(kProductImage2D,OutImageLabel()));
     if(!ev_image) {
       LARCV_CRITICAL() << "Output image could not be created!" << std::endl;
@@ -50,6 +52,16 @@ namespace larcv {
     }
     if(!(ev_image->Image2DArray().empty())) {
       LARCV_CRITICAL() << "Output image array not empty!" << std::endl;
+      throw larbys();
+    }
+    
+    auto ev_ancestor = (EventImage2D*)(mgr.get_data(kProductImage2D,m_ancestor_label));
+    if(!ev_ancestor) {
+      LARCV_CRITICAL() << "Ancestor image could not be created!" << std::endl;
+      throw larbys();
+    }
+    if(!(ev_ancestor->Image2DArray().empty())) {
+      LARCV_CRITICAL() << "Ancestor image array not empty!" << std::endl;
       throw larbys();
     }
 
@@ -101,10 +113,15 @@ namespace larcv {
       col_compression_factor.push_back( ColCompressionFactor().at(meta.plane()) );
     }
 
-    auto image_v = supera::Instance2Image(meta_v, trackid2ancestorid, LArData<supera::LArSimCh_t>(),
-					  row_compression_factor, col_compression_factor, TimeOffset() );
+    std::vector<larcv::Image2D> idimg_v;
+    std::vector<larcv::Image2D> ancestor_v;
+    supera::Instance2Image(meta_v, trackid2ancestorid, LArData<supera::LArSimCh_t>(),
+			   row_compression_factor, col_compression_factor, TimeOffset(),
+			   idimg_v, ancestor_v );
+
           
-    ev_image->Emplace(std::move(image_v));
+    ev_image->Emplace(std::move(idimg_v));
+    ev_ancestor->Emplace(std::move(ancestor_v));
     
     return true;
   }

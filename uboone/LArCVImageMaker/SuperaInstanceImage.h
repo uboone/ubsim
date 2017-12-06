@@ -50,7 +50,7 @@ namespace larcv {
   private:
 
     unsigned short _origin;
-
+    std::string m_ancestor_label;
   };
 
   /**
