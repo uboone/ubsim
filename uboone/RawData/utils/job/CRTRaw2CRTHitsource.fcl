@@ -1,4 +1,7 @@
 process_name: CRTRawtoCRTHit
+#include "services_microboone.fcl"
+#include "sam_microboone.fcl"
+##include "subevent_module.fcl"
 
 services:
 {
@@ -14,7 +17,7 @@ source:
 	ModuleLabel	:"crthit"
 	InstanceLabel	:""
 	run_mode: 3   #3=beam, 11=all
-	Nr_Files: 1   
+	Nr_Files: 0   
 	Offset: 40000 #ns
 	verbose:0
 	CRTpositions_file: "/uboone/app/users/dlorca/testberncode_june/larsoft_v06_36_00/srcs/uboonecode/uboone/CRT/CRTpositionsSiPM-V8.txt"

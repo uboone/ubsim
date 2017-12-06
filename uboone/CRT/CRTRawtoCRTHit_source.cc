@@ -445,7 +445,22 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
   
   fb = new art::FileBlock(art::FileFormatVersion(1, "RawEvent2011"), filename);
   //load raw file names: 4 files only for Testing!!!!!!!!!!!!
+
+  if(NrFiles_==0){
+    data1=fopen(filename.c_str(),"r");
+    fseek(data1, 0, SEEK_END); // seek to end of file
+    long size1 = ftell(data1); // get current file pointer
+    fseek(data1, 0, SEEK_SET); // seek back to beginning of file
+    size_ev=size1/sizeof(EVENT_t);		//number of total events
+    printf("Total Number of events: %ld\n",size_ev);
+    read_events1=1000;
+    read_events2=0;
+    read_events3=0;
+    read_events4=0;
+  }
+
   fInputStreamList.open(filename.c_str(),std::ios_base::in);
+
   if(NrFiles_==1){
     std::string input_temp1;
     if (fInputStreamList.good()){
