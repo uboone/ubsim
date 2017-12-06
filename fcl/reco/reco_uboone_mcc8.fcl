@@ -468,7 +468,7 @@ microboone_reco_mcc8_3D: [               rns,
                                          @sequence::microboone_reco_mcc8_cctracks,
                                          @sequence::microboone_reco_mcc8_pandora ]
 
-microboone_dlprod_ana_stage1: [          dlprodMcinfo ]
+microboone_dlprod_ana: [                 dlprodMcinfo ]
 
 ### Below we include overrides for the modules above
 ### These are for MCC 7
