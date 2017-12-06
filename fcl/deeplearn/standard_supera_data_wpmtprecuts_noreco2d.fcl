@@ -25,6 +25,8 @@ physics.analyzers.analysistree.SaveCaloCosmics: true
 physics.analyzers.analysistree.SaveSWTriggerInfo: false
 # configure supera
 physics.analyzers.superaWholeView.supera_params: "supera_basic.fcl"
+# configure larlite
+physics.analyzers.opreco.trigger: ["daq"]
 
 # Add precuts filter
 physics.filters: {
