@@ -10,13 +10,17 @@ int crt::auxfunctions::getFEBN(uint64_t febid){
 void crt::auxfunctions::FillPos(std::string filePos,   std::map <int, std::vector<double> >& sensor_pos){ //key = FEB*100+ch                
   
   std::cout<<"Reading SiPMs position information"<<std::endl;
+
+  std::string fname;
+  cet::search_path sp("FW_SEARCH_PATH");
+  sp.find_file(filePos,fname);
   
   std::ifstream in;
-  in.open(filePos.c_str());
-  std::cout <<"File open? "<<in.is_open()<<std::endl;
+  in.open(fname.c_str());
+  std::cout <<"File "<< fname << "open? "<<in.is_open()<<std::endl;
 
   if(in.is_open()){
-    std::cout<<"File open: "<<filePos.c_str()<<std::endl;
+    std::cout<<"File open: "<<fname.c_str()<<std::endl;
   }
 
   while (!in.eof()){
@@ -51,12 +55,16 @@ void crt::auxfunctions::FillFEBDel(std::string fileFEBDel,   std::map <int,doubl
   
   std::cout<<"Reading FEB delay information"<<std::endl;
  
+  std::string fname;
+  cet::search_path sp("FW_SEARCH_PATH");
+  sp.find_file(fileFEBDel,fname);
+
   std::ifstream in;
-  in.open(fileFEBDel.c_str());
+  in.open(fname.c_str());
   std::cout <<"File open? "<<in.is_open()<<std::endl;
 
   if(in.is_open()){
-    std::cout<<"File open: "<<fileFEBDel.c_str()<<std::endl;
+    std::cout<<"File open: "<<fname.c_str()<<std::endl;
   }
 
   while (!in.eof()){
@@ -82,13 +90,17 @@ double crt::auxfunctions::getFEBDel(int ID,  std::map <int,double >& FEBDel){
 void crt::auxfunctions::FillGain(std::string fileGain,   std::map <int, std::pair<double,double> >& sensor_gain){ //key = FEB*100+ch            
   
   std::cout<<"Reading SiPMs gain information"<<std::endl;
+
+  std::string fname;
+  cet::search_path sp("FW_SEARCH_PATH");
+  sp.find_file(fileGain,fname);
   
   std::ifstream in;
-  in.open(fileGain.c_str());
+  in.open(fname.c_str());
 
   std::cout <<"File open? "<<in.is_open()<<std::endl;
   if(in.is_open()){
-    std::cout<<"File open: "<<fileGain.c_str()<<std::endl;
+    std::cout<<"File open: "<<fname.c_str()<<std::endl;
   }
   
   while (!in.eof()){

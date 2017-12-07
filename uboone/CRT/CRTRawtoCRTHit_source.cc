@@ -58,6 +58,8 @@
 #include <memory>
 #include <iomanip> // needed to use manipulators with parameters (precision, width)
 
+#include <exception>
+
 #define MAX_TIME_PREBEAM 2000000 //ns before beam ts1
 #define MAX_TIME_PASTBEAM 4000000 //ns after beam ts1
 #define EVLEN 80        // event length of a raw event (80 for uBooNE)
@@ -331,12 +333,14 @@ crt::CRTRawInputDetail::CRTRawInputDetail(fhicl::ParameterSet const & ps,
 void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlock*& fb)
 {
   //initialization////////////////////////////////////////////////////////////////////////////////
+
   crt::auxfunctions::FillPos(SiPMpositions_, sensor_pos); //key = FEB*100+ch  //fill sipm positions      
   crt::auxfunctions::FillFEBDel(FEBDelays_, FEBDel); //key = FEB  //fill FEB delays
   crt::auxfunctions::FillGain(CRTGains_, SiPMgain); //key = FEB*100+ch  //fill sipms gain
   crt::auxfunctions::FillGain(CRTPedestals_, SiPMpedestal); //key = FEB*100+ch  //same for pedestals 
   
   std::cout <<"Run in mode (3=only beam, 11=all): "<< run_mode_ << std::endl; 
+
   //set all hit counters (from scan buffer and pro buffer) to 0
   for(int i=0;i<MAXFEBNR+1;i++){
     ev_counter_mac[i]=0;
@@ -457,6 +461,7 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
     read_events2=0;
     read_events3=0;
     read_events4=0;
+    return;
   }
 
   fInputStreamList.open(filename.c_str(),std::ios_base::in);
@@ -560,6 +565,8 @@ bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::S
         //printf("fill status of %d: %d - %d\n",i,ev_counter_mac[i], ev_counter_scan[i]);
       }
     }
+
+
     //receive new data
     if(ready_to_fill==PROBUF_READY_TO_FILL){
       ready_to_fill=PROBUF_FILLING;

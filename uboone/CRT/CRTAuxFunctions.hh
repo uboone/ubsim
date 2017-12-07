@@ -16,6 +16,8 @@
 #include <vector>
 #include <map>
 #include <fstream>
+#include "cetlib/search_path.h"
+
 
 namespace crt {
   
