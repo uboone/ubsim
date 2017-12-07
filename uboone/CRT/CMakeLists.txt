@@ -228,7 +228,5 @@ simple_plugin( CRTMerger "module"
 install_headers()
 install_fhicl()
 install_source()
-# in order to grab up files for use in production and also not demand cutting a new larbatch:
-install_scripts( EXTRAS extractor_dict_wCRT.py condor_lar_ec.sh crtdaq2root_conversion_project.xml  ) 
 
 
