@@ -17,7 +17,6 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
-//#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
 #include "artdaq-core/Data/Fragments.hh"
 
 #include "art/Framework/Services/Optional/TFileService.h"
@@ -25,6 +24,7 @@
 #include "uboone/CRT/CRTProducts/CRTHit.hh"
 #include "uboone/CRT/CRTProducts/CRTTrack.hh"
 #include "uboone/CRT/CRTAuxFunctions.hh"
+#include "uboone/RawData/utils/DAQHeaderTimeUBooNE.h"
 
 #include "TTree.h"
 
@@ -72,22 +72,24 @@ private:
   uint32_t frunNum;                //Run Number taken from event
   uint32_t fsubRunNum;             //Subrun Number taken from event
 
-  std::string  raw_data_label_;
+  std::string  data_label_;
   int file_type_;
+  std::string  data_label_DAQHeader_;
 };
 
 
 crt::TimeExtraction::TimeExtraction(fhicl::ParameterSet const & p)
   : EDAnalyzer(p),
-    raw_data_label_(p.get<std::string>("raw_data_label")),
-    file_type_(p.get<int>("file_type"))
+    data_label_(p.get<std::string>("data_label")),
+    file_type_(p.get<int>("file_type")),
+    data_label_DAQHeader_(p.get<std::string>("data_label_DAQHeader_"))
 {}
 
 void crt::TimeExtraction::analyze(art::Event const & evt)
 {
 
-  //for TPC
-  //if(file_type_==0){
+  
+ 
     frunNum    = evt.run();
     fsubRunNum = evt.subRun();
     fEvtNum = evt.event();
@@ -104,90 +106,77 @@ void crt::TimeExtraction::analyze(art::Event const & evt)
     std::cout<<"Timestamp_nsec: (Trigger)  "<<evt_time_nsec<< "   " <<std::endl;                          
     std::cout<<"                 " <<std::endl;                          
     
-    // }
-  //for TPC
-     
-    
-
-
-
-  
-  //for crt
-  //if(file_type_==1){ 
-    art::Handle< std::vector<artdaq::Fragment> > rawHandle;
-    //  evt.getByLabel(raw_data_label_, "BernZMQ", rawHandle); //artdaq //daq  
-    evt.getByLabel(raw_data_label_, rawHandle); //Converted files //crtdaq                                                                                 
-
-    //check to make sure the data we asked for is valid                                                                                  
-    if(!rawHandle.isValid()){
-      std::cout << "Run " << evt.run() << ", subrun " << evt.subRun()
-		<< ", event " << evt.event() << " has zero"
-		<< " BernFEB fragments " << " in module " << raw_data_label_ << std::endl;
-      std::cout << std::endl;
-      return;
-    }
-    
-    int counter = 1;
-    //get better access to the data                                                                                                                             
-    std::vector<artdaq::Fragment> const& rawFragments(*rawHandle);
-    std::cout<<"                 " <<std::endl;
-    std::cout<< "This event contains:  "<<rawFragments.size()<<" artdaq::Fragments"<<std::endl;       
-    std::cout<<"                 " <<std::endl;
-    //loop over the raw data fragments                                                                                                                          
-    //There should be one fragment per FEB in each event.                                                                                                    
-    for(auto const& frag : rawFragments){//A                                                                                                  
+    //for TPC
+    if(file_type_==0){
+      //get DAQ Header                                     
+      art::Handle< raw::DAQHeaderTimeUBooNE > rawHandle_DAQHeader;
+      evt.getByLabel(data_label_DAQHeader_, rawHandle_DAQHeader);
       
-      //overlay this so it's in the "BernFragment" format. Same data!                                                                                          
-      bernfebdaq::BernZMQFragment bfrag(frag);
-      //Grab the metadata.                                                                                                                                  
-      //See bernfebdaq-core/bernfebdaq-core/Overlays/BernFEBFragment.hh                                                                                              
-      auto bfrag_metadata = bfrag.metadata();
-      size_t   nevents    = bfrag_metadata->n_events();   //number of BernFEBEvents in this packet                                                       
-      auto time_start_seconds = bfrag_metadata->time_start_seconds();     //last second.           
-      auto time_end_seconds = bfrag_metadata->time_end_seconds();     //last second.                                                                             
-      auto time_start_ns = bfrag_metadata->time_start_nanosec();     //from last second.       
-      auto time_end_ns = bfrag_metadata->time_end_nanosec();     //last second + 1s.                                                                              
-      auto FEB_MAC =  bfrag_metadata->feb_id();     //mac addresss of this packet                  
+      //check to make sure the data we asked for is valid
+      if(!rawHandle_DAQHeader.isValid()){
+	std::cout << "Run " << evt.run() << ", subrun " << evt.subRun()
+		  << ", event " << evt.event() << " has zero" 
+		  << " DAQHeaderTimeUBooNE  " << " in with label " << data_label_DAQHeader_ << std::endl;
+	std::cout<<"                 " <<std::endl;                          
+	return;
+      }
       
-      std::cout<< "Fragment: "<<counter<<std::endl;
-      counter++;
-      std::cout<< "FEB: "<<FEB_MAC << " :Fragment contains: " <<nevents<<" events"<<std::endl;       
-      std::cout<< "time_start_seconds:  "<<time_start_seconds<<std::endl;       
-      std::cout<< "time_end_seconds:  "<<time_end_seconds<<std::endl;       
-      std::cout<< "time_start_ns:  "<<time_start_ns<<std::endl;       
-      std::cout<< "time_end_ns:  "<<time_end_ns<<std::endl;       
+      raw::DAQHeaderTimeUBooNE const& my_DAQHeader(*rawHandle_DAQHeader);
+      art::Timestamp evtTimeGPS = my_DAQHeader.gps_time();
+      double evt_timeGPS_sec = evtTimeGPS.timeHigh();
+      double evt_timeGPS_nsec = evtTimeGPS.timeLow();
+      
+      std::cout<<"GPS:: timestamp_sec: (Trigger sec)  "<<evt_timeGPS_sec<< "   " <<std::endl;
+      std::cout<<"GPS:: timestamp_nsec: (Trigger nsec)  "<<evt_timeGPS_nsec<< "   " <<std::endl;
       std::cout<<"                 " <<std::endl;                          
-
-      /*          
-	if(FEB_MAC==108){//C
-	
-	  //read event.
-	  for(size_t i_e=0; i_e<nevents; ++i_e){//B_1                                                                                    
-	    
-	    bernfebdaq::BernZMQEvent const* this_event = bfrag.eventdata(i_e); //get the single hit/event                                              
-	    
-	    //bool sptevent0 = this_event->IsReference_TS0();
-	    //bool sptevent1 = this_event->IsReference_TS1();
-	    //if( (!sptevent0) && (!sptevent1)  ){//B_2               
-	    
-	    auto time_ts0 = this_event->Time_TS0();         //grab the event time from last second         
-	    auto time_ts1 = this_event->Time_TS1();         //grab the event time from last second         
-	    std::cout<<"event: "<<i_e<<std::endl;
-	    getchar();
-	    for(size_t i_chan=0; i_chan<2; ++i_chan){ //1st max                                                                                                   
-	      int adc = this_event->adc[i_chan];
-	      std::cout<<"FEB: "<<FEB_MAC<<" SiPM: "<<i_chan<<"  adc: "<< adc<< "  time0: "<<time_ts0<< "  time1: "<<time_ts1 <<std::endl;                          
-	    }
-	    
-	  }//B_1
-	  getchar();
-	}//C
-      	//read event
-	*/
-    }//A
+    }
+    //for TPC
     
-    // }
-  //for crt
+    
+    
+    //for crt
+    if(file_type_==1){
+      art::Handle< std::vector<crt::CRTHit> > rawHandle;
+      evt.getByLabel(data_label_, rawHandle); //
+      
+      //check to make sure the data we asked for is valid                                                                                                      
+      if(!rawHandle.isValid()){
+	std::cout << "Run " << evt.run() << ", subrun " << evt.subRun()
+		  << ", event " << evt.event() << " has zero"
+		  << " CRTHits " << " in module " << data_label_ << std::endl;
+	std::cout << std::endl;
+	return;
+      }
+      
+      //get better access to the data               
+      std::vector<crt::CRTHit> const& CRTHitCollection(*rawHandle);
+      std::cout<<"                 " <<std::endl;                          
+      std::cout<<"CRTHits in this event::  "<<CRTHitCollection.size() <<std::endl;
+      std::cout<<"                 " <<std::endl;                    
+      
+      std::vector<int>::size_type end = CRTHitCollection.size() - 1;
+      
+      crt::CRTHit CRTHitevent_first = CRTHitCollection[0];
+      std::cout<< "CRTHitevent_first::  "<<std::endl;                          
+      std::cout<< "second::ts0_s  "<<CRTHitevent_first.ts0_s<<std::endl;                          
+      std::cout<< "nano_second::ts0_ns  "<<CRTHitevent_first.ts0_ns<<std::endl;                          
+      std::cout<< "nano_second::ts1_ns  "<<CRTHitevent_first.ts1_ns<<std::endl;                          
+      std::cout<<"                 " <<std::endl;                          
+      
+      crt::CRTHit CRTHitevent_last = CRTHitCollection[end];
+      std::cout<< "CRTHitevent_last::  "<<std::endl;                          
+      std::cout<< "second::ts0_s  "<<CRTHitevent_last.ts0_s<<std::endl;                          
+      std::cout<< "nano_second::ts0_ns  "<<CRTHitevent_last.ts0_ns<<std::endl;                          
+      std::cout<< "nano_second::ts1_ns  "<<CRTHitevent_last.ts1_ns<<std::endl;                          
+      std::cout<<"                 " <<std::endl;                          
+      
+      //for(std::vector<int>::size_type i = 0; i != CRTHitCollection.size(); i++) {//A 
+      
+      // }//A
+    }
+    //for crt
+
+
 }
 
 void crt::TimeExtraction::beginJob()
