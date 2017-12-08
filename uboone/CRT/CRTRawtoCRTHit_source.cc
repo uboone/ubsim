@@ -334,6 +334,7 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
 {
   //initialization////////////////////////////////////////////////////////////////////////////////
 
+
   crt::auxfunctions::FillPos(SiPMpositions_, sensor_pos); //key = FEB*100+ch  //fill sipm positions      
   crt::auxfunctions::FillFEBDel(FEBDelays_, FEBDel); //key = FEB  //fill FEB delays
   crt::auxfunctions::FillGain(CRTGains_, SiPMgain); //key = FEB*100+ch  //fill sipms gain

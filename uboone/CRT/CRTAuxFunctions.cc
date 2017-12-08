@@ -1,4 +1,5 @@
 #include "uboone/CRT/CRTAuxFunctions.hh"
+#include "cetlib/exception.h"
 
 int crt::auxfunctions::getFEBN(uint64_t febid){
   
@@ -18,6 +19,8 @@ void crt::auxfunctions::FillPos(std::string filePos,   std::map <int, std::vecto
   std::ifstream in;
   in.open(fname.c_str());
   std::cout <<"File "<< fname << "open? "<<in.is_open()<<std::endl;
+
+
 
   if(in.is_open()){
     std::cout<<"File open: "<<fname.c_str()<<std::endl;
