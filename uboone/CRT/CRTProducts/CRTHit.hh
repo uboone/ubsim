@@ -51,7 +51,7 @@ namespace crt {
       uint16_t event_flag;
       std::map< uint8_t, uint16_t > lostcpu_map;
       std::map< uint8_t, uint16_t > lostfpga_map;
-      uint16_t pullms;
+      uint16_t pollms;
 
       CRTHit() {}
 
