@@ -11,11 +11,3 @@ physics.end_paths: [ ana, stream1 ]
 outputs.out1.fileName: "%ifb_%tc_reco1.root"
 outputs.out1.dataTier: "reconstructed-2d"
 source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McReco*" ]
-
-microboone_tfile_metadata:
-{
-  JSONFileName:          "larlite_mcinfo.root.json"
-  GenerateTFileMetadata: true
-  dataTier:              "larlite"
-  fileFormat:            "root"
-}

@@ -284,7 +284,9 @@ microboone_reco_mcc8_analyzers:
 {
   # Larlite mc information.
   # This needs to run in reco stage because it uses SimChannel data product.
-  dlprodMcinfo: @local::dlprod_analyzers.mcinfo
+  #dlprodMcinfo:            @local::dlprod_analyzers.mcinfo
+  #dlprodSuperaMCFullSet:   @local::dlprod_analyzers.superaMCFullSet
+  #dlprodSuperaMCTruthOnly: @local::dlprod_analyzers.superaMCTruthOnly
 }
 
 microboone_reco_mcc8_filters:
@@ -491,7 +493,8 @@ microboone_reco_mcc8_3D: [               rns,
                                          @sequence::microboone_reco_mcc8_cctracks,
                                          @sequence::microboone_reco_mcc8_pandora ]
 
-microboone_dlprod_ana: [                 dlprodMcinfo ]
+#microboone_dlprod_ana: [                 dlprodMcinfo ]
+microboone_dlprod_ana: [ ]
 
 ### Below we include overrides for the modules above
 ### These are for MCC 7

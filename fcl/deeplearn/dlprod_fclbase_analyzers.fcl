@@ -25,7 +25,16 @@ SuperaBasic: @local::SuperaWholeView
 SuperaBasic.supera_params: "supera_basic.fcl"
 
 SuperaMCBasic: @local::SuperaWholeView
-SuperaMCBasic.supera_params: "supera_segment.fcl"
+SuperaMCBasic.supera_params: "supera_basic.fcl"
+
+SuperaMCLArFlow: @local::SuperaWholeView
+SuperaMCLArFlow.supera_params: "supera_larflow.fcl"
+
+SuperaMCInstance: @local::SuperaWholeView
+SuperaMCInstance.supera_params: "supera_instance.fcl"
+
+SuperaMCFullSet: @local::SuperaWholeView
+SuperaMCFullSet.supera_params: "supera_mcset.fcl"
 
 SuperaFocusedView3D: @local::SuperaWholeView
 SuperaFocusedView3D.supera_params: "supera_segment_pork3d.fcl"
@@ -45,6 +54,12 @@ SuperaCCPi0MC.CSVSuperaMetaMaker: "ccpi0_constraint_mcc8.fcl"
 SuperaCCPi0Data: @local::SuperaFocusedView
 SuperaCCPi0Data.supera_params: "supera_basic_focused.fcl"
 SuperaCCPi0Data.CSVSuperaMetaMaker: "ccpi0_constraint.fcl"
+
+SuperaMCBasic: @local::SuperaWholeView
+SuperaMCBasic.supera_params: "supera_segment.fcl"
+
+SuperaMCTruthOnly: @local::SuperaWholeView
+SuperaMCTruthOnly.supera_params: "supera_mctruthonly.fcl"
 
 dlprod_analyzers:
  {
@@ -66,6 +81,10 @@ dlprod_analyzers:
    superaMichelData:  @local::SuperaMichelData
    superaCCPi0MC:     @local::SuperaCCPi0MC
    superaCCPi0Data:   @local::SuperaCCPi0Data
+   superaMCLArFlow:   @local::SuperaMCLArFlow
+   superaMCInstance:  @local::SuperaMCInstance
+   superaMCFullSet:   @local::SuperaMCFullSet
+   superaMCTruthOnly: @local::SuperaMCTruthOnly
 }
 
 dlprod_analyze_all:    [ simch, mcinfo, opreco, reco2d, opdigit, wire ]
