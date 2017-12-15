@@ -105,6 +105,7 @@ microboone_reco_mcc8_producers:
 
   ### calwire producers
   caldata:                        @local::microboone_calroi
+  caldataFull:                    @local::microboone_calroi
 
   ### hit-finder producers
   gaushit:                        @local::microboone_gaushitfinder
@@ -306,8 +307,9 @@ microboone_reco_mcc8_optical: [ saturation,
                                 simpleFlashBeamLowPE]
 
 microboone_reco_mcc8_signalprocessing: [ #digitfilter,
+                                         caldataFull,
                                          wcNoiseFilter,
-					                               caldata,
+                                         caldata,
                                          gaushit ]
 
 microboone_reco_mcc8_fuzzycluster: [     #fuzzycluster ]
@@ -509,6 +511,14 @@ microboone_reco_mcc8_producers.wcNoiseFilter.DoNoiseFiltering:                  
 physics.producers.saturation.CalibrationCorr : [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
                                                 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
 
+
+microboone_reco_mcc8_producers.caldataFull.DigitModuleLabel:                     "daq"
+microboone_reco_mcc8_producers.caldataFull.Threshold:                            [0, 0, 0]  # Not what you think...
+microboone_reco_mcc8_producers.caldataFull.NumSigma:                             [9, 9, 9]  # Closer to what you think...
+microboone_reco_mcc8_producers.caldataFull.ROIFinder.Threshold:                  [0, 0, 0]
+microboone_reco_mcc8_producers.caldataFull.ROIFinder.NumSigma:                   [9, 9, 9]
+microboone_reco_mcc8_producers.caldataFull.DodQdxCalib:                          false
+microboone_reco_mcc8_producers.caldataFull.MakeSparseRawDigits:                  false
 
 microboone_reco_mcc8_producers.caldata.DigitModuleLabel:                         "wcNoiseFilter"
 microboone_reco_mcc8_producers.caldata.Threshold:                                [0, 0, 0]  # Not what you think...
