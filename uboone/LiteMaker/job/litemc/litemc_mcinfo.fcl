@@ -1,7 +1,5 @@
 #include "litemaker_base.fcl"
 
-BEGIN_PROLOG
-
 litemc_mcinfo: @local::litemaker_base
 
 litemc_mcinfo.out_filename: "larlite_mcinfo.root"
@@ -24,5 +22,3 @@ litemc_mcinfo.AssociationLookUpMap: {
 }
 
 litemc_mcinfo.AssLabelToSave:["generator","corsika"]
-
-END_PROLOG

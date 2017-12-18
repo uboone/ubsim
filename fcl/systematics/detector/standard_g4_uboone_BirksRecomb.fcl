@@ -1,14 +1,12 @@
 #include "standard_g4_uboone.fcl"
 
-process_name: G4CV
+process_name: G4BirksRecomb
 
-outputs.out1.fileName: "detsyst_%tc_g4_CV.root"
+outputs.out1.fileName: "detsyst_%tc_g4_BirksRecomb.root"
 
-services.SpaceCharge.EnableSimSpatialSCE: true
-services.SpaceCharge.EnableSimEfieldSCE: true
+source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*","drop *_*_*_G4*"]
 
-source.inputCommands: ["keep *_*_*_*", "drop *_*_*_G4*","drop *_*_*_Detsim*","drop *_*_*_McReco*" ]
-
+services.LArG4Parameters.UseModBoxRecomb: false
 
 services.DetectorPropertiesService.NumberTimeSamples: 9600
 services.DetectorPropertiesService.ReadOutWindowSize: 9600

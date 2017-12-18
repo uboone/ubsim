@@ -1,25 +1,29 @@
 <?xml version="1.0"?>
 
 <!-- Author: Joseph Zennamo, UChicago, jzennamo@uchicago.edu, Sep. 2017 -->
+<!-- JZ Updated Nov. 2017; Now Supports two MCC8 releases to correctly
+                           handle the LArG4 simulation for mainline MCC8
+                           production -->
 
 <!-- Production Project -->
 <!DOCTYPE project [
-<!ENTITY release "v06_26_01_06">
+<!ENTITY relsim  "v06_26_01">
+<!ENTITY relreco "v06_26_01_08">
 <!ENTITY file_type "mc">
 <!ENTITY run_type "physics">
 <!-- CHANGE THE PROJECT NAME -->
 <!ENTITY name "detsyst">
 <!ENTITY prod_mode "detsyst">
-<!-- CHANGE YOUR USER NAME -->
-<!ENTITY user_name "users/USER NAME">
-<!ENTITY tardir "/pnfs/uboone/persistent/users/USER NAME/tars">
+<!-- CHANGE YOUR jaz8600 -->
+<!ENTITY user_name "users/jaz8600">
+<!ENTITY tardir "/pnfs/uboone/persistent/users/jaz8600/tars">
 <!-- CHANGE YOUR SAM DEF NAME -->
-<!ENTITY sam_def "SAME DEF NAME">
+<!-- <!ENTITY sam_def "SAME DEF NAME"> -->
 ]>
 
 <job>
 
-<project name="&name;">
+<project name="&name;_G4DetSim">
 
   <!-- Project size -->
   <numevents>40000</numevents>
@@ -33,13 +37,130 @@
   <!-- <resource>DEDICATED,OPPORTUNISTIC</resource>  -->
   
   <!-- Project Version -->
-  <version>&prod_mode;_v06_26_01_06</version>
+  <version>&prod_mode;_v06_26_01</version>
 
   <!-- Larsoft information -->
   <larsoft>
-    <tag>&release;</tag>
+    <tag>&relsim;</tag>
     <qual>e10:prof</qual>
-    <local>&tardir;/DetSysts.tar</local>
+    <local>&tardir;/DetSyst_MCC8_G4.tar</local>
+  </larsoft>
+  
+  <check>0</check>
+  <copy>0</copy>
+
+  <!-- Project stages -->
+
+  <stage name="CV_G4">
+    <fcl>standard_g4_CV_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/CV_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/CV_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relsim;/&name;/CV_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relsim;/&name;/CV_G4</workdir>
+    <numjobs>1</numjobs>
+    <inputlist>/uboone/app/users/jaz8600/work/DetectorSystematics/v06_26_01_08/test.list</inputlist>
+    <defname>zennamo_test_onemuon_detsyst_g4_cv</defname>
+    <maxfilesperjob>1</maxfilesperjob>
+    <datatier>detector-simulated</datatier>
+    <memory>4000</memory>
+    <jobsub>--expected-lifetime=8h</jobsub>
+  </stage>  
+  
+  <stage name="nospacecharge_G4" base="CV_G4">
+    <fcl>standard_g4_noSCE_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/nospacecharge_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/nospacecharge_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relsim;/&name;/nospacecharge_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relsim;/&name;/nospacecharge_G4</workdir>
+    <defname>zennamo_test_onemuon_detsyst_nospacecharge_G4</defname>
+  </stage>  
+
+  <stage name="enhancedexttpcvis_G4" base="CV_G4">
+    <fcl>standard_g4_spacecharge_EnhancedExtraTPCVis_uboone.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/enhancedexttpcvis_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/enhancedexttpcvis_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relsim;/&name;/enhancedexttpcvis_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relsim;/&name;/enhancedexttpcvis_G4</workdir>
+    <defname>zennamo_test_onemuon_detsyst_enhancedexttpcvis_G4</defname>
+  </stage>  
+  
+  <stage name="lifetime10ms_G4" base="CV_G4">
+    <fcl>standard_g4_uboone_10msLt.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/lifetime10ms_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/lifetime10ms_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relsim;/&name;/lifetime10ms_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relsim;/&name;/lifetime10ms_G4</workdir>
+    <defname>zennamo_test_onemuon_detsyst_lifetime10ms_G4</defname>
+  </stage>  
+
+<stage name="dl0_G4" base="CV_G4">
+    <fcl>standard_g4_uboone_DL0.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/dl0_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/dl0_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relsim;/&name;/dl0_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relsim;/&name;/dl0_G4</workdir>
+    <defname>zennamo_test_onemuon_detsyst_dl0_G4</defname>
+  </stage>  
+
+<stage name="dt0_G4" base="CV_G4">
+    <fcl>standard_g4_uboone_DT0.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/dt0_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/dt0_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relsim;/&name;/dt0_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relsim;/&name;/dt0_G4</workdir>
+    <defname>zennamo_test_onemuon_detsyst_dt0_G4</defname>
+  </stage> 
+
+<stage name="birksrecomb_G4" base="CV_G4">
+    <fcl>standard_g4_uboone_BirksRecomb.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/birksrecomb_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/birksrecomb_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relsim;/&name;/birksrecomb_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relsim;/&name;/birksrecomb_G4</workdir>
+    <defname>zennamo_test_onemuon_detsyst_birksrecomb_G4</defname>
+  </stage> 
+
+<stage name="nodeltaray_G4" base="CV_G4">
+    <fcl>standard_g4_uboone_nodeltarays.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/nodeltaray_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/nodeltaray_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relsim;/&name;/nodeltaray_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relsim;/&name;/nodeltaray_G4</workdir>
+    <defname>zennamo_test_onemuon_detsyst_nodeltaray_G4</defname>
+  </stage> 
+
+<stage name="nohadronic_G4" base="CV_G4">
+    <fcl>standard_g4_uboone_nohadronic.fcl</fcl>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/nohadronic_G4</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relsim;/&name;/nohadronic_G4</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relsim;/&name;/nohadronic_G4</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relsim;/&name;/nohadronic_G4</workdir>
+    <defname>zennamo_test_onemuon_detsyst_nohadronic_G4</defname>
+  </stage> 
+
+</project>
+
+<project name="&name;_Reco">
+
+  <!-- Project size -->
+  <numevents>40000</numevents>
+  
+
+ <!-- Operating System -->
+  <os>SL6</os>
+
+  <!-- Batch resources -->
+  <resource>DEDICATED,OPPORTUNISTIC,OFFSITE</resource>
+  <!-- <resource>DEDICATED,OPPORTUNISTIC</resource>  -->
+  
+  <!-- Project Version -->
+  <version>&prod_mode;_v06_26_01_08</version>
+
+  <!-- Larsoft information -->
+  <larsoft>
+    <tag>&relreco;</tag>
+    <qual>e10:prof</qual>
+    <local>&tardir;/DetSyst_MCC8_4.tar</local>
   </larsoft>
   
   <check>0</check>
@@ -48,15 +169,15 @@
   <!-- Project stages -->
 
   <stage name="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
-
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/CV</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/CV</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/CV</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/CV</workdir>
-    <numjobs>749</numjobs>
-    <inputdef>&sam_def;</inputdef>
-    <defname>temp_detsyst_cv</defname>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/CV</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/CV</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/CV</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/CV</workdir>
+    <numjobs>1</numjobs>
+    <previousstage>CV_G4</previousstage>
+    <defname>zennamo_test_onemuon_detsyst_cv</defname>
     <maxfilesperjob>1</maxfilesperjob>
     <datatier>detector-simulated</datatier>
     <memory>5000</memory>
@@ -64,118 +185,199 @@
   </stage>  
   
   <stage name="stretchResp" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage1_stretchResp.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage2_CV.fcl</fcl>
  
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/stretchRes</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/stretchRes</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/stretchRes</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/stretchRes</workdir>
-    <defname>temp_detsyst_stretchRes</defname>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/stretchRes</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/stretchRes</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/stretchRes</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/stretchRes</workdir>
+    <defname>zennamo_test_onemuon_detsyst_stretchRes</defname>
   </stage>  
 
   <stage name="altDeadChannels" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage1_altDeadChannels.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage2_CV.fcl</fcl>
  
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/altDeadChannels</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/altDeadChannels</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/altDeadChannels</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/altDeadChannels</workdir>
-    <defname>temp_detsyst_altDeadChannels</defname>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/altDeadChannels</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/altDeadChannels</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/altDeadChannels</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/altDeadChannels</workdir>
+    <defname>zennamo_test_onemuon_detsyst_altDeadChannels</defname>
   </stage>  
 
   <stage name="deadSaturatedChannels" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage1_deadSaturatedChannels.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage2_CV.fcl</fcl>
  
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/deadSaturatedChannels</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/deadSaturatedChannels</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/deadSaturatedChannels</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/deadSaturatedChannels</workdir>
-    <defname>temp_detsyst_deadSaturatedChannels</defname>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/deadSaturatedChannels</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/deadSaturatedChannels</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/deadSaturatedChannels</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/deadSaturatedChannels</workdir>
+    <defname>zennamo_test_onemuon_detsyst_deadSaturatedChannels</defname>
   </stage>  
 
-<!--
- <stage name="highshapingtime" base="CV">
-    <fcl>standard_detsim_highshapingtime_uboone.fcl</fcl>
-    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
- 
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/highshapingtime</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/highshapingtime</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/highshapingtime</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/highshapingtime</workdir>
-    <defname>temp_detsyst_highshapingtime</defname>
-  </stage>  
--->
-<!--
-  <stage name="lowgain" base="CV">
-    <fcl>standard_detsim_lowgain_uboone.fcl</fcl>
-    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
- 
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lowgain</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/lowgain</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/lowgain</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/lowgain</workdir>
-    <defname>temp_detsyst_lowgain</defname>
-  </stage>  
--->
   <stage name="noPEnoise" base="CV">
     <fcl>standard_detsim_noPEnoise_uboone.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
  
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/noPEnoise</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/noPEnoise</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/noPEnoise</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/noPEnoise</workdir>
-    <defname>temp_detsyst_noPEnoise</defname>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/noPEnoise</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/noPEnoise</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/noPEnoise</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/noPEnoise</workdir>
+    <defname>zennamo_test_onemuon_detsyst_noPEnoise</defname>
   </stage>  
 
   <stage name="noShortedResp" base="CV">
     <fcl>standard_detsim_noShortedResp_uboone.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
  
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/noShortedResp</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/noShortedResp</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/noShortedResp</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/noShortedResp</workdir>
-    <defname>temp_detsyst_noShortedResp</defname>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/noShortedResp</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/noShortedResp</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/noShortedResp</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/noShortedResp</workdir>
+    <defname>zennamo_test_onemuon_detsyst_noShortedResp</defname>
   </stage>  
 
   <stage name="whitenoise" base="CV">
     <fcl>standard_detsim_whitenoise_uboone.fcl</fcl>
     <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
  
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/whitenoise</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/whitenoise</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/whitenoise</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/whitenoise</workdir>
-    <defname>temp_detsyst_whitenoise</defname>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/whitenoise</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/whitenoise</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/whitenoise</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/whitenoise</workdir>
+    <defname>zennamo_test_onemuon_detsyst_whitenoise</defname>
   </stage>  
 
   <stage name="nospacecharge" base="CV">
-    <fcl>standard_g4_noSCE_uboone.fcl</fcl>
     <fcl>standard_detsim_CV_uboone.fcl</fcl> 
     <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
- 
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/nospacecharge</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/nospacecharge</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/nospacecharge</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/nospacecharge</workdir>
-    <defname>temp_detsyst_nospacecharge</defname>
+
+    <previousstage>nospacecharge_G4</previousstage>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/nospacecharge</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/nospacecharge</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/nospacecharge</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/nospacecharge</workdir>
+    <defname>zennamo_test_onemuon_detsyst_nospacecharge</defname>
   </stage>  
 
   <stage name="dicharge" base="CV">
     <fcl>standard_detsim_withDIC_uboone.fcl</fcl> 
     <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
  
-    <outdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dicharge</outdir>
-    <logdir>/pnfs/uboone/scratch/&user_name;/&release;/&name;/dicharge</logdir>
-    <bookdir>/uboone/data/&user_name;/book/&release;/&name;/dicharge</bookdir>
-    <workdir>/pnfs/uboone/scratch/&user_name;/work/&release;/&name;/dicharge</workdir>
-    <defname>temp_detsyst_dicharge</defname>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/dicharge</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/dicharge</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/dicharge</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/dicharge</workdir>
+    <defname>zennamo_test_onemuon_detsyst_dicharge</defname>
+  </stage>  
+  
+  <stage name="enhancedexttpcvis" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+ 
+    <previousstage>enhancedexttpcvis_G4</previousstage>
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/enhancedexttpcvis</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/enhancedexttpcvis</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/enhancedexttpcvis</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/enhancedexttpcvis</workdir>
+    <defname>zennamo_test_onemuon_detsyst_enhancedexttpcvis</defname>
   </stage>  
 
+<stage name="lifetime10ms" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+ 
+    <previousstage>lifetime10ms_G4</previousstage> 
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/lifetime10ms</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/lifetime10ms</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/lifetime10ms</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/lifetime10ms</workdir>
+    <defname>zennamo_test_onemuon_detsyst_lifetime10ms</defname>
+  </stage>  
+
+<stage name="dl0" base="CV">
+    <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+    <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+
+    <previousstage>dl0_G4</previousstage> 
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/dl0</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/dl0</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/dl0</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/dl0</workdir>
+    <defname>zennamo_test_onemuon_detsyst_dl0</defname>
+  </stage>  
+
+<stage name="dt0" base="CV">
+  <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+  <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+  
+  <previousstage>dt0_G4</previousstage> 
+  <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/dt0</outdir>
+  <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/dt0</logdir>
+  <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/dt0</bookdir>
+  <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/dt0</workdir>
+  <defname>zennamo_test_onemuon_detsyst_dt0</defname>
+</stage>  
+
+<stage name="birksrecomb" base="CV">
+  <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+  <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+
+    <previousstage>birksrecomb_G4</previousstage> 
+    <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/birksrecomb</outdir>
+    <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/birksrecomb</logdir>
+    <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/birksrecomb</bookdir>
+    <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/birksrecomb</workdir>
+    <defname>zennamo_test_onemuon_detsyst_birksrecomb</defname>
+  </stage> 
+
+<stage name="nodeltaray" base="CV">
+  <fcl>standard_detsim_CV_uboone.fcl</fcl>
+  <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+  
+  <previousstage>nodeltaray_G4</previousstage> 
+  <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/nodeltaray</outdir>
+  <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/nodeltaray</logdir>
+  <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/nodeltaray</bookdir>
+  <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/nodeltaray</workdir>
+  <defname>zennamo_test_onemuon_detsyst_nodeltaray</defname>
+</stage> 
+
+<stage name="nohadronic" base="CV">
+  <fcl>standard_detsim_CV_uboone.fcl</fcl>
+  <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+
+  <previousstage>nohadronic_G4</previousstage> 
+  <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/nohadronic</outdir>
+  <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/nohadronic</logdir>
+  <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/nohadronic</bookdir>
+  <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/nohadronic</workdir>
+  <defname>zennamo_test_onemuon_detsyst_nohadronic</defname>
+</stage> 
+
+
+<stage name="lightyeild" base="CV">
+  <fcl>standard_g4_CV_uboone.fcl</fcl> 
+  <fcl>standard_detsim_CV_uboone.fcl</fcl> 
+  <fcl>reco_uboone_mcc8_driver_stage1and2_CV.fcl</fcl>
+  
+  <inputlist>/uboone/app/users/jaz8600/work/DetectorSystematics/v06_26_01_08/test.list</inputlist>
+  <outdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/lightyeild</outdir>
+  <logdir>/pnfs/uboone/scratch/&user_name;/&relreco;/&name;/lightyeild</logdir>
+  <bookdir>/uboone/data/&user_name;/book/&relreco;/&name;/lightyeild</bookdir>
+  <workdir>/pnfs/uboone/scratch/&user_name;/work/&relreco;/&name;/lightyeild</workdir>
+  <defname>zennamo_test_onemuon_detsyst_lightyeild</defname>
+</stage>  
+
+
+  
+
 </project>
+
 
 </job>

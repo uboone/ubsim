@@ -11,7 +11,6 @@
 #include "DataFormat/trigger.h"
 #include "DataFormat/swtrigger.h"
 #include "DataFormat/potsummary.h"
-#include "DataFormat/hit.h"
 #include "DataFormat/track.h"
 #include "DataFormat/mctruth.h"
 #include "DataFormat/mctree.h"
@@ -43,6 +42,7 @@
 #include "DataFormat/mucsdata.h"
 #include "DataFormat/mucsreco.h"
 #include "DataFormat/chstatus.h"
+#include "DataFormat/mceventweight.h"
 #include <TStopwatch.h>
 /*
   This file defines certain specilization of templated functions.
@@ -483,9 +483,11 @@ namespace larlite {
       
       const art::Ptr<::sim::SimChannel> sch_ptr(dh,i);
       
+      if ( sch_ptr->Channel() < 4800 ) continue;
       const auto & sch_map(sch_ptr->TDCIDEMap());
       
       larlite::simch lite_sch;
+      
       lite_sch.set_channel(sch_ptr->Channel());
       
       for(auto sch_iter = sch_map.begin(); sch_iter!=sch_map.end(); ++sch_iter) {
@@ -498,9 +500,9 @@ namespace larlite {
 	  lite_ide.trackID = this_ide.trackID;
 	  lite_ide.numElectrons = this_ide.numElectrons;
 	  lite_ide.energy = this_ide.energy;
-	  lite_ide.x = this_ide.x;
-	  lite_ide.y = this_ide.y;
-	  lite_ide.z = this_ide.z;
+	  //lite_ide.x = this_ide.x;
+	  //lite_ide.y = this_ide.y;
+	  //lite_ide.z = this_ide.z;
 	  
 	  lite_sch.add_ide(tdc,lite_ide);
 	}
@@ -680,26 +682,26 @@ namespace larlite {
       
     }
 
-  template <>
-  void ScannerAlgo::ScanSimpleData(art::Handle< ::raw::ubdaqSoftwareTriggerData> const &dh,
-				   ::larlite::event_base* lite_dh)
-  { 
-      
-      //fDataReadFlag_v[lite_dh->data_type()][lite_dh->name()] = true;  
-      //auto name_index = NameIndex(lite_dh->data_type(),lite_dh->name());
-      auto lite_data = (::larlite::swtrigger*)lite_dh;
-      
-      for(size_t i=0; i<(size_t)(dh->getNumberOfAlgorithms()); ++i) {
-	lite_data->addAlgorithm( dh->getTriggerAlgorithm(i),
-				 dh->getPass(i),
-				 dh->getPassPrescale(i),
-				 dh->getPhmax(i),
-				 dh->getMultiplicity(i),
-				 dh->getTriggerTick(i),
-				 dh->getTimeSinceTrigger(i),
-				 dh->getPrescale(i) );
-      }
-    }
+  //template <>
+  //void ScannerAlgo::ScanSimpleData(art::Handle< ::raw::ubdaqSoftwareTriggerData> const &dh,
+  //  			   ::larlite::event_base* lite_dh)
+  //{ 
+  //    
+  //    //fDataReadFlag_v[lite_dh->data_type()][lite_dh->name()] = true;  
+  //    //auto name_index = NameIndex(lite_dh->data_type(),lite_dh->name());
+  //    auto lite_data = (::larlite::swtrigger*)lite_dh;
+  //    
+  //    for(size_t i=0; i<(size_t)(dh->getNumberOfAlgorithms()); ++i) {
+  //  lite_data->addAlgorithm( dh->getTriggerAlgorithm(i),
+  //  			 dh->getPass(i),
+  //  			 dh->getPassPrescale(i),
+  //  			 dh->getPhmax(i),
+  //  			 dh->getMultiplicity(i),
+  //  			 dh->getTriggerTick(i),
+  //  			 dh->getTimeSinceTrigger(i),
+  //  			 dh->getPrescale(i) );
+  //    }
+  //  }
   
   template <>
   void ScannerAlgo::ScanData(art::Handle<std::vector< ::recob::Wire> > const &dh,
@@ -816,13 +818,14 @@ namespace larlite {
       pe_per_opdet.reserve((*(channel_set.rbegin())));
       double pe_larsoft = flash_ptr->TotalPE();
       double pe_larlite = 0.;
+       
       for(auto const& ch : channel_set) {
-	pe_per_opdet.resize(ch+1);
-	if(pe_larsoft > pe_larlite) {
-	  pe_larlite += flash_ptr->PE(ch);
-	  pe_per_opdet[ch] = flash_ptr->PE(ch);
-	}else
-	  pe_per_opdet[ch] = 0.;
+        pe_per_opdet.resize(ch+1);
+        if(pe_larsoft > pe_larlite) {
+          pe_larlite += flash_ptr->PE(ch);
+          pe_per_opdet[ch] = flash_ptr->PE(ch);
+        }else
+          pe_per_opdet[ch] = 0.;
       }
       
       ::larlite::opflash lite_flash( flash_ptr->Time(),
@@ -839,7 +842,7 @@ namespace larlite {
 				     flash_ptr->ZWidth(),
 				     flash_ptr->WireCenters(),
 				     flash_ptr->WireWidths());
-      
+
       //fPtrIndex_opflash[flash_ptr] = std::make_pair(lite_data->size(),name_index);
       lite_data->push_back(lite_flash);
     }
@@ -1026,7 +1029,7 @@ namespace larlite {
       for(size_t i=0; i<track_ptr->NumberCovariance(); i++)
 	track_lite.add_covariance (track_ptr->CovarianceAtPoint(i));
       // Momentum
-      for(size_t i=0; i<track_ptr->NumberFitMomentum(); i++)
+      for(size_t i=0; i<track_ptr->NumberTrajectoryPoints(); i++)
 	track_lite.add_momentum   (track_ptr->MomentumAtPoint(i));
       
       // Store address map for downstream association
@@ -1064,6 +1067,7 @@ namespace larlite {
       lite_shower.set_length(shower_ptr->Length());
       lite_shower.set_direction(shower_ptr->Direction());
       lite_shower.set_direction_err(shower_ptr->DirectionErr());
+      lite_shower.set_opening_angle(shower_ptr->OpenAngle());
 
       //fPtrIndex_shower[shower_ptr] = std::make_pair(lite_data->size(),name_index);
       
@@ -1228,6 +1232,27 @@ namespace larlite {
     }
   }
 
+  template<>
+  void ScannerAlgo::ScanData(art::Handle<std::vector< ::evwgh::MCEventWeight> > const &dh,
+                             ::larlite::event_base* lite_dh)
+  {
+
+    fDataReadFlag_v[lite_dh->data_type()][lite_dh->name()] = true;
+    //auto name_index = NameIndex(lite_dh->data_type(),lite_dh->name());
+    auto lite_data = (::larlite::event_mceventweight*)lite_dh;
+    for(size_t i=0; i<dh->size(); ++i) {
+      art::Ptr<::evwgh::MCEventWeight> weight_ptr(dh,i);
+      larlite::mceventweight lite_weight(weight_ptr->fWeight);
+
+      auto w_map = lite_weight.GetWeights() ;
+
+     // for (auto const & it : w_map ) {
+     //   //for ( auto const & vit : w_map.second )
+     //     std::cout<<"\n\n\n\n\nAdding weigths here: "<<it.first<<std::endl ;// ", "<<it.second.at(vit)<<std::endl ;
+     //  }
+      lite_data->push_back(lite_weight);
+    }
+  }
 
   template <class T>
   void ScanData(art::Handle<std::vector<T> > const &dh,
@@ -1448,6 +1473,12 @@ namespace larlite {
     return fPtrIndex_fmatch[key1][key2]; 
   }
 
+  template <> std::map<art::Ptr< ::evwgh::MCEventWeight>,std::pair<size_t,size_t> >& ScannerAlgo::GetPtrMap(size_t key1, size_t key2)
+  { if(fPtrIndex_eventweight.size()<=key1) fPtrIndex_eventweight.resize(key1+1);
+    if(fPtrIndex_eventweight[key1].size()<=key2) fPtrIndex_eventweight[key1].resize(key2+1);
+    return fPtrIndex_eventweight[key1][key2];
+  }
+
   template <class T>
   std::map<art::Ptr<T>,std::pair<size_t,size_t> >& ScannerAlgo::GetPtrMap(size_t key1, size_t key2)
   { throw cet::exception(__PRETTY_FUNCTION__)<<"Not implemented for a specified data product type..."; }
@@ -1530,6 +1561,11 @@ namespace larlite {
   { return ::larlite::data::kMuCSData; }
   template <> const ::larlite::data::DataType_t ScannerAlgo::LiteDataType<::MuCS::MuCSRecoData> () const
   { return ::larlite::data::kMuCSReco; }
+  // evwgh
+  template <> const ::larlite::data::DataType_t ScannerAlgo::LiteDataType<::evwgh::MCEventWeight> () const
+  { return ::larlite::data::kMCEventWeight; }
+
+  //
   //
   // LocateLiteProduct implementation
   //
@@ -1560,7 +1596,7 @@ namespace larlite {
     auto ass_type_a = LiteDataType<T>();
     auto ass_type_b = LiteDataType<U>();
 
-    //std::cout << "    <<ScanAssociation>> looking up " << ass_type_a << " by " << lite_dh->name() << " => " << ass_type_b << " ... " << std::flush;
+    std::cout<<"Scanning for "<<ass_type_a<<" by "<<lite_dh->name()<<" to "<<ass_type_b<<std::endl;
 
     larlite::product_id ass_id_a(ass_type_a,dh.provenance()->moduleLabel());
 
@@ -1570,26 +1606,32 @@ namespace larlite {
 	return;
       }
       const std::vector<art::Ptr<U> > ptr_coll = ptr_coll_v.at(0);
-      /*
-      std::cout << "Got " << ptr_coll_v.size() << " associations!" << std::flush;
+      
+      //std::cout << "Got " << ptr_coll_v.size() << " associations!" << std::flush;
       if(!ptr_coll.empty()) {
 	auto const& aptr = ptr_coll.front();
 	auto const& pid  = aptr.id();
 	art::Handle< std::vector<U> > u_handle;
 	e.get(pid,u_handle);
-	std::cout << " first product by " << u_handle.provenance()->moduleLabel() << std::endl;
+	//std::cout << " first product by " << u_handle.provenance()->moduleLabel() << std::endl;
       }
-      */
+      
     }catch( art::Exception const& e){
       //std::cout << "Something went wrong!" << std::endl;
       return;
     }
+
     // Instantiate association container. length = # of producers for associated data type
     std::vector< ::larlite::AssSet_t> ass_set_v(fAssModuleLabel_v[ass_type_b].size(),
 						::larlite::AssSet_t());
     
+	//std::cout << "Ass set size: " <<ass_set_v.size()<<", "<<fAssModuleLabel_v[ass_type_b].size()<< std::endl;
+
     // Return if there's no data products stored for associated data type
     if(!(ass_set_v.size())) return;
+
+    std::cout<<"\nIf we make it here, there are data products stored for this ass data type ! "<<std::endl ;
+    std::cout << "    <<ScanAssociation>> looking up " << ass_type_a << " by " << lite_dh->name() << " => " << ass_type_b << " ... " << std::flush;
 
     auto watch = TStopwatch();
     //std::cout<<"Scanning association start... " << GetPtrMap<U>().size() << " = pool size... " << std::endl;
@@ -1630,6 +1672,7 @@ namespace larlite {
 	std::vector<deque> 
       }
       */
+
       for(size_t i=0; i<ass_set_v.size(); ++i)
 
 	ass_set_v[i].emplace_back(ass_unit_v[i]);
@@ -1637,15 +1680,20 @@ namespace larlite {
     } // end looping over origin data products
     //std::cout<<"Located a=>b "<<watch.RealTime()<<std::endl;
     
+
     // Store associations in larlite data products
     for(size_t i=0; i<ass_set_v.size(); ++i) {
+       //std::cout<<"ASSET size at i : "<<i<<", "<<ass_set_v[i].size()<<std::endl ;
 
       // Loop over in one association set, store if there's any
       for(auto const& ass_unit : ass_set_v[i]) {
 
+      //std::cout<<"And ass unit size? "<<ass_unit.size()<<std::endl ;  
 	if(ass_unit.size()) {
 
 	  auto const& ass_name = fAssModuleLabel_v[(size_t)ass_type_b][i];
+
+      //std::cout<<"STORING ASS NAME ASS NAME !! "<<ass_name <<std::endl ;
 
 	  larlite::product_id ass_id_b(ass_type_b,ass_name);
 	  
@@ -1726,6 +1774,10 @@ namespace larlite {
 										  ::larlite::event_ass* lite_dh)
   { throw cet::exception(__PRETTY_FUNCTION__) << " not implemented!"; }
 
+ template <> void ScannerAlgo::ScanAssociation <::evwgh::MCEventWeight,::evwgh::MCEventWeight>(art::Event const& e,
+                                          art::Handle<std::vector<::evwgh::MCEventWeight> > &dh,
+                                          ::larlite::event_ass* lite_dh)
+  { throw cet::exception(__PRETTY_FUNCTION__) << " not implemented!"; }
 
   //
   // LiteDataType
