@@ -8,6 +8,7 @@
 #include "art/Framework/Principal/Handle.h"
 #include "IFDH_service.h"
 #include "uboone/RawData/utils/DAQHeaderTimeUBooNE.h"
+#include "uboone/CRT/CRTProducts/CRTHit.hh"
 
 #include <memory>
 #include <string>
@@ -46,7 +47,7 @@ crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset): data_label_DAQHeader
 	//std::cout<<"ifdh_data_dir "<<getenv("IFDH_DATA_DIR")<<std::endl;
 	
 	this->reconfigure(pset);
-	produces< std::vector<artdaq::Fragment> >();
+	produces< std::vector<crt::CRTHit> >();
 	fTag		= pset.get<art::InputTag> ("InputTagName");
 	_debug		= pset.get<bool>		 ("debug");
 	fTimeOffSet	= pset.get<std::vector< unsigned long > > ("test_t_offset");
@@ -70,13 +71,9 @@ void crt::CRTMerger::produce(art::Event& event)
 		std::cout <<"crt::CRTMerger::produce, NEW EVENT" << std::endl;
 	}
 	
-	std::unique_ptr< std::vector <artdaq::Fragment> > MergedSet (new std::vector <artdaq::Fragment>);
-	
 	//For this event
 	if(_debug)
 	std::cout<<fMaxCount<<std::endl;
-	
-	std::vector<artdaq::Fragment>  ThisFragment;
 	
 	//get DAQ Header
 	art::Handle< raw::DAQHeaderTimeUBooNE > rawHandle_DAQHeader;
@@ -98,7 +95,7 @@ void crt::CRTMerger::produce(art::Event& event)
 	//art::Timestamp evtTime = event.time();
 	art::Timestamp evtTime = evtTimeGPS;
 	
-	unsigned long evt_time_sec = evtTime.timeHigh()+fTimeOffSet[2];	
+	unsigned long evt_time_sec = evtTime.timeHigh();//+fTimeOffSet[2];	
 	unsigned long evt_time_nsec = evtTime.timeLow();
 	
 	// Use the information for configuring SAM query about the coincident crt-binrary-raw files
@@ -170,18 +167,10 @@ void crt::CRTMerger::produce(art::Event& event)
 		
 		if (tmprootfile.size()>0)
 		crtrootfile.push_back(tmprootfile[0]);
-		/*
-		crtrootfile = tIFDH->translateConstraints(dim1.str());
-		
-		if (crtrootfile.size()>0)
-		{
-			if (_debug)
-			std::cout<<"found the child of the parent crtdaq file:"<<std::endl;
-			break;
-		}
-		*/
 	}
 	std::cout<<"total: "<<crtrootfile.size()<<std::endl;
+	
+	std::unique_ptr<std::vector<crt::CRTHit> > CRTHitEventsSet(new std::vector<crt::CRTHit>); //collection of CRTHits for this event
 	
 	for(unsigned crf_index = 0; crf_index < crtrootfile.size(); crf_index++)
 	{
@@ -204,122 +193,54 @@ void crt::CRTMerger::produce(art::Event& event)
 	gallery::Event fCRTEvent(crtrootFile_xrootd_url);
 	std::cout<<"Opened the CRT root file from xrootd URL"<<std::endl;
 	
-	/*
-	///////////////////////////////////////////////////////////////////////////////////
-	////gsiftp URL
-	//std::string schema = "gsiftp";
-	//std::vector< std::string > crtrootFile_url = tIFDH->locateFile(crtrootfile[0], schema);
-	//std::cout<<"gsiftp URL: "<<crtrootFile_url[0]<<std::endl;
-	//
-	////std::cout<<"ifdh_data_dir "<<getenv("IFDH_DATA_DIR")<<std::endl;
-	
-	////std::string fetchedcrtrootfile = "";
-	////bool fetch = false;
-	
-	////std::cout<<"### "<<fTestFiles.size()<<std::endl;
-	
-	////if (previouscrtrootfile != "")
-	////{
-	////	std::cout<<"previouscrtrootfile: "<<previouscrtrootfile<<std::endl;
-	////	if (previouscrtrootfile==crtrootfile[0])
-	////	{
-	////		fetchedcrtrootfile = crtrootfile[0];
-	////		std::cout<<"fetchedcrtrootfile "<<fetchedcrtrootfile<<std::endl;
-	////		fetch = false;
-	////	}
-	////	else
-	////	fetch = true;
-	////}
-	////else
-	////std::cout<<"Need to fill fTestFiles through fetchInput"<<std::endl;
-	
-	////if ((fetchedcrtrootfile == "") | (fetch==true))
-	////fetchedcrtrootfile = (tIFDH->fetchInput(crtrootFile_url[0]));
-	
-	////fTestFiles.push_back(fetchedcrtrootfile);
-	//////////////////////////////////////////////////////////////////////////////////
-	////std::cout<<"# of legitimate CRT files "<<crtrootfile.size()<<std::endl;
-	*/
-	
-	unsigned int count = 0;
-	//unsigned int n = 0;
-	//gallery::Event fCRTEvent(fFileNames);
-	
 	if (_debug)
 	std::cout<<"Start merging attempts"<<std::endl;
 	
 	unsigned int merging = 0;
-	
+	//int triscuit = 0;
 	for(fCRTEvent.toBegin(); !fCRTEvent.atEnd(); ++fCRTEvent)
 	{
-		auto const& artdaqFragSet = *(fCRTEvent.getValidHandle< std::vector<artdaq::Fragment> >(fTag));
-		auto iv = begin(artdaqFragSet);
+		//art::Handle< std::vector< crt::CRTHit> > rawHandle;
+		//fCRTEvent.getByLabel(cTag, rawHandle);
 		
-		auto const& i_crtFrag= *iv;
-		bernfebdaq::BernZMQFragment bernfrag(i_crtFrag);
-		auto i_Frag_metadata = bernfrag.metadata();
+		std::vector< crt::CRTHit >  const& CRTHitCollection = *(fCRTEvent.getValidHandle< std::vector<crt::CRTHit> >(cTag));	
 		
-                unsigned long crt_bf_time_s             = i_Frag_metadata->time_start_seconds();
-                unsigned long crt_bf_time_e             = i_Frag_metadata->time_end_seconds();
-                unsigned long crt_bf_time_start_ns      = i_Frag_metadata->time_start_nanosec();
-                unsigned long crt_bf_time_end_ns        = i_Frag_metadata->time_end_nanosec();
-                unsigned long total_TPC_time            = evt_time_sec*1000000000+evt_time_nsec;
-                unsigned long time_CRT_start            = crt_bf_time_s*1000000000+crt_bf_time_start_ns;
-                unsigned long time_CRT_end              = crt_bf_time_e*1000000000+crt_bf_time_end_ns;
-		
-                if ((total_TPC_time>=time_CRT_start) && (total_TPC_time<=time_CRT_end) && (merging != 2))
-                {
-                        std::cout<<"merging happens"<<std::endl;
-                        merging = 1;
-                }
-		
-		if (merging != 0)
-		std::cout<<count<<"     "<<merging<<"     "<<MergedSet->size()<<std::endl;
-		
-		if (merging == 0)
+		for(std::vector<int>::size_type hit_index=0; hit_index!=CRTHitCollection.size(); hit_index++)
 		{
-			if (MergedSet->size()>0)
-			{
-				MergedSet->clear();
-				//LastFragSet->clear();
-			}
+			crt::CRTHit CRTHitevent = CRTHitCollection[hit_index];
+			unsigned long CRTtime_s	= CRTHitevent.ts0_s;
+			unsigned long CRTtime_ns= CRTHitevent.ts0_ns;
 			
-			for(auto i_f = begin(artdaqFragSet); i_f != end(artdaqFragSet); ++i_f)
+			//unsigned long TPCtime_ns= evt_time_sec*1000000000+evt_time_nsec;
+			unsigned long TPCtime_s	= evt_time_sec;
+			unsigned long TPCtime_ns= evt_time_nsec;
+			
+			unsigned long MergingWindow_start = TPCtime_ns - 2000000;
+			unsigned long MergingWindow_end	  = TPCtime_ns + 4000000;
+			
+			//std::cout<<"TPC_ns: "<<TPCtime_ns<<", CRT_ns: "<<CRTtime_ns<<", Diff "<<(TPCtime_ns-CRTtime_ns)/fTimeWindow<<std::endl;
+			if(std::abs(CRTtime_s - TPCtime_s)<2)
 			{
-				auto const& ifrag = *i_f;
-				MergedSet->push_back(ifrag);
-				//LastFragSet->push_back(ifrag);
+				if ((CRTtime_ns > MergingWindow_start) && (CRTtime_ns < MergingWindow_end))
+				{
+					std::cout<<"found match"<<std::endl;
+					CRTHitEventsSet->emplace_back(CRTHitevent);
+					merging = 1;
+					break;
+				}
 			}
 		}
-		else if (merging == 1)
+		
+		if (merging==1)
 		{
-			std::cout<<"merging=1"<<std::endl;
-                        for(auto i_f = begin(artdaqFragSet); i_f != end(artdaqFragSet); ++i_f)
-                        {
-                                auto const& ifrag = *i_f;
-                                MergedSet->push_back(ifrag);
-				//ThisFragSet->push_back(ifrag);
-                        }
-			merging = 2;
-		}
-		else if (merging == 2)
-		{
-			std::cout<<"merging=2"<<std::endl;
-                        for(auto i_f = begin(artdaqFragSet); i_f != end(artdaqFragSet); ++i_f)
-                        {
-                                auto const& ifrag = *i_f;
-                                MergedSet->push_back(ifrag);
-				//NextFragSet->push_back(ifrag);
-                        }
+			std::cout<<"found match"<<std::endl;
 			break;
 		}
-		else
-		{
-		}
-		++count;
+		
+		//std::cout<<"Next CRT event ..."<<std::endl;
 	}
 	}
-	event.put(std::move(MergedSet));
+	event.put(std::move(CRTHitEventsSet));
 	
 	if (_debug)
 	std::cout<<"---X---"<<std::endl;
@@ -329,33 +250,8 @@ void crt::CRTMerger::reconfigure(fhicl::ParameterSet const & pset)
 {
 	std::cout<<"crt::CRTMerger::reconfigure"<<std::endl;
 	
-	fTag = {pset.get<std::string>("InputTagName","crtdaq")};
+	cTag = {pset.get<std::string>("data_label_CRTHit_")};
+	fTag = {pset.get<std::string>("InputTagName","crthit")};
 	fTimeWindow = pset.get<unsigned>("TimeWindow",5000000);
-	
-	//fCRTFile = pset.get< std::vector < std::string > >("InputFilenames");
-	
-	//if ( ! fIFDH ) fIFDH = new ifdh_ns::ifdh;
-	//std::string fetchedfile(fIFDH->fetchInput(fFileNames[0]));
-	//fTestFiles.push_back(fetchedfile);
-	/*
-	gallery::Event testGallery4ifdh(fFileNames);
-	unsigned int N = 0;
-	for(testGallery4ifdh.toBegin(); !testGallery4ifdh.atEnd(); ++testGallery4ifdh)
-        {
-		auto const& TryCRT_frags = *(testGallery4ifdh.getValidHandle< std::vector<artdaq::Fragment> >(fTag));
-		N++;
-		std::vector< artdaq::Fragment > f;
-		for(auto iv=begin(TryCRT_frags); iv!=end(TryCRT_frags); ++iv)
-		{
-			auto const& fg = *iv;
-			f.push_back(fg);
-		}
-		w.push_back(f);
-	}
-	fMaxCount=N;
-	std::cout<<"fMaxCount "<<fMaxCount<<std::endl;
-	//if ( ! fIFDH )
-        //delete fIFDH;
-	*/
 }
 DEFINE_ART_MODULE(crt::CRTMerger)

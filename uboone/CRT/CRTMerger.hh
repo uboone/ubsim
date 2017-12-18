@@ -54,7 +54,8 @@ namespace crt
 		ifdh_ns::ifdh* fIFDH=0;
 		
 		std::vector< std::string > fCRTFile;
-		std::string  data_label_DAQHeader_;
+		std::string data_label_DAQHeader_;
+		std::string cTag;
 		std::string fInputFileName;
 		uint32_t fRun;
 		uint32_t fsubRun;

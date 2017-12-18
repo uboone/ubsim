@@ -468,6 +468,7 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
   fInputStreamList.open(filename.c_str(),std::ios_base::in);
 
   if(NrFiles_==1){
+    /*
     std::string input_temp1;
     if (fInputStreamList.good()){
       getline(fInputStreamList, input_temp1);
@@ -476,6 +477,8 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
     fInputStreamList.close();
     const char *input1 = input_temp1.c_str();
     data1=fopen(input1,"r");
+    */
+    data1=fopen(filename.c_str(),"r");
     fseek(data1, 0, SEEK_END); // seek to end of file
     long size1 = ftell(data1); // get current file pointer
     fseek(data1, 0, SEEK_SET); // seek back to beginning of file
