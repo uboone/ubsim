@@ -5,20 +5,22 @@ process_name: McRecoStage2CV
 services.DetectorClocksService.InheritClockConfig:  false
 
 services.TFileService.fileName: "reco_stage_2_hist.root"
-services.BackTracker:  @local::microboone_backtracker
-physics.producers.btload:   { module_type: BackTrackerLoader }
-physics.reco: [btload, @sequence::microboone_reco_mcc8_stage2]
 
-physics.trigger_paths: [ reco ]
-outputs.out1.fileName: "%ifb_%tc_reco2_CV.root"
-outputs.out1.dataTier: "reconstructed"
-source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McRecoStage2" ]
+
 
 physics.producers.trajcluster.TrajClusterAlg.MatchTruth: [ -1, -1, -1, -1 ]
 physics.producers.trajcluster.DoRawDigitAssns: false
 
 physics.producers.pandoraCosmicHitRemoval.CopyHitMCParticleAssns: true
 physics.producers.pandoraCosmicHitRemoval.HitMCParticleAssnLabel: "gaushitTruthMatch"
+
+physics.reco: [@sequence::microboone_reco_mcc8_stage2]
+
+physics.trigger_paths: [ reco ]
+outputs.out1.fileName: "%ifb_%tc_reco2_CV.root"
+outputs.out1.dataTier: "reconstructed"
+source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McRecoStage2" ]
+
 
 #services.DetectorPropertiesService.NumberTimeSamples: 9600
 #services.DetectorPropertiesService.ReadOutWindowSize: 9600

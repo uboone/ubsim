@@ -3,6 +3,7 @@
 process_name: McRecoStage1altDeadChannels
 
 services.TFileService.fileName: "reco_stage_1_hist.root"
+services.BackTracker:  @local::microboone_backtracker
 physics.reco: [ @sequence::microboone_reco_mcc8_stage1 ]
 physics.trigger_paths: [ reco ]
 outputs.out1.fileName: "%ifb_%tc_reco1_altDeadChan.root"
@@ -13,6 +14,13 @@ services.ChannelStatusService.ChannelStatusProvider.UseDB: true
 services.ChannelStatusService.ChannelStatusProvider.DatabaseRetrievalAlg.DBUrl: "http://dbdata0vm.fnal.gov:8086/uboonecon_dev/app/"
 services.ChannelStatusService.ChannelStatusProvider.DatabaseRetrievalAlg.DBFolderName: "channelstatus_mcc8_altdeadchannels"
 services.ChannelStatusService.ChannelStatusProvider.DatabaseRetrievalAlg.DBTag: "v1r0"
+
+services.DetectorPropertiesService.NumberTimeSamples: 6400
+services.DetectorPropertiesService.ReadOutWindowSize: 6400
+services.DetectorClocksService.InheritClockConfig:    false
+services.DetectorClocksService.TriggerOffsetTPC:      -400
+
+
 
 #services.DetectorPropertiesService.NumberTimeSamples: 9600
 #services.DetectorPropertiesService.ReadOutWindowSize: 9600
