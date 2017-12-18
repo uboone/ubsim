@@ -15,7 +15,9 @@
   <class name="art::Wrapper< std::vector<crt::CRTSimData> >"/>
  
   
-  <class name="crt::CRTHit" ClassVersion="13">
+  <class name="crt::CRTHit" ClassVersion="15">
+   <version ClassVersion="15" checksum="3296007532"/>
+   <version ClassVersion="14" checksum="1325563170"/>
    <version ClassVersion="13" checksum="788898104"/>
    <version ClassVersion="12" checksum="1364321833"/>
    <version ClassVersion="11" checksum="2969044014"/>
@@ -24,6 +26,7 @@
   
   <class name="std::vector<crt::CRTHit>"/>
   <class name="std::vector< std::pair<int,double> >"/>
+  <class name="std::map< uint8_t, uint16_t >"/>
   <class name="std::map< unsigned char, std::vector< std::pair<int,double> > > "/>
   <class name="art::Wrapper< std::vector<crt::CRTHit> >"/>
   

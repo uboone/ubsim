@@ -1272,7 +1272,28 @@ void crt::CRTRawInputDetail::make2DHit(){
     crt2Dhit.ts0_ns_err=std::abs((coincidence[0].ts0+coincidence[0].ts0)/2-crt2Dhit.ts0_ns);
     crt2Dhit.ts1_ns=beam_time_ns;
     crt2Dhit.ts1_ns_err=std::abs((ts1_local1+ts1_local2)/2-crt2Dhit.ts1_ns);
-
+    
+    //fill with corrected gps values from data base...//////////
+    crt2Dhit.ts0_s_corr=0;
+    crt2Dhit.ts0_s_err_corr=0;
+    crt2Dhit.ts0_ns_corr=0;
+    crt2Dhit.ts0_ns_err_corr=0;
+    crt2Dhit.ts1_ns_corr=0;
+    crt2Dhit.ts1_ns_err_corr=0;
+    
+    std::map< uint8_t, uint16_t > lostcpu_map;
+    lostcpu_map[coincidence[0].mac5] = coincidence[0].lostcpu;
+    lostcpu_map[coincidence[1].mac5] = coincidence[1].lostcpu;
+    crt2Dhit.lostcpu_map = lostcpu_map;
+    
+    std::map< uint8_t, uint16_t > lostfpga_map;
+    lostfpga_map[coincidence[0].mac5] = coincidence[0].lostfpga;
+    lostfpga_map[coincidence[1].mac5] = coincidence[1].lostfpga;
+    crt2Dhit.lostfpga_map = lostfpga_map;
+    
+    crt2Dhit.event_flag=0;
+    crt2Dhit.pollms=(coincidence[2].adc[1]+coincidence[2].adc[0])/2;
+    
     crt2Dhit.x_pos= xtot;
     crt2Dhit.x_err=sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );
     crt2Dhit.y_pos= ytot;
