@@ -4,10 +4,13 @@
 
 process_name: McRecoStage1
 
+physics.filters.opfiltercommon: @local::physics.filters.opfiltercommonext
+
+physics.producers.eventweight:  @local::microboone_eventweight
 physics.producers.mchitfinder:  @local::standard_mchitfinder
 
 services.TFileService.fileName: "reco_stage_1_hist.root"
-physics.reco: [ mchitfinder, @sequence::microboone_reco_data_stage1 ]
+physics.reco: [ mchitfinder, eventweight, @sequence::microboone_reco_data_stage1, opfiltercommon ]
 physics.trigger_paths: [ reco ]
 outputs.out1.fileName: "%ifb_%tc_reco1.root"
 outputs.out1.dataTier: "reconstructed-2d"
