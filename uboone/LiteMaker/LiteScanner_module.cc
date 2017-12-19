@@ -28,10 +28,9 @@
 // LArSoft includes
 #include "uboone/Geometry/UBOpChannelTypes.h"
 #include "uboone/Geometry/UBOpReadoutMap.h"
-//#include "uboone/RawData/utils/ubdaqSoftwareTriggerData.h"
+#include "uboone/RawData/utils/ubdaqSoftwareTriggerData.h"
 #include "uboone/MuCS/MuCSData.h"
 #include "uboone/MuCS/MuCSRecoData.h"
-#include "uboone/EventWeight/MCEventWeight.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include "larcore/Geometry/Geometry.h"
 #include "lardataobj/RawData/RawDigit.h"
@@ -179,17 +178,17 @@ LiteScanner::LiteScanner(fhicl::ParameterSet const & p)
   auto const data_pset = p.get<fhicl::ParameterSet>("DataLookUpMap");
   auto const ass_pset = p.get<fhicl::ParameterSet>("AssociationLookUpMap");
   for(size_t i = 0; i<(size_t)(::larlite::data::kDATA_TYPE_MAX); ++i) {
+
     std::vector<std::string> labels;
     switch((::larlite::data::DataType_t)i) {
     case ::larlite::data::kUndefined:
     case ::larlite::data::kEvent:
       break;
     default:
+
       labels = data_pset.get<std::vector<std::string> >(::larlite::data::kDATA_TREE_NAME[i].c_str(),labels);
-      //std::cout<<"Entering default; catch any labels? "<<labels.size()<<std::endl ;
       //std::cout<<::larlite::data::kDATA_TREE_NAME[i].c_str()<<" data product..."<<std::endl;
       for(auto const& label : labels) {
-        //std::cout<<"LABEL : "<<label <<", "<<i<<std::endl;
 	//std::cout<<"  --"<<label.c_str()<<std::endl;
 	fAlg.Register(label,(::larlite::data::DataType_t)i);
       }
@@ -282,7 +281,6 @@ void LiteScanner::analyze(art::Event const & e)
   // Loop over data type to store association ptr map
   //
   SaveAssociationSource<simb::MCTruth>(e);
-  SaveAssociationSource<simb::MCParticle>(e);
   SaveAssociationSource<recob::Hit>(e);
   SaveAssociationSource<recob::Cluster>(e);
   SaveAssociationSource<recob::EndPoint2D>(e);
@@ -339,12 +337,10 @@ void LiteScanner::analyze(art::Event const & e)
       case ::larlite::data::kTrigger:
 	ScanData<raw::Trigger>(e,j); break;
       case ::larlite::data::kSWTrigger:
-	//ScanSimpleData<raw::ubdaqSoftwareTriggerData>(e,j); break;
+	ScanSimpleData<raw::ubdaqSoftwareTriggerData>(e,j); break;
 
       case ::larlite::data::kHit:
 	ScanData<recob::Hit>(e,j); break;
-      case ::larlite::data::kMCEventWeight:
-	ScanData<evwgh::MCEventWeight>(e,j); break;
       case ::larlite::data::kWire:
 	ScanData<recob::Wire>(e,j); break;
       case ::larlite::data::kOpHit:
@@ -405,8 +401,6 @@ void LiteScanner::analyze(art::Event const & e)
     for(size_t j=0; j<labels.size(); ++j) {
 
       auto const& label = labels[j];
-      //std::cout<<"Label currently is: "<<label <<std::endl ;
-
       if(!fAssLabelToSave_s.empty() && fAssLabelToSave_s.find(label) == fAssLabelToSave_s.end())
 	continue;
       switch(lite_type) {
@@ -446,7 +440,6 @@ void LiteScanner::analyze(art::Event const & e)
       case ::larlite::data::kMCTrack:
       case ::larlite::data::kWire:
       case ::larlite::data::kHit:
-      case ::larlite::data::kMCEventWeight:
       case ::larlite::data::kUndefined:
       case ::larlite::data::kEvent:
       default:
@@ -649,8 +642,6 @@ template<class T> void LiteScanner::SaveAssociationSource(const art::Event& evt)
 
     auto const& name = ass_labels_v[lite_type][i];
 
-    //std::cout<<"Lite type + name : ["<<lite_type<<", " <<i<<"], "<<name <<std::endl ;
-
     art::Handle<std::vector<T> > dh;
     if(name.find("::")<name.size()) {
       evt.getByLabel(name.substr(0,name.find("::")),
@@ -684,21 +675,17 @@ template<class T> void LiteScanner::ScanAssociation(const art::Event& evt, const
   auto lite_id = fAlg.AssProductID<T>(name_index);
   art::Handle<std::vector<T> > dh;
   std::string label = lite_id.second;
-
-  //std::cout<<"STRING NAME IS ! "<<label <<", "<<name_index <<std::endl ;
   if(label.find("::")<label.size()) {
     evt.getByLabel(label.substr(0,label.find("::")),
 		   label.substr(label.find("::")+2,label.size()-label.find("::")-2),
 		   dh);
   }else{ evt.getByLabel(lite_id.second,dh); }
       
-  if(!dh.isValid()) return; 
+  if(!dh.isValid()) return;
 
   //std::cout<<"Inspecting association for type " << lite_id.first << " by " << lite_id.second << std::endl;
-  //std::cout<<"F ASS SIZE: " <<fAssProducer_v.size()<<std::endl ;
 
   for(auto const& ass_producer : fAssProducer_v) {
-    std::cout<<"Do we come in here? ******************* "<<ass_producer<<std::endl ;
 
     auto lite_ass = (::larlite::event_ass*)(_mgr.get_data(::larlite::data::kAssociation,ass_producer));
     
@@ -709,7 +696,6 @@ template<class T> void LiteScanner::ScanAssociation(const art::Event& evt, const
     case ::larlite::data::kMCTruth:      break;
     case ::larlite::data::kMCParticle:
       fAlg.ScanAssociation<T, simb::MCTruth     > (evt,dh,lite_ass);
-      fAlg.ScanAssociation<T, recob::Track> (evt,dh,lite_ass);
       break;
     case ::larlite::data::kMCFlux:        break;
     case ::larlite::data::kMCTrajectory:  break;
@@ -721,7 +707,6 @@ template<class T> void LiteScanner::ScanAssociation(const art::Event& evt, const
     case ::larlite::data::kSWTrigger:     break;
     case ::larlite::data::kWire:          break;
     case ::larlite::data::kHit:           break;
-    case ::larlite::data::kMCEventWeight: break;
     case ::larlite::data::kMuCSData:      break;
     case ::larlite::data::kMuCSReco:      break;
     case ::larlite::data::kCosmicTag:
@@ -750,8 +735,6 @@ template<class T> void LiteScanner::ScanAssociation(const art::Event& evt, const
       fAlg.ScanAssociation<T, recob::Vertex     > (evt,dh,lite_ass);
       fAlg.ScanAssociation<T, anab::ParticleID  > (evt,dh,lite_ass);
       fAlg.ScanAssociation<T, anab::Calorimetry > (evt,dh,lite_ass);
-      fAlg.ScanAssociation<T, simb::MCParticle> (evt,dh,lite_ass);
-      std::cout<<"IN THE TRACK AREA " <<lite_id.first<<std::endl ;
       break;
     case ::larlite::data::kShower:
       fAlg.ScanAssociation<T, recob::Hit        > (evt,dh,lite_ass);
@@ -764,7 +747,6 @@ template<class T> void LiteScanner::ScanAssociation(const art::Event& evt, const
       //fAlg.ScanAssociation<T, recob::SpacePoint > (evt,dh,lite_ass);
       fAlg.ScanAssociation<T, recob::Track      > (evt,dh,lite_ass);
       fAlg.ScanAssociation<T, recob::Shower     > (evt,dh,lite_ass);
-      std::cout<<"IN THE VERTEX AREA " <<lite_id.first<<", "<<ass_producer<<std::endl ;
       break;
     case ::larlite::data::kEndPoint2D:
       //fAlg.ScanAssociation<T, recob::Cluster    > (evt,dh,lite_ass);
@@ -814,7 +796,6 @@ template<class T> void LiteScanner::ScanAssociation(const art::Event& evt, const
     case ::larlite::data::kTrigger:       break;
     case ::larlite::data::kWire:          break;
     case ::larlite::data::kHit:           break;
-    case ::larlite::data::kMCEventWeight: break;
     case ::larlite::data::kMuCSData:      break;
     case ::larlite::data::kMuCSReco:      break;
     case ::larlite::data::kCosmicTag:
@@ -843,7 +824,6 @@ template<class T> void LiteScanner::ScanAssociation(const art::Event& evt, const
       fAlg.ScanAssociation<T, recob::Vertex     > (evt,dh,lite_ass);
       fAlg.ScanAssociation<T, anab::ParticleID  > (evt,dh,lite_ass);
       fAlg.ScanAssociation<T, anab::Calorimetry > (evt,dh,lite_ass);
-      fAlg.ScanAssociation<T, simb::MCParticle  > (evt,dh,lite_ass);
       break;
     case ::larlite::data::kShower:
       fAlg.ScanAssociation<T, recob::Hit        > (evt,dh,lite_ass);
