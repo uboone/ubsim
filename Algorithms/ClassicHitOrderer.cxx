@@ -6,10 +6,10 @@
 
 namespace cosmictag {
 
-  static HitOrdererFactory __global_HitOrdererFactory__;
+  static ClassicHitOrdererFactory __global_ClassicHitOrdererFactory__;
 
   ClassicHitOrderer::ClassicHitOrderer(const std::string name)
-    : BaseFlashHypothesis(name)
+    : BaseOrdererAlgo(name)
   {}
 
   void ClassicHitOrderer::_Configure_(const Config_t &pset)
