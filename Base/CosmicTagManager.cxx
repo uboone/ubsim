@@ -110,7 +110,7 @@ namespace cosmictag {
   cosmictag::BaseAlgorithm* CosmicTagManager::GetCustomAlgo(std::string name)
   {
     if(_custom_alg_m.find(name) == _custom_alg_m.end()) {
-      FLASH_ERROR() << Form("Algorithm name %s not found!",name.c_str()) << std::endl;
+      CT_ERROR() << Form("Algorithm name %s not found!",name.c_str()) << std::endl;
       throw HitCosmicTagException();
     }
     return _custom_alg_m[name];
@@ -126,15 +126,9 @@ namespace cosmictag {
   bool CosmicTagManager::Match()
   {
     // Clear some history variables
-    _res_tpc_flash_v.clear();
-    _res_flash_tpc_v.clear();
-    if(_store_full) {
-      _res_tpc_flash_v.resize(_tpc_object_v.size(),std::vector<cosmictag::FlashMatch_t>(_flash_v.size()));
-      _res_flash_tpc_v.resize(_flash_v.size(),std::vector<cosmictag::FlashMatch_t>(_tpc_object_v.size()));
-    }
+    
     
     // Create also a result container
-    std::vector<FlashMatch_t> result;
     
     if (!_alg_hit_orderer)
       throw HitCosmicTagException("Hit orderer algorithm is reuqired! (not attached)");
