@@ -16,7 +16,7 @@
 #define ClassicHitOrderer_H
 
 #include <iostream>
-#include "../Base/BaseOrdererAlgo.h"
+#include "../Base/BaseHitOrdererAlgo.h"
 #include "../Base/HitOrdererFactory.h"
 
 namespace cosmictag {
