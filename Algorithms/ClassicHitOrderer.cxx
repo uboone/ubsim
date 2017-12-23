@@ -20,7 +20,7 @@ namespace cosmictag {
   bool ClassicHitOrderer::OrderHits(const SimpleCluster& cluster) const
   {
  
-
+    std::cout << "Test" << std::endl;
     return true;
   }
 }

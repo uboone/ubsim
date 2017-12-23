@@ -15,7 +15,7 @@
 #define HITCOSMICTAG_COSMICTAGMANAGER_H
 
 #include "LoggerFeature.h"
-#include "OpT0FinderFMWKInterface.h"
+#include "HitCosmicTagFMWKInterface.h"
 #include "BaseAlgorithm.h"
 #include "BaseHitOrderer.h"
 
