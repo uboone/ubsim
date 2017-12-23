@@ -60,11 +60,11 @@ namespace cosmictag {
 
     /// Clears locally kept TPC object (QClusterArray_t) and flash (FlashArray_t), both provided by a user
     void Reset()
-    { _tpc_object_v.clear(); _flash_v.clear(); }
+    { /*_tpc_object_v.clear(); _flash_v.clear();*/ }
 
     /// Configuration option: true => allows an assignment of the same flash to multiple TPC objects
     void CanReuseFlash(bool ok=true)
-    { _allow_reuse_flash = ok; }
+    { /*_allow_reuse_flash = ok;*/ }
 
     void PrintConfig();
 
@@ -73,7 +73,7 @@ namespace cosmictag {
 
     void AddCustomAlgo(BaseAlgorithm* alg);
 
-    BaseHitOrderer*     _alg_hit_orderer;     ///< Order Hits Algorithm
+    BaseHitOrdererAlgo*     _alg_hit_orderer;     ///< Order Hits Algorithm
    
     /**
        A set of custom algorithms (not to be executed but to be configured)

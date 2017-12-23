@@ -51,7 +51,7 @@ namespace cosmictag {
     std::vector<std::string> custom_algo_v;
     custom_algo_v = mgr_cfg.get<std::vector<std::string> >("CustomAlgo",custom_algo_v);
 
-    if(!hit_orderer_name.empty()) _alg_hit_orderer = FlashFilterFactory::get().create(hit_orderer_name,hit_orderer_name);
+    if(!hit_orderer_name.empty()) _alg_hit_orderer = HitOrdererFactory::get().create(hit_orderer_name,hit_orderer_name);
     
     for(auto const& name : custom_algo_v)
       if(!name.empty()) AddCustomAlgo(CustomAlgoFactory::get().create(name,name));
