@@ -34,12 +34,12 @@ namespace cosmictag {
     /// Default destructor
     virtual ~ClassicHitOrderer(){}
 
-    bool OrderHits(const SimpleCluster&) const;
+    int OrderHits(const SimpleCluster&) const;
 
   protected:
 
     void _Configure_(const Config_t &pset);
-    double _global_qe;         ///< Global QE
+    double _max_allowed_hit_distance;         ///< ?
   };
   
   /**

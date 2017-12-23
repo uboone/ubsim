@@ -21,7 +21,7 @@
 
 namespace cosmictag {
   /**
-     \class FlashMatchManager
+     \class CosmicTagManager
   */
   class CosmicTagManager : public LoggerFeature {
 
@@ -47,6 +47,8 @@ namespace cosmictag {
 		 
     /// Emplacer of a Cluster
     void Emplace(cosmictag::SimpleCluster && obj);
+
+    void SetStartHit(cosmictag::SimpleHit && hit);
 
     /**
        CORE FUNCTION: executes algorithms to find a match of TPC object and flash provided by users. \n
@@ -80,9 +82,11 @@ namespace cosmictag {
     */
     std::map<std::string,cosmictag::BaseAlgorithm*> _custom_alg_m;
 
-    /// TPC object information collection (provided by a user)
+    /// The cluster to be analysed
     SimpleCluster _cluster;
 
+    /// The start hit of the cluster
+    SimpleHit _start_hit;
 
     /// Configuration readiness flag
     bool _configured;
