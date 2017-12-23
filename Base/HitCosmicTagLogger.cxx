@@ -2,7 +2,8 @@
 #define __HITCOSMICTAGLOGGER_CXX__
 
 #include "HitCosmicTagLogger.h"
-namespace flashana {
+
+namespace cosmictag {
 
   std::map<std::string,logger> *logger::_logger_m = nullptr;
 

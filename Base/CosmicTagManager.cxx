@@ -41,7 +41,7 @@ namespace cosmictag {
   void CosmicTagManager::Configure(const Config_t& main_cfg) 
   {
    
-    auto const& mgr_cfg = main_cfg.get<flashana::Config_t>(Name());
+    auto const& mgr_cfg = main_cfg.get<cosmictag::Config_t>(Name());
 
     this->set_verbosity((msg::Level_t)(mgr_cfg.get<unsigned int>("Verbosity")));
 
@@ -59,7 +59,7 @@ namespace cosmictag {
   
     if (_alg_hit_orderer) {
 
-      _alg_hit_orderer->Configure(main_cfg.get<flashana::Config_t>(_alg_hit_orderer->AlgorithmName()));
+      _alg_hit_orderer->Configure(main_cfg.get<cosmictag::Config_t>(_alg_hit_orderer->AlgorithmName()));
       _alg_hit_orderer->SetOpDetPositions(pmt_x_pos, pmt_y_pos, pmt_z_pos);
       _alg_hit_orderer->SetActiveVolume( det_xrange[0], det_xrange[1],
                                           det_yrange[0], det_yrange[1],
@@ -129,8 +129,8 @@ namespace cosmictag {
     _res_tpc_flash_v.clear();
     _res_flash_tpc_v.clear();
     if(_store_full) {
-      _res_tpc_flash_v.resize(_tpc_object_v.size(),std::vector<flashana::FlashMatch_t>(_flash_v.size()));
-      _res_flash_tpc_v.resize(_flash_v.size(),std::vector<flashana::FlashMatch_t>(_tpc_object_v.size()));
+      _res_tpc_flash_v.resize(_tpc_object_v.size(),std::vector<cosmictag::FlashMatch_t>(_flash_v.size()));
+      _res_flash_tpc_v.resize(_flash_v.size(),std::vector<cosmictag::FlashMatch_t>(_tpc_object_v.size()));
     }
     
     // Create also a result container

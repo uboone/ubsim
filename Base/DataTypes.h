@@ -15,6 +15,7 @@ namespace cosmictag {
     kAlgoBragg = 1,
     kAlgoCurvature = 2,
     kAlgoSimpleMIP = 3,
+    kHitOrderer,
     kAlgorithmTypeMax   ///< enum flag for algorithm type count & invalid type
   };
 

@@ -43,7 +43,7 @@ namespace cosmictag {
   };
   
   /**
-     \class flashana::ClassicHitOrdererFactory
+     \class cosmictag::ClassicHitOrdererFactory
   */
   class ClassicHitOrdererFactory : public HitOrdererFactoryBase {
   public:
