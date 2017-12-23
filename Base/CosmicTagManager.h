@@ -17,7 +17,7 @@
 #include "LoggerFeature.h"
 #include "HitCosmicTagFMWKInterface.h"
 #include "BaseAlgorithm.h"
-#include "BaseHitOrderer.h"
+#include "BaseHitOrdererAlgo.h"
 
 namespace cosmictag {
   /**
