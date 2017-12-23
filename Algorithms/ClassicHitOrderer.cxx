@@ -9,7 +9,7 @@ namespace cosmictag {
   static ClassicHitOrdererFactory __global_ClassicHitOrdererFactory__;
 
   ClassicHitOrderer::ClassicHitOrderer(const std::string name)
-    : BaseOrdererAlgo(name)
+    : BaseHitOrdererAlgo(name)
   {}
 
   void ClassicHitOrderer::_Configure_(const Config_t &pset)
