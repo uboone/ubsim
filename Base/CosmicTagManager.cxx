@@ -1,5 +1,5 @@
-#ifndef HITCOSMICTAG_COSMICTAGMANAGER_H
-#define HITCOSMICTAG_COSMICTAGMANAGER_H
+#ifndef HITCOSMICTAG_COSMICTAGMANAGER_CXX
+#define HITCOSMICTAG_COSMICTAGMANAGER_CXX
 
 #include <sstream>
 #include <map>
@@ -22,6 +22,7 @@ namespace cosmictag {
     : _alg_hit_orderer(nullptr)
     , _name(name)
   {
+    _configured = false;
   }
 
   const std::string& CosmicTagManager::Name() const
