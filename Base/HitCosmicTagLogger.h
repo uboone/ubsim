@@ -24,7 +24,7 @@ namespace cosmictag {
   /**
      \class logger
      \brief Utility class used to show formatted message on the screen.
-     A logger class for flashana. Simply shows a formatted colored message on a screen. \n
+     A logger class for cosmictag. Simply shows a formatted colored message on a screen. \n
      A static getter method is provided to create a sharable logger instance (see OpT0FinderBase for useage). \n
   */
   class logger{
@@ -52,7 +52,7 @@ namespace cosmictag {
     std::string _name;
     
     /// Set of loggers
-    static std::map<std::string,flashana::logger> *_logger_m;
+    static std::map<std::string,cosmictag::logger> *_logger_m;
 
     /// Default logger level
     static msg::Level_t _level_default;
@@ -79,7 +79,7 @@ namespace cosmictag {
     /// Getter of a message instance 
     static logger& get(const std::string name)
     {
-      if(!_logger_m) _logger_m = new std::map<std::string,flashana::logger>();
+      if(!_logger_m) _logger_m = new std::map<std::string,cosmictag::logger>();
       auto iter = _logger_m->find(name);
       if(iter == _logger_m->end()) {
         iter = _logger_m->emplace(name,logger(name)).first;
@@ -128,17 +128,17 @@ namespace cosmictag {
 // Compiler macro for saving us from text typing
 //
 /// Compiler macro for DEBUG message
-#define CT_DEBUG()    if( logger().debug   () ) logger().send(::flashana::msg::kDEBUG,    __FUNCTION__, __LINE__, __FILE__)
+#define CT_DEBUG()    if( logger().debug   () ) logger().send(::cosmictag::msg::kDEBUG,    __FUNCTION__, __LINE__, __FILE__)
 /// Compiler macro for INFO message
-#define CT_INFO()     if( logger().info    () ) logger().send(::flashana::msg::kINFO,     __FUNCTION__, __LINE__          )
+#define CT_INFO()     if( logger().info    () ) logger().send(::cosmictag::msg::kINFO,     __FUNCTION__, __LINE__          )
 /// Compiler macro for NORMAL message
-#define CT_NORMAL()   if( logger().normal  () ) logger().send(::flashana::msg::kNORMAL,   __FUNCTION__                    )
+#define CT_NORMAL()   if( logger().normal  () ) logger().send(::cosmictag::msg::kNORMAL,   __FUNCTION__                    )
 /// Compiler macro for WARNING message
-#define CT_WARNING()  if( logger().warning () ) logger().send(::flashana::msg::kWARNING,  __FUNCTION__                    )
+#define CT_WARNING()  if( logger().warning () ) logger().send(::cosmictag::msg::kWARNING,  __FUNCTION__                    )
 /// Compiler macro for ERROR message
-#define CT_ERROR()    if( logger().error   () ) logger().send(::flashana::msg::kERROR,    __FUNCTION__, __LINE__          )
+#define CT_ERROR()    if( logger().error   () ) logger().send(::cosmictag::msg::kERROR,    __FUNCTION__, __LINE__          )
 /// Compiler macro for CRITICAL message
-#define CT_CRITICAL()                           logger().send(::flashana::msg::kCRITICAL, __FUNCTION__, __LINE__, __FILE__)
+#define CT_CRITICAL()                           logger().send(::cosmictag::msg::kCRITICAL, __FUNCTION__, __LINE__, __FILE__)
   
 /** @} */ // end of doxygen group logger
 #endif

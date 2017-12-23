@@ -5,7 +5,7 @@
 #include "HitCosmicTagException.h"
 namespace cosmictag {
 
-  BaseAlgorithm::BaseAlgorithm(const Algorithm_t type,const std::string name)
+  BaseAlgorithm::BaseAlgorithm(const AlgoType type,const std::string name)
     : _type(type)
     , _name(name)
   {}

@@ -50,7 +50,7 @@ namespace cosmictag {
     static HitOrdererFactory& get()
     { if(!_me) _me = new HitOrdererFactory; return *_me; }
     /// Factory registration method (should be called by global factory instance in algorithm header)
-    void add_factory(const std::string name, flashana::HitOrdererFactoryBase* factory)
+    void add_factory(const std::string name, cosmictag::HitOrdererFactoryBase* factory)
     { _factory_map[name] = factory; }
     /// Factory creation method (should be called by clients, possibly you!)
     BaseOrdererAlgo* create(const std::string name, const std::string instance_name) {
@@ -65,7 +65,7 @@ namespace cosmictag {
 
   private:
     /// Static factory container
-    std::map<std::string,flashana::HitOrdererFactoryBase*> _factory_map;
+    std::map<std::string,cosmictag::HitOrdererFactoryBase*> _factory_map;
     /// Static self
     static HitOrdererFactory* _me;
   };

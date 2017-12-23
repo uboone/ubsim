@@ -34,7 +34,7 @@ namespace cosmictag {
   public:
     
     /// Default constructor
-    BaseAlgorithm(const Algorithm_t type, const std::string name);
+    BaseAlgorithm(const AlgoType type, const std::string name);
     
     /// Default destructor
     ~BaseAlgorithm(){}
@@ -54,7 +54,7 @@ namespace cosmictag {
 
   private:
     
-    Algorithm_t _type; ///< Algorithm type
+    AlgoType _type; ///< Algorithm type
     std::string _name; ///< Algorithm name
    
   };

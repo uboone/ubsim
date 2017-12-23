@@ -16,7 +16,7 @@
 #define __HITCOSMICTAGLOGGERFEATURE_H__
 
 #include <vector>
-#include "OpT0FinderLogger.h"
+#include "HitCosmicTagLogger.h"
 
 namespace cosmictag {
     

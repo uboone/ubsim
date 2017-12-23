@@ -49,7 +49,7 @@ namespace cosmictag {
 
     public: 
 
-    std::vector<ubana::SimpleHit> _s_hit_v;
+    std::vector<SimpleHit> _s_hit_v;
     int _start_index = -1;
     std::vector<double> _dqds_v;
     std::vector<double> _ds_v;

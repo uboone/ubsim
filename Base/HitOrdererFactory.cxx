@@ -3,6 +3,6 @@
 
 #include "HitOrdererFactory.h"
 
-flashana::HitOrdererFactory* flashana::HitOrdererFactory::_me = nullptr;
+cosmictag::HitOrdererFactory* cosmictag::HitOrdererFactory::_me = nullptr;
 
 #endif
