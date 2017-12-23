@@ -3,7 +3,7 @@
 
 #include "HitCosmicTagException.h"
 
-namespace flashana {
+namespace cosmictag {
 
   HitCosmicTagException::HitCosmicTagException(const std::string& msg)
     : std::exception()

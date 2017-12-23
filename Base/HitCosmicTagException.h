@@ -17,7 +17,7 @@
 #include <iostream>
 #include <exception>
 
-namespace flashana {
+namespace cosmictag {
   /**
      \class HitCosmicTagException
      Generic (base) exception class for HitCosmicTag package

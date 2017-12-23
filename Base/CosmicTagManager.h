@@ -78,7 +78,7 @@ namespace cosmictag {
     /**
        A set of custom algorithms (not to be executed but to be configured)
     */
-    std::map<std::string,flashana::BaseAlgorithm*> _custom_alg_m;
+    std::map<std::string,cosmictag::BaseAlgorithm*> _custom_alg_m;
 
     /// TPC object information collection (provided by a user)
     SimpleCluster _cluster;
