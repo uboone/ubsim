@@ -56,8 +56,8 @@ namespace cosmictag {
     BaseHitOrdererAlgo* create(const std::string name, const std::string instance_name) {
       auto iter = _factory_map.find(name);
       if(iter == _factory_map.end() || !((*iter).second)) {
-	std::cerr << "Found no registered class " << name << std::endl;
-	return nullptr;
+	      std::cerr << "Found no registered class " << name << std::endl;
+	      return nullptr;
       }
       auto ptr = (*iter).second->create(instance_name);
       return ptr;
