@@ -6,11 +6,6 @@ link_libraries( ${LIB_NAME} -L$ENV{BOOST_LIB} -lboost_system ${ROOTLIB} )
 art_make( BASENAME_ONLY
     	    LIBRARY_NAME     HitCosmicTag_Algorithms
 	        LIB_LIBRARIES
-                	         larsim_PhotonPropagation
-			                     larsim_PhotonPropagation_PhotonVisibilityService_service
-			                     uboonecode_uboone_BasicTool_GeoAlgo
-			                     uboonecode_uboone_SelectionTool_OpT0FinderBase
-                           UBOpReadoutMap_service
   		                     ${ART_FRAMEWORK_CORE}
    		                     ${ART_FRAMEWORK_PRINCIPAL}
 		                       ${ART_FRAMEWORK_BASIC}
@@ -23,7 +18,7 @@ art_make( BASENAME_ONLY
                            ${ROOT_BASIC_LIB_LIST}
                            ${FHICLCPP}
                            ${CETLIB}
-	       )
+	      )
 
 install_headers()
 install_source()

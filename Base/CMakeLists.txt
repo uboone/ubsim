@@ -6,6 +6,6 @@ art_make( BASENAME_ONLY
 	      ${ROOT_BASIC_LIB_LIST}
 	      ${FHICLCPP}
           ${CETLIB}
-	     )
+	    )
 install_headers()
 install_source()
