@@ -16,7 +16,7 @@
 #define ClassicHitOrderer_H
 
 #include <iostream>
-#include "../Base/BaseOrdererAlgo.h"
+#include "../Base/BaseHitOrdererAlgo.h"
 #include "../Base/HitOrdererFactory.h"
 
 namespace cosmictag {
@@ -24,7 +24,7 @@ namespace cosmictag {
      \class ClassicHitOrderer
      User custom analysis class made by SHELL_USER_NAME
    */
-  class ClassicHitOrderer : public BaseOrdererAlgo {
+  class ClassicHitOrderer : public BaseHitOrdererAlgo {
   
   public:
 
@@ -52,7 +52,7 @@ namespace cosmictag {
     /// dtor
     ~ClassicHitOrdererFactory() {}
     /// creation method
-    BaseOrdererAlgo* create(const std::string instance_name) { return new ClassicHitOrderer(instance_name); }
+    BaseHitOrdererAlgo* create(const std::string instance_name) { return new ClassicHitOrderer(instance_name); }
   };
 }
 #endif

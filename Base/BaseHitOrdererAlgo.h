@@ -3,7 +3,7 @@
  *
  * \ingroup Base
  * 
- * \brief Class def header for a class BaseOrdererAlgo
+ * \brief Class def header for a class BaseHitOrdererAlgo
  *
  * @author Marco Del Tutto
  */
@@ -18,7 +18,7 @@
 
 namespace cosmictag {
   /**
-     \class BaseOrdererAlgo
+     \class BaseHitOrdererAlgo
      Algorithm base class for prohibiting the match
      between a charge cluster and a flash \n
   */
