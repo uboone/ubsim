@@ -1,6 +1,6 @@
 #ifndef HITCOSMICTAG_BASEORDERERALGO_CXX
 #define HITCOSMICTAG_BASEORDERERALGO_CXX
 
-#include "BaseOrdererAlgo.h"
+#include "BaseHitOrdererAlgo.h"
 
 #endif
