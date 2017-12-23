@@ -6,6 +6,7 @@ link_libraries( ${LIB_NAME} -L$ENV{BOOST_LIB} -lboost_system ${ROOTLIB} )
 art_make( BASENAME_ONLY
     	    LIBRARY_NAME     HitCosmicTag_Algorithms
 	        LIB_LIBRARIES
+                           HitCosmicTag_Base
   		                     ${ART_FRAMEWORK_CORE}
    		                     ${ART_FRAMEWORK_PRINCIPAL}
 		                       ${ART_FRAMEWORK_BASIC}
