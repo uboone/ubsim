@@ -107,7 +107,7 @@ namespace cosmictag {
   cosmictag::BaseAlgorithm* CosmicTagManager::GetCustomAlgo(std::string name)
   {
     if(_custom_alg_m.find(name) == _custom_alg_m.end()) {
-      CT_ERROR() << Form("Algorithm name %s not found!",name.c_str()) << std::endl;
+      //CT_ERROR() << Form("Algorithm name %s not found!",name.c_str()) << std::endl;
       throw HitCosmicTagException();
     }
     return _custom_alg_m[name];

@@ -22,13 +22,13 @@ namespace cosmictag {
      Algorithm base class for prohibiting the match
      between a charge cluster and a flash \n
   */
-  class BaseHitOrdererAlgo : public cosmictag::BaseAlgorithm{
+  class BaseHitOrdererAlgo : public BaseAlgorithm{
     
   public:
     
     /// Default constructor
     BaseHitOrdererAlgo(const std::string name="noname") 
-       : cosmictag::BaseAlgorithm(cosmictag::kHitOrderer,name)
+       : BaseAlgorithm(kHitOrderer,name)
     {}
  
     /// Default destructor
