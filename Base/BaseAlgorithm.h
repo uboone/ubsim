@@ -29,7 +29,7 @@ namespace cosmictag {
   */
   class BaseAlgorithm : public LoggerFeature {
 
-    friend class FlashMatchManager;
+    friend class CosmicTagManager;
     
   public:
     
