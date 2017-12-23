@@ -16,7 +16,7 @@
 
 #include <iostream>
 #include <map>
-#include "BaseOrdererAlgo.h"
+#include "BaseHitOrdererAlgo.h"
 
 
 namespace cosmictag {

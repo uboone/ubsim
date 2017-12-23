@@ -1,5 +1,5 @@
 /**
- * \file BaseOrdererAlgo.h
+ * \file BaseHitOrdererAlgo.h
  *
  * \ingroup Base
  * 
@@ -11,8 +11,8 @@
 /** \addtogroup Base
 
     @{*/
-#ifndef HITCOSMICTAG_BASEORDERERALGO_H
-#define HITCOSMICTAG_BASEORDERERALGO_H
+#ifndef HITCOSMICTAG_BASEHITORDERERALGO_H
+#define HITCOSMICTAG_BASEHITORDERERALGO_H
 
 #include "BaseAlgorithm.h"
 
@@ -22,17 +22,17 @@ namespace cosmictag {
      Algorithm base class for prohibiting the match
      between a charge cluster and a flash \n
   */
-  class BaseOrdererAlgo : public cosmictag::BaseAlgorithm{
+  class BaseHitOrdererAlgo : public cosmictag::BaseAlgorithm{
     
   public:
     
     /// Default constructor
-    BaseOrdererAlgo(const std::string name="noname") 
+    BaseHitOrdererAlgo(const std::string name="noname") 
        : cosmictag::BaseAlgorithm(cosmictag::kHitOrderer,name)
     {}
  
     /// Default destructor
-    virtual ~BaseOrdererAlgo(){}
+    virtual ~BaseHitOrdererAlgo(){}
     
     /**
      * @brief CORE FUNCTION: order the hits
