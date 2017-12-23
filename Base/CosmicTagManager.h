@@ -40,10 +40,10 @@ namespace cosmictag {
     void Configure(const Config_t& cfg);
 
     /// Algorithm getter
-    flashana::BaseAlgorithm* GetAlgo(cosmictag::AlgoType type);
+    cosmictag::BaseAlgorithm* GetAlgo(cosmictag::AlgoType type);
 
     /// Custom algorithm getter
-    flashana::BaseAlgorithm* GetCustomAlgo(std::string name);
+    cosmictag::BaseAlgorithm* GetCustomAlgo(std::string name);
 		 
     /// Emplacer of a Cluster
     void Emplace(cosmictag::SimpleCluster && obj);
