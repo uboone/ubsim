@@ -8,12 +8,12 @@
 
 #include "HitCosmicTagException.h"
 #include "HitOrdererFactory.h"
+#include "CustomAlgoFactory.h"
 
 //#include "TPCFilterFactory.h"
 //#include "FlashMatchFactory.h"
 //#include "FlashHypothesisFactory.h"
 //#include "FlashProhibitFactory.h"
-//#include "CustomAlgoFactory.h"
 
 
 namespace cosmictag {
