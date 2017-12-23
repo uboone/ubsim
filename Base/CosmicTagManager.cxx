@@ -60,11 +60,7 @@ namespace cosmictag {
     if (_alg_hit_orderer) {
 
       _alg_hit_orderer->Configure(main_cfg.get<cosmictag::Config_t>(_alg_hit_orderer->AlgorithmName()));
-      _alg_hit_orderer->SetOpDetPositions(pmt_x_pos, pmt_y_pos, pmt_z_pos);
-      _alg_hit_orderer->SetActiveVolume( det_xrange[0], det_xrange[1],
-                                          det_yrange[0], det_yrange[1],
-                                          det_zrange[0], det_zrange[1] );
-      _alg_hit_orderer->SetDriftVelocity( drift_velocity );
+      
     }
 
     _configured = true;
@@ -73,7 +69,7 @@ namespace cosmictag {
   BaseAlgorithm* CosmicTagManager::GetAlgo(cosmictag::AlgoType type)
   {
     if (!_configured)
-      FLASH_WARNING() << "Algorithm may be not configured yet!" << std::endl;
+      CT_WARNING() << "Algorithm may be not configured yet!" << std::endl;
 
     // Figure out the type of a provided algorithm
     switch (type) {
