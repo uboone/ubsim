@@ -32,7 +32,7 @@ namespace cosmictag {
     /// Default dtor (virtual)
     virtual ~DqDsSmootherFactoryBase(){}
     /// Abstract constructor method
-    virtual DqDsSmootherAlgo* create(const std::string instance_name) = 0;
+    virtual BaseDqDsSmootherAlgo* create(const std::string instance_name) = 0;
   };
 
   /**
