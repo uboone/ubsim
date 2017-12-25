@@ -12,30 +12,30 @@
 
     @{*/
 
-#ifndef ClassicHitOrderer_H
-#define ClassicHitOrderer_H
+#ifndef CLASSICSTARTHITFINDER_H
+#define CLASSICSTARTHITFINDER_H
 
 #include <iostream>
-#include "../Base/BaseHitOrdererAlgo.h"
-#include "../Base/HitOrdererFactory.h"
+#include "../Base/BaseStartHitFinderAlgo.h"
+#include "../Base/StartHitFinderFactory.h"
 
 namespace cosmictag {
   /**
      \class ClassicHitOrderer
      User custom analysis class
    */
-  class ClassicHitOrderer : public BaseHitOrdererAlgo {
+  class ClassicStartHitFinder : public BaseStartHitFinderAlgo {
   
   public:
 
     /// Default constructor
-    ClassicHitOrderer(const std::string name="ClassicHitOrderer");
+    ClassicStartHitFinder(const std::string name="ClassicStartHitFinder");
 
     /// Default destructor
-    virtual ~ClassicHitOrderer(){}
+    virtual ~ClassicStartHitFinder(){}
 
     /// ?
-    int OrderHits(SimpleCluster&) const;
+    int FindStartHit(SimpleCluster&) const;
 
   protected:
 
@@ -47,14 +47,14 @@ namespace cosmictag {
   /**
      \class cosmictag::ClassicHitOrdererFactory
   */
-  class ClassicHitOrdererFactory : public HitOrdererFactoryBase {
+  class ClassicStartHitFinderFactory : public StartHitFinderFactoryBase {
   public:
     /// ctor
-    ClassicHitOrdererFactory() { HitOrdererFactory::get().add_factory("ClassicHitOrderer",this); }
+    ClassicStartHitFinderFactory() { StartHitFinderFactory::get().add_factory("ClassicStartHitFinder",this); }
     /// dtor
-    ~ClassicHitOrdererFactory() {}
+    ~ClassicStartHitFinderFactory() {}
     /// creation method
-    BaseHitOrdererAlgo* create(const std::string instance_name) { return new ClassicHitOrderer(instance_name); }
+    BaseStartHitFinderAlgo* create(const std::string instance_name) { return new ClassicStartHitFinder(instance_name); }
   };
 }
 #endif

@@ -15,11 +15,11 @@ namespace cosmictag {
     kAlgoBragg = 1,
     kAlgoCurvature = 2,
     kAlgoSimpleMIP = 3,
-    kHitOrderer,
+    kCustomAlgo,
     kAlgorithmTypeMax   ///< enum flag for algorithm type count & invalid type
   };
 
-  /// Struct to represent an optical flash
+  /// Struct to represent a hit
    struct SimpleHit {
 
     public: 

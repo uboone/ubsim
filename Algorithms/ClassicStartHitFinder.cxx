@@ -1,23 +1,23 @@
-#ifndef CLASSICHITORDERER_CXX
-#define CLASSICHITORDERER_CXX
+#ifndef CLASSICSTARTHITFINDER_CXX
+#define CLASSICSTARTHITFINDER_CXX
 
-#include "ClassicHitOrderer.h"
+#include "ClassicStartHitFinder.h"
 
 
 namespace cosmictag {
 
-  static ClassicHitOrdererFactory __global_ClassicHitOrdererFactory__;
+  static ClassicStartHitFinderFactory __global_ClassicStartHitFinderFactory__;
 
-  ClassicHitOrderer::ClassicHitOrderer(const std::string name)
+  ClassicStartHitFinder::ClassicStartHitFinder(const std::string name)
     : BaseHitOrdererAlgo(name)
   {}
 
-  void ClassicHitOrderer::_Configure_(const Config_t &pset)
+  void ClassicStartHitFinder::_Configure_(const Config_t &pset)
   {
     _max_allowed_hit_distance = pset.get<double>("GlobalQE");
   }
   
-  int ClassicHitOrderer::OrderHits(SimpleCluster& cluster) const
+  int ClassicStartHitFinder::FindStartHit(SimpleCluster& cluster) const
   {
 
     int                    & _start_index = cluster._start_index;
