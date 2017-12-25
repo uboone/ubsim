@@ -37,7 +37,7 @@ namespace cosmictag {
     /**
      * @brief CORE FUNCTION: order the hits
      */
-    virtual int FindStartHit(SimpleCluster&) const = 0;
+    virtual int FindStartHit(SimpleCluster&, SimpleHit&) const = 0;
   };
 }
 

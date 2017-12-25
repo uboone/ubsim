@@ -35,7 +35,7 @@ namespace cosmictag {
     virtual ~ClassicStartHitFinder(){}
 
     /// ?
-    int FindStartHit(SimpleCluster&) const;
+    int FindStartHit(SimpleCluster&, SimpleHit&) const;
 
   protected:
 

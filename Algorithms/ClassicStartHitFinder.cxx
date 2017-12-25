@@ -17,7 +17,7 @@ namespace cosmictag {
     _max_allowed_hit_distance = pset.get<double>("GlobalQE");
   }
   
-  int ClassicStartHitFinder::FindStartHit(SimpleCluster& cluster) const
+  int ClassicStartHitFinder::FindStartHit(SimpleCluster& cluster, SimpleHit& start_hit) const
   {
 
     int                    & _start_index      = cluster._start_index;
@@ -32,8 +32,8 @@ namespace cosmictag {
     //  return;
     //}
 
-    int wire_no = _start_hit.wire;
-    int time = _start_hit.time;
+    int wire_no = start_hit.wire;
+    int time = start_hit.time;
 
     TVector3 pt1(time, wire_no, 0);
     
