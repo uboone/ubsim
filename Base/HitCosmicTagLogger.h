@@ -25,7 +25,7 @@ namespace cosmictag {
      \class logger
      \brief Utility class used to show formatted message on the screen.
      A logger class for cosmictag. Simply shows a formatted colored message on a screen. \n
-     A static getter method is provided to create a sharable logger instance (see OpT0FinderBase for useage). \n
+     A static getter method is provided to create a sharable logger instance. \n
   */
   class logger{
     

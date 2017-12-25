@@ -59,6 +59,7 @@ namespace cosmictag {
 
     bool _linearity_is_set = false;
     bool _hits_ordered = false;
+    bool _start_hit_is_set = false;
 
     SimpleCluster () {
       _s_hit_v.clear();
@@ -69,6 +70,7 @@ namespace cosmictag {
 
       _linearity_is_set = false;
       _hits_ordered = false;
+      _start_hit_is_set = false;
     }
   };
 

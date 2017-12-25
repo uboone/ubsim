@@ -20,139 +20,149 @@ namespace cosmictag {
   int ClassicStartHitFinder::FindStartHit(SimpleCluster& cluster) const
   {
 
-    int                    & _start_index = cluster._start_index;
-    std::vector<SimpleHit> & _s_hit_v     = cluster._s_hit_v;
-    std::vector<double>    & _ds_v        = cluster._ds_v;
+    int                    & _start_index      = cluster._start_index;
+    std::vector<SimpleHit> & _s_hit_v          = cluster._s_hit_v;
+    bool                   & _start_hit_is_set = cluster._start_hit_is_set;
+    //std::vector<double>    & _ds_v        = cluster._ds_v;
 
+    _start_hit_is_set = false;
 
-    if (_start_index < 0) {
-      std::cout << "Start hit not set." << std::endl;
-      return 0;
-    }
-
-    if ((size_t)_start_index >= _s_hit_v.size()) {
-      std::cout << "Start hit not compatible with current hit vector." 
-       << "Start hit index is " << _start_index 
-       << ", while hit vector size is " << _s_hit_v.size() << std::endl;
-      return 0;
-    }
-
-
-    std::vector<SimpleHit> new_vector;
-    new_vector.clear();
-    new_vector.reserve(_s_hit_v.size());
-
-    _ds_v.clear();
-    _ds_v.reserve(_s_hit_v.size());
-
-    new_vector.push_back(_s_hit_v.at(_start_index));
-
-    //if (_debug) {
-    //  for (auto h : _s_hit_v) {
-    //    std::cout << "BEFORE: " << h.wire << ", " << h.time*4 << std::endl;
-    //  }
+    //if (plane_no != 2) {
+    //  std::cout << "Plane not supported." << std::endl;
+    //  return;
     //}
 
-    _s_hit_v.erase(_s_hit_v.begin() + _start_index);
+    int wire_no = _start_hit.wire;
+    int time = _start_hit.time;
 
-    double min_dist = 1e9; 
-    int min_index = -1;
+    TVector3 pt1(time, wire_no, 0);
+    
+    double min_dist = 1e9;
+    int best_hit_id = -1;
 
-    while (_s_hit_v.size() != 0) {
+    if (_debug) std::cout << "Simple hit vector size " << _s_hit_v.size() << std::endl;
 
-      min_dist = 1e9;
-      min_index = -1; 
+    for (size_t i = 0; i < _s_hit_v.size(); i++) {
 
-      for (size_t i = 0; i < _s_hit_v.size(); i++){
+      auto sh = _s_hit_v.at(i);
+      TVector3 pt2(sh.time, sh.wire, 0);
+      double dist = (pt1-pt2).Mag();
 
-        TVector3 pt1(new_vector.back().time, new_vector.back().wire, 0);
-        TVector3 pt2(_s_hit_v.at(i).time,    _s_hit_v.at(i).wire,    0);
-        double dist = (pt1 - pt2).Mag();
-
-        if (dist < min_dist) {
-          min_index = i;
-          min_dist = dist;
-        }
+      if (dist< min_dist) {
+        best_hit_id = i;
+        min_dist = dist;
       }
+    }
 
-      if (min_index < 0) {
-         std::cout << "Logic fail." << std::endl;
-         throw std::exception();
-      }
-
-      // Emplace the next hit in the new vector...
-      if (min_dist < _max_allowed_hit_distance) {
-        if (_debug) std::cout << "min_dist: " << min_dist <<std::endl;
-        new_vector.push_back(_s_hit_v.at(min_index));
-        _ds_v.push_back(min_dist);
-      } else if (new_vector.size() > 5){
+    if (best_hit_id == -1) {
+      std::cout << "Could not find start hit." << std::endl;
+      return;
+    }
+   
  
-        // Calculate previous slope
-        auto iter = new_vector.end();
-        auto sh_3 = _s_hit_v.at(min_index);
-        auto sh_2 = *(--iter);
-        auto sh_1 = *(iter-5); // go 5 hits back
-        double slope = (sh_2.time - sh_1.time) / (sh_2.wire - sh_1.wire);
+    // The best hit may not be the start one, but one very close,
+    // So let's find a border hit
 
-        // Calculate the new slope
-        double slope_new = (sh_3.time - sh_2.time) / (sh_3.wire - sh_2.wire);
+    auto almost_best_hit = _s_hit_v.at(best_hit_id);
 
-        std::cout << "sh_1.wire: "<<sh_1.wire<<", sh_1.time: "<< sh_1.time << std::endl;
-        std::cout << "sh_2.wire: "<<sh_2.wire<<", sh_2.time: "<< sh_2.time << std::endl;
-        std::cout << "sh_3.wire: "<<sh_3.wire<<", sh_3.time: "<< sh_3.time << std::endl;
-        if (_debug) std::cout << "Current slope : " << slope 
-                              << " New slope: " << slope_new 
-                              << " Diff: " << slope_new - slope << std::endl;
+    CT_DEBUG() << "Almost best hit has wire " << almost_best_hit.wire
+               << ", and time " << almost_best_hit.time*4 << std::endl;
 
-        // Check the next hit will be in a consecutive wire
-        bool progressive_order = false;
+    TVector3 pt0(almost_best_hit.time, almost_best_hit.wire, 0);
 
-        if (sh_1.wire < sh_2.wire) {
-          if (sh_3.wire > sh_2.wire) {
-            progressive_order = true;
-          }
-        }
-        if (sh_2.wire < sh_1.wire) {
-          if (sh_3.wire < sh_2.wire) {
-            progressive_order = true;
-          }
-        }
+    // First create a map from wire to hit
+    std::map<int,ubana::SimpleHit> wire_to_hit;
 
-        std::cout << "Progressive order? " << (progressive_order ? "YES" : "NO") << std::endl;
+    for (size_t i = 0; i < _s_hit_v.size(); i++) {
 
-        // If the two slopes are close, than there is 
-        // probably a dead region between the point.
-        // If so, increase the min distance by half a meter
-        // and add the hit.
-        if (std::abs(slope_new - slope) < _slope_threshold &&
-            min_dist < _max_allowed_hit_distance + 50 &&
-            progressive_order) {
+      auto sh = _s_hit_v.at(i); 
 
-          new_vector.push_back(_s_hit_v.at(min_index)); 
-          _ds_v.push_back(min_dist);
-
-        } 
-
+      // If we never encountered this wire, just save it
+      auto iter = wire_to_hit.find(sh.wire);
+      if (iter == wire_to_hit.end()) {
+        wire_to_hit[sh.wire] = sh;
+        continue;
       }
 
-      // ...and delete it from the old vector
-      _s_hit_v.erase(_s_hit_v.begin() + min_index);
+      // Otherwise pick the one that is closer to the almost_best_hit
+      auto previous_hit = iter->second;
+      TVector3 pt1(previous_hit.time, previous_hit.wire, 0);
+      double dist_previous = (pt0-pt1).Mag();
+      TVector3 pt2(sh.time, sh.wire, 0);
+      double dist_current = (pt0-pt2).Mag();
 
+      if (dist_current < dist_previous)
+        wire_to_hit[sh.wire] = sh;
+      else 
+        continue;
     }
 
-    // For the last hit, use the last values of min_dist
-    _ds_v.push_back(min_dist);
+    // Then try going to the left first
+    int n_step_left = 0;
+    int best_index_left = -1;
+    for (int w = almost_best_hit.wire - 1; w > 0; w--) {
 
-    // Now that the vector is ordered, reassing to the original one
-    _s_hit_v = new_vector;
+      auto iter = wire_to_hit.find(w);
+      if (iter == wire_to_hit.end()) {
+        break;
+      }
 
-    //if (_debug) {
-      //for (auto h : _s_hit_v) {
-        //std::cout << "Ordered hits: " << h.wire << ", " << h.time*4 << std::endl;
-      //}
-    //}
+      //ubana::SimpleHit temp = iter->second;
+      auto it = std::find(_s_hit_v.begin(), _s_hit_v.end(), iter->second);
+      best_index_left = it - _s_hit_v.begin();//w;//std::distance(_s_hit_v.begin(), it);
+      TVector3 pt1(iter->second.time, iter->second.wire, 0);
+      double dist = (pt0-pt1).Mag();
+  
+      if (dist > 2.) // Check this number! 
+        break;
 
-    //_hits_ordered = true;
+      n_step_left ++;
+
+      CT_DEBUG() << "Found hit on the left, wire " << iter->second.wire
+                 << ", time " << iter->second.time << std::endl;
+    }
+
+    // Then go rigth
+    int n_step_right = 0;
+    int best_index_right = -1;
+    for (int w = almost_best_hit.wire + 1; w < 3456; w++) {
+
+      auto iter = wire_to_hit.find(w);
+      if (iter == wire_to_hit.end()) {
+        break;
+      }
+
+      auto it = std::find(_s_hit_v.begin(), _s_hit_v.end(), iter->second);
+      best_index_right = it - _s_hit_v.begin();//w;//std::distance(_s_hit_v.begin(), it);
+      TVector3 pt1(iter->second.time, iter->second.wire, 0);
+      double dist = (pt0-pt1).Mag(); 
+
+      if (dist > _max_allowed_hit_distance) // Check this number!  
+        break; 
+
+      n_step_right ++;
+
+      CT_DEBUG() << "Found hit on the right, wire " << iter->second.wire 
+                 << ", time " << iter->second.time*4 << std::endl; 
+    }
+
+    _start_index = 0;
+
+    if (n_step_left == 0 || n_step_right == 0) {
+      _start_index = best_hit_id;
+    } else if (n_step_left > n_step_right) {
+      _start_index = best_index_right;
+    } else if (n_step_right >= n_step_left) {
+      _start_index = best_index_left;
+    }
+
+
+    CT_DEBUG() << "[StoppingMuonTaggerHelper] Start hit set to w: " 
+               << _s_hit_v.at(_start_index).wire << ", and t: " 
+               << _s_hit_v.at(_start_index).time*4 << std::endl;
+
+    _start_hit_is_set = true;
+
 
     return _s_hit_v.size();
   }
