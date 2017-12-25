@@ -13,7 +13,7 @@ namespace cosmictag {
     kStartHitFinder = 0,
     kHitOrderer = 1,
     kDqDsCalculator = 2,
-    kAlgoSimpleMIP = 3,
+    kDqDsSmoother = 3,
     kCustomAlgo,
     kAlgorithmTypeMax   ///< enum flag for algorithm type count & invalid type
   };
