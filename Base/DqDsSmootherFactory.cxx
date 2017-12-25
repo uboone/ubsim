@@ -1,8 +1,8 @@
-#ifndef __DQDSCMOOTHER_CXX__
-#define __DQDSCMOOTHER_CXX__
+#ifndef __DQDSSMOOTHER_CXX__
+#define __DQDSSMOOTHER_CXX__
 
-#include "HitOrdererFactory.h"
+#include "DqDsSmootherFactory.h"
 
-cosmictag::HitOrdererFactory* cosmictag::HitOrdererFactory::_me = nullptr;
+cosmictag::DqDsSmootherFactory* cosmictag::DqDsSmootherFactory::_me = nullptr;
 
 #endif
