@@ -19,6 +19,8 @@
 #include "../Base/BaseHitOrdererAlgo.h"
 #include "../Base/HitOrdererFactory.h"
 
+#include <TVector3.h>
+
 namespace cosmictag {
   /**
      \class ClassicHitOrderer
@@ -41,6 +43,7 @@ namespace cosmictag {
 
     void _Configure_(const Config_t &pset);
     double _max_allowed_hit_distance;         ///< ?
+    double _slope_threshold;                  ///< ?
     bool _debug;                              ///< Debug mode
   };
   

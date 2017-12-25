@@ -15,6 +15,7 @@ namespace cosmictag {
   void ClassicHitOrderer::_Configure_(const Config_t &pset)
   {
     _max_allowed_hit_distance = pset.get<double>("GlobalQE");
+    _slope_threshold          = pset.get<double>("GlobalQE"); 
   }
   
   int ClassicHitOrderer::OrderHits(SimpleCluster& cluster) const
