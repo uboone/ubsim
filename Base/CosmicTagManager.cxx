@@ -118,7 +118,7 @@ namespace cosmictag {
   void CosmicTagManager::Emplace(cosmictag::SimpleCluster && obj)
   { _cluster = obj; }
 
-  void SetStartHit(cosmictag::SimpleHit &&hit)
+  void CosmicTagManager::SetStartHit(cosmictag::SimpleHit && hit)
   { _start_hit = hit; }
 
   

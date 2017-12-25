@@ -19,6 +19,8 @@
 #include "../Base/BaseStartHitFinderAlgo.h"
 #include "../Base/StartHitFinderFactory.h"
 
+#include <TVector3.h>
+
 namespace cosmictag {
   /**
      \class ClassicHitOrderer
