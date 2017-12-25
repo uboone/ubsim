@@ -148,7 +148,7 @@ namespace cosmictag {
 
   void CosmicTagManager::PrintConfig() {
     
-    std::cout << "---- FLASH MATCH MANAGER PRINTING CONFIG     ----" << std::endl
+    std::cout << "---- COSMIC TAG MANAGER PRINTING CONFIG     ----" << std::endl
 	      << "_name = " << _name << std::endl;
         /*
 	      << "_alg_flash_filter?" << std::endl;

@@ -11,8 +11,8 @@ namespace cosmictag {
   /// Enumerator for different types of algorithm
   enum AlgoType{
     kAlgoUnknown = -1,  ///< Algorithm type to f?
-    kAlgoMichel = 0,
-    kAlgoBragg = 1,
+    kStartHitFinder = 0,
+    kHitOrderer = 1,
     kAlgoCurvature = 2,
     kAlgoSimpleMIP = 3,
     kCustomAlgo,
