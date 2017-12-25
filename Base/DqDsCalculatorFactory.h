@@ -50,7 +50,7 @@ namespace cosmictag {
     static DqDsCalculatorFactory& get()
     { if(!_me) _me = new DqDsCalculatorFactory; return *_me; }
     /// Factory registration method (should be called by global factory instance in algorithm header)
-    void add_factory(const std::string name, cosmictag::BaseDqDsCalculatorAlgo* factory)
+    void add_factory(const std::string name, cosmictag::DqDsCalculatorFactoryBase* factory)
     { _factory_map[name] = factory; }
     /// Factory creation method (should be called by clients, possibly you!)
     BaseDqDsCalculatorAlgo* create(const std::string name, const std::string instance_name) {
@@ -65,7 +65,7 @@ namespace cosmictag {
 
   private:
     /// Static factory container
-    std::map<std::string,cosmictag::BaseDqDsCalculatorAlgo*> _factory_map;
+    std::map<std::string,cosmictag::DqDsCalculatorFactoryBase*> _factory_map;
     /// Static self
     static DqDsCalculatorFactory* _me;
   };
