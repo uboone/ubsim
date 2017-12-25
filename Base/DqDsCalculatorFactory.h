@@ -22,7 +22,7 @@
 namespace cosmictag {
 
   /**
-     \class BaseStartHitFinderAlgo
+     \class DqDsCalculatorFactoryBase
      \brief Abstract base class for factory (to be implemented per cluster)
   */
   class DqDsCalculatorFactoryBase {
@@ -50,10 +50,10 @@ namespace cosmictag {
     static DqDsCalculatorFactory& get()
     { if(!_me) _me = new DqDsCalculatorFactory; return *_me; }
     /// Factory registration method (should be called by global factory instance in algorithm header)
-    void add_factory(const std::string name, cosmictag::BaseStartHitFinderAlgo* factory)
+    void add_factory(const std::string name, cosmictag::BaseDqDsCalculatorAlgo* factory)
     { _factory_map[name] = factory; }
     /// Factory creation method (should be called by clients, possibly you!)
-    BaseStartHitFinderAlgo* create(const std::string name, const std::string instance_name) {
+    BaseDqDsCalculatorAlgo* create(const std::string name, const std::string instance_name) {
       auto iter = _factory_map.find(name);
       if(iter == _factory_map.end() || !((*iter).second)) {
 	      std::cerr << "Found no registered class " << name << std::endl;
@@ -65,7 +65,7 @@ namespace cosmictag {
 
   private:
     /// Static factory container
-    std::map<std::string,cosmictag::BaseStartHitFinderAlgo*> _factory_map;
+    std::map<std::string,cosmictag::BaseDqDsCalculatorAlgo*> _factory_map;
     /// Static self
     static DqDsCalculatorFactory* _me;
   };
