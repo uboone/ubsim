@@ -1,9 +1,9 @@
 /**
- * \file BaseHitOrdererAlgo.h
+ * \file BaseDqDsCalculatorAlgo.h
  *
  * \ingroup Base
  * 
- * \brief Class def header for a class BaseHitOrdererAlgo
+ * \brief Class def header for a class BaseDqDsCalculatorAlgo
  *
  * @author Marco Del Tutto
  */
@@ -18,7 +18,7 @@
 
 namespace cosmictag {
   /**
-     \class BaseHitOrdererAlgo
+     \class BaseDqDsCalculatorAlgo
      Algorithm base class for prohibiting the match
      between a charge cluster and a flash \n
   */
