@@ -50,7 +50,7 @@ namespace cosmictag {
     static StartHitFinderFactory& get()
     { if(!_me) _me = new StartHitFinderFactory; return *_me; }
     /// Factory registration method (should be called by global factory instance in algorithm header)
-    void add_factory(const std::string name, cosmictag::BaseStartHitFinderAlgo* factory)
+    void add_factory(const std::string name, cosmictag::StartHitFinderFactoryBase* factory)
     { _factory_map[name] = factory; }
     /// Factory creation method (should be called by clients, possibly you!)
     BaseStartHitFinderAlgo* create(const std::string name, const std::string instance_name) {
@@ -65,7 +65,7 @@ namespace cosmictag {
 
   private:
     /// Static factory container
-    std::map<std::string,cosmictag::BaseStartHitFinderAlgo*> _factory_map;
+    std::map<std::string,cosmictag::StartHitFinderFactoryBase*> _factory_map;
     /// Static self
     static StartHitFinderFactory* _me;
   };
