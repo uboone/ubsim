@@ -53,7 +53,7 @@ namespace cosmictag {
     void add_factory(const std::string name, cosmictag::DqDsSmootherFactoryBase* factory)
     { _factory_map[name] = factory; }
     /// Factory creation method (should be called by clients, possibly you!)
-    BaseHitOrdererAlgo* create(const std::string name, const std::string instance_name) {
+    BaseDqDsSmootherAlgo* create(const std::string name, const std::string instance_name) {
       auto iter = _factory_map.find(name);
       if(iter == _factory_map.end() || !((*iter).second)) {
 	      std::cerr << "Found no registered class " << name << std::endl;
