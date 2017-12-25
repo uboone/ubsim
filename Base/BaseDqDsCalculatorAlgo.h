@@ -11,8 +11,8 @@
 /** \addtogroup Base
 
     @{*/
-#ifndef HITCOSMICTAG_BASESTARTHITFINDERALGO_H
-#define HITCOSMICTAG_BASESTARTHITFINDERALGO_H
+#ifndef HITCOSMICTAG_BASEDQDSCALCULATORALGO_H
+#define HITCOSMICTAG_BASEDQDSCALCULATORALGO_H
 
 #include "BaseAlgorithm.h"
 
@@ -22,22 +22,22 @@ namespace cosmictag {
      Algorithm base class for prohibiting the match
      between a charge cluster and a flash \n
   */
-  class BaseStartHitFinderAlgo : public BaseAlgorithm{
+  class BaseDqDsCalculatorAlgo : public BaseAlgorithm{
     
   public:
     
     /// Default constructor
-    BaseStartHitFinderAlgo(const std::string name="noname") 
-       : BaseAlgorithm(kStartHitFinder,name)
+    BaseDqDsCalculatorAlgo(const std::string name="noname") 
+       : BaseAlgorithm(kDqDsCalculator,name)
     {}
  
     /// Default destructor
-    virtual ~BaseStartHitFinderAlgo(){}
+    virtual ~BaseDqDsCalculatorAlgo(){}
     
     /**
      * @brief CORE FUNCTION: order the hits
      */
-    virtual int FindStartHit(SimpleCluster&, SimpleHit&) const = 0;
+    virtual int CalculateDqDs(SimpleCluster&) const = 0;
   };
 }
 

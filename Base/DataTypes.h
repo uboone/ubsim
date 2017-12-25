@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <numeric>
-//#include "OpT0FinderConstants.h"
 #include <string>
 
 namespace cosmictag {
@@ -13,7 +12,7 @@ namespace cosmictag {
     kAlgoUnknown = -1,  ///< Algorithm type to f?
     kStartHitFinder = 0,
     kHitOrderer = 1,
-    kAlgoCurvature = 2,
+    kDqDsCalculator = 2,
     kAlgoSimpleMIP = 3,
     kCustomAlgo,
     kAlgorithmTypeMax   ///< enum flag for algorithm type count & invalid type
