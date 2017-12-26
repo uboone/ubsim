@@ -75,7 +75,11 @@ namespace cosmictag {
 
     void AddCustomAlgo(BaseAlgorithm* alg);
 
-    BaseHitOrdererAlgo*     _alg_hit_orderer;     ///< Order Hits Algorithm
+    BaseStartHitFinderAlgo*           _alg_start_hit_finder;          ///< Find start hit in cluster Algorithm
+    BaseHitOrdererAlgo*               _alg_hit_orderer;               ///< Order Hits Algorithm
+    BaseDqDsCalculatorAlgo*           _alg_dqds_calculator;           ///< Calculate dq/ds algorithm
+    BaseDqDsSmootherAlgo*             _alg_dqds_smoother;             ///< Smooths dqds algorithm
+    BaseLocalLinearityCalculatorAlgo* _alg_linearity_calculator_algo; ///< Calculate linearity algorithm
    
     /**
        A set of custom algorithms (not to be executed but to be configured)
