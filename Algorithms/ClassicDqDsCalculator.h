@@ -18,7 +18,7 @@
 #include <iostream>
 #include "../Base/BaseDqDsCalculatorAlgo.h"
 #include "../Base/DqDsCalculatorFactory.h"
-#include "../Base/sHitCosmicTagException.h"
+#include "../Base/HitCosmicTagException.h"
 
 #include <TVector3.h>
 
@@ -45,6 +45,7 @@ namespace cosmictag {
     void _Configure_(const Config_t &pset);
     double _w2cm;                             ///< ?
     double _t2cm;                             ///< ?
+    double _dqds_calib;                       ///< ?
   };
   
   /**

@@ -9,7 +9,7 @@ namespace cosmictag {
   static ClassicStartHitFinderFactory __global_ClassicStartHitFinderFactory__;
 
   ClassicStartHitFinder::ClassicStartHitFinder(const std::string name)
-    : BaseHitOrdererAlgo(name)
+    : BaseStartHitFinderAlgo(name)
   {}
 
   void ClassicStartHitFinder::_Configure_(const Config_t &pset)

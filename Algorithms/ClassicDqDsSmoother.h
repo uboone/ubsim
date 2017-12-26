@@ -16,8 +16,8 @@
 #define CLASSICSDQDSSMOOTHER_H
 
 #include <iostream>
-#include "../Base/BaseDqDsCalculatorAlgo.h"
-#include "../Base/DqDsCalculatorFactory.h"
+#include "../Base/BaseDqDsSmootherAlgo.h"
+#include "../Base/DqDsSmootherFactory.h"
 #include "../Base/HitCosmicTagException.h"
 #include "../Base/Tools.h"
 
