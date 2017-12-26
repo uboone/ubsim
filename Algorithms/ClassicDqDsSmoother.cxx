@@ -17,7 +17,7 @@ namespace cosmictag {
     _slider_window = pset.get<int>("GlobalQE");
   }
   
-  int ClassicDqDsSmoother::CalculateDqDs(SimpleCluster& cluster) const
+  int ClassicDqDsSmoother::SmoothDqDs(SimpleCluster& cluster) const
   {
 
     //int                    & _start_index      = cluster._start_index;
