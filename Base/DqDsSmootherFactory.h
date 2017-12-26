@@ -11,8 +11,8 @@
 /** \addtogroup Base
 
     @{*/
-#ifndef HITORDERERFACTORY_H
-#define HITORDERERFACTORY_H
+#ifndef DQDSSMOOTHERFACTORYFACTORY_H
+#define DQDSSMOOTHERFACTORYFACTORY_H
 
 #include <iostream>
 #include <map>

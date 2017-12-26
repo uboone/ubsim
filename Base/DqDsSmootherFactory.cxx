@@ -1,5 +1,5 @@
-#ifndef __DQDSSMOOTHER_CXX__
-#define __DQDSSMOOTHER_CXX__
+#ifndef __DQDSSMOOTHERFACTORY_CXX__
+#define __DQDSSMOOTHERFACTORY_CXX__
 
 #include "DqDsSmootherFactory.h"
 
