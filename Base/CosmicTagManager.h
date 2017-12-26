@@ -62,11 +62,13 @@ namespace cosmictag {
        3) Flash matching algorithm (required)           \n
        4) Returns match information for created TPC object & flash pair which respects the outcome of 3)
      */
-    bool Match();
+    bool Run();
+
+    bool MakeDecision(std::string);
 
     /// Clears locally kept TPC object (QClusterArray_t) and flash (FlashArray_t), both provided by a user
     void Reset()
-    { /*_tpc_object_v.clear(); _flash_v.clear();*/ }
+    { /*_tpc_object_v.clear(); _flash_v.clear();*/ _ready = false;}
 
     /// Configuration option: true => allows an assignment of the same flash to multiple TPC objects
     void CanReuseFlash(bool ok=true)
@@ -97,7 +99,11 @@ namespace cosmictag {
     SimpleHit _start_hit;
 
     /// Configuration readiness flag
-    bool _configured;
+    bool _configured = false;;
+
+    /// Readiness flag
+    bool _ready = false;
+
     /// Configuration file
     std::string _config_file;
     /// Name

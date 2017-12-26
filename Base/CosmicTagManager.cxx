@@ -151,36 +151,67 @@ namespace cosmictag {
 
   
   // CORE FUNCTION
-  bool CosmicTagManager::Match()
-  {
-    // Clear some history variables
-    
-    
-    // Create also a result container
+  bool CosmicTagManager::Run()
+  {     
     
     if (!_alg_start_hit_finder)
-      throw HitCosmicTagException("Start hit finder algorithm is reuqired! (not attached)");
+      throw HitCosmicTagException("Start hit finder algorithm is required! (not attached)");
     if (!_alg_hit_orderer)
-      throw HitCosmicTagException("Hit orderer algorithm is reuqired! (not attached)");
+      throw HitCosmicTagException("Hit orderer algorithm is required! (not attached)");
     if (!_alg_dqds_calculator)
-      throw HitCosmicTagException("dq/ds calculator algorithm is reuqired! (not attached)");
+      throw HitCosmicTagException("dq/ds calculator algorithm is required! (not attached)");
     if (!_alg_dqds_smoother)
-      throw HitCosmicTagException("dq/ds smoother algorithm is reuqired! (not attached)");
+      throw HitCosmicTagException("dq/ds smoother algorithm is required! (not attached)");
     if (!_alg_linearity_calculator)
-      throw HitCosmicTagException("local linearity algorithm is reuqired! (not attached)");
+      throw HitCosmicTagException("local linearity algorithm is required! (not attached)");
 
     if (!_configured)
       throw HitCosmicTagException("Have not configured yet!");
 
-    //if(_tpc_object_v.empty() || _flash_v.empty()) return result;
+   
+    CT_DEBUG() << "Running start hit finder now." << std::endl;
+    _alg_start_hit_finder->FindStartHit(_cluster);
 
-    //
-    // Filter stage: for both TPC and Flash
-    //
+    CT_DEBUG() << "Running hit orderer algo now." << std::endl;
+    _alg_hit_orderer->FindStartHit(_cluster);
+
+    CT_DEBUG() << "Running dq/ds calculator now." << std::endl;
+    _alg_dqds_calculator->FindStartHit(_cluster);
+
+    CT_DEBUG() << "Running dq/ds smoother now." << std::endl;
+    _alg_dqds_smoother->FindStartHit(_cluster);
+
+    CT_DEBUG() << "Running slinearity calculator now." << std::endl;
+    _alg_linearity_calculator->FindStartHit(_cluster);
+
+    _ready = true;
 
     return false;
 
   }
+
+
+
+  bool MakeDecision(std::string name) 
+  {
+
+    if (!_configured)
+      throw HitCosmicTagException("Have not configured yet!");
+
+    if (!_ready)
+      throw HitCosmicTagException("Have not run yet!");
+
+
+    if(_custom_alg_m.find(name) == _custom_alg_m.end()) {
+      //CT_ERROR() << Form("Algorithm name %s not found!",name.c_str()) << std::endl;
+      throw HitCosmicTagException();
+    }
+    //return _custom_alg_m[name];
+
+    return false;
+  }
+
+
 
   void CosmicTagManager::PrintConfig() {
     

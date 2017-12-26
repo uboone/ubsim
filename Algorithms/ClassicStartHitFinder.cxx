@@ -14,7 +14,7 @@ namespace cosmictag {
 
   void ClassicStartHitFinder::_Configure_(const Config_t &pset)
   {
-    _max_allowed_hit_distance = pset.get<double>("GlobalQE");
+    _max_allowed_hit_distance = pset.get<double>("MaxAllowedHitDistance");
   }
   
   int ClassicStartHitFinder::FindStartHit(SimpleCluster& cluster, SimpleHit& start_hit) const
@@ -113,7 +113,7 @@ namespace cosmictag {
       TVector3 pt1(iter->second.time, iter->second.wire, 0);
       double dist = (pt0-pt1).Mag();
   
-      if (dist > 2.) // Check this number! 
+      if (dist > _max_allowed_hit_distance)  
         break;
 
       n_step_left ++;
@@ -137,7 +137,7 @@ namespace cosmictag {
       TVector3 pt1(iter->second.time, iter->second.wire, 0);
       double dist = (pt0-pt1).Mag(); 
 
-      if (dist > _max_allowed_hit_distance) // Check this number!  
+      if (dist > _max_allowed_hit_distance)   
         break; 
 
       n_step_right ++;

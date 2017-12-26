@@ -14,8 +14,8 @@ namespace cosmictag {
 
   void ClassicLocalLinearityCalculator::_Configure_(const Config_t &pset)
   {
-    _max_allowed_hit_distance = pset.get<double>("GlobalQE");
-    _slider_window = pset.get<size_t>("GlobalQE", 20); 
+    _max_allowed_hit_distance = pset.get<double>("MaxAllowedHitDistance");
+    _slider_window = pset.get<size_t>("SliderWindow", 20); 
   }
   
   int ClassicLocalLinearityCalculator::CalculateLocalLinearity(SimpleCluster& cluster) const

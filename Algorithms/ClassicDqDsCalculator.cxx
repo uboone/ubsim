@@ -14,9 +14,9 @@ namespace cosmictag {
 
   void ClassicDqDsCalculator::_Configure_(const Config_t &pset)
   {
-    _w2cm = pset.get<double>("GlobalQE");
-    _t2cm = pset.get<double>("GlobalQE");
-    _dqds_calib = pset.get<double>("GlobalQE");
+    _w2cm = pset.get<double>("WireToCmConstant");
+    _t2cm = pset.get<double>("TimeToCmConstant");
+    _dqds_calib = pset.get<double>("GainCalib");
   }
   
   int ClassicDqDsCalculator::CalculateDqDs(SimpleCluster& cluster) const
