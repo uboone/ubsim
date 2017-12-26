@@ -97,7 +97,7 @@ namespace cosmictag {
 
 
   double cov (const std::vector<double>& data1,
-              const std::vector<double>& data2) const
+              const std::vector<double>& data2)
   {
     if(data1.size() == 0) CT_NORMAL() << "You have me nill to cov" << std::endl;
     if(data2.size() == 0) CT_NORMAL() << "You have me nill to cov" << std::endl;
@@ -116,7 +116,7 @@ namespace cosmictag {
 
 
 
-  double stdev(const std::vector<double>& data) const
+  double stdev(const std::vector<double>& data)
   {
     if(data.size() == 0) CT_NORMAL()<< "You have me nill to stdev" << std::endl;
 
@@ -129,9 +129,9 @@ namespace cosmictag {
   }
 
 
-  
 
-  double mean(const std::vector<double>& data) const
+
+  double mean(const std::vector<double>& data)
   {
     if(data.size() == 0) CT_NORMAL() << "You have me nill to mean" << std::endl;
         
