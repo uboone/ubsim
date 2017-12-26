@@ -14,6 +14,7 @@ namespace cosmictag {
     kHitOrderer = 1,
     kDqDsCalculator = 2,
     kDqDsSmoother = 3,
+    kLocalLinearity,
     kCustomAlgo,
     kAlgorithmTypeMax   ///< enum flag for algorithm type count & invalid type
   };
