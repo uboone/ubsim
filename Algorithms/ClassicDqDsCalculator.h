@@ -54,7 +54,7 @@ namespace cosmictag {
     /// dtor
     ~ClassicDqDsCalculatorFactory() {}
     /// creation method
-    BaseClassicDqDsCalculatorAlgo* create(const std::string instance_name) { return new ClassicDqDsCalculator(instance_name); }
+    BaseDqDsCalculatorAlgo* create(const std::string instance_name) { return new ClassicDqDsCalculator(instance_name); }
   };
 }
 #endif

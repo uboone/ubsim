@@ -1,23 +1,23 @@
 #ifndef CLASSICSDQDSSMOOTHER_CXX
 #define CLASSICSDQDSSMOOTHER_CXX
 
-#include "ClassicDqDsCalculator.h"
+#include "ClassicDqDsSmoother.h"
 
 
 namespace cosmictag {
 
-  static ClassicDqDsCalculatorFactory __global_ClassicDqDsCalculatorFactory__;
+  static ClassicDqDsSmootherFactory __global_ClassicDqDsSmootherFactory__;
 
-  ClassicDqDsCalculator::ClassicDqDsCalculator(const std::string name)
+  ClassicDqDsSmoother::ClassicDqDsSmoother(const std::string name)
     : BaseHitOrdererAlgo(name)
   {}
 
-  void ClassicDqDsCalculator::_Configure_(const Config_t &pset)
+  void ClassicDqDsSmoother::_Configure_(const Config_t &pset)
   {
     _slider_window = pset.get<int>("GlobalQE");
   }
   
-  int ClassicDqDsCalculator::CalculateDqDs(SimpleCluster& cluster) const
+  int ClassicDqDsSmoother::CalculateDqDs(SimpleCluster& cluster) const
   {
 
     //int                    & _start_index      = cluster._start_index;

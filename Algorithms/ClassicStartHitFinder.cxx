@@ -56,7 +56,7 @@ namespace cosmictag {
 
     if (best_hit_id == -1) {
       std::cout << "Could not find start hit." << std::endl;
-      return;
+      return 0;
     }
    
  
