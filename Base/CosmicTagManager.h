@@ -17,7 +17,11 @@
 #include "LoggerFeature.h"
 #include "HitCosmicTagFMWKInterface.h"
 #include "BaseAlgorithm.h"
+#include "BaseStartHitFinderAlgo.h"
 #include "BaseHitOrdererAlgo.h"
+#include "BaseDqDsCalculatorAlgo.h"
+#include "BaseDqDsSmootherAlgo.h"
+#include "BaseLocalLinearityCalculatorAlgo.h"
 
 namespace cosmictag {
   /**
@@ -79,7 +83,7 @@ namespace cosmictag {
     BaseHitOrdererAlgo*               _alg_hit_orderer;               ///< Order Hits Algorithm
     BaseDqDsCalculatorAlgo*           _alg_dqds_calculator;           ///< Calculate dq/ds algorithm
     BaseDqDsSmootherAlgo*             _alg_dqds_smoother;             ///< Smooths dqds algorithm
-    BaseLocalLinearityCalculatorAlgo* _alg_linearity_calculator_algo; ///< Calculate linearity algorithm
+    BaseLocalLinearityCalculatorAlgo* _alg_linearity_calculator; ///< Calculate linearity algorithm
    
     /**
        A set of custom algorithms (not to be executed but to be configured)
