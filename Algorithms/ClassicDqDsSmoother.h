@@ -44,7 +44,7 @@ namespace cosmictag {
   protected:
 
     void _Configure_(const Config_t &pset);
-    int _slider_window;                             ///< ?
+    size_t _slider_window;                             ///< ?
   };
   
   /**
