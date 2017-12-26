@@ -93,6 +93,19 @@ namespace cosmictag {
 
 
 
+  double mean(const std::vector<double>& data)
+  {
+    if(data.size() == 0) CT_NORMAL() << "You have me nill to mean" << std::endl;
+        
+    double result = 0.0;
+
+    for(const auto& d : data) 
+      result += d;
+        
+    return (result / ((double)data.size()));
+  }
+
+
 
 
 
@@ -131,17 +144,7 @@ namespace cosmictag {
 
 
 
-  double mean(const std::vector<double>& data)
-  {
-    if(data.size() == 0) CT_NORMAL() << "You have me nill to mean" << std::endl;
-        
-    double result = 0.0;
-
-    for(const auto& d : data) 
-      result += d;
-        
-    return (result / ((double)data.size()));
-  }
+  
 
 }
 #endif
