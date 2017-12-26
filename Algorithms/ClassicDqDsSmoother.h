@@ -18,7 +18,10 @@
 #include <iostream>
 #include "../Base/BaseDqDsCalculatorAlgo.h"
 #include "../Base/DqDsCalculatorFactory.h"
+#include "../Base/HitCosmicTagException.h"
 #include "../Base/Tools.h"
+
+#include <TVector3.h>
 
 namespace cosmictag {
   /**
@@ -47,10 +50,10 @@ namespace cosmictag {
   /**
      \class cosmictag::ClassicHitOrdererFactory
   */
-  class ClassicDqDsSmootherFactory : public DqDsCalculatorFactoryBase {
+  class ClassicDqDsSmootherFactory : public DqDsSmootherFactoryBase {
   public:
     /// ctor
-    ClassicDqDsSmootherFactory() { StartHitFinderFactory::get().add_factory("ClassicDqDsSmoother",this); }
+    ClassicDqDsSmootherFactory() { DqDsSmootherFactory::get().add_factory("ClassicDqDsSmoother",this); }
     /// dtor
     ~ClassicDqDsSmootherFactory() {}
     /// creation method

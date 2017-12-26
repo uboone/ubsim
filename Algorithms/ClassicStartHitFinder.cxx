@@ -71,7 +71,7 @@ namespace cosmictag {
     TVector3 pt0(almost_best_hit.time, almost_best_hit.wire, 0);
 
     // First create a map from wire to hit
-    std::map<int,ubana::SimpleHit> wire_to_hit;
+    std::map<int,SimpleHit> wire_to_hit;
 
     for (size_t i = 0; i < _s_hit_v.size(); i++) {
 
@@ -107,7 +107,7 @@ namespace cosmictag {
         break;
       }
 
-      //ubana::SimpleHit temp = iter->second;
+      //SimpleHit temp = iter->second;
       auto it = std::find(_s_hit_v.begin(), _s_hit_v.end(), iter->second);
       best_index_left = it - _s_hit_v.begin();//w;//std::distance(_s_hit_v.begin(), it);
       TVector3 pt1(iter->second.time, iter->second.wire, 0);

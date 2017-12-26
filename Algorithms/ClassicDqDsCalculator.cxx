@@ -9,23 +9,25 @@ namespace cosmictag {
   static ClassicDqDsCalculatorFactory __global_ClassicDqDsCalculatorFactory__;
 
   ClassicDqDsCalculator::ClassicDqDsCalculator(const std::string name)
-    : BaseHitOrdererAlgo(name)
+    : BaseDqDsCalculatorAlgo(name)
   {}
 
   void ClassicDqDsCalculator::_Configure_(const Config_t &pset)
   {
     _w2cm = pset.get<double>("GlobalQE");
     _t2cm = pset.get<double>("GlobalQE");
+    _dqds_calib = pset.get<double>("GlobalQE");
   }
   
   int ClassicDqDsCalculator::CalculateDqDs(SimpleCluster& cluster) const
   {
 
-    int                    & _start_index      = cluster._start_index;
+    //int                    & _start_index      = cluster._start_index;
     std::vector<SimpleHit> & _s_hit_v          = cluster._s_hit_v;
     std::vector<double>    & _dqds_v           = cluster._dqds_v;
+    std::vector<double>    & _ds_v             = cluster._ds_v;
     bool                   & _hits_ordered     = cluster._hits_ordered;
-    //std::vector<double>    & _ds_v        = cluster._ds_v;
+    
 
      if (!_hits_ordered) {
       CT_ERROR() << "Need to order hits first." << std::endl;

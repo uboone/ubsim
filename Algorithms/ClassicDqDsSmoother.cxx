@@ -9,7 +9,7 @@ namespace cosmictag {
   static ClassicDqDsSmootherFactory __global_ClassicDqDsSmootherFactory__;
 
   ClassicDqDsSmoother::ClassicDqDsSmoother(const std::string name)
-    : BaseHitOrdererAlgo(name)
+    : BaseDqDsSmootherAlgo(name)
   {}
 
   void ClassicDqDsSmoother::_Configure_(const Config_t &pset)

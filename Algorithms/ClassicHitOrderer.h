@@ -18,6 +18,7 @@
 #include <iostream>
 #include "../Base/BaseHitOrdererAlgo.h"
 #include "../Base/HitOrdererFactory.h"
+#include "../Base/HitCosmicTagException.h"
 
 #include <TVector3.h>
 

@@ -18,6 +18,7 @@
 #include <iostream>
 #include "../Base/BaseStartHitFinderAlgo.h"
 #include "../Base/StartHitFinderFactory.h"
+#include "../Base/HitCosmicTagException.h"
 
 #include <TVector3.h>
 
