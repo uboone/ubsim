@@ -91,5 +91,57 @@ namespace cosmictag {
     return median;
   }
 
+
+
+
+
+
+  double cov (const std::vector<double>& data1,
+              const std::vector<double>& data2) const
+  {
+    if(data1.size() == 0) CT_NORMAL() << "You have me nill to cov" << std::endl;
+    if(data2.size() == 0) CT_NORMAL() << "You have me nill to cov" << std::endl;
+
+    double result = 0.0;
+    auto   mean1  = mean(data1);
+    auto   mean2  = mean(data2);
+    
+    for(size_t i = 0; i < data1.size(); ++i)
+      result += (data1[i] - mean1)*(data2[i] - mean2);
+    
+    return result/((double)data1.size());
+      
+  }
+
+
+
+
+  double stdev(const std::vector<double>& data) const
+  {
+    if(data.size() == 0) CT_NORMAL()<< "You have me nill to stdev" << std::endl;
+
+    double result = 0.0;
+    auto    avg   = mean(data);
+    for(const auto& d: data)
+      result += (d - avg)*(d - avg);
+    
+    return sqrt(result/((double)data.size()));
+  }
+
+
+  
+
+  double mean(const std::vector<double>& data) const
+  {
+    if(data.size() == 0) CT_NORMAL() << "You have me nill to mean" << std::endl;
+        
+    double result = 0.0;
+
+    for(const auto& d : data) 
+      result += d;
+        
+    return (result / ((double)data.size()));
+  }
+
 }
 #endif

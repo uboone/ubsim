@@ -40,7 +40,7 @@ namespace cosmictag {
     X.reserve(_slider_window);
     Y.reserve(_slider_window);
 
-    for(const auto& window : this->get_windows(_s_hit_v, _slider_window)) {
+    for(const auto& window : get_windows(_s_hit_v, _slider_window)) {
 
       for(const auto& s_hit : window) {
         X.push_back(s_hit.wire); 
