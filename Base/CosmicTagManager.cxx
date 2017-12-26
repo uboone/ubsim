@@ -11,7 +11,7 @@
 #include "HitOrdererFactory.h"
 #include "DqDsCalculatorFactory.h"
 #include "DqDsSmootherFactory.h"
-#include "LocalLineartyCalculatorFactory.h"
+#include "LocalLinearityCalculatorFactory.h"
 #include "CustomAlgoFactory.h"
 
 
