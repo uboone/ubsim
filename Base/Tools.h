@@ -1,5 +1,5 @@
-#ifndef HITCOSMICTAG_DATATYPES_H
-#define HITCOSMICTAG_DATATYPES_H
+#ifndef HITCOSMICTAG_TOOLS_H
+#define HITCOSMICTAG_TOOLS_H
 
 #include <vector>
 #include <numeric>
@@ -10,7 +10,7 @@ namespace cosmictag {
   /// Enumerator for different types of algorithm
   template<typename T>
   std::vector<std::vector<T>> get_windows(const std::vector<T>& the_thing,
-                                          const size_t window_size) const
+                                          const size_t window_size)
   {
 
     // given a vector of values return a vector of the same length

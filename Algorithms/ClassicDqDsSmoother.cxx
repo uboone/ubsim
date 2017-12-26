@@ -3,7 +3,6 @@
 
 #include "ClassicDqDsSmoother.h"
 
-
 namespace cosmictag {
 
   static ClassicDqDsSmootherFactory __global_ClassicDqDsSmootherFactory__;
