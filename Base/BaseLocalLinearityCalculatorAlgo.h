@@ -11,8 +11,8 @@
 /** \addtogroup Base
 
     @{*/
-#ifndef HITCOSMICTAG_LOCALLINEARITYCALCULATORALGO_H
-#define HITCOSMICTAG_LOCALLINEARITYCALCULATORALGO_H
+#ifndef HITCOSMICTAG_BASELOCALLINEARITYCALCULATORALGO_H
+#define HITCOSMICTAG_BASELOCALLINEARITYCALCULATORALGO_H
 
 #include "BaseAlgorithm.h"
 
@@ -22,17 +22,17 @@ namespace cosmictag {
      Algorithm base class for prohibiting the match
      between a charge cluster and a flash \n
   */
-  class LocalLinearityCalculatorAlgo : public BaseAlgorithm{
+  class BaseLocalLinearityCalculatorAlgo : public BaseAlgorithm{
     
   public:
     
     /// Default constructor
-    LocalLinearityCalculatorAlgo(const std::string name="noname") 
-       : BaseAlgorithm(kHitOrderer,name)
+    BaseLocalLinearityCalculatorAlgo(const std::string name="noname") 
+       : BaseAlgorithm(kLocalLinearity,name)
     {}
  
     /// Default destructor
-    virtual ~LocalLinearityCalculatorAlgo(){}
+    virtual ~BaseLocalLinearityCalculatorAlgo(){}
     
     /**
      * @brief CORE FUNCTION: order the hits
