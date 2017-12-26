@@ -97,7 +97,7 @@ namespace cosmictag {
 
   double mean(const std::vector<double>& data)
   {
-    if(data.size() == 0) CT_NORMAL() << "You have me nill to mean" << std::endl;
+    if(data.size() == 0) std::cout << __PRETTY_FUNCTION__ << "You have me nill to mean" << std::endl;
         
     double result = 0.0;
 
@@ -114,8 +114,8 @@ namespace cosmictag {
   double cov (const std::vector<double>& data1,
               const std::vector<double>& data2)
   {
-    if(data1.size() == 0) CT_NORMAL() << "You have me nill to cov" << std::endl;
-    if(data2.size() == 0) CT_NORMAL() << "You have me nill to cov" << std::endl;
+    if(data1.size() == 0) std::cout << __PRETTY_FUNCTION__ << "You have me nill to cov" << std::endl;
+    if(data2.size() == 0) std::cout << __PRETTY_FUNCTION__ << "You have me nill to cov" << std::endl;
 
     double result = 0.0;
     auto   mean1  = mean(data1);
@@ -133,14 +133,14 @@ namespace cosmictag {
 
   double stdev(const std::vector<double>& data)
   {
-    if(data.size() == 0) CT_NORMAL()<< "You have me nill to stdev" << std::endl;
+    if(data.size() == 0) std::cout << __PRETTY_FUNCTION__ << "You have me nill to stdev" << std::endl;
 
     double result = 0.0;
     auto    avg   = mean(data);
     for(const auto& d: data)
       result += (d - avg)*(d - avg);
     
-    return sqrt(result/((double)data.size()));
+    return std::sqrt(result/((double)data.size()));
   }
 
 

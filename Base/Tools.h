@@ -4,6 +4,7 @@
 #include <vector>
 #include <numeric>
 #include <string>
+#include <algorithm>
 
 namespace cosmictag {
 
