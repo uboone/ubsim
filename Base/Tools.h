@@ -1,6 +1,7 @@
 #ifndef HITCOSMICTAG_TOOLS_H
 #define HITCOSMICTAG_TOOLS_H
 
+#include <iostream>
 #include <vector>
 #include <numeric>
 #include <string>
