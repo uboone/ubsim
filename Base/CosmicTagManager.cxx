@@ -208,7 +208,7 @@ namespace cosmictag {
 
 
 
-  bool MakeDecision(std::string name) 
+  bool CosmicTagManager::MakeDecision(std::string name) 
   {
 
     if (!_configured)
