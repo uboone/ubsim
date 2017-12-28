@@ -19,6 +19,7 @@
 #include "BaseAlgorithm.h"
 #include "BaseStartHitFinderAlgo.h"
 #include "BaseHitOrdererAlgo.h"
+#include "BaseHitSmootherAlgo.h"
 #include "BaseDqDsCalculatorAlgo.h"
 #include "BaseDqDsSmootherAlgo.h"
 #include "BaseLocalLinearityCalculatorAlgo.h"
