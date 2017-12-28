@@ -10,9 +10,8 @@
 namespace cosmictag {
 
   /// ?
-  template<typename T>
-  std::vector<std::vector<T>> get_windows(const std::vector<T>& the_thing,
-                                          const size_t window_size);
+  std::vector<std::vector<double>> get_windows(const std::vector<double>& the_thing,
+                                               const size_t window_size);
   
 
   /// ?
