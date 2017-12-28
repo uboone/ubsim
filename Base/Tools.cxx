@@ -24,7 +24,7 @@ namespace cosmictag {
     // 2nd element: [0,1,2,3,4]
     // jth element: [j-w,j-w+1,..,j+w-2,j+w-1]
     
-    std::vector<std::vector<T>> data;
+    std::vector<std::vector<double>> data;
     
     auto w = window_size + 2;
     w = (unsigned int)((w - 1)/2);
