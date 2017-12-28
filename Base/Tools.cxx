@@ -10,8 +10,9 @@
 namespace cosmictag {
 
   /// Enumerator for different types of algorithm
-  std::vector<std::vector<double>> get_windows(const std::vector<double>& the_thing,
-                                               const size_t window_size)
+  template<typename T>
+  std::vector<std::vector<T>> get_windows(const std::vector<T>& the_thing,
+                                          const size_t window_size)
   {
 
     // given a vector of values return a vector of the same length
@@ -24,7 +25,7 @@ namespace cosmictag {
     // 2nd element: [0,1,2,3,4]
     // jth element: [j-w,j-w+1,..,j+w-2,j+w-1]
     
-    std::vector<std::vector<double>> data;
+    std::vector<std::vector<T>> data;
     
     auto w = window_size + 2;
     w = (unsigned int)((w - 1)/2);
@@ -33,7 +34,7 @@ namespace cosmictag {
     data.reserve(num);
     
     for(size_t i = 1; i <= num; ++i) {
-      std::vector<double> inner;
+      std::vector<T> inner;
       inner.reserve(20);
       // if we are at the beginning of the vector (and risk accessing -1 elements)
       if(i < w)
