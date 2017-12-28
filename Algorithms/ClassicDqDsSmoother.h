@@ -46,10 +46,6 @@ namespace cosmictag {
     void _Configure_(const Config_t &pset);
     size_t _slider_window;                             ///< ?
 
-  private: 
-    template<typename T>
-    std::vector<std::vector<T>> get_windows(const std::vector<T>& the_thing,
-                                            const size_t window_size);
   };
   
   /**
