@@ -101,7 +101,7 @@ namespace cosmictag {
     SimpleHit _start_hit;
 
     /// Configuration readiness flag
-    bool _configured = false;;
+    bool _configured = false;
 
     /// Readiness flag
     bool _ready = false;

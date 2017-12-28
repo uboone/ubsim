@@ -9,6 +9,7 @@
 #include "HitCosmicTagException.h"
 #include "StartHitFinderFactory.h"
 #include "HitOrdererFactory.h"
+#include "HitSmootherFactory.h"
 #include "DqDsCalculatorFactory.h"
 #include "DqDsSmootherFactory.h"
 #include "LocalLinearityCalculatorFactory.h"
@@ -182,7 +183,7 @@ namespace cosmictag {
 
    
     CT_DEBUG() << "Running start hit finder now." << std::endl;
-    _alg_start_hit_finder->FindStartHit(_cluster);
+    _alg_start_hit_finder->FindStartHit(_cluster, _start_hit);
 
     CT_DEBUG() << "Running hit orderer algo now." << std::endl;
     _alg_hit_orderer->OrderHits(_cluster);
