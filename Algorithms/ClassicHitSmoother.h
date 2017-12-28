@@ -19,6 +19,7 @@
 #include "../Base/BaseHitSmootherAlgo.h"
 #include "../Base/HitSmootherFactory.h"
 #include "../Base/HitCosmicTagException.h"
+#include "../Base/Tools.h"
 
 #include <TVector3.h>
 
