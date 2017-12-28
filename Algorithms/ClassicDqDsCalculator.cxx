@@ -46,8 +46,8 @@ namespace cosmictag {
 
     for (size_t i = 0; i < _s_hit_v.size()-1; i++) {
 
-      TVector3 this_point(_s_hit_v.at(i).wire * _w2cm, _s_hit_v.at(i).time*_t2cm, 0);
-      TVector3 next_point(_s_hit_v.at(i+1).wire * _w2cm, _s_hit_v.at(i+1).time*_t2cm, 0);
+      TVector3 this_point(_s_hit_v.at(i).wire * _w2cm, _s_hit_v.at(i).time*4*_t2cm, 0);
+      TVector3 next_point(_s_hit_v.at(i+1).wire * _w2cm, _s_hit_v.at(i+1).time*4*_t2cm, 0);
       ds = (this_point - next_point).Mag();
 
       _dqds_v.emplace_back(_s_hit_v.at(i).integral/ds * _dqds_calib);

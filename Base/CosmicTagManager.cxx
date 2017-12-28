@@ -47,6 +47,7 @@ namespace cosmictag {
 
     auto const start_hit_finder_name      = mgr_cfg.get<std::string>("StartHitFinderAlgo","");
     auto const hit_orderer_name           = mgr_cfg.get<std::string>("HitOrdererAlgo","");
+    auto const hit_smoother_name          = mgr_cfg.get<std::string>("HitSmootherAlgo","");
     auto const dqds_calculator_name       = mgr_cfg.get<std::string>("DqDsCalculatorAlgo","");
     auto const dqds_smoother_name         = mgr_cfg.get<std::string>("DqDsSmootherAlgo","");
     auto const linearity_calculator_name  = mgr_cfg.get<std::string>("LocalLinearityCalculatorAlgo","");
@@ -56,6 +57,7 @@ namespace cosmictag {
 
     if(!start_hit_finder_name.empty()) _alg_start_hit_finder = StartHitFinderFactory::get().create(start_hit_finder_name,start_hit_finder_name);
     if(!hit_orderer_name.empty()) _alg_hit_orderer = HitOrdererFactory::get().create(hit_orderer_name,hit_orderer_name);
+    if(!hit_smoother_name.empty()) _alg_hit_smoother = HitSmootherFactory::get().create(hit_smoother_name,hit_smoother_name);
     if(!dqds_calculator_name.empty()) _alg_dqds_calculator = DqDsCalculatorFactory::get().create(dqds_calculator_name,dqds_calculator_name);
     if(!dqds_smoother_name.empty()) _alg_dqds_smoother = DqDsSmootherFactory::get().create(dqds_smoother_name,dqds_smoother_name);
     if(!linearity_calculator_name.empty()) _alg_linearity_calculator = LocalLinearityCalculatorFactory::get().create(linearity_calculator_name,linearity_calculator_name);
@@ -74,6 +76,11 @@ namespace cosmictag {
     if (_alg_hit_orderer) {
 
       _alg_hit_orderer->Configure(main_cfg.get<cosmictag::Config_t>(_alg_hit_orderer->AlgorithmName()));
+      
+    }
+    if (_alg_hit_smoother) {
+
+      _alg_hit_smoother->Configure(main_cfg.get<cosmictag::Config_t>(_alg_hit_smoother->AlgorithmName()));
       
     }
     if (_alg_dqds_calculator) {
@@ -110,6 +117,9 @@ namespace cosmictag {
     // Hit Orderer
     case kHitOrderer:
       return _alg_hit_orderer;
+
+    case kHitSmoother:
+      return _alg_hit_smoother;
 
     // dq/ds Calculator
     case kDqDsCalculator:
@@ -158,6 +168,8 @@ namespace cosmictag {
       throw HitCosmicTagException("Start hit finder algorithm is required! (not attached)");
     if (!_alg_hit_orderer)
       throw HitCosmicTagException("Hit orderer algorithm is required! (not attached)");
+    if (!_alg_hit_smoother)
+      throw HitCosmicTagException("Hit smoother algorithm is required! (not attached)");
     if (!_alg_dqds_calculator)
       throw HitCosmicTagException("dq/ds calculator algorithm is required! (not attached)");
     if (!_alg_dqds_smoother)
@@ -173,16 +185,19 @@ namespace cosmictag {
     _alg_start_hit_finder->FindStartHit(_cluster);
 
     CT_DEBUG() << "Running hit orderer algo now." << std::endl;
-    _alg_hit_orderer->FindStartHit(_cluster);
+    _alg_hit_orderer->OrderHits(_cluster);
+
+    CT_DEBUG() << "Running hit smoother algo now." << std::endl;
+    _alg_hit_smoother->Smooth(_cluster);
 
     CT_DEBUG() << "Running dq/ds calculator now." << std::endl;
-    _alg_dqds_calculator->FindStartHit(_cluster);
+    _alg_dqds_calculator->CalculateDqDs(_cluster);
 
     CT_DEBUG() << "Running dq/ds smoother now." << std::endl;
-    _alg_dqds_smoother->FindStartHit(_cluster);
+    _alg_dqds_smoother->SmoothDqDs(_cluster);
 
     CT_DEBUG() << "Running slinearity calculator now." << std::endl;
-    _alg_linearity_calculator->FindStartHit(_cluster);
+    _alg_linearity_calculator->CalculateLocalLinearity(_cluster);
 
     _ready = true;
 
@@ -223,6 +238,9 @@ namespace cosmictag {
     std::cout << "_alg_hit_orderer?" << std::endl;
     if (_alg_hit_orderer)
       std::cout << "\t" << _alg_hit_orderer->AlgorithmName() << std::endl;
+    std::cout << "_alg_hit_smoother?" << std::endl;
+    if (_alg_hit_smoother)
+      std::cout << "\t" << _alg_hit_smoother->AlgorithmName() << std::endl;
     std::cout << "_alg_dqds_calculator?" << std::endl;
     if (_alg_dqds_calculator)
       std::cout << "\t" << _alg_dqds_calculator->AlgorithmName() << std::endl;

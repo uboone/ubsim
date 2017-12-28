@@ -11,9 +11,10 @@ namespace cosmictag {
   enum AlgoType{
     kAlgoUnknown = -1,  ///< Algorithm type to f?
     kStartHitFinder = 0,
-    kHitOrderer = 1,
-    kDqDsCalculator = 2,
-    kDqDsSmoother = 3,
+    kHitOrderer,
+    kHitSmoother,
+    kDqDsCalculator,
+    kDqDsSmoother,
     kLocalLinearity,
     kCustomAlgo,
     kAlgorithmTypeMax   ///< enum flag for algorithm type count & invalid type

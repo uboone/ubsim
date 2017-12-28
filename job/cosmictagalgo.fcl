@@ -8,6 +8,7 @@ cosmictag_config : {
 CosmicTagManager: {
   StartHitFinderAlgo:            "ClassicStartHitFinder"
   HitOrdererAlgo:                "ClassicHitOrderer"
+  HitSmootherAlgo:               "ClassicHitSmoother"
   DqDsCalculatorAlgo:            "ClassicDqDsCalculator"
   DqDsSmootherAlgo:              "ClassicDqDsSmoother"
   LocalLinearityCalculatorAlgo:  "ClassicLocalLinearityCalculator"
@@ -22,14 +23,18 @@ CosmicTagManager: {
 # Algorithms
 #
 ClassicStartHitFinder: {
-  MaxAllowedHitDistance:   2
+  MaxAllowedHitDistance:   4
   Debug:                   true
 }
 
 ClassicHitOrderer: {
-  MaxAllowedHitDistance:   15
+  MaxAllowedHitDistance:   4
   SlopeThreshold:          0.25
   Debug:                   true
+}
+
+ClassicHitSmoother: {
+  SliderWindow:            4
 }
 
 ClassicDqDsCalculator: {
