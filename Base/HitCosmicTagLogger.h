@@ -138,7 +138,7 @@ namespace cosmictag {
 /// Compiler macro for ERROR message
 #define CT_ERROR()    if( logger().error   () ) logger().send(::cosmictag::msg::kERROR,    __FUNCTION__, __LINE__          )
 /// Compiler macro for CRITICAL message
-#define CT_CRITICAL()                           logger().send(::cosmictag::msg::kCRITICAL, __FUNCTION__, __LINE__, __FILE__)
+#define CT_CRITICAL()                           logger().send(::cosmictag::msg::kEXCEPTION, __FUNCTION__, __LINE__, __FILE__)
   
 /** @} */ // end of doxygen group logger
 #endif
