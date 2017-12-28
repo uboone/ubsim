@@ -33,7 +33,7 @@ namespace cosmictag {
       return 0;
     }
 
-    std::vector<ubana::SimpleHit> new_vector;
+    std::vector<SimpleHit> new_vector;
     new_vector.clear(); 
 
     std::vector<double> new_vector_ds;
@@ -44,13 +44,13 @@ namespace cosmictag {
 
     std::vector<double> wire_v;
 
-    for(const auto& window : this->get_windows(_s_hit_v, _slider_window)) {
+    for(const auto& window : get_windows(_s_hit_v, _slider_window)) {
 
       for (auto s_h : window) {
         wire_v.push_back(s_h.wire);
       }
 
-      mean_v.push_back(this->mean(wire_v));
+      mean_v.push_back(mean(wire_v));
 
       wire_v.clear();
     }
