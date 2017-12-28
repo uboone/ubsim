@@ -33,7 +33,7 @@ namespace cosmictag {
     data.reserve(num);
     
     for(size_t i = 1; i <= num; ++i) {
-      std::vector<T> inner;
+      std::vector<double> inner;
       inner.reserve(20);
       // if we are at the beginning of the vector (and risk accessing -1 elements)
       if(i < w)
