@@ -19,6 +19,7 @@
 #include "../Base/BaseDqDsSmootherAlgo.h"
 #include "../Base/DqDsSmootherFactory.h"
 #include "../Base/HitCosmicTagException.h"
+#include "../Base/Tools.h"
 
 #include <TVector3.h>
 
