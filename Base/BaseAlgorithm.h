@@ -17,7 +17,6 @@
 #include "DataTypes.h"
 #include "HitCosmicTagFMWKInterface.h"
 #include "LoggerFeature.h"
-#include "Tools.h"
 
 #include <vector>
 
