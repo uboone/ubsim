@@ -10,7 +10,6 @@ namespace cosmictag {
 
   StopMuMichel::StopMuMichel(const std::string name)
     : BaseAlgorithm(kCustomAlgo, name)
-    , _gap         ( 0.5    )
   {}
 
   void StopMuMichel::_Configure_(const Config_t &pset)
@@ -26,7 +25,7 @@ namespace cosmictag {
   }
 
  
-  bool IsStopMuMichel(const cosmictag::SimpleCluster & cluster) const {
+  bool StopMuMichel::IsStopMuMichel(const cosmictag::SimpleCluster & cluster) const {
 
 
     int                    & _start_index      = cluster._start_index;
