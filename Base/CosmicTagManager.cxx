@@ -19,7 +19,12 @@
 namespace cosmictag {
 
   CosmicTagManager::CosmicTagManager(const std::string name)
-    : _alg_hit_orderer(nullptr)
+    : _alg_start_hit_finder(nullptr)
+    , _alg_hit_orderer(nullptr)
+    , _alg_hit_smoother(nullptr)
+    , _alg_dqds_calculator(nullptr)
+    , _alg_dqds_smoother(nullptr)
+    , _alg_linearity_calculator(nullptr)
     , _name(name)
   {
     _configured = false;
