@@ -190,24 +190,31 @@ namespace cosmictag {
     if (!_configured)
       throw HitCosmicTagException("Have not configured yet!");
 
+    bool status = true;
    
     CT_DEBUG() << "Running start hit finder now." << std::endl;
-    _alg_start_hit_finder->FindStartHit(_cluster, _start_hit);
+    status = _alg_start_hit_finder->FindStartHit(_cluster, _start_hit);
+    if (!status) return false;
 
     CT_DEBUG() << "Running hit orderer algo now." << std::endl;
-    _alg_hit_orderer->OrderHits(_cluster);
+    status = _alg_hit_orderer->OrderHits(_cluster);
+    if (!status) return false;
 
     CT_DEBUG() << "Running hit smoother algo now." << std::endl;
-    _alg_hit_smoother->Smooth(_cluster);
+    status = _alg_hit_smoother->Smooth(_cluster);
+    if (!status) return false;
 
     CT_DEBUG() << "Running dq/ds calculator now." << std::endl;
-    _alg_dqds_calculator->CalculateDqDs(_cluster);
+    status = _alg_dqds_calculator->CalculateDqDs(_cluster);
+    if (!status) return false;
 
     CT_DEBUG() << "Running dq/ds smoother now." << std::endl;
-    _alg_dqds_smoother->SmoothDqDs(_cluster);
+    status = _alg_dqds_smoother->SmoothDqDs(_cluster);
+    if (!status) return false;
 
     CT_DEBUG() << "Running slinearity calculator now." << std::endl;
-    _alg_linearity_calculator->CalculateLocalLinearity(_cluster);
+    status = _alg_linearity_calculator->CalculateLocalLinearity(_cluster);
+    if (!status) return false;
 
     _ready = true;
 
