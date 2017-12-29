@@ -62,8 +62,9 @@ namespace cosmictag {
     bool _hits_ordered = false;
     bool _start_hit_is_set = false;
 
-    SimpleCluster () {
+    SimpleCluster (std::vector<SimpleHit> v) {
       _s_hit_v.clear();
+      _s_hit_v. = v;
       _dqds_v.clear();
       _ds_v.clear();
       _dqds_slider.clear();
@@ -72,6 +73,7 @@ namespace cosmictag {
       _linearity_is_set = false;
       _hits_ordered = false;
       _start_hit_is_set = false;
+
     }
   };
 
