@@ -24,7 +24,7 @@ namespace cosmictag {
     int                    & _start_index  = cluster._start_index;
     std::vector<SimpleHit> & _s_hit_v      = cluster._s_hit_v;
     std::vector<double>    & _ds_v         = cluster._ds_v;
-    int                    & _hits_ordered = cluster._hits_ordered;
+    bool                   & _hits_ordered = cluster._hits_ordered;
 
     _hits_ordered = false;
 
