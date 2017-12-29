@@ -165,6 +165,10 @@ namespace cosmictag {
   void CosmicTagManager::SetStartHit(cosmictag::SimpleHit && hit)
   { _start_hit = hit; }
 
+  SimpleCluster CosmicTagManager::GetCluster()
+  {
+    return _cluster;
+  }
   
   // CORE FUNCTION
   bool CosmicTagManager::Run()

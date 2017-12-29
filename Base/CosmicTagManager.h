@@ -55,6 +55,8 @@ namespace cosmictag {
 
     void SetStartHit(cosmictag::SimpleHit && hit);
 
+    SimpleCluster GetCluster();
+
     /**
        CORE FUNCTION: executes algorithms to find a match of TPC object and flash provided by users. \n
        The execution takes following steps:             \n
