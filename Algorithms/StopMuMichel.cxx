@@ -28,11 +28,12 @@ namespace cosmictag {
   bool StopMuMichel::IsStopMuMichel(const cosmictag::SimpleCluster & cluster) const {
 
 
-    int                    & _start_index      = cluster._start_index;
-    std::vector<SimpleHit> & _s_hit_v          = cluster._s_hit_v;
-    bool                   & _start_hit_is_set = cluster._start_hit_is_set;
-    std::vector<double>    & _dqds_v           = cluster._dqds_v;
-    std::vector<double>    & _dqds_slider      = cluster._dqds_slider;
+    //const int                    & _start_index      = cluster._start_index;
+    //const std::vector<SimpleHit> & _s_hit_v          = cluster._s_hit_v;
+    //const bool                   & _start_hit_is_set = cluster._start_hit_is_set;
+    //const std::vector<double>    & _dqds_v           = cluster._dqds_v;
+    const std::vector<double>    & _dqds_slider      = cluster._dqds_slider;
+    const std::vector<double>    & _linearity_v      = cluster._linearity_v;
 
 
     if (_dqds_slider.size() < (unsigned int) (_hits_to_remove * 2 + _pre_post_window * 2 + 6)) {
