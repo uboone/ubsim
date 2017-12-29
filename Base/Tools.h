@@ -14,6 +14,10 @@ namespace cosmictag {
   std::vector<std::vector<T>> get_windows(const std::vector<T>& the_thing,
                                           const size_t window_size);
   
+}
+#include "Tools_impl.h" // for template functions
+
+namespace cosmictag {
 
   /// ?
   double get_smooth_trunc_median(std::vector<double> v);
