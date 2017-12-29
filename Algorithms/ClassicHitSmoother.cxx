@@ -25,8 +25,8 @@ namespace cosmictag {
     bool                   & _hits_ordered = cluster._hits_ordered;
 
     if (!_hits_ordered) {
-      std::cout << __PRETTY_FUNCTION__ << ": need to order hits first." << std::endl;
-      throw std::exception();
+      CT_CRITICAL() << ": need to order hits first." << std::endl;
+      throw HitCosmicTagException();
     }
 
     if (_s_hit_v.size() < _slider_window) {
