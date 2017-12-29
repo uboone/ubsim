@@ -64,7 +64,7 @@ namespace cosmictag {
 
     SimpleCluster (std::vector<SimpleHit> v) {
       _s_hit_v.clear();
-      _s_hit_v. = v;
+      _s_hit_v = v;
       _dqds_v.clear();
       _ds_v.clear();
       _dqds_slider.clear();
