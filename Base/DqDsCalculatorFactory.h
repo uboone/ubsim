@@ -1,9 +1,9 @@
 /**
- * \file CustomAlgoFactory.h
+ * \file DqDsCalculatorFactory.h
  *
  * \ingroup Base
  * 
- * \brief Class def header for a class CustomAlgoFactory
+ * \brief Class def header for a class DqDsCalculatorFactory
  *
  * @author Marco Del Tutto
  */
@@ -11,49 +11,49 @@
 /** \addtogroup Base
 
     @{*/
-#ifndef CUSTOMALGOFACTORY_H
-#define CUSTOMALGOFACTORY_H
+#ifndef DQDSCALCULATORFACTORY_H
+#define DQDSCALCULATORFACTORY_H
 
 #include <iostream>
 #include <map>
-#include "BaseAlgorithm.h"
+#include "BaseDqDsCalculatorAlgo.h"
 
 
 namespace cosmictag {
 
   /**
-     \class CustomAlgoFactoryBase
-     \brief Abstract base class for factory (to be implemented per flash)
+     \class DqDsCalculatorFactoryBase
+     \brief Abstract base class for factory (to be implemented per cluster)
   */
-  class CustomAlgoFactoryBase {
+  class DqDsCalculatorFactoryBase {
   public:
     /// Default ctor
-    CustomAlgoFactoryBase(){}
+    DqDsCalculatorFactoryBase(){}
     /// Default dtor (virtual)
-    virtual ~CustomAlgoFactoryBase(){}
+    virtual ~DqDsCalculatorFactoryBase(){}
     /// Abstract constructor method
-    virtual BaseAlgorithm* create(const std::string instance_name) = 0;
+    virtual BaseDqDsCalculatorAlgo* create(const std::string instance_name) = 0;
   };
 
   /**
-     \class CustomAlgoFactory
+     \class DqDsCalculatorFactory
      \brief Factory class for instantiating flash algorithm instance
   */
-  class CustomAlgoFactory {
+  class DqDsCalculatorFactory {
   private:
     /// Default ctor, shouldn't be used
-    CustomAlgoFactory() {}
+    DqDsCalculatorFactory() {}
   public:
     /// Default dtor
-    ~CustomAlgoFactory() {_factory_map.clear();}
+    ~DqDsCalculatorFactory() {_factory_map.clear();}
     /// Static sharable instance getter
-    static CustomAlgoFactory& get()
-    { if(!_me) _me = new CustomAlgoFactory; return *_me; }
+    static DqDsCalculatorFactory& get()
+    { if(!_me) _me = new DqDsCalculatorFactory; return *_me; }
     /// Factory registration method (should be called by global factory instance in algorithm header)
-    void add_factory(const std::string name, cosmictag::CustomAlgoFactoryBase* factory)
+    void add_factory(const std::string name, cosmictag::DqDsCalculatorFactoryBase* factory)
     { _factory_map[name] = factory; }
     /// Factory creation method (should be called by clients, possibly you!)
-    BaseAlgorithm* create(const std::string name, const std::string instance_name) {
+    BaseDqDsCalculatorAlgo* create(const std::string name, const std::string instance_name) {
       auto iter = _factory_map.find(name);
       if(iter == _factory_map.end() || !((*iter).second)) {
 	      std::cerr << "Found no registered class " << name << std::endl;
@@ -65,9 +65,9 @@ namespace cosmictag {
 
   private:
     /// Static factory container
-    std::map<std::string,cosmictag::CustomAlgoFactoryBase*> _factory_map;
+    std::map<std::string,cosmictag::DqDsCalculatorFactoryBase*> _factory_map;
     /// Static self
-    static CustomAlgoFactory* _me;
+    static DqDsCalculatorFactory* _me;
   };
 }
 #endif

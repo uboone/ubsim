@@ -25,7 +25,7 @@ namespace cosmictag {
      \class logger
      \brief Utility class used to show formatted message on the screen.
      A logger class for cosmictag. Simply shows a formatted colored message on a screen. \n
-     A static getter method is provided to create a sharable logger instance (see OpT0FinderBase for useage). \n
+     A static getter method is provided to create a sharable logger instance. \n
   */
   class logger{
     
@@ -138,7 +138,7 @@ namespace cosmictag {
 /// Compiler macro for ERROR message
 #define CT_ERROR()    if( logger().error   () ) logger().send(::cosmictag::msg::kERROR,    __FUNCTION__, __LINE__          )
 /// Compiler macro for CRITICAL message
-#define CT_CRITICAL()                           logger().send(::cosmictag::msg::kCRITICAL, __FUNCTION__, __LINE__, __FILE__)
+#define CT_CRITICAL()                           logger().send(::cosmictag::msg::kEXCEPTION, __FUNCTION__, __LINE__, __FILE__)
   
 /** @} */ // end of doxygen group logger
 #endif

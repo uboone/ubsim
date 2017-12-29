@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <numeric>
-//#include "OpT0FinderConstants.h"
 #include <string>
 
 namespace cosmictag {
@@ -11,15 +10,17 @@ namespace cosmictag {
   /// Enumerator for different types of algorithm
   enum AlgoType{
     kAlgoUnknown = -1,  ///< Algorithm type to f?
-    kAlgoMichel = 0,
-    kAlgoBragg = 1,
-    kAlgoCurvature = 2,
-    kAlgoSimpleMIP = 3,
+    kStartHitFinder = 0,
     kHitOrderer,
+    kHitSmoother,
+    kDqDsCalculator,
+    kDqDsSmoother,
+    kLocalLinearity,
+    kCustomAlgo,
     kAlgorithmTypeMax   ///< enum flag for algorithm type count & invalid type
   };
 
-  /// Struct to represent an optical flash
+  /// Struct to represent a hit
    struct SimpleHit {
 
     public: 
@@ -59,6 +60,7 @@ namespace cosmictag {
 
     bool _linearity_is_set = false;
     bool _hits_ordered = false;
+    bool _start_hit_is_set = false;
 
     SimpleCluster () {
       _s_hit_v.clear();
@@ -69,6 +71,22 @@ namespace cosmictag {
 
       _linearity_is_set = false;
       _hits_ordered = false;
+      _start_hit_is_set = false;
+
+    }
+
+    SimpleCluster (std::vector<SimpleHit> v) {
+      _s_hit_v.clear();
+      _s_hit_v = v;
+      _dqds_v.clear();
+      _ds_v.clear();
+      _dqds_slider.clear();
+      _linearity_v.clear();
+
+      _linearity_is_set = false;
+      _hits_ordered = false;
+      _start_hit_is_set = false;
+
     }
   };
 

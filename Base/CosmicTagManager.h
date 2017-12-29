@@ -17,7 +17,12 @@
 #include "LoggerFeature.h"
 #include "HitCosmicTagFMWKInterface.h"
 #include "BaseAlgorithm.h"
+#include "BaseStartHitFinderAlgo.h"
 #include "BaseHitOrdererAlgo.h"
+#include "BaseHitSmootherAlgo.h"
+#include "BaseDqDsCalculatorAlgo.h"
+#include "BaseDqDsSmootherAlgo.h"
+#include "BaseLocalLinearityCalculatorAlgo.h"
 
 namespace cosmictag {
   /**
@@ -50,6 +55,8 @@ namespace cosmictag {
 
     void SetStartHit(cosmictag::SimpleHit && hit);
 
+    SimpleCluster GetCluster();
+
     /**
        CORE FUNCTION: executes algorithms to find a match of TPC object and flash provided by users. \n
        The execution takes following steps:             \n
@@ -58,11 +65,13 @@ namespace cosmictag {
        3) Flash matching algorithm (required)           \n
        4) Returns match information for created TPC object & flash pair which respects the outcome of 3)
      */
-    bool Match();
+    bool Run();
+
+    bool MakeDecision(std::string);
 
     /// Clears locally kept TPC object (QClusterArray_t) and flash (FlashArray_t), both provided by a user
     void Reset()
-    { /*_tpc_object_v.clear(); _flash_v.clear();*/ }
+    { /*_tpc_object_v.clear(); _flash_v.clear();*/ _ready = false;}
 
     /// Configuration option: true => allows an assignment of the same flash to multiple TPC objects
     void CanReuseFlash(bool ok=true)
@@ -75,7 +84,12 @@ namespace cosmictag {
 
     void AddCustomAlgo(BaseAlgorithm* alg);
 
-    BaseHitOrdererAlgo*     _alg_hit_orderer;     ///< Order Hits Algorithm
+    BaseStartHitFinderAlgo*           _alg_start_hit_finder;          ///< Find start hit in cluster Algorithm
+    BaseHitOrdererAlgo*               _alg_hit_orderer;               ///< Order Hits Algorithm
+    BaseHitSmootherAlgo*              _alg_hit_smoother;              ///< Smooth Hits Algorithm
+    BaseDqDsCalculatorAlgo*           _alg_dqds_calculator;           ///< Calculate dq/ds algorithm
+    BaseDqDsSmootherAlgo*             _alg_dqds_smoother;             ///< Smooths dqds algorithm
+    BaseLocalLinearityCalculatorAlgo* _alg_linearity_calculator;      ///< Calculate linearity algorithm
    
     /**
        A set of custom algorithms (not to be executed but to be configured)
@@ -89,7 +103,11 @@ namespace cosmictag {
     SimpleHit _start_hit;
 
     /// Configuration readiness flag
-    bool _configured;
+    bool _configured = false;
+
+    /// Readiness flag
+    bool _ready = false;
+
     /// Configuration file
     std::string _config_file;
     /// Name

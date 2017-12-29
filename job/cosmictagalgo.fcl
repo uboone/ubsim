@@ -1,0 +1,59 @@
+
+BEGIN_PROLOG
+
+cosmictag_config : {
+#
+# Manager configuration
+#
+CosmicTagManager: {
+
+  Verbosity: 0
+
+  StartHitFinderAlgo:            "ClassicStartHitFinder"
+  HitOrdererAlgo:                "ClassicHitOrderer"
+  HitSmootherAlgo:               "ClassicHitSmoother"
+  DqDsCalculatorAlgo:            "ClassicDqDsCalculator"
+  DqDsSmootherAlgo:              "ClassicDqDsSmoother"
+  LocalLinearityCalculatorAlgo:  "ClassicLocalLinearityCalculator"
+
+  CustomAlgo:                 [] # ["StopMuMichel", 
+                                 #"StopMuBragg", 
+                                 #"StopMuCurvature", 
+                                 #"SimpleMIP"]
+}
+
+#
+# Algorithms
+#
+ClassicStartHitFinder: {
+  MaxAllowedHitDistance:   4
+  Debug:                   true
+}
+
+ClassicHitOrderer: {
+  MaxAllowedHitDistance:   4
+  SlopeThreshold:          0.25
+  Debug:                   true
+}
+
+ClassicHitSmoother: {
+  SliderWindow:            4
+}
+
+ClassicDqDsCalculator: {
+  WireToCmConstant:        0.3
+  TimeToCmConstant:        0.0557
+  GainCalib:               198
+}
+
+ClassicDqDsSmoother: {
+  SliderWindow:            10
+}
+
+ClassicLocalLinearityCalculator: {
+  MaxAllowedHitDistance:   15
+  SliderWindow:            20
+}
+
+}
+END_PROLOG

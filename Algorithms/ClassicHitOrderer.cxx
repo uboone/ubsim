@@ -14,18 +14,19 @@ namespace cosmictag {
 
   void ClassicHitOrderer::_Configure_(const Config_t &pset)
   {
-    _max_allowed_hit_distance = pset.get<double>("GlobalQE");
+    _max_allowed_hit_distance = pset.get<double>("MaxAllowedHitDistance");
+    _slope_threshold          = pset.get<double>("SlopeThreshold"); 
   }
   
-  bool ClassicHitOrderer::OrderHits(const SimpleCluster& cluster) const
+  int ClassicHitOrderer::OrderHits(SimpleCluster& cluster) const
   {
 
-    bool _debug = true;
+    int                    & _start_index  = cluster._start_index;
+    std::vector<SimpleHit> & _s_hit_v      = cluster._s_hit_v;
+    std::vector<double>    & _ds_v         = cluster._ds_v;
+    bool                   & _hits_ordered = cluster._hits_ordered;
 
-    int & _start_index = cluster._start_index;
-    std::vector<SimpleHit> & _s_hit_v = cluster._s_hit_v;
-    std::vector<double> & _ds_v = cluster._ds_v;
-
+    _hits_ordered = false;
 
     if (_start_index < 0) {
       std::cout << "Start hit not set." << std::endl;
@@ -154,15 +155,9 @@ namespace cosmictag {
       //}
     //}
 
-    //_hits_ordered = true;
+    _hits_ordered = true;
 
     return _s_hit_v.size();
-  }
-
-
-
-    std::cout << "Test" << std::endl;
-    return true;
   }
 }
 #endif

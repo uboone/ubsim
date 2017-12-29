@@ -17,7 +17,7 @@
 #include "DataTypes.h"
 #include "HitCosmicTagFMWKInterface.h"
 #include "LoggerFeature.h"
-//#include "uboone/LLBasicTool/GeoAlgo/GeoAABox.h"
+
 #include <vector>
 
 namespace cosmictag {
