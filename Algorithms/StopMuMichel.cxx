@@ -20,6 +20,7 @@ namespace cosmictag {
     _min_muon_hits               = pset.get< int > ( "MinMuonHits", 20 );
     _max_michel_hits             = pset.get< int > ( "MaxMuonHits", 2000 );
     _min_michel_hits             = pset.get< int > ( "MinMichelHits", 2 );
+    _max_end_hits                = pset.get< int > ( "MaxEndHits", 120 ); 
     _local_linearity_threshold   = pset.get< double > ( "LocalLinerityThreshold", 0.85 );
     _perc_diff_cut               = pset.get< double > ( "PercDiffCut", 20 );
   }

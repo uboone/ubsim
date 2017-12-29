@@ -51,6 +51,7 @@ namespace cosmictag{
     int _min_muon_hits;
     int _max_michel_hits;
     int _min_michel_hits;
+    int _max_end_hits;
     double _local_linearity_threshold;
     double _perc_diff_cut;
 
