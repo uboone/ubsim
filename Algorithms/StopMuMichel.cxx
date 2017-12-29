@@ -83,8 +83,8 @@ namespace cosmictag {
 
     // Check that the number of muon hits are above the minimum allowed
     if (n_muon_hits < _min_muon_hits) {
-      iCT_DEBUG() << "Number of muon hits is " << n_muon_hits
-                  << " which is below minimum allowed (" << _min_muon_hits << ")" << std::endl;
+      CT_DEBUG() << "Number of muon hits is " << n_muon_hits
+                 << " which is below minimum allowed (" << _min_muon_hits << ")" << std::endl;
       return false;
     }
 
