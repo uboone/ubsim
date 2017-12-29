@@ -6,6 +6,9 @@ cosmictag_config : {
 # Manager configuration
 #
 CosmicTagManager: {
+
+  Verbosity: 0
+
   StartHitFinderAlgo:            "ClassicStartHitFinder"
   HitOrdererAlgo:                "ClassicHitOrderer"
   HitSmootherAlgo:               "ClassicHitSmoother"
@@ -13,10 +16,10 @@ CosmicTagManager: {
   DqDsSmootherAlgo:              "ClassicDqDsSmoother"
   LocalLinearityCalculatorAlgo:  "ClassicLocalLinearityCalculator"
 
-  CustomAlgo:                   ["StopMuMichel", 
-                                 "StopMuBragg", 
-                                 "StopMuCurvature", 
-                                 "SimpleMIP"]
+  CustomAlgo:                 [] # ["StopMuMichel", 
+                                 #"StopMuBragg", 
+                                 #"StopMuCurvature", 
+                                 #"SimpleMIP"]
 }
 
 #
@@ -50,5 +53,7 @@ ClassicDqDsSmoother: {
 ClassicLocalLinearityCalculator: {
   MaxAllowedHitDistance:   15
   SliderWindow:            20
+}
+
 }
 END_PROLOG
