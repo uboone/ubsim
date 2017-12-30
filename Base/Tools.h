@@ -15,7 +15,7 @@ namespace cosmictag {
                                           const size_t window_size);
   
 }
-#include "Tools_impl.h" // for template functions
+#include "Tools.tcxx" // for template functions
 
 namespace cosmictag {
 
