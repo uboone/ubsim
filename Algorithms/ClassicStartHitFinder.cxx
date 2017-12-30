@@ -16,31 +16,40 @@ namespace cosmictag {
   {
     _max_allowed_hit_distance = pset.get<double>("MaxAllowedHitDistance");
   }
+
+  void ClassicStartHitFinder::PrintConfig() const
+  {
+    std::cout << "--- ClassicStartHitFinder Config" << std::endl;
+    std::cout << "--- _max_allowed_hit_distance = " << _max_allowed_hit_distance << std::endl;
+
+  }
   
   int ClassicStartHitFinder::FindStartHit(SimpleCluster& cluster, SimpleHit& start_hit) const
   {
+    this->PrintConfig();
 
     int                    & _start_index      = cluster._start_index;
     std::vector<SimpleHit> & _s_hit_v          = cluster._s_hit_v;
     bool                   & _start_hit_is_set = cluster._start_hit_is_set;
-    //std::vector<double>    & _ds_v        = cluster._ds_v;
 
     _start_hit_is_set = false;
 
-    //if (plane_no != 2) {
-    //  std::cout << "Plane not supported." << std::endl;
-    //  return;
-    //}
+    if (start_hit.plane != 2) {
+      CT_CRITICAL() << "Plane not supported." << std::endl;
+      throw HitCosmicTagException();
+    }
 
     int wire_no = start_hit.wire;
     int time = start_hit.time;
+
+    CT_DEBUG() << "wire_no: " << wire_no << ", time: " << time << std::endl;
 
     TVector3 pt1(time, wire_no, 0);
     
     double min_dist = 1e9;
     int best_hit_id = -1;
 
-    if (_debug) std::cout << "Simple hit vector size " << _s_hit_v.size() << std::endl;
+    CT_DEBUG() << "Simple hit vector size " << _s_hit_v.size() << std::endl;
 
     for (size_t i = 0; i < _s_hit_v.size(); i++) {
 
@@ -55,7 +64,7 @@ namespace cosmictag {
     }
 
     if (best_hit_id == -1) {
-      std::cout << "Could not find start hit." << std::endl;
+      CT_NORMAL() << "Could not find start hit." << std::endl;
       return 0;
     }
    
@@ -69,9 +78,10 @@ namespace cosmictag {
                << ", and time " << almost_best_hit.time*4 << std::endl;
 
     TVector3 pt0(almost_best_hit.time, almost_best_hit.wire, 0);
+    TVector3 pt_previous = pt0;
 
     // First create a map from wire to hit
-    std::map<int,SimpleHit> wire_to_hit;
+    std::map<int,cosmictag::SimpleHit> wire_to_hit;
 
     for (size_t i = 0; i < _s_hit_v.size(); i++) {
 
@@ -107,19 +117,21 @@ namespace cosmictag {
         break;
       }
 
-      //SimpleHit temp = iter->second;
+      //cosmictag::SimpleHit temp = iter->second;
       auto it = std::find(_s_hit_v.begin(), _s_hit_v.end(), iter->second);
-      best_index_left = it - _s_hit_v.begin();//w;//std::distance(_s_hit_v.begin(), it);
       TVector3 pt1(iter->second.time, iter->second.wire, 0);
-      double dist = (pt0-pt1).Mag();
+      double dist = (pt_previous-pt1).Mag();
   
-      if (dist > _max_allowed_hit_distance)  
+      if (dist > 4.) // Check this number! 
         break;
 
+      pt_previous = pt1;
+
       n_step_left ++;
+      best_index_left = it - _s_hit_v.begin();//w;//std::distance(_s_hit_v.begin(), it);;
 
       CT_DEBUG() << "Found hit on the left, wire " << iter->second.wire
-                 << ", time " << iter->second.time << std::endl;
+                 << ", time " << iter->second.time*4 << std::endl;
     }
 
     // Then go rigth
@@ -133,14 +145,16 @@ namespace cosmictag {
       }
 
       auto it = std::find(_s_hit_v.begin(), _s_hit_v.end(), iter->second);
-      best_index_right = it - _s_hit_v.begin();//w;//std::distance(_s_hit_v.begin(), it);
       TVector3 pt1(iter->second.time, iter->second.wire, 0);
-      double dist = (pt0-pt1).Mag(); 
+      double dist = (pt_previous-pt1).Mag(); 
 
-      if (dist > _max_allowed_hit_distance)   
+      if (dist > 4.) // Check this number!  
         break; 
 
+      pt_previous = pt1;
+
       n_step_right ++;
+      best_index_right = it - _s_hit_v.begin();//w;//std::distance(_s_hit_v.begin(), it);;
 
       CT_DEBUG() << "Found hit on the right, wire " << iter->second.wire 
                  << ", time " << iter->second.time*4 << std::endl; 
@@ -157,7 +171,7 @@ namespace cosmictag {
     }
 
 
-    CT_DEBUG() << "[StoppingMuonTaggerHelper] Start hit set to w: " 
+    CT_DEBUG() << "Start hit set to w: " 
                << _s_hit_v.at(_start_index).wire << ", and t: " 
                << _s_hit_v.at(_start_index).time*4 << std::endl;
 

@@ -79,6 +79,8 @@ namespace cosmictag {
 
     void PrintConfig();
 
+    void PrintClusterStatus();
+
 
   private:
 

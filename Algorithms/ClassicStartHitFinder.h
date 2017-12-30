@@ -40,11 +40,13 @@ namespace cosmictag {
     /// ?
     int FindStartHit(SimpleCluster&, SimpleHit&) const;
 
+    void PrintConfig() const;
+
   protected:
 
     void _Configure_(const Config_t &pset);
+
     double _max_allowed_hit_distance;         ///< ?
-    bool _debug;                              ///< Debug mode
   };
   
   /**

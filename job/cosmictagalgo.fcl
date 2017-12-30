@@ -16,10 +16,9 @@ CosmicTagManager: {
   DqDsSmootherAlgo:              "ClassicDqDsSmoother"
   LocalLinearityCalculatorAlgo:  "ClassicLocalLinearityCalculator"
 
-  CustomAlgo:                 [] # ["StopMuMichel", 
-                                 #"StopMuBragg", 
-                                 #"StopMuCurvature", 
-                                 #"SimpleMIP"]
+  CustomAlgo:                    ["StopMuMichel", 
+                                  "StopMuBragg", 
+                                  "CosmicSimpleMIP"]
 }
 
 #
@@ -43,7 +42,7 @@ ClassicHitSmoother: {
 ClassicDqDsCalculator: {
   WireToCmConstant:        0.3
   TimeToCmConstant:        0.0557
-  GainCalib:               198
+  GainCalib:               198 
 }
 
 ClassicDqDsSmoother: {
@@ -55,5 +54,35 @@ ClassicLocalLinearityCalculator: {
   SliderWindow:            20
 }
 
+StopMuMichel: {
+  HitsToRemove:            3
+  PrePostWindow:           10
+  PercDiffCut:             35 #50
+  LocalLinerityThreshold:  0.9
+  MinMuonHits:             20           
+  MaxMuonHits:             2000
+  MinMichelHits:           2
+  MaxMichelHits:           70
+  MaxEndHits:              100
 }
+
+StopMuBragg: {
+  HitsToRemove:            3
+  PrePostWindow:           10
+  PercDiffCut:             35 #50
+  LocalLinerityThreshold:  0.9
+  MinMuonHits:             20           
+  MaxMuonHits:             2000
+}
+
+CosmicSimpleMIP: {
+  LocalLinerityThreshold:  0.9
+}
+
+}
+
+cosmictag_config_mc:   @local::cosmictag_config
+cosmictag_config_data: @local::cosmictag_config
+cosmictag_config_data.ClassicDqDsCalculator.GainCalib: 243
+
 END_PROLOG

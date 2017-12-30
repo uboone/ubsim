@@ -29,12 +29,12 @@ namespace cosmictag {
     _hits_ordered = false;
 
     if (_start_index < 0) {
-      std::cout << "Start hit not set." << std::endl;
+      CT_NORMAL() << "Start hit not set." << std::endl;
       return 0;
     }
 
     if ((size_t)_start_index >= _s_hit_v.size()) {
-      std::cout << "Start hit not compatible with current hit vector." 
+      CT_NORMAL() << "Start hit not compatible with current hit vector." 
        << "Start hit index is " << _start_index 
        << ", while hit vector size is " << _s_hit_v.size() << std::endl;
       return 0;
@@ -79,13 +79,13 @@ namespace cosmictag {
       }
 
       if (min_index < 0) {
-         std::cout << "Logic fail." << std::endl;
+         CT_CRITICAL() << "Logic fail." << std::endl;
          throw std::exception();
       }
 
       // Emplace the next hit in the new vector...
       if (min_dist < _max_allowed_hit_distance) {
-        if (_debug) std::cout << "min_dist: " << min_dist <<std::endl;
+        CT_DEBUG()  << "min_dist: " << min_dist <<std::endl;
         new_vector.push_back(_s_hit_v.at(min_index));
         _ds_v.push_back(min_dist);
       } else if (new_vector.size() > 5){
@@ -100,12 +100,12 @@ namespace cosmictag {
         // Calculate the new slope
         double slope_new = (sh_3.time - sh_2.time) / (sh_3.wire - sh_2.wire);
 
-        std::cout << "sh_1.wire: "<<sh_1.wire<<", sh_1.time: "<< sh_1.time << std::endl;
-        std::cout << "sh_2.wire: "<<sh_2.wire<<", sh_2.time: "<< sh_2.time << std::endl;
-        std::cout << "sh_3.wire: "<<sh_3.wire<<", sh_3.time: "<< sh_3.time << std::endl;
-        if (_debug) std::cout << "Current slope : " << slope 
-                              << " New slope: " << slope_new 
-                              << " Diff: " << slope_new - slope << std::endl;
+        CT_DEBUG()  << "sh_1.wire: "<<sh_1.wire<<", sh_1.time: "<< sh_1.time << std::endl;
+        CT_DEBUG()  << "sh_2.wire: "<<sh_2.wire<<", sh_2.time: "<< sh_2.time << std::endl;
+        CT_DEBUG()  << "sh_3.wire: "<<sh_3.wire<<", sh_3.time: "<< sh_3.time << std::endl;
+        CT_DEBUG()  << "Current slope : " << slope 
+                    << " New slope: " << slope_new 
+                    << " Diff: " << slope_new - slope << std::endl;
 
         // Check the next hit will be in a consecutive wire
         bool progressive_order = false;
@@ -121,7 +121,7 @@ namespace cosmictag {
           }
         }
 
-        std::cout << "Progressive order? " << (progressive_order ? "YES" : "NO") << std::endl;
+        CT_DEBUG() << "Progressive order? " << (progressive_order ? "YES" : "NO") << std::endl;
 
         // If the two slopes are close, than there is 
         // probably a dead region between the point.

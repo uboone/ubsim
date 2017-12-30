@@ -105,6 +105,14 @@ namespace cosmictag {
       
     }
 
+     
+    // Custom algo config
+    for (auto& name_ptr : _custom_alg_m) {
+
+      name_ptr.second->Configure(main_cfg.get<cosmictag::Config_t>(name_ptr.first));
+
+    }
+
     _configured = true;
   }
 
@@ -212,13 +220,13 @@ namespace cosmictag {
     status = _alg_dqds_smoother->SmoothDqDs(_cluster);
     if (!status) return false;
 
-    CT_DEBUG() << "Running slinearity calculator now." << std::endl;
+    CT_DEBUG() << "Running linearity calculator now." << std::endl;
     status = _alg_linearity_calculator->CalculateLocalLinearity(_cluster);
     if (!status) return false;
 
     _ready = true;
 
-    return false;
+    return true;
 
   }
 
@@ -273,6 +281,27 @@ namespace cosmictag {
     std::cout << "---- END FLASH MATCH MANAGER PRINTING CONFIG ----" << std::endl;
     
   }
+
+  void CosmicTagManager::PrintClusterStatus() {
+
+    auto & s_hit_v = _cluster._s_hit_v;
+    auto & _dqds_slider = _cluster._dqds_slider;
+    auto & _linearity_v = _cluster._linearity_v;
+
+    CT_NORMAL() << "Current Cluster Status:" << std::endl;
+
+    int counter = 0;
+    for (auto h : s_hit_v) {
+      CT_NORMAL() << "index " << counter
+                  << ", wire: " << h.wire
+                  << ", time: " << h.time*4
+                  << ", dqdx_slider: " << _dqds_slider.at(counter)
+                  << ", linearity: " << _linearity_v.at(counter) << std::endl;
+      counter++;
+    }
+  }
+
+
 }
 
 #endif

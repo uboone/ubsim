@@ -40,6 +40,8 @@ namespace cosmictag{
 
     bool IsStopMuMichel(const cosmictag::SimpleCluster & cluster) const;
 
+    void PrintConfig();
+
 
   protected:
 

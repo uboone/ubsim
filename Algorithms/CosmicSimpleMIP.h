@@ -40,6 +40,8 @@ namespace cosmictag{
 
     bool IsCosmicSimpleMIP(const cosmictag::SimpleCluster & cluster) const;
 
+    void PrintConfig() const;
+
 
   protected:
 
