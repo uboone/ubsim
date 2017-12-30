@@ -41,8 +41,8 @@ namespace cosmictag {
     }
 
     // Vertex must not be in the FV
-    if (_fv.InFV(_vertex))
-      return false;
+    //if (_fv.InFV(_vertex))
+      //return false;
 
     // Find the hits with the maximum dqds, that one will be the hit
     // where the Bragg peak is
@@ -57,7 +57,7 @@ namespace cosmictag {
       }
     }
 
-    if (_debug) std::cout << "[IsStopMuBragg] Bragg peak hit index is " << bragg_index << std::endl;
+    CT_DEBUG() << "Bragg peak hit index is " << bragg_index << std::endl;
 
     // Check that the number of muon hits are below the maximum allowed
     int n_muon_hits = bragg_index + 1;
