@@ -25,14 +25,13 @@ CosmicTagManager: {
 # Algorithms
 #
 ClassicStartHitFinder: {
-  MaxAllowedHitDistance:   4
+  MaxAllowedHitDistance:   6
   Debug:                   true
 }
 
 ClassicHitOrderer: {
-  MaxAllowedHitDistance:   4
+  MaxAllowedHitDistance:   6
   SlopeThreshold:          0.25
-  Debug:                   true
 }
 
 ClassicHitSmoother: {

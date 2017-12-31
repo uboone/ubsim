@@ -50,11 +50,9 @@ namespace cosmictag {
 
     new_vector.push_back(_s_hit_v.at(_start_index));
 
-    //if (_debug) {
     //  for (auto h : _s_hit_v) {
     //    std::cout << "BEFORE: " << h.wire << ", " << h.time*4 << std::endl;
     //  }
-    //}
 
     _s_hit_v.erase(_s_hit_v.begin() + _start_index);
 
@@ -149,10 +147,8 @@ namespace cosmictag {
     // Now that the vector is ordered, reassing to the original one
     _s_hit_v = new_vector;
 
-    //if (_debug) {
-      //for (auto h : _s_hit_v) {
-        //std::cout << "Ordered hits: " << h.wire << ", " << h.time*4 << std::endl;
-      //}
+    //for (auto h : _s_hit_v) {
+      //std::cout << "Ordered hits: " << h.wire << ", " << h.time*4 << std::endl;
     //}
 
     _hits_ordered = true;
