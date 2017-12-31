@@ -122,7 +122,7 @@ namespace cosmictag {
       TVector3 pt1(iter->second.time, iter->second.wire, 0);
       double dist = (pt_previous-pt1).Mag();
   
-      if (dist > 4.) // Check this number! 
+      if (dist > _max_allowed_hit_distance) // Check this number! 
         break;
 
       pt_previous = pt1;
@@ -135,6 +135,7 @@ namespace cosmictag {
     }
 
     // Then go rigth
+    pt_previous = pt0;
     int n_step_right = 0;
     int best_index_right = -1;
     for (int w = almost_best_hit.wire + 1; w < 3456; w++) {
@@ -148,7 +149,7 @@ namespace cosmictag {
       TVector3 pt1(iter->second.time, iter->second.wire, 0);
       double dist = (pt_previous-pt1).Mag(); 
 
-      if (dist > 4.) // Check this number!  
+      if (dist > _max_allowed_hit_distance) // Check this number!  
         break; 
 
       pt_previous = pt1;
