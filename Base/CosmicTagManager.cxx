@@ -82,6 +82,7 @@ namespace cosmictag {
     if (_alg_hit_orderer) {
 
       _alg_hit_orderer->Configure(main_cfg.get<cosmictag::Config_t>(_alg_hit_orderer->AlgorithmName()));
+      _alg_hit_orderer->CollectionCoplanar(_collection_coplanar);
       
     }
     if (_alg_hit_smoother) {

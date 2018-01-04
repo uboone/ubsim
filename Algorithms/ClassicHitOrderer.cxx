@@ -15,8 +15,12 @@ namespace cosmictag {
   void ClassicHitOrderer::_Configure_(const Config_t &pset)
   {
     _max_allowed_hit_distance = pset.get<double>("MaxAllowedHitDistance");
+    _max_allowed_hit_distance_coll_cop = pset.get<double>("MaxAllowedHitDistanceCollectionCoplanar");
     _slope_threshold          = pset.get<double>("SlopeThreshold"); 
   }
+
+  void ClassicHitOrderer::CollectionCoplanar(bool status)
+  { _collection_coplanar = status; }
   
   int ClassicHitOrderer::OrderHits(SimpleCluster& cluster) const
   {
@@ -27,6 +31,11 @@ namespace cosmictag {
     bool                   & _hits_ordered = cluster._hits_ordered;
 
     _hits_ordered = false;
+
+    double max_allowed_hit_distance = _max_allowed_hit_distance;
+
+    if (_collection_coplanar)
+      max_allowed_hit_distance = _max_allowed_hit_distance_coll_cop;
 
     if (_start_index < 0) {
       CT_NORMAL() << "Start hit not set." << std::endl;
@@ -82,7 +91,7 @@ namespace cosmictag {
       }
 
       // Emplace the next hit in the new vector...
-      if (min_dist < _max_allowed_hit_distance) {
+      if (min_dist < max_allowed_hit_distance) {
         CT_DEBUG()  << "min_dist: " << min_dist <<std::endl;
         new_vector.push_back(_s_hit_v.at(min_index));
         _ds_v.push_back(min_dist);
@@ -126,7 +135,7 @@ namespace cosmictag {
         // If so, increase the min distance by half a meter
         // and add the hit.
         if (std::abs(slope_new - slope) < _slope_threshold &&
-            min_dist < _max_allowed_hit_distance + 50 &&
+            min_dist < max_allowed_hit_distance + 50 &&
             progressive_order) {
 
           new_vector.push_back(_s_hit_v.at(min_index)); 

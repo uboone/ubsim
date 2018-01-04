@@ -31,6 +31,7 @@ ClassicStartHitFinder: {
 
 ClassicHitOrderer: {
   MaxAllowedHitDistance:   6
+  MaxAllowedHitDistanceCollectionCoplanar: 10
   SlopeThreshold:          0.25
 }
 

@@ -71,7 +71,11 @@ namespace cosmictag {
 
     /// Clears locally kept TPC object (QClusterArray_t) and flash (FlashArray_t), both provided by a user
     void Reset()
-    { /*_tpc_object_v.clear(); _flash_v.clear();*/ _ready = false;}
+    { /*_tpc_object_v.clear(); _flash_v.clear();*/ _ready = false; _collection_coplanar = false;}
+
+    ///
+    void CollectionCoplanar(bool status)
+    {_collection_coplanar = status;}
 
     /// Configuration option: true => allows an assignment of the same flash to multiple TPC objects
     void CanReuseFlash(bool ok=true)
@@ -103,6 +107,9 @@ namespace cosmictag {
 
     /// The start hit of the cluster
     SimpleHit _start_hit;
+
+    /// Collection coplanar flas
+    bool _collection_coplanar = false;
 
     /// Configuration readiness flag
     bool _configured = false;
