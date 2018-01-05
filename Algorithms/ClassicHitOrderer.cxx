@@ -34,8 +34,10 @@ namespace cosmictag {
 
     double max_allowed_hit_distance = _max_allowed_hit_distance;
 
-    if (_collection_coplanar)
+    if (_collection_coplanar) {
+      CT_DEBUG() << "Collection Coplanar" << std::endl;
       max_allowed_hit_distance = _max_allowed_hit_distance_coll_cop;
+    }
 
     if (_start_index < 0) {
       CT_NORMAL() << "Start hit not set." << std::endl;

@@ -75,7 +75,7 @@ namespace cosmictag {
 
     ///
     void CollectionCoplanar(bool status)
-    {_collection_coplanar = status;}
+    { _collection_coplanar = status; }
 
     /// Configuration option: true => allows an assignment of the same flash to multiple TPC objects
     void CanReuseFlash(bool ok=true)

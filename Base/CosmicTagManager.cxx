@@ -83,7 +83,6 @@ namespace cosmictag {
 
       _alg_hit_orderer->Configure(main_cfg.get<cosmictag::Config_t>(_alg_hit_orderer->AlgorithmName()));
       _alg_hit_orderer->CollectionCoplanar(_collection_coplanar);
-      
     }
     if (_alg_hit_smoother) {
 
@@ -206,6 +205,7 @@ namespace cosmictag {
     if (!status) return false;
 
     CT_DEBUG() << "Running hit orderer algo now." << std::endl;
+    _alg_hit_orderer->CollectionCoplanar(_collection_coplanar);
     status = _alg_hit_orderer->OrderHits(_cluster);
     if (!status) return false;
 

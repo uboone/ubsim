@@ -59,7 +59,7 @@ StopMuMichel: {
   PrePostWindow:           10
   PercDiffCut:             35 #50
   LocalLinerityThreshold:  0.9
-  MinMuonHits:             20           
+  MinMuonHits:             15           
   MaxMuonHits:             2000
   MinMichelHits:           2
   MaxMichelHits:           70
