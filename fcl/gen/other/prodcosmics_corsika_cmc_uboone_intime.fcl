@@ -28,8 +28,8 @@ services:
   }
   RandomNumberGenerator: {} #ART native random number generator
   FileCatalogMetadata:  @local::art_file_catalog_mc
-  @table::microboone_g4_services
   @table::microboone_gen_services
+  @table::microboone_g4_services
 
 }
 
