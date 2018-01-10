@@ -23,7 +23,6 @@ art_make( BASENAME_ONLY
 	TimeExtraction_module.cc
 	MergeTest_module.cc
 	mergeCRTHits_module.cc
-	#CRTRawtoCRTHit_module.cc	
 	CRTRawtoCRTHit_source.cc
 	CRTAnalyser_module.cc	
     LIBRARY_NAME  
