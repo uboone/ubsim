@@ -30,6 +30,7 @@ source:
 physics.analyzers:  {
 		    @table::dlprod_analyzers
 		    }
+physics.analyzers.superaWholeView.out_filename: "larcv_wholeview.root"
 
 # Define larcv analyzer sequence.
 
@@ -45,8 +46,8 @@ microboone_tfile_metadata:
 {
   JSONFileName:	[ "larlite_opreco.root.json",
                   "larlite_reco2d.root.json",
-                  "larcv.root.json" ]
+                  "larcv_wholeview.root.json" ]
   GenerateTFileMetadata: [ true, true, true ]
-  dataTier:              [ "larlite", "larlite", "larcv" ]
+  dataTier:              [ "larlite_opreco", "larlite_reco2d", "larcv_wholeview" ]
   fileFormat:            [ "root", "root", "root" ]
 }
