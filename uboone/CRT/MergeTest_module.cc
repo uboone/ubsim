@@ -23,7 +23,9 @@
 #include "lardataobj/AnalysisBase/T0.h"
 #include "lardataobj/AnalysisBase/CosmicTag.h"
 #include "lardata/Utilities/AssociationUtil.h"
+
 #include "artdaq-core/Data/Fragments.hh"
+
 #include "art/Framework/Services/Optional/TFileService.h"
 
 #include "uboone/CRT/CRTProducts/CRTHit.hh"
@@ -84,7 +86,6 @@ private:
   std::string  data_label_DAQHeader_;
   int fHardDelay_;
   int verbose_;
-  // int diff_tra_flaMAX_;
 
 
   //art::InputTag opFlashTag("opflashSat");
@@ -96,16 +97,13 @@ private:
   TH2F* hTFvsTH_2d;
   TH2F* hNFlavsNHit;
 
-  TH1F* hGPSnsFLAns;
+  TH1F* hTFvsTH_t0;
+  TH2F* hTFvsTH_t0_2d;
+  TH2F* hTFvsTH_t0_plane;
 
-  //TH1F* hYdiff;
-  //TH1F* hZdiff;
+  TH1F* hYdiff;
+  TH1F* hZdiff;
 
-  //TH1F* hTFvsTT;
-  //TH1F* hMulFT;
-  //TH2F* hMulFTvsTdis;
-
-  
 
   /* //for Tree
   uint32_t fTriTim_sec;
@@ -144,39 +142,35 @@ void crt::MergeTest::analyze(art::Event const & evt)
   art::Timestamp evtTime = evt.time();
   auto evt_time_sec = evtTime.timeHigh();
   auto evt_time_nsec = evtTime.timeLow();
-  
-  //Uncomment if old swizzle without GPS/NTP HEADER
-  //double  evt_timeGPS_sec = evt_time_sec;
+
+  //  double  evt_timeGPS_sec = evt_time_sec;
   //double  evt_timeGPS_nsec = evt_time_nsec;
   
-  //get DAQ Header                                 
-  //Comment if old swizzle without GPS/NTP HEADER                                                                                                                      
-  art::Handle< raw::DAQHeaderTimeUBooNE > rawHandle_DAQHeader;                                                                                                            
-  evt.getByLabel(data_label_DAQHeader_, rawHandle_DAQHeader);                                                                                                               
+  //get DAQ Header                                                                                                                                                      
+  //Commentar para old swizzler, sin DAQ Header
+  art::Handle< raw::DAQHeaderTimeUBooNE > rawHandle_DAQHeader;                                                                           
+  evt.getByLabel(data_label_DAQHeader_, rawHandle_DAQHeader);                                                                                           
   
   //check to make sure the data we asked for is valid                                                                                                               
-  if(!rawHandle_DAQHeader.isValid()){ 
-    std::cout << "Run " << evt.run() << ", subrun " << evt.subRun()
-	      << ", event " << evt.event() << " has zero"
-	      << " DAQHeaderTimeUBooNE  " << " in with label " << data_label_DAQHeader_ << std::endl;
-    return;
-  }
+  if(!rawHandle_DAQHeader.isValid()){                                                                                                                                        std::cout << "Run " << evt.run() << ", subrun " << evt.subRun()														   << ", event " << evt.event() << " has zero"											  					       << " DAQHeaderTimeUBooNE  " << " in with label " << data_label_DAQHeader_ << std::endl;  
+    return;               
+  }                                                                                                                                                                  
   
-  raw::DAQHeaderTimeUBooNE const& my_DAQHeader(*rawHandle_DAQHeader);                                                                                            
+  raw::DAQHeaderTimeUBooNE const& my_DAQHeader(*rawHandle_DAQHeader);                                                                                                    
   art::Timestamp evtTimeGPS = my_DAQHeader.gps_time();                                                                                                                    
   double evt_timeGPS_sec = evtTimeGPS.timeHigh();                                                                                                                         
   double evt_timeGPS_nsec = evtTimeGPS.timeLow();                                                                                                                         
-    
+   
   art::Timestamp evtTimeNTP = my_DAQHeader.ntp_time();                                                                                                                     
   double evt_timeNTP_sec = evtTimeNTP.timeHigh();                                                                                                                         
   double evt_timeNTP_nsec = evtTimeNTP.timeLow();                                                                                                                                                                                                                                                                                       
   double timstp_diff = std::abs(evt_timeGPS_nsec - evt_timeNTP_nsec);                                                                                                      
-  
+
   if(verbose_==1){                                                                                                                                                        
     std::cout<< "Run:  "<<frunNum << "   subRun: " <<fsubRunNum<<std::endl;
     std::cout<<"event: "<<fEvtNum <<std::endl;    
     std::cout.precision(19);    
-    std::cout<<"  GPS time second:  "<<evt_timeGPS_sec<<std::endl;                                                                                                        
+    std::cout<<"  GPS time second:  "<<evt_timeGPS_sec<<std::endl;
     std::cout<<"  GPS time nano_second:  "<<evt_timeGPS_nsec<<std::endl;                                                                                                  
     std::cout<<"  NTP time second:  "<<evt_timeNTP_sec<<std::endl;                                                                                                        
     std::cout<<"  NTP time nano_second:  "<<evt_timeNTP_nsec<<std::endl;                                                                                                  
@@ -187,10 +181,10 @@ void crt::MergeTest::analyze(art::Event const & evt)
     
     if( (evt_time_sec==evt_timeGPS_sec) && (evt_time_nsec==evt_timeGPS_nsec))  std::cout<<" Event time type is: GPS  "<<std::endl;                                        
     if( (evt_time_sec==evt_timeNTP_sec) && (evt_time_nsec==evt_timeNTP_nsec))  std::cout<<" Event time type is: NTP  "<<std::endl;                                                                                                                                                       
-    //    getchar();                                                                                                                                                            
+    getchar();                                                                                                                                                            
   }  
   
-  //Comment if old swizzle without GPS/NTP HEADER                                                                                                                      
+  //Comentar para old swizzle sin header
 
   
   //get Optical Flash
@@ -247,7 +241,7 @@ void crt::MergeTest::analyze(art::Event const & evt)
   
   if(verbose_==1){ 
     std::cout<<"  CRTHitCollection.size()  "<<CRTHitCollection.size()<<std::endl; 
-    //getchar();   
+    getchar();   
   }
   //get CRTHits
   
@@ -277,14 +271,14 @@ void crt::MergeTest::analyze(art::Event const & evt)
 	std::cout.precision(19);
       }
       
-      unsigned long int flash_time_GPS_ns = evt_timeGPS_nsec + (Timeflash * 1000);
+      int flash_time_GPS_ns = evt_timeGPS_nsec + (Timeflash * 1000);  //do not trust on this
       
       if(verbose_==1){ 
 	std::cout.precision(19);            
 	std::cout<<"Flash["<<i<<"]::Time_us: "<<Timeflash<<"   us w.r.t. trigger time"<<std::endl;  
 	std::cout<<"Flash["<<i<<"]::Time_ns: "<<Timeflash * 1000<<"   ns w.r.t. trigger time"<<std::endl;        
-	std::cout<<"Flash time in GPS units: "<<flash_time_GPS_ns <<" nanoseconds "<<std::endl;	  
-	//	getchar();
+	std::cout<<"Flash time in GPS units: "<<flash_time_GPS_ns <<" nanoseconds DO NOT TRUST THIS INFO"<<std::endl;	  
+	getchar();
       }
       
       
@@ -298,47 +292,56 @@ void crt::MergeTest::analyze(art::Event const & evt)
 	  uint32_t Hit_sec = my_CRTHit.ts0_s;
 	  uint32_t Flash_sec = evt_timeGPS_sec;
 	  
-	  uint32_t Hit_nsec_t0 = my_CRTHit.ts0_ns;
-	  //int CRT_GPS_ns = evt_timeGPS_nsec + Hit_nsec_t0;  
-	  int CRT_GPS_ns =  Hit_nsec_t0;  
-
 	  uint32_t Hit_nsec = my_CRTHit.ts1_ns + fHardDelay_;
 	  uint32_t Flash_nsec = Timeflash * 1000;
 	  
 	  int dif_sec = Flash_sec - Hit_sec;
 	  int dif_nsec = Flash_nsec - Hit_nsec;
-	  uint dif_secABS = std::abs(Flash_sec - Hit_sec);
-	  uint dif_nsecABS = std::abs(Flash_nsec - Hit_nsec);
+	  int dif_secABS = std::abs(dif_sec);
+	  int dif_nsecABS = std::abs(dif_nsec);
 	  
-
+	  //	  abs(Flash_s-Hit_s )<3  && abs(Flash_ns-Hit_ns)<1000.	  
+	  //if( (std::abs(Flash_sec - Hit_sec)<3)  &&  (std::abs(Flash_nsec - Hit_nsec)<1000 )  ){//E
 	  if( (dif_secABS<3)  &&  (dif_nsecABS<1000 )  ){//E
+	    
 	  	    
 	    hTFvsTH->Fill(dif_nsec);
 	    hTFvsTH_2d->Fill(dif_sec , dif_nsecABS);
-	    
-	    hGPSnsFLAns->Fill(evt_timeGPS_nsec - Flash_nsec);
+	  
+	    hTFvsTH_t0->Fill(flash_time_GPS_ns - my_CRTHit.ts0_ns);
+	    hTFvsTH_t0_2d->Fill(flash_time_GPS_ns - my_CRTHit.ts0_ns, dif_nsec);
+	    hTFvsTH_t0_plane->Fill(my_CRTHit.plane, flash_time_GPS_ns - my_CRTHit.ts0_ns);
 
+	    /*
+	    if( (dif_nsec>400) && (dif_nsec<600) ){
+	      std::cout.precision(19);
+	      std::cout<<" "<<std::endl;	      
+	      std::cout<<"MATCH:: Flash["<<i<<"] and CRTHit["<<j<<"]   "<<std::endl;
+	      	      std::cout<<" "<<std::endl;	      
+	      std::cout<<"  GPS time second:  "<<evt_timeGPS_sec<<std::endl;
+	      std::cout<<"  GPS time nanosecond:  "<<evt_timeGPS_nsec<<std::endl;
+	      	      std::cout<<" "<<std::endl;	      
+	      std::cout<<"Flash time: "<<Timeflash<< "  us w.r.t to trigger"<<std::endl;
+	      std::cout<<"Flash["<<i<<"]::Time_ns: "<<Timeflash * 1000<<"   ns w.r.t. trigger time"<<std::endl;        
+	      std::cout<<"Flash time in GPS units: "<<flash_time_GPS_ns <<" nanoseconds"<<std::endl;	  
+	      std::cout<<" "<<std::endl;	      
+	      std::cout<<"my_CRTHit.plane: "<<my_CRTHit.plane<<std::endl;
+	      std::cout<<"my_CRTHit.ts0_s: "<<my_CRTHit.ts0_s<<std::endl;
+	      std::cout<<"my_CRTHit.ts0_ns: "<<my_CRTHit.ts0_ns<<std::endl;
+	      std::cout<<"my_CRTHit.ts1_ns: "<<my_CRTHit.ts1_ns<<std::endl;
+	      std::cout<<" "<<std::endl;	      
+	      std::cout<<"Flash_sec - Hit_sec: "<<dif_sec<<std::endl;
+	      std::cout<<"Flash_nsec - Hit_nsec (t1): "<<dif_nsec<<std::endl;
+	      std::cout<<"Flash_nsec - Hit_nsec (t0): "<<flash_time_GPS_ns - my_CRTHit.ts0_ns<<std::endl;
+	      std::cout<<" "<<std::endl;	      
+
+	      getchar();
+	    }
+*/
+  
 	    if(verbose_==1){
-	    
-	      std::cout<<"  "<<std::endl;
-	      std::cout<<"evt_timeGPS_sec: "<<evt_timeGPS_sec<<std::endl;
-	      std::cout<<"Flash_sec: "<<Flash_sec<<std::endl;
-	      std::cout<<"Hit_sec: "<<Hit_sec<<std::endl;
-
-	      std::cout<<"  "<<std::endl;
-	      std::cout<<"evt_timeGPS_nsec: "<<evt_timeGPS_nsec<<std::endl;	      
-	      std::cout<<"Flash_nsec: "<<Flash_nsec<<std::endl;
-	      std::cout<<"CRT_GPS_ns: "<<CRT_GPS_ns<<std::endl;
-	      std::cout<<"Hit_nsec: "<<Hit_nsec<<std::endl;
-	      std::cout<<"Hit_nsec_t0: "<<Hit_nsec_t0<<std::endl;
-	      
-
-	      std::cout<<"  "<<std::endl;
-	      std::cout<<"Flash_sec - Hit_sec: "<<dif_secABS<<std::endl;
-	      std::cout<<"Flash_nsec - Hit_nsec: "<<dif_nsecABS<<std::endl;
-	      std::cout<<"evt_timeGPS_nsec - Flash_nsec: "<<evt_timeGPS_nsec - Flash_nsec<<std::endl;
-	      std::cout<<"evt_timeGPS_nsec - Flash_nsec: "<<evt_timeGPS_nsec - Flash_nsec<<std::endl;
-	      std::cout<<"  "<<std::endl;
+	      std::cout<<"Flash_sec - Hit_sec: "<<Flash_sec - Hit_sec<<std::endl;
+	      std::cout<<"Flash_nsec - Hit_nsec: "<<Flash_nsec - Hit_nsec<<std::endl;
 	      getchar();
 	    }
 	    
@@ -358,35 +361,46 @@ void crt::MergeTest::beginJob()
 
 
   
-  hFlashTimeDis = tfs->make<TH1F>("hFlashTimDis","hFlashTimDis",6000,-10,50);
+  hFlashTimeDis = tfs->make<TH1F>("hFlashTimDis","hFlashTimDis",2000,-5,25);
   hFlashTimeDis->GetXaxis()->SetTitle("Flash Time w.r.t. trigger (us)");
   hFlashTimeDis->GetYaxis()->SetTitle("Entries/bin");  
 
-  hFlashTimeDis_b0 = tfs->make<TH1F>("hFlashTimDis_b0","hFlashTimDis_b0",6000,-10,50);
+  hFlashTimeDis_b0 = tfs->make<TH1F>("hFlashTimDis_b0","hFlashTimDis_b0",2000,-5,25);
   hFlashTimeDis_b0->GetXaxis()->SetTitle("Flash_bo Time w.r.t. trigger (us)");
-  hFlashTimeDis_b0->GetYaxis()->SetTitle("Entries/bin");  
-  
-  hTFvsTH = tfs->make<TH1F>("hTFns_THns","hTFns_THns",2000,-1000,1000);
-  hTFvsTH->GetXaxis()->SetTitle("Flash Time - CRTHit Time (ns)");
+  hFlashTimeDis_b0->GetYaxis()->SetTitle("Entries/bin");
+
+  hTFvsTH = tfs->make<TH1F>("hTFns_THns","hTFns_THns",500,-1000,1000);
+  hTFvsTH->GetXaxis()->SetTitle("Flash Time w.r.t. trigger - CRTHit Time_t1 (ns)");
   hTFvsTH->GetYaxis()->SetTitle("Entries/bin");
 
-  hTFvsTH_2d = tfs->make<TH2F>("hTF_TH","hTF_TH",6,-3,3,1000,0,1000);
+  hTFvsTH_2d = tfs->make<TH2F>("hTF_TH","hTF_TH",6,-3,3,500,0,1000);
   hTFvsTH_2d->GetXaxis()->SetTitle("Flash Time - CRTHit Time (s)");
-  hTFvsTH_2d->GetYaxis()->SetTitle("Flash Time - CRTHit Time (ns)");
+  hTFvsTH_2d->GetYaxis()->SetTitle("Flash Time w.r.t Trigger - CRTHit_Time_t1 (ns)");
   hTFvsTH_2d->SetOption("COLZ"); 
 
-  hNFlavsNHit = tfs->make<TH2F>("hNFlavsNTra","hNFlavsNTra",200,0,200,200,0,200);
-  hNFlavsNHit->GetXaxis()->SetTitle("Number of Flash");
+  hNFlavsNHit = tfs->make<TH2F>("hNFlavsNTra","hNFlavsNTra",30,0,30,100,0,300);
+  hNFlavsNHit->GetXaxis()->SetTitle("Number of Flashes");
   hNFlavsNHit->GetYaxis()->SetTitle("Number of CRT Hits");
   hNFlavsNHit->GetZaxis()->SetTitle("Entries/bin");
   hNFlavsNHit->SetOption("COLZ");
 
 
-  hGPSnsFLAns = tfs->make<TH1F>("hGPSnsFLAns","hGPSnsFLAns",30000, 0,60000000);
-  hGPSnsFLAns->GetXaxis()->SetTitle("Trigger:GPS_ns - Flash_ns (ns)");
-  hGPSnsFLAns->GetYaxis()->SetTitle("Entries/bin");  
+  hTFvsTH_t0 = tfs->make<TH1F>("hTFns_THns_t0","hTFns_THns_t0",4000,0,2000000);
+  hTFvsTH_t0->GetXaxis()->SetTitle("Flash Time_GPS - CRTHit_Time_t0 (ns)");
+  hTFvsTH_t0->GetYaxis()->SetTitle("Entries/bin");
 
-  /*  
+  hTFvsTH_t0_2d = tfs->make<TH2F>("hTF_TH_t0","hTF_TH_t0",4000,0,2000000, 1000,0,1000);
+  hTFvsTH_t0_2d->GetXaxis()->SetTitle("Flash_Time_GPS - CRTHit Time_t0 (ns)");
+  hTFvsTH_t0_2d->GetYaxis()->SetTitle("Flash_Time w.r.t Trigger - CRTHit Time_t1 (ns)");
+  hTFvsTH_t0_2d->SetOption("COLZ"); 
+
+  hTFvsTH_t0_plane = tfs->make<TH2F>("hTF_TH_t0plane","hTF_TH_t0plane",4,0,4, 4000,0,2000000);
+  hTFvsTH_t0_plane->GetXaxis()->SetTitle("CRT plane (0=bottom, 1=FT, 2=Pipe, 3=Top))");
+  hTFvsTH_t0_plane->GetYaxis()->SetTitle("Flash Time_GPS - CRTHit Time_t0 (ns)");
+  hTFvsTH_t0_plane->SetOption("COLZ"); 
+
+
+  /*
   hZdiff = tfs->make<TH1F>("hZdiff","hZdiff",1200,0,12000);
   hZdiff->GetXaxis()->SetTitle("ZTrack - ZFlash (cm)");
   hZdiff->GetYaxis()->SetTitle("Entries/bin");
@@ -394,7 +408,8 @@ void crt::MergeTest::beginJob()
   hYdiff = tfs->make<TH1F>("hYdiff","hYdiff",500,0,5000);
   hYdiff->GetXaxis()->SetTitle("YTrack - YFlash (cm)");
   hYdiff->GetYaxis()->SetTitle("Entries/bin");
-
+  */
+  /*
   hTFvsTT = tfs->make<TH1F>("hTFvsTT","hTFvsTT",1000000,0,10000000);//1ms max
   hTFvsTT->GetXaxis()->SetTitle("Track time - Flash time (ns)");
   hTFvsTT->GetYaxis()->SetTitle("Entries/bin");
