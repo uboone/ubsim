@@ -816,24 +816,24 @@ namespace larlite {
     for(size_t i=0; i<dh->size(); ++i) {
 
       art::Ptr<::recob::OpFlash> flash_ptr(dh,i);
-     
       std::vector<double> pe_per_opdet;
-      pe_per_opdet.reserve(geo->NOpChannels());
-      for(size_t j=0; j<geo->NOpChannels(); ++j){
-        pe_per_opdet.push_back(flash_ptr->PE(j));
-     }    
 
-    //  pe_per_opdet.reserve((*(channel_set.rbegin())));
-    //  double pe_larsoft = flash_ptr->TotalPE();
-    //  double pe_larlite = 0.;
-    //  for(auto const& ch : channel_set) {
-	//pe_per_opdet.resize(ch+1);
-	//if(pe_larsoft > pe_larlite) {
-	//  pe_larlite += flash_ptr->PE(ch);
-	//  pe_per_opdet[ch] = flash_ptr->PE(ch);
-	//}else
-	//  pe_per_opdet[ch] = 0.;
-    //  }
+      //pe_per_opdet.reserve(geo->NOpChannels());
+      //for(size_t j=0; j<geo->NOpChannels(); ++j){
+      //  pe_per_opdet.push_back(flash_ptr->PE(j));
+      //}    
+
+      pe_per_opdet.reserve((*(channel_set.rbegin())));
+      double pe_larsoft = flash_ptr->TotalPE();
+      double pe_larlite = 0.;
+      for(auto const& ch : channel_set) {
+	pe_per_opdet.resize(ch+1);
+	if(pe_larsoft > pe_larlite) {
+	  pe_larlite += flash_ptr->PE(ch);
+	  pe_per_opdet[ch] = flash_ptr->PE(ch);
+	}else
+	  pe_per_opdet[ch] = 0.;
+      }
       
       ::larlite::opflash lite_flash( flash_ptr->Time(),
 				     flash_ptr->TimeWidth(),
