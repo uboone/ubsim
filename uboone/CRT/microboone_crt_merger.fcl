@@ -6,6 +6,7 @@ microboone_crt_merger:{
  InputFilenames : ["/pnfs/uboone/scratch/users/kolahalb/bernzmq_artdaq_20170926T214604.root"]
  test_t_offset	: [1,2,3]
  data_label_DAQHeader_: "daq"
+ data_label_CRTHit_:"crthit"
  InputTagName	: "crtdaq"
  debug		: true
 }

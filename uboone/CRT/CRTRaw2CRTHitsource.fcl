@@ -28,8 +28,10 @@ source:
 	fileNames       :[]
 	ModuleLabel	:"crthit"
 	InstanceLabel	:""
-	run_mode: 3   #3=beam, 11=all
-	Nr_Files: 0   
+	run_mode: 11   #3=beam, 11=all
+	Nr_Files: 0
+	IsTop: 1
+	WhichHalf: 2   
 	Offset: 40000 #ns
 	verbose:0
 	CRTpositions_file: "CRTpositionsSiPM-V8.txt"
