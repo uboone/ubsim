@@ -18,8 +18,8 @@
 // LArSoft libraries
 #include "uboone/SpaceCharge/SpaceChargeMicroBooNETestHelpers.h"
 #include "uboone/SpaceCharge/SpaceChargeMicroBooNE.h"
-#include "larcore/TestUtils/unit_test_base.h"
-#include "larcoreobj/SimpleTypesAndConstants/geo_vectors_fhicl.h"
+#include "larcorealg/TestUtils/unit_test_base.h"
+#include "larcorealg/Geometry/geo_vectors_fhicl.h"
 #include "larcoreobj/SimpleTypesAndConstants/geo_vectors.h" // geo::Point_t
 
 // framework libraries
