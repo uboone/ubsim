@@ -28,6 +28,9 @@ namespace cosmictag {
     , _name(name)
   {
     _configured = false;
+
+    _csvfile.open ("stopping_muon_tagger_helper.csv", std::ofstream::out | std::ofstream::trunc);
+    _csvfile << "n,i,dqdx,dqdx_slider,linearity" << std::endl;
   }
 
   const std::string& CosmicTagManager::Name() const
@@ -299,6 +302,24 @@ namespace cosmictag {
                   << ", dqdx_slider: " << _dqds_slider.at(counter)
                   << ", linearity: " << _linearity_v.at(counter) << std::endl;
       counter++;
+    }
+  }
+
+  void CosmicTagManager::PrintOnFile(int index) {
+
+    if (_cluster._s_hit_v.size() != _cluster._linearity_v.size() 
+      || _cluster._s_hit_v.size() != _cluster._dqds_slider.size()) {
+      CT_CRITICAL() << "Vectors in cluster have different size!" << std::endl;
+      throw HitCosmicTagException();
+    }
+
+    for (size_t i = 0; i < _cluster._dqds_slider.size(); i++) {
+      _csvfile << index << "," 
+               << i << "," 
+               << _cluster._dqds_v.at(i) << "," 
+               << _cluster._dqds_slider.at(i) << ", "
+               << _cluster._linearity_v.at(i)
+               << std::endl;
     }
   }
 

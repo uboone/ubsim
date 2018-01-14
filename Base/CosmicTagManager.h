@@ -24,6 +24,8 @@
 #include "BaseDqDsSmootherAlgo.h"
 #include "BaseLocalLinearityCalculatorAlgo.h"
 
+#include <fstream>
+
 namespace cosmictag {
   /**
      \class CosmicTagManager
@@ -85,6 +87,8 @@ namespace cosmictag {
 
     void PrintClusterStatus();
 
+    void PrintOnFile(int index);
+
 
   private:
 
@@ -123,6 +127,8 @@ namespace cosmictag {
     std::string _name;
     /// Request boolean to store full matching result (per Match function call)
     bool _store_full;   
+
+    std::ofstream _csvfile; 
   };
 }
 
