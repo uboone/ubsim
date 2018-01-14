@@ -97,6 +97,10 @@ namespace cosmictag {
         CT_DEBUG()  << "min_dist: " << min_dist <<std::endl;
         new_vector.push_back(_s_hit_v.at(min_index));
         _ds_v.push_back(min_dist);
+      } else if (_s_hit_v.at(min_index).wire == new_vector.back().wire && min_dist < 50) {
+        CT_DEBUG()  << "min_dist: " << min_dist << " => but on same wire, so continue"<< std::endl;
+        new_vector.push_back(_s_hit_v.at(min_index));
+        _ds_v.push_back(min_dist);
       } else if (new_vector.size() > 5){
  
         // Calculate previous slope
