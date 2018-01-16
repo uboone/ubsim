@@ -38,7 +38,7 @@ namespace cosmictag{
     /// Default destructor
     ~StopMuMichel(){}
 
-    bool IsStopMuMichel(const cosmictag::SimpleCluster & cluster) const;
+    bool IsStopMuMichel(const cosmictag::SimpleCluster & cluster);
 
     void PrintConfig();
 
@@ -56,6 +56,8 @@ namespace cosmictag{
     int _max_end_hits;
     double _local_linearity_threshold;
     double _perc_diff_cut;
+
+    std::vector<double> dqds_end;
 
   };
   
