@@ -40,12 +40,16 @@ namespace cosmictag {
     /// ?
     int OrderHits(SimpleCluster&) const;
 
+    void CollectionCoplanar(bool status);
+
   protected:
 
     void _Configure_(const Config_t &pset);
-    double _max_allowed_hit_distance;         ///< ?
-    double _slope_threshold;                  ///< ?
-    bool _debug;                              ///< Debug mode
+    double _max_allowed_hit_distance;          ///< ?
+    double _max_allowed_hit_distance_coll_cop; ///< ?
+    double _slope_threshold;                   ///< ?
+
+    bool _collection_coplanar;                 ///< ?
   };
   
   /**

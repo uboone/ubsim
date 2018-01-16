@@ -17,6 +17,12 @@ namespace cosmictag {
     _local_linearity_threshold   = pset.get< double > ( "LocalLinerityThreshold", 0.9 );
   }
 
+  void CosmicSimpleMIP::PrintConfig() const 
+  {
+    std::cout << "--- CosmicSimpleMIP Config" << std::endl;
+    std::cout << "--- _local_linearity_threshold = " << _local_linearity_threshold << std::endl;
+  }
+
  
   bool CosmicSimpleMIP::IsCosmicSimpleMIP(const cosmictag::SimpleCluster & cluster) const {
 

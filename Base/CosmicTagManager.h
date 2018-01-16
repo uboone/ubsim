@@ -24,6 +24,8 @@
 #include "BaseDqDsSmootherAlgo.h"
 #include "BaseLocalLinearityCalculatorAlgo.h"
 
+#include <fstream>
+
 namespace cosmictag {
   /**
      \class CosmicTagManager
@@ -71,13 +73,21 @@ namespace cosmictag {
 
     /// Clears locally kept TPC object (QClusterArray_t) and flash (FlashArray_t), both provided by a user
     void Reset()
-    { /*_tpc_object_v.clear(); _flash_v.clear();*/ _ready = false;}
+    { /*_tpc_object_v.clear(); _flash_v.clear();*/ _ready = false; _collection_coplanar = false;}
+
+    ///
+    void CollectionCoplanar(bool status)
+    { _collection_coplanar = status; }
 
     /// Configuration option: true => allows an assignment of the same flash to multiple TPC objects
     void CanReuseFlash(bool ok=true)
     { /*_allow_reuse_flash = ok;*/ }
 
     void PrintConfig();
+
+    void PrintClusterStatus();
+
+    void PrintOnFile(int index);
 
 
   private:
@@ -102,6 +112,9 @@ namespace cosmictag {
     /// The start hit of the cluster
     SimpleHit _start_hit;
 
+    /// Collection coplanar flas
+    bool _collection_coplanar = false;
+
     /// Configuration readiness flag
     bool _configured = false;
 
@@ -114,6 +127,8 @@ namespace cosmictag {
     std::string _name;
     /// Request boolean to store full matching result (per Match function call)
     bool _store_full;   
+
+    std::ofstream _csvfile; 
   };
 }
 

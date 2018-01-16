@@ -12,7 +12,7 @@ namespace cosmictag {
   std::ostream& logger::send(const msg::Level_t level) const
   {
     (*_ostrm)  << msg::kStringPrefix[level].c_str()
-	       << "\033[0m ";
+	       << " ";
     return (*_ostrm);
   }
   
@@ -20,7 +20,7 @@ namespace cosmictag {
 			     const std::string& function ) const
   {
     auto& strm(send(level));
-    strm << "\033[94m<" << _name << "::" << function.c_str() << ">\033[00m ";
+    strm << "<" << _name << "::" << function.c_str() << "> ";
     return strm;
   }
   
@@ -29,7 +29,7 @@ namespace cosmictag {
 			     const unsigned int line_num ) const
   {
     auto& strm(send(level));
-    strm << "\033[94m<" << _name << "::" << function.c_str() << "::L" << line_num << ">\033[00m ";
+    strm << "<" << _name << "::" << function.c_str() << "::L" << line_num << "> ";
     return strm;
   }
   

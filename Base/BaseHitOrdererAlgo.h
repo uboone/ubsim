@@ -38,6 +38,8 @@ namespace cosmictag {
      * @brief CORE FUNCTION: order the hits
      */
     virtual int OrderHits(SimpleCluster&) const = 0;
+
+    virtual void CollectionCoplanar(bool status) = 0;
   };
 }
 

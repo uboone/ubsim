@@ -22,6 +22,17 @@ namespace cosmictag {
     _perc_diff_cut               = pset.get< double > ( "PercDiffCut", 20 );
   }
 
+  void StopMuBragg::PrintConfig() const 
+  {
+    std::cout << "--- StopMuBragg Config" << std::endl;
+    std::cout << "--- _hits_to_remove = " << _hits_to_remove << std::endl;
+    std::cout << "--- _pre_post_window = " << _pre_post_window << std::endl;
+    std::cout << "--- _max_muon_hits = " << _max_muon_hits << std::endl;
+    std::cout << "--- _min_muon_hits = " << _min_muon_hits << std::endl;
+    std::cout << "--- _local_linearity_threshold = " << _local_linearity_threshold << std::endl;
+    std::cout << "--- _perc_diff_cut = " << _perc_diff_cut << std::endl;
+  }
+
  
   bool StopMuBragg::IsStopMuBragg(const cosmictag::SimpleCluster & cluster) const {
 

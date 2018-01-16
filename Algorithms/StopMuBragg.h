@@ -40,6 +40,8 @@ namespace cosmictag{
 
     bool IsStopMuBragg(const cosmictag::SimpleCluster & cluster) const;
 
+    void PrintConfig() const;
+
 
   protected:
 

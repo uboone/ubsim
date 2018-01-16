@@ -31,15 +31,15 @@ namespace cosmictag {
       throw HitCosmicTagException();
     }
 
-    if (_dqds_v.size() < _slider_window * 2) {
-      CT_NORMAL() <<  " not enough hits" << std::endl;
+    if (_dqds_v.size() < _slider_window) {
+      CT_NORMAL() <<  "Not enough hits" << std::endl;
       return 0;
     }
 
     //size_t window = _slider_window;
 
     if (_slider_window % 2 != 0) {
-      CT_ERROR() << ": _slider_window has to be even." << std::endl; 
+      CT_ERROR() << "_slider_window has to be even." << std::endl; 
       throw HitCosmicTagException();
     }
 

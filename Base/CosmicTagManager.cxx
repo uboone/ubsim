@@ -28,6 +28,9 @@ namespace cosmictag {
     , _name(name)
   {
     _configured = false;
+
+    _csvfile.open ("stopping_muon_tagger_helper.csv", std::ofstream::out | std::ofstream::trunc);
+    _csvfile << "n,i,dqdx,dqdx_slider,linearity" << std::endl;
   }
 
   const std::string& CosmicTagManager::Name() const
@@ -82,7 +85,7 @@ namespace cosmictag {
     if (_alg_hit_orderer) {
 
       _alg_hit_orderer->Configure(main_cfg.get<cosmictag::Config_t>(_alg_hit_orderer->AlgorithmName()));
-      
+      _alg_hit_orderer->CollectionCoplanar(_collection_coplanar);
     }
     if (_alg_hit_smoother) {
 
@@ -103,6 +106,14 @@ namespace cosmictag {
 
       _alg_linearity_calculator->Configure(main_cfg.get<cosmictag::Config_t>(_alg_linearity_calculator->AlgorithmName()));
       
+    }
+
+     
+    // Custom algo config
+    for (auto& name_ptr : _custom_alg_m) {
+
+      name_ptr.second->Configure(main_cfg.get<cosmictag::Config_t>(name_ptr.first));
+
     }
 
     _configured = true;
@@ -197,6 +208,7 @@ namespace cosmictag {
     if (!status) return false;
 
     CT_DEBUG() << "Running hit orderer algo now." << std::endl;
+    _alg_hit_orderer->CollectionCoplanar(_collection_coplanar);
     status = _alg_hit_orderer->OrderHits(_cluster);
     if (!status) return false;
 
@@ -212,13 +224,13 @@ namespace cosmictag {
     status = _alg_dqds_smoother->SmoothDqDs(_cluster);
     if (!status) return false;
 
-    CT_DEBUG() << "Running slinearity calculator now." << std::endl;
+    CT_DEBUG() << "Running linearity calculator now." << std::endl;
     status = _alg_linearity_calculator->CalculateLocalLinearity(_cluster);
     if (!status) return false;
 
     _ready = true;
 
-    return false;
+    return true;
 
   }
 
@@ -273,6 +285,45 @@ namespace cosmictag {
     std::cout << "---- END FLASH MATCH MANAGER PRINTING CONFIG ----" << std::endl;
     
   }
+
+  void CosmicTagManager::PrintClusterStatus() {
+
+    auto & s_hit_v = _cluster._s_hit_v;
+    auto & _dqds_slider = _cluster._dqds_slider;
+    auto & _linearity_v = _cluster._linearity_v;
+
+    CT_NORMAL() << "Current Cluster Status:" << std::endl;
+
+    int counter = 0;
+    for (auto h : s_hit_v) {
+      CT_NORMAL() << "index " << counter
+                  << ", wire: " << h.wire
+                  << ", time: " << h.time*4
+                  << ", dqdx_slider: " << _dqds_slider.at(counter)
+                  << ", linearity: " << _linearity_v.at(counter) << std::endl;
+      counter++;
+    }
+  }
+
+  void CosmicTagManager::PrintOnFile(int index) {
+
+    if (_cluster._s_hit_v.size() != _cluster._linearity_v.size() 
+      || _cluster._s_hit_v.size() != _cluster._dqds_slider.size()) {
+      CT_CRITICAL() << "Vectors in cluster have different size!" << std::endl;
+      throw HitCosmicTagException();
+    }
+
+    for (size_t i = 0; i < _cluster._dqds_slider.size(); i++) {
+      _csvfile << index << "," 
+               << i << "," 
+               << _cluster._dqds_v.at(i) << "," 
+               << _cluster._dqds_slider.at(i) << ", "
+               << _cluster._linearity_v.at(i)
+               << std::endl;
+    }
+  }
+
+
 }
 
 #endif
