@@ -34,10 +34,10 @@ namespace cosmictag {
 
     _start_hit_is_set = false;
 
-    if (start_hit.plane != 2) {
-      CT_CRITICAL() << "Plane not supported." << std::endl;
-      throw HitCosmicTagException();
-    }
+    //if (start_hit.plane != 2) {
+      //CT_CRITICAL() << "Plane not supported." << std::endl;
+      //throw HitCosmicTagException();
+    //}
 
     int wire_no = start_hit.wire;
     int time = start_hit.time;
