@@ -8,8 +8,6 @@
 
 #include "CRTBernFEBDAQCore/Overlays/BernZMQFragment.hh"
 #include "artdaq-core/Data/Fragments.hh"
-//#include "uboone/CRT/CRTProducts/CRTHit.hh"
-//#include "uboone/CRT/CRTProducts/CRTTrack.hh"
 
 #include <iostream>
 #include <sstream>
@@ -48,6 +46,10 @@ namespace crt {
     double inter_X_error(double S1, double S2, double L);//return error por interaction position.
     
     double getTcorr(std::vector<double>& inpos1, std::vector<double>& inpos2 , double T);//return corrected time, along the fiber. 6.2ns/m 
+
+    std::string filename;
+    int mac_buffer[3][100];
+    void FillPartTop(std::string filename, int mac_buffer[3][100]);
     
   }
   
