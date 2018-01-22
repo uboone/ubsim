@@ -209,3 +209,36 @@ double crt::auxfunctions::getTcorr(std::vector<double>& inpos1, std::vector<doub
   double Tcorr = T - (L*6.2/100);                                                                                                                            
   return Tcorr; 
 }
+
+void crt::auxfunctions::FillPartTop(std::string fileTop, int mac_buffer[3][100]){
+  
+  std::cout<<"Reading Part Mac of Top information"<<std::endl;
+
+  std::string fname;
+  cet::search_path sp("FW_SEARCH_PATH");
+  sp.find_file(fileTop,fname);
+  
+  std::ifstream in;
+  in.open(fname.c_str());
+
+  std::cout <<"File open? "<<in.is_open()<<std::endl;
+  if(in.is_open()){
+    std::cout<<"File open: "<<fname.c_str()<<std::endl;
+  }
+  int counter=0;
+  int febnr1;
+  int febnr2;
+  int febnr3;
+  while (!in.eof()){
+    
+    in>>febnr1>>febnr2>>febnr3;
+    mac_buffer[0][counter]=febnr1;
+    mac_buffer[1][counter]=febnr2;
+    mac_buffer[2][counter]=febnr3;
+    counter++;
+      
+  }
+  mac_buffer[0][99]=counter;
+  mac_buffer[1][99]=counter;
+  mac_buffer[2][99]=counter;
+}

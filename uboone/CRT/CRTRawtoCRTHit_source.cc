@@ -195,6 +195,8 @@ private:
 
   void make2DHit();
   void check_storing();
+  
+  //void Init_HalfTop(std::string filename, int mac_buffer[3][100]);
   ////////////////////////////////////////////////////
   
   //pair_builder variables////////////////////////////
@@ -226,8 +228,9 @@ private:
   int fOffset_;
   int NrFiles_;
   int save_event;
-  int IsTop_;
+  int Split_;
   int WhichHalf_;
+  int TopPart_;
   //pair_builder ends stuff here////////////////////////////////////////////////////////////////////
 
   std::vector<crt::CRTHit> allCRTHits;
@@ -236,6 +239,9 @@ private:
   std::string  FEBDelays_;
   std::string  CRTGains_;
   std::string  CRTPedestals_;
+  std::string  PartTop_;
+  
+	int mac_part_top[3][100];
   
   std::map <int, std::vector<double> > sensor_pos; //key = FEB*100+ch
   std::map <int, double > FEBDel; //key = FEB;
@@ -327,8 +333,10 @@ crt::CRTRawInputDetail::CRTRawInputDetail(fhicl::ParameterSet const & ps,
   CRTPedestals_= ps.get<std::string>("CRTpedestals_file");
   fOffset_ = ps.get<int>("Offset");
   verbose_ = ps.get<int>("verbose");
-  IsTop_ = ps.get<int>("IsTop");
+  Split_ = ps.get<int>("Split");
   WhichHalf_ = ps.get<int>("WhichHalf");
+  TopPart_ = ps.get<int>("TopPart");
+  PartTop_= ps.get<std::string>("PartTop_file");
 }
 
 
@@ -341,7 +349,8 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
   crt::auxfunctions::FillPos(SiPMpositions_, sensor_pos); //key = FEB*100+ch  //fill sipm positions      
   crt::auxfunctions::FillFEBDel(FEBDelays_, FEBDel); //key = FEB  //fill FEB delays
   crt::auxfunctions::FillGain(CRTGains_, SiPMgain); //key = FEB*100+ch  //fill sipms gain
-  crt::auxfunctions::FillGain(CRTPedestals_, SiPMpedestal); //key = FEB*100+ch  //same for pedestals 
+  crt::auxfunctions::FillGain(CRTPedestals_, SiPMpedestal); //key = FEB*100+ch  //same for pedestals  
+  crt::auxfunctions::FillPartTop(PartTop_,mac_part_top);
   
   std::cout <<"Run in mode (3=only beam, 11=all): "<< run_mode_ << std::endl; 
 
@@ -364,8 +373,8 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
   for(int i=0; i<100;i++){
     ts1ref_counter[i]=0;
     ts1ref_second[i]=0;
-    EndOfFile=0; //mark end of file is reached by reading
   }
+  EndOfFile=0; //mark end of file is reached by reading
   previous_sec=0; //store value of previous second
   save_event=0; // scan and receive aslong events untill found coincidencs of 3 diff seconds
   event_counter=0;
@@ -464,8 +473,8 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
     long size1 = ftell(data1); // get current file pointer
     fseek(data1, 0, SEEK_SET); // seek back to beginning of file
     size_ev=size1/sizeof(EVENT_t);		//number of total events
-    if(IsTop_==1 && WhichHalf_==1) size_ev=size_ev/2;
-    if(IsTop_==1 && WhichHalf_==2) fseek(data1, (size_ev/2+1)*sizeof(EVENT_t), SEEK_SET);
+    if(Split_==1 && WhichHalf_==1) size_ev=size_ev/2;
+    if(Split_==1 && WhichHalf_==2) fseek(data1, (size_ev/2+1)*sizeof(EVENT_t), SEEK_SET);
     printf("Total Number of events: %ld\n",size_ev);
     read_events1=1000;
     read_events2=0;
@@ -489,8 +498,8 @@ void crt::CRTRawInputDetail::readFile(std::string const & filename, art::FileBlo
     long size1 = ftell(data1); // get current file pointer
     fseek(data1, 0, SEEK_SET); // seek back to beginning of file
     size_ev=size1/sizeof(EVENT_t);		//number of total events
-    if(IsTop_==1 && WhichHalf_==1) size_ev=size_ev/2;
-    if(IsTop_==1 && WhichHalf_==2) fseek(data1, (size_ev/2+1)*sizeof(EVENT_t), SEEK_SET);
+    if(Split_==1 && WhichHalf_==1) size_ev=size_ev/2;
+    if(Split_==1 && WhichHalf_==2) fseek(data1, (size_ev/2+1)*sizeof(EVENT_t), SEEK_SET);
     printf("Total Number of events: %ld\n",size_ev);
     read_events1=1000;
     read_events2=0;
@@ -668,8 +677,9 @@ bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::S
     }
   outE = fSourceHelper.makeEventPrincipal(run_num, subrun_num, fEventNumber++, v_crt_time);
   event_counter++;
-  if(event_counter%100==0){
-    std::cout<<"Wrote event Nr: "<< event_counter <<std::endl;
+  if(event_counter%1==0){
+    const time_t ctt = time(0);
+    std::cout<<"Wrote event Nr: "<< event_counter << " at: " << asctime(localtime(&ctt));
     std::cout<<"Found total: " << total_hits << " in the second: "<< allCRTHits[0].ts0_s <<std::endl;
   }
   //evt.put(std::move(CRTHiteventCol));
@@ -701,13 +711,20 @@ void crt::CRTRawInputDetail::receive_data(){
   }
   int received_events=read_events1+read_events2+read_events3+read_events4;
   tot_events+=received_events;
-  if(IsTop_==1){
+  if(Split_==1){
     if(WhichHalf_==1 && size_ev<tot_events) EndOfFile=1;
   }
   int reassign=0;//control number for changes in second assignement
   int all_fine=0;//control number if the jump happened after a reference pulse
-	
+	int proceed=1;
+  
   for(int i=0; i<received_events; i++){
+    proceed=1;
+    for(int z=0; z<mac_part_top[TopPart_][99]; z++){
+			if(evbuf[i].mac5==mac_part_top[TopPart_][z]){
+				proceed=0;
+			}
+		}
     if(evbuf[i].mac5==0xFFFF){    //reads the spezial event
       memcpy(&refevent,&evbuf[i].mac5,sizeof(EOP_EVENT_t));
       previous_sec=act_time[0][MAXFEBNR];
@@ -768,7 +785,7 @@ void crt::CRTRawInputDetail::receive_data(){
         } 
       }
     }
-    else {
+    else if(proceed==1){
       //add the second to the events and copy the buffer into another
       mac=evbuf[i].mac5; 
       reassign=0;
@@ -1076,13 +1093,15 @@ void crt::CRTRawInputDetail::scan_filter_buffer(int mac){  //scan over all event
   //std::cout<<"scan for pairs data" <<std::endl;
   long time1, time2;
   long delta;
+  int counter_mac[MAXFEBNR];
+  for (int i=0; i<MAXFEBNR; i++) counter_mac[i]=0;
   for(int i=0;i<ev_counter_filter_scan[mac];i++){
     if(run_mode_!=TS1_CORR || !(i>20 && evbuf_filter_scan[mac][i].ts0 > (1e9-MSOVERLAP))){ 
     //printf("jump: %3d: mac: %2d, flags: %2d, ts0: %10d, ts1: %10d, sec: %10d  dt: %d, lostcpu: %d\n", i,evbuf_filter_scan[mac][i].mac5, evbuf_filter_scan[mac][i].flags, evbuf_filter_scan[mac][i].ts0,evbuf_filter_scan[mac][i].ts1,evbuf_filter_scan[mac][i].sec, evbuf_filter_scan[mac][i].ts0-evbuf_filter_scan[mac][i].ts1, evbuf_filter_scan[mac][i].lostcpu ); 
     time1=evbuf_filter_scan[mac][i].ts0_scaled;
     for(int j=0;j<MAXFEBNR;j++){
         if(j!=mac){
-        for(int k=0;k<ev_counter_filter_scan[j];k++){
+        for(int k=counter_mac[j];k<ev_counter_filter_scan[j];k++){
           if(run_mode_!=TS1_CORR || !(k>20 && evbuf_filter_scan[j][k].ts0 > (1e9-MSOVERLAP))){  
            time2=evbuf_filter_scan[j][k].ts0_scaled;
            delta=time2-time1;
@@ -1119,6 +1138,8 @@ void crt::CRTRawInputDetail::scan_filter_buffer(int mac){  //scan over all event
              coincidence[2].adc[1]=evbuf_filter_scan[j][k].ms;
              coincidence[2].recover=std::abs(i-j);
              make2DHit();
+             counter_mac[j]=k;
+             break;
            }
          }
        } //end loop through all events of feb j
@@ -1368,7 +1389,38 @@ void crt::CRTRawInputDetail::check_storing(){
     //std::cout<<"found: " << hit_counter << " of " << total_hits << " in the second: "<< this_sec <<std::endl;
   }
 }
-
+/*
+void crt::CRTRawInputDetail::Init_HalfTop(std::string filename, int mac_buffer[3][100]){
+    std::ifstream in;
+	int counter=0;
+  //in1.open("/uboone/app/users/dlorca/testberncode_june/larsoft_v06_36_00/srcs/uboonecode/uboone/CRT/FEB_CableDelay-V8.txt");
+  in.open(filename);
+  if (in.is_open()){
+    std::cout << "initializing Half Top to cut" << std::endl;
+    int febnr1;
+		int febnr2;
+		int febnr3;
+    //double factor;
+    while (!in.eof()) {
+      in>>febnr1>>febnr2>>febnr3;
+      mac_buffer[0][counter]=febnr1;
+			mac_buffer[1][counter]=febnr2;
+			mac_buffer[2][counter]=febnr3;
+			counter++;
+    }      
+    in.close();
+    }
+   else
+   {
+    std::cout << "Error opening poll ms delay file";
+   }
+	mac_buffer[TopPart_][99]=counter;
+	std::cout<<"IsDownStream: " << TopPart_ <<std::endl;
+	for(int z=0; z<mac_part_top[TopPart_][99]; z++){
+		std::cout<<"not allowed macs: " << mac_part_top[TopPart_][z] << " of " << mac_part_top[TopPart_][99] <<std::endl;
+	}
+}
+*/
 namespace crt {
   using CRTRawInputSource = art::Source<CRTRawInputDetail>;
 }
