@@ -1,0 +1,55 @@
+<!-- Production Project -->
+
+<!DOCTYPE project [
+<!ENTITY uBversion "v06_27_00">
+<!ENTITY file_type "data">
+<!ENTITY run__type "physics">
+<!ENTITY proj_name "kb_crt_tpc_datastream_merging">
+<!ENTITY file_path1 "/uboone/app/users/kolahalb/MicroBooNE/CRTStudy/runs/">
+<!ENTITY projStage "dev">
+]>
+
+<project name="&proj_name;">
+        <check>1</check>
+	
+        <!--<group>uboone</group>-->
+	
+        <!-- Project size -->
+        <numevents>1000000</numevents>
+	
+        <!-- Operating System -->
+        <os>SL6</os>
+	
+        <!-- Batch resources -->
+        <resource>DEDICATED,OPPORTUNISTIC</resource>
+	
+        <!-- <maxfilesperjob>1</maxfilesperjob> -->
+	
+        <!-- Larsoft information -->
+        <larsoft>
+                <tag>&uBversion;</tag>
+                <qual>e14:debug</qual>
+		<local>/uboone/app/users/kolahalb/MicroBooNE/CRTStudy/uBooNE_CRT/slf6.v06_27_00/uBbern.tar.gz</local>
+        </larsoft>
+	
+        <!-- Project stages -->
+	
+        <stage name="crtmerging3">
+		<fcl>testmerger.fcl</fcl>
+		<inputlist>&file_path1;TPCEvents.txt</inputlist>
+                <outdir>/uboone/data/users/kolahalb/MicroBooNE/CRTMerging/&proj_name;/&uBversion;/&projStage;_t+3</outdir>
+                <logdir>/uboone/data/users/kolahalb/MicroBooNE/CRTMerging/&proj_name;/&uBversion;/&projStage;_t+3</logdir>
+                <workdir>/uboone/app/users/kolahalb/MicroBooNE/CRTMerging/&proj_name;/&uBversion;/&projStage;_t+3</workdir>
+                <numjobs>20</numjobs>
+                <!-- <output>kb_test_${PROCESS}_%tc.root</output> -->
+                <datatier>reco</datatier>
+                <defname>crt_tpc_merged</defname>
+        </stage>
+
+        <!-- file type -->
+        <filetype>&file_type;</filetype>
+
+        <!-- run type -->
+        <runtype>&run__type;</runtype>
+
+</project>
