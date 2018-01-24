@@ -79,6 +79,7 @@ outputs:
    module_type: RootOutput
    fileName:    "prodgenie_bnb_nu_cosmic_filtered_NCDeltaRad_uboone_%tc_gen.root" #default file name, can override from command line with -o or --output
    dataTier:    "generated"
+   SelectEvents: [ simulate ]
    compressionLevel: 1
    fastCloning: false
  }
