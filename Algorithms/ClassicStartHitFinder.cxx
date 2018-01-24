@@ -26,7 +26,7 @@ namespace cosmictag {
   
   int ClassicStartHitFinder::FindStartHit(SimpleCluster& cluster, SimpleHit& start_hit) const
   {
-    this->PrintConfig();
+    //this->PrintConfig();
 
     int                    & _start_index      = cluster._start_index;
     std::vector<SimpleHit> & _s_hit_v          = cluster._s_hit_v;

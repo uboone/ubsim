@@ -7,7 +7,7 @@ cosmictag_config : {
 #
 CosmicTagManager: {
 
-  Verbosity: 0
+  Verbosity: 3
 
   StartHitFinderAlgo:            "ClassicStartHitFinder"
   HitOrdererAlgo:                "ClassicHitOrderer"
