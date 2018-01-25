@@ -224,22 +224,25 @@ void crt::CRTMerger::produce(art::Event& event)
 				if ((CRTtime_ns > MergingWindow_start) && (CRTtime_ns < MergingWindow_end))
 				{
 					std::cout<<"found match"<<std::endl;
-					CRTHitEventsSet->emplace_back(CRTHitevent);
-					merging = 1;
-					break;
-				}
+				CRTHitEventsSet->emplace_back(CRTHitevent);
+				merging += 1;
+				//break;
 			}
 		}
-		
-		if (merging==1)
-		{
-			std::cout<<"found match"<<std::endl;
-			break;
-		}
-		
-		//std::cout<<"Next CRT event ..."<<std::endl;
 	}
+	//std::cout<<"# merging in the stream: "<<merging<<std::endl;
+	/*
+	if (merging==1)
+	{
+		std::cout<<"found match"<<std::endl;
+		break;
 	}
+	*/
+	//std::cout<<"Next CRT event ..."<<std::endl;
+}
+std::cout<<"# merging in the stream: "<<merging<<std::endl;
+}
+std::cout<<"# of CRTHitEventsSet before writing: "<<CRTHitEventsSet->size()<<std::endl;
 	event.put(std::move(CRTHitEventsSet));
 	
 	if (_debug)
