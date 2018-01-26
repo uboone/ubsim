@@ -7,7 +7,7 @@
 #include <vector> 
 
 #include "CRTBernFEBDAQCore/Overlays/BernZMQFragment.hh"
-#include <artdaq-core/Data/Fragments.hh>
+#include <artdaq-core/Data/Fragment.hh>
 
 #include <iostream>
 #include <sstream>

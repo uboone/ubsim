@@ -24,7 +24,7 @@
 #include "lardataobj/AnalysisBase/CosmicTag.h"
 #include "lardata/Utilities/AssociationUtil.h"
 
-#include "artdaq-core/Data/Fragments.hh"
+#include <artdaq-core/Data/Fragment.hh>
 
 #include "art/Framework/Services/Optional/TFileService.h"
 

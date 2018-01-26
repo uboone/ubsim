@@ -25,7 +25,7 @@
 #include "lardata/Utilities/AssociationUtil.h"
 
 //#include "bernfebdaq-core/Overlays/BernZMQFragment.hh"
-#include "artdaq-core/Data/Fragments.hh"
+#include <artdaq-core/Data/Fragment.hh>
 
 #include "art/Framework/Services/Optional/TFileService.h"
 
