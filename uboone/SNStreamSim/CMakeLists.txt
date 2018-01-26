@@ -14,7 +14,8 @@ art_make(
 			uboone_SNStreamSim_Algo
 			larcorealg_Geometry
 			larcore_Geometry_Geometry_service
-			larsim_MCCheater_BackTracker_service
+			larsim_MCCheater_ParticleInventoryService_service
+			larsim_MCCheater_BackTrackerService_service
 			larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
 			lardataobj_RecoBase
 			lardataobj_AnalysisBase	

@@ -9,7 +9,10 @@
 //
 
 #include "canvas/Persistency/Common/Wrapper.h"
-#include "UbooneOpticalFilter.h"
+#include "canvas/Persistency/Common/Assns.h"
+#include "ubooneobj/UbooneOpticalFilter.h"
+#include "ubooneobj/SparseRawDigit.h"
+#include "lardataobj/RecoBase/Wire.h"
 
 //
 // Only include objects that we would like to be able to put into the event.
