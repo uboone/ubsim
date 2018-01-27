@@ -16,7 +16,7 @@ services:
 	TimeTracker		:	@local::microboone_time_tracker
 	MemoryTracker		:	@local::microboone_memory_tracker
 	RandomNumberGenerator	:	{}                     #ART native random number generator
-	BackTracker		:	@local::microboone_backtracker
+#	BackTrackerService	:	@local::microboone_backtrackerservice
 	
 	#BELOW you see a list of the common services! Uncomment the ones you need.
 	DetectorClocksService	:	@local::microboone_detectorclocks
@@ -52,7 +52,7 @@ services.message.destinations:
 	{
 		type:      "cout"      #tells the message service to output this destination to cout
 		threshold: "WARNING"   #tells the message service that this destination applies to WARNING and higher level messages
-		append:     true       #says to append all messages to the output
+#		append:     true       #says to append all messages to the output
 		categories:
 		{
 			ChannelFilter:
@@ -62,7 +62,8 @@ services.message.destinations:
 			}
 			default:
 			{
-				limit: -1  #don't print anything at the infomsg level except the explicitly named categories
+ #don't print anything at the infomsg level except the explicitly named categories
+				limit: -1 
 				reportEvery: 1
 			}
 		}
