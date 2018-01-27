@@ -8,7 +8,7 @@
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Principal/Run.h"
 #include "art/Framework/Principal/SubRun.h"
-#include "artdaq-core/Data/Fragments.hh"
+#include <artdaq-core/Data/Fragment.hh>
 #include "fhiclcpp/ParameterSet.h"
 #include "canvas/Utilities/InputTag.h"
 //#include "gallery/Event.h"

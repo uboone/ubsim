@@ -1,7 +1,7 @@
 #include "uboone/CRT/CRTMerger.hh"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "uboone/CRT/CRTProducts/MSetCRTFrag.hh"
-#include "artdaq-core/Data/Fragments.hh"
+#include <artdaq-core/Data/Fragment.hh>
 #include "gallery/Event.h"
 #include "CRTBernFEBDAQCore/Overlays/BernZMQFragment.hh"
 #include "art/Framework/Services/System/FileCatalogMetadata.h"
