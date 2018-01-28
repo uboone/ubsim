@@ -69,3 +69,4 @@ services.message.destinations:
 		}
 	}
 }
+physics.producers.merger.debug: false
