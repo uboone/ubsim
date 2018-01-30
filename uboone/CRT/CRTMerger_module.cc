@@ -61,7 +61,7 @@ crt::CRTMerger::~CRTMerger()
 	std::cout<<"crt::CRTMerger::~CRTmerger"<<std::endl;
 	
 	if ( ! tIFDH )
-	delete tIFDH;
+	  delete tIFDH;
 }
 
 void crt::CRTMerger::produce(art::Event& event)
@@ -70,6 +70,8 @@ void crt::CRTMerger::produce(art::Event& event)
 	{
 		std::cout <<"crt::CRTMerger::produce, NEW EVENT" << std::endl;
 	}
+
+	const int T0(5); // Number of files/seconds of CRT wrt TPC evt time less than which we won't check for merge candidates..
 	
 	//For this event
 	if(_debug)
@@ -181,7 +183,16 @@ void crt::CRTMerger::produce(art::Event& event)
 	  // This is alternative to use gsiftp URL. In that approach we use the URL to ifdh::fetchInput the crt file to local directory and keep it open as long as we make use of it
 	  //xrootd URL
 	  std::string schema = "root";
-	  std::vector< std::string > crtrootFile_xrootd_url = tIFDH->locateFile(crtrootfile[crf_index], schema);
+	  std::vector< std::string > crtrootFile_xrootd_url;
+	  try{
+	    std::vector<std::string> tmp(tIFDH->locateFile(crtrootfile[crf_index], schema));
+	    crtrootFile_xrootd_url.swap(tmp);
+	  }
+	  catch(...)
+	    {
+	      std::cout << "This Root File does not exist. No Merger CRTHit candidates put on event for this TPC evt for this chunk of the CRT." << std::endl;
+	      continue;
+	    }
 	  std::cout<<"xrootd URL: "<<crtrootFile_xrootd_url[0]<<std::endl;
 	
 	  // gallery, when fed the list of the xrootd URL, internally calls TFile::Open() to open the file-list
@@ -190,6 +201,17 @@ void crt::CRTMerger::produce(art::Event& event)
 	  // when you would like to launch a 'lar -c ... ... ...'
 	  // In batch mode, this step is automatically done
 	  
+	  //	  try{
+	    gallery::Event fCRTEvent_tmp(crtrootFile_xrootd_url);
+	    /*
+	  }
+	  catch(...)
+	    {
+	      std::cout << "This Root File can not be opened by gallery. No Merger CRTHit candidates put on event for this TPC evt for this chunk of the CRT." << std::endl;
+	      continue;
+	    }
+	    */
+
 	  gallery::Event fCRTEvent(crtrootFile_xrootd_url);
 	  std::cout<<"Opened the CRT root file from xrootd URL"<<std::endl;
 	
@@ -222,15 +244,15 @@ void crt::CRTMerger::produce(art::Event& event)
 		
 	      std::vector< crt::CRTHit >  const& CRTHitCollection = *(fCRTEvent.getValidHandle< std::vector<crt::CRTHit> >(cTag));
 	      jump = 1;
-	      // If our TPC evt is more than 10 sec beyond the end of the first CRT event's last Hit, then ffwd
+	      // If our TPC evt is more than T0 sec beyond the end of the first CRT event's last Hit, then ffwd
 	      // I am assuming these CRT events are precisely 1 second long each. 
-	      if ( ( evt_time_sec > (CRTHitCollection[CRTHitCollection.size()-1].ts0_s + 10) ) && firstE )
+	      if ( ( evt_time_sec > (CRTHitCollection[CRTHitCollection.size()-1].ts0_s + T0) ) && firstE )
 		{
 		  firstE = false;
 
-		  // Let's stop 10 sec short of where we'd like to land.
-		  jump = evt_time_sec - CRTHitCollection[CRTHitCollection.size()-1].ts0_s - 10; 
-		  
+		  // Let's stop T0 sec short of where we'd like to land.
+		  jump = evt_time_sec - CRTHitCollection[CRTHitCollection.size()-1].ts0_s - T0; 
+		  // if jump is a large number, don't zip off end of list. Stop short by 2 files.
 		  if (jump > (unsigned long)(fCRTEvent.numberOfEventsInFile()-2) && ((fCRTEvent.numberOfEventsInFile()-2)>0) ) jump = fCRTEvent.numberOfEventsInFile()-2;
 
 		  if (CRTHitCollection[0].ts0_s==0 &&CRTHitCollection[CRTHitCollection.size()-1].ts0_s==0) // This happens for crt02 a lot, it seems.
@@ -248,7 +270,7 @@ void crt::CRTMerger::produce(art::Event& event)
 		  continue;
 
 		}
-	      if ( evt_time_sec < CRTHitCollection[0].ts0_s)
+	      if ( evt_time_sec < (CRTHitCollection[0].ts0_s-T0))
 		{
 		  std::cout << "Within this CRT sub event the last CRT Hit times in seconds is "  << CRTHitCollection[CRTHitCollection.size()-1].ts0_s << " whereas TPC event sec is " << evt_time_sec << " ... and therefore we are moving to next full collection of CRT Events (new file)." <<  std::endl;
 
@@ -289,16 +311,7 @@ void crt::CRTMerger::produce(art::Event& event)
 			    std::cout<<"found match"<<std::endl;
 			  CRTHitEventsSet->emplace_back(CRTHitevent);
 			  merging += 1;
-			  //break;
-			}
-		      else
-			{
-			  if (merging)
-			    {
-			      // Assuming time-ordered hits. We're here because we've been merging and now we're past the window.
-			      exitCollection = true;
-			      break;
-			    }
+
 			}
 		    }
 		} // end loop on Hit Collection within CRT evt
