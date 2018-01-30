@@ -444,15 +444,11 @@ microboone_reco_data_MucSTags: [         #MuCSTrackTaggertrackkalmanhit,
                                          MuCSTrackTaggerpandoraCosmicKHit, 
                                          MuCSTrackTaggerpmtrack ]
 
-microboone_dqm_ana_stage1: [             DQMHits,
+microboone_dqm_ana: [                    DQMHits,
                                          DQMFlashes,
                                          DQMChannels,
-                                         DQMTPCBursts ]
-
-microboone_dqm_ana_stage2: [             DQMGoodRuns ]
-
-microboone_dqm_ana: [                    @sequence::microboone_dqm_ana_stage1,
-		    			 @sequence::microboone_dqm_ana_stage2 ]
+                                         DQMTPCBursts,
+                                         DQMGoodRuns ]
 
 ### Below we include overrides for the modules above
 ### These are for MCC 7
@@ -466,7 +462,6 @@ microboone_reco_data_producers.caldata.NumSigma:                                
 microboone_reco_data_producers.caldata.ROIFinder.Threshold:                      [0, 0, 0]
 microboone_reco_data_producers.caldata.ROIFinder.NumSigma:                       [9, 9, 9]
 microboone_reco_data_producers.caldata.DodQdxCalib:                              false
-microboone_reco_data_producers.caldata.MakeSparseRawDigits:                      true
 
 microboone_reco_data_producers.gaushit.CalDataModuleLabel:                       "caldata"
 microboone_reco_data_producers.gaushit.MinSig:                                   [2.6,  3.4,  3.4]
