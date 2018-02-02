@@ -2,6 +2,7 @@
 
 process_name: McRecoCali
 
+services.TFileService.fileName: "reco_cali_hist.root"
 physics.reco: [ pandoraNucali, pandoraNucalipid, 
                 pandoraNuKHitcali, pandoraNuKHitcalipid, 
                 pandoraNuKalmanTrackcali, pandoraNuKalmanTrackcalipid, 
