@@ -25,14 +25,15 @@
 #include <iostream>
 #include <iomanip>
 
-#include "Weight_t.h"
-#include "MCEventWeight.h"
-#include "WeightCalc.h"
-#include "WeightCalcFactory.h"
+#include "larsim/EventWeight/Base/Weight_t.h"
+#include "larsim/EventWeight/Base/MCEventWeight.h"
+#include "larsim/EventWeight/Base/WeightCalc.h"
+#include "larsim/EventWeight/Base/WeightCalcFactory.h"
+#include "larsim/EventWeight/Base/WeightManager.h"
 
 #include "nusimdata/SimulationBase/MCTruth.h"
 
-namespace evwgh {
+namespace ubevwgh {
 
 class EventWeight : public art::EDProducer {
 public:
@@ -53,7 +54,10 @@ public:
   void endJob() override;
 
 private:
-  std::map<std::string, Weight_t*> fWeightCalcMap;  
+
+  ::evwgh::WeightManager _wgt_manager;
+
+  //std::map<std::string, evwgh::Weight_t*> fWeightCalcMap;  
   std::string fGenieModuleLabel;
 
 };
@@ -61,54 +65,24 @@ private:
 EventWeight::EventWeight(fhicl::ParameterSet const & p) 
 // Initialize member data here.
 {
-  //  art::ServiceHandle<artext::SeedService> seedservice;
-   art::ServiceHandle<rndm::NuRandomService> seedservice;
 
-  //get list of weight functions
-  std::vector<std::string> rw_func=p.get<std::vector<std::string> >("weight_functions");
-  fGenieModuleLabel = p.get< std::string > ("genie_module_label");
+  size_t n_func = _wgt_manager.Configure(p, *this);//p.get<fhicl::ParameterSet> ("WeightManagerConfig"), *this);
 
-  for (auto ifunc=rw_func.begin(); ifunc!=rw_func.end(); ifunc++) {
-    fhicl::ParameterSet const &ps_func=p.get<fhicl::ParameterSet> (*ifunc);
-    std::string func_type=ps_func.get<std::string>("type");
-    
-    WeightCalc* wcalc=WeightCalcFactory::Create(func_type+"WeightCalc");
-    if ( wcalc==NULL ) 
-      throw cet::exception(__FUNCTION__) << "Function "<<*ifunc<<" requested in fcl file has not been registered!"<<std::endl;    
-    if ( fWeightCalcMap.find(*ifunc)!=fWeightCalcMap.end() ) 
-      throw cet::exception(__FUNCTION__) << "Function "<<*ifunc<<" has been requested multiple times in fcl file!"<<std::endl;
-       
-    mf::LogInfo("")<<"Configuring weight calculator "<<*ifunc;
-    
-    //create random engine for each rw function (name=*ifunc) (and seed it with random_seed set in the fcl)
-    seedservice->createEngine(*this, "HepJamesRandom", *ifunc, ps_func, "random_seed");
+  fGenieModuleLabel = p.get<std::string> ("genie_module_label", "generator");
 
-    //seedservice->createEngine(*this, ps_func,"random_seed");
-    
-    wcalc->SetName(*ifunc);
-    wcalc->Configure(p);
-    Weight_t* winfo=new Weight_t();
-    winfo->fWeightCalcType=func_type;
-    winfo->fWeightCalc=wcalc;
-    winfo->fNmultisims=ps_func.get<int>("number_of_multisims");
-      
-    std::pair<std::string, Weight_t*> pwc(*ifunc,winfo);
-    fWeightCalcMap.insert(pwc);
-  }
- 
   // Call appropriate produces<>() functions here.
-  if ( fWeightCalcMap.size()>0 ) 
-    produces<std::vector<MCEventWeight> >();
+  if ( n_func > 0 ) 
+    produces<std::vector<evwgh::MCEventWeight> >();
 
 }
 
 void EventWeight::produce(art::Event & e)
 {
   // Implementation of required member function here.
-  std::unique_ptr<std::vector<MCEventWeight> > mcwghvec(new std::vector<MCEventWeight>);
+  std::unique_ptr<std::vector<evwgh::MCEventWeight> > mcwghvec(new std::vector<evwgh::MCEventWeight>);
 
-  //get the MC generator information out of the event       
-  //these are all handles to mc information.
+  // Get the MC generator information out of the event       
+  // these are all handles to mc information.
   art::Handle< std::vector<simb::MCTruth> > mcTruthHandle;
   std::vector<art::Ptr<simb::MCTruth> > mclist;
 
@@ -117,29 +91,17 @@ void EventWeight::produce(art::Event & e)
   art::fill_ptr_vector(mclist, mcTruthHandle);
     
 
-  // contains the mctruth object from genie
-  
- 
-  for ( unsigned int inu=0; inu<mclist.size();inu++) { 
-    MCEventWeight mcwgh;
-    for (auto it=fWeightCalcMap.begin();it!=fWeightCalcMap.end();it++) {
 
-      auto const & weights = it->second->GetWeight(e);
-      
-      if(weights.size() == 0){
-	std::vector< double > empty;
-	std::pair<std::string, std::vector <double> > p("empty",empty);
-	mcwgh.fWeight.insert(p);
-      }	
-      else{
-	std::pair<std::string, std::vector<double> > 
-	  p(it->first+"_"+it->second->fWeightCalcType,
-	    weights[inu]);
-	mcwgh.fWeight.insert(p);
-      }
+  //
+  // Loop over all neutrinos in this event
+  // 
+  for (unsigned int inu = 0; inu < mclist.size(); inu++) 
+  { 
 
-    }
+    evwgh::MCEventWeight mcwgh = _wgt_manager.Run(e, inu);
+
     (*mcwghvec).push_back(mcwgh);
+
   }
 
   e.put(std::move(mcwghvec));
@@ -147,6 +109,7 @@ void EventWeight::produce(art::Event & e)
 
   void EventWeight::endJob()
   {
+    /*
     std::stringstream job_summary;
     job_summary<<std::setprecision(2);
     for (int i=1;i<=110;i++) job_summary<<"=";
@@ -174,8 +137,8 @@ void EventWeight::produce(art::Event & e)
     for (int i=1;i<=110;i++) job_summary<<"=";
     job_summary<<std::endl;
     mf::LogInfo("")<<job_summary.str();
-
+    */
   }
 }
 
-DEFINE_ART_MODULE(evwgh::EventWeight)
+DEFINE_ART_MODULE(ubevwgh::EventWeight)
