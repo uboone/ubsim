@@ -40,12 +40,14 @@
   <class name="std::vector<crt::CRTTrack>"/>
   <class name="art::Wrapper< std::vector<crt::CRTTrack> >"/>
 
+<!--
   <class name="crt::MSetCRTFrag" ClassVersion="11">
    <version ClassVersion="11" checksum="2199015529"/>
    <version ClassVersion="10" checksum="1184856394"/>
   </class>
   <class name="art::Wrapper<vector<crt::MSetCRTFrag> >" />
   <class name="std::vector<crt::MSetCRTFrag>"/>
+-->
 
   <!--<class name="artdaq::Fragment" ClassVersion="10">
   </class>-->

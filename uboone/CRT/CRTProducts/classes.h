@@ -12,10 +12,10 @@
 #include "CRTSimData.hh"
 #include "CRTHit.hh"
 #include "CRTTrack.hh"
-#include "MSetCRTFrag.hh"
+////#include "MSetCRTFrag.hh"
 #include <utility>
 #include <vector>
-#include "artdaq-core/Data/Fragments.hh"
+#include <artdaq-core/Data/Fragment.hh>
 #include <map>
 
 //
@@ -35,8 +35,8 @@ template class art::Wrapper< std::vector<crt::CRTHit> >;
 template class std::vector<crt::CRTTrack>;
 template class art::Wrapper< std::vector<crt::CRTTrack> >;
 
-template class std::vector<crt::MSetCRTFrag>;
-template class art::Wrapper< std::vector<crt::MSetCRTFrag> >;
+////template class std::vector<crt::MSetCRTFrag>;
+////template class art::Wrapper< std::vector<crt::MSetCRTFrag> >;
 
 //template class std::vector< std::vector< artdaq::Fragment> >;
 //template class art::Wrapper< std::vector< std::vector< artdaq::Fragment> > >;
