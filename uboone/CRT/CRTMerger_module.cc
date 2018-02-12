@@ -167,8 +167,11 @@ void crt::CRTMerger::produce(art::Event& event)
 		
 		tmprootfile = tIFDH->translateConstraints(dim1.str());
 		
-		if (tmprootfile.size()>0)
-		crtrootfile.push_back(tmprootfile[0]);
+		if (tmprootfile.size()>0) {
+		  std::cout << "We get " << tmprootfile.size()  << " daughters of " << crtfiles[k] << ". Pushing them/it onto vector of artroot files "  << std::endl;
+		  for (const auto& artrootchild : tmprootfile)
+		    crtrootfile.push_back(artrootchild);
+		}
 	}
 	std::cout<<"total: "<<crtrootfile.size()<<std::endl;
 	
@@ -254,8 +257,8 @@ void crt::CRTMerger::produce(art::Event& event)
 		  jump = evt_time_sec - CRTHitCollection[CRTHitCollection.size()-1].ts0_s - T0; 
 		  // if jump is a large number, don't zip off end of list. Stop short by 2 files.
 		  if (jump > (unsigned long)(fCRTEvent.numberOfEventsInFile()-2) && ((fCRTEvent.numberOfEventsInFile()-2)>0) ) jump = fCRTEvent.numberOfEventsInFile()-2;
-
-		  if (CRTHitCollection[0].ts0_s==0 &&CRTHitCollection[CRTHitCollection.size()-1].ts0_s==0) // This happens for crt02 a lot, it seems.
+		  // Sometimes the Top panel has tiny (0,1) values, so make sure seconds are not crazy since the time since Epoch.
+		  if (CRTHitCollection[0].ts0_s<1300000000 && CRTHitCollection[CRTHitCollection.size()-1].ts0_s<1300000000) 
 		    {
 		      // don't ffwd any sub-events, but don't rule out doing it later (meaning, keep firstE set to true)
 		      jump = 1;
