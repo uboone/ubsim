@@ -4,7 +4,11 @@
 #include "reco_uboone_mcc7.fcl"
 #include "trackfindermodules_microboone.fcl"
 #include "seedservice_microboone.fcl"
-#include "genie_eventweight_microboone.fcl"
+#include "genie_eventweight.fcl" 
+
+#
+# The GENIE reweight driver is in larsim/EventWeight
+#
 
 process_name: EventWeightAnaTree
 
@@ -42,7 +46,7 @@ physics:
 {
     producers:{
         # EventWeight
-        genieeventweight:    @local::genie_microboone_eventweight
+        genieeventweight:    @local::genie_eventweight
         rns:            { module_type: "RandomNumberSaver" }
         }
     analyzers:{
