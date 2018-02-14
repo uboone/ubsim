@@ -534,8 +534,8 @@ void crt::pair_builder::shift_scale(int mac, int ref_nr, int ts0_ref){ //scale a
   for(int amp=0; amp<32; amp++) ts0_ref_event[0].adc[amp]=evbuf_pro[mac][ref_nr].adc[amp];
   if(evbuf_pro[mac][ref_nr].flags!=7 && evbuf_pro[mac][ref_nr].flags!=5){
     printf("\n Error\n");
-    for(int i=-2;i<5;i++){
-      printf("%d %d %d %d %d %d\n", evbuf_pro[mac][ref_nr+i].mac5, evbuf_pro[mac][ref_nr+i].flags,evbuf_pro[mac][ref_nr+i].ts0, evbuf_pro[mac][ref_nr+i].ts1, evbuf_pro[mac][ref_nr+i].adc[0],evbuf_pro[mac][ref_nr+i].sec);
+    for(int new_iter=0;new_iter<7;new_iter++){
+      printf("%d %d %d %d %d %d\n", evbuf_pro[mac][ref_nr+new_iter-2].mac5, evbuf_pro[mac][ref_nr+new_iter-2].flags,evbuf_pro[mac][ref_nr+new_iter-2].ts0, evbuf_pro[mac][ref_nr+new_iter-2].ts1, evbuf_pro[mac][ref_nr+new_iter-2].adc[0],evbuf_pro[mac][ref_nr+new_iter-2].sec);
     }
     printf("Error\n");
   }
