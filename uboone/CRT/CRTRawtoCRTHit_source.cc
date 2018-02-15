@@ -40,7 +40,6 @@
 
 #include "uboone/CRT/CRTProducts/CRTHit.hh"
 #include "uboone/CRT/CRTProducts/CRTTrack.hh"
-//#include "uboone/CRT/pair_builder_debug_6msts1.h"
 #include "uboone/CRT/CRTAuxFunctions.hh"
 
 #include "TH1F.h"
