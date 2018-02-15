@@ -4,7 +4,7 @@ process_name: DetsimWithDIC
 
 outputs.out1.fileName: "%ifb_%tc_detsim_withDIC.root"
 
-source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*" ]
+source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*" , "drop sumdata::RunData_*_*_*"]
 
 services.SignalShapingServiceMicroBooNE.YZdependentResponse:  false
 services.SignalShapingServiceMicroBooNE.datadrivenResponse:   false

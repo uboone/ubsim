@@ -16,7 +16,7 @@ physics.reco: [@sequence::microboone_reco_mcc8_stage2]
 physics.trigger_paths: [ reco ]
 outputs.out1.fileName: "%ifb_%tc_reco2_CV.root"
 outputs.out1.dataTier: "reconstructed"
-source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McRecoStage2" ]
+source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McRecoStage2", "drop sumdata::RunData_*_*_*"]
 
 
 #services.DetectorPropertiesService.NumberTimeSamples: 9600

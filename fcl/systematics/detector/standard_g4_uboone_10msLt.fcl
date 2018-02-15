@@ -4,7 +4,7 @@ process_name: G410msLt
 
 outputs.out1.fileName: "detsyst_%tc_g4_10mslt.root"
 
-source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*","drop *_*_*_G4*"]
+source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*","drop *_*_*_G4*", "drop sumdata::RunData_*_*_*"]
 
 services.DetectorPropertiesService.Electronlifetime: 10.0e3 # in microseconds
 

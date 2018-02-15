@@ -4,7 +4,7 @@ process_name: DetsimNoPENoise
 
 outputs.out1.fileName: "%ifb_%tc_detsim_noPEnoise.root"
 
-source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*" ]
+source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*", "drop sumdata::RunData_*_*_*" ]
 
 #services.UBOpticalChConfig.PedestalSpread: [ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
 #                                             0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 

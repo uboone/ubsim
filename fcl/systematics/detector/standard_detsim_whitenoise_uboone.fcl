@@ -4,7 +4,7 @@ process_name: DetsimWhiteNoise
 
 outputs.out1.fileName: "%ifb_%tc_detsim_whitenoise.root"
 
-source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*" ]
+source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*", "drop sumdata::RunData_*_*_*" ]
 
 physics.producers.daq.GenNoise: 1
 

@@ -11,7 +11,7 @@ physics.trigger_paths: [ reco ]
 outputs.out1.fileName: "%ifb_%tc_reco12_CV.root"
 outputs.out1.dataTier: "reconstructed"
 
-source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McReco*" ]
+source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McReco*", "drop sumdata::RunData_*_*_*" ]
 
 physics.producers.trajcluster.TrajClusterAlg.MatchTruth: [ -1, -1, -1, -1 ]
 physics.producers.trajcluster.DoRawDigitAssns: false
