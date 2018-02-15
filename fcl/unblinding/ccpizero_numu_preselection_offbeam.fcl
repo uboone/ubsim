@@ -1,5 +1,6 @@
 #include "services_microboone.fcl"
 #include "cluster_microboone.fcl"
+#include "calibration_microboone.fcl"
 #include "filters.fcl"
 #include "signalservices_microboone.fcl"
 #include "trackfindermodules_microboone.fcl"
@@ -38,8 +39,10 @@ source:
 
 physics:
 {
- producers:     { NuMuCCSelectionII:      @local::microboone_tpcNeutrinoID }
-
+ producers:     { 
+        NuMuCCSelectionII:      @local::microboone_tpcNeutrinoID 
+        Calorimetry:            @local::microboone_calibrationdedx
+        }
  filters:       { 
    tpcneutrinoidfilter : @local::microboone_tpcneutrinoidfilter 
   }
@@ -82,6 +85,9 @@ services.DetectorClocksService.InheritClockConfig:                     false
 services.DetectorClocksService.TriggerOffsetTPC:                       -0.400e3
 
 physics.producers.NuMuCCSelectionII.NeutrinoIDAlgName:                         "NuMuCCSelectionIIAlg"
+
+physics.producers.Calorimetry.CaloAlg: @local::microboone_calorimetryalgmcc84data
+
 
 physics.producers.NuMuCCSelectionII.NuMuCCSelectionIIAlg.BeamMin : 3.65 
 physics.producers.NuMuCCSelectionII.NuMuCCSelectionIIAlg.BeamMax : 5.25
