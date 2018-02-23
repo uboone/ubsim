@@ -1,5 +1,5 @@
-#include "WeightCalcCreator.h"
-#include "WeightCalc.h"
+#include "larsim/EventWeight/Base/WeightCalcCreator.h"
+#include "larsim/EventWeight/Base/WeightCalc.h"
 
 #include <iostream>
 
