@@ -16,6 +16,7 @@ physics.trigger_paths: [ reco ]
 physics.end_paths: [ stream1 ]
 outputs.out1.fileName: "%ifb_%tc_cali.root"
 outputs.out1.dataTier: "reconstructed"
+outputs.out1.SelectEvents: [ reco ]
 source.inputCommands: ["keep *_*_*_*"]
 
 physics.producers.NuMuCCSelectionII.NeutrinoIDAlgName: "NuMuCCSelectionIIAlg"
