@@ -4,7 +4,11 @@
 #include "reco_uboone_mcc7.fcl"
 #include "trackfindermodules_microboone.fcl"
 #include "seedservice_microboone.fcl"
-#include "genie_eventweight_microboone.fcl"
+#include "genie_eventweight.fcl" 
+
+#
+# The GENIE reweight driver is in larsim/EventWeight
+#
 
 process_name: EventWeightAnaTree
 
@@ -42,7 +46,7 @@ physics:
 {
     producers:{
         # EventWeight
-        genieeventweight:    @local::genie_microboone_eventweight
+        genieeventweight:    @local::genie_eventweight
         rns:            { module_type: "RandomNumberSaver" }
         }
     analyzers:{
@@ -51,6 +55,8 @@ physics:
         pandoraCosmiceff:    @local::microboone_neutrinotrackingeff
         pandoraNuPMAeff:     @local::microboone_neutrinotrackingeff
         pandoraNuKHiteff:    @local::microboone_neutrinotrackingeff
+        pandoraNuKalmanTrackeff: @local::microboone_neutrinotrackingeff
+        pandoraNuKalmanShowereff: @local::microboone_neutrinotrackingeff
         pmtrackeff:          @local::microboone_neutrinotrackingeff
         trackkalmanhiteff:   @local::microboone_neutrinotrackingeff
         stitchkalmanhiteff:  @local::microboone_neutrinotrackingeff
@@ -79,7 +85,7 @@ outputs:
  out1:
  {
    module_type: RootOutput
-   fileName:    "standard_reco.root"    #default file name, can override from command line with -o or --output
+   fileName:    "%ifb_%tc_eventweight.root"    #default file name, can override from command line with -o or --output
    dataTier:    "reconstructed"
    compressionLevel: 1
  }
@@ -87,37 +93,44 @@ outputs:
 
 ### Here, we overwrite ALL module labels with the ones defined above.
 #physics.analyzers.analysistree:  @local::microboone_analysistree
-physics.analyzers.analysistree.OpFlashModuleLabel:              [ "simpleFlashBeam", "simpleFlashCosmic", "opflashBeam", "opflashCosmic" ]
+physics.analyzers.analysistree.OpFlashModuleLabel:              [ "simpleFlashBeam", "simpleFlashCosmic", "opflashBeam", "opflashCosmic", "simpleFlashBeamLowPE" ]
 physics.analyzers.analysistree.HitsModuleLabel:                 "gaushit"
-physics.analyzers.analysistree.TrackModuleLabel:                ["trackkalmanhit","stitchkalmanhit","pandoraCosmic","pandoraCosmicKHit","pandoraNu","pandoraNuKHit","pandoraNuPMA","pmtrack"]
-physics.analyzers.analysistree.VertexModuleLabel:               ["cccluster", "pandoraNu", "pandoraCosmic","pmtrack","linecluster"]
+physics.analyzers.analysistree.TrackModuleLabel:                ["pandoraCosmic","pandoraCosmicKHit","pandoraCosmicKalmanTrack","pandoraNu","pandoraNuKHit","pandoraNuKalmanTrack","pandoraNuKalmanShower","pandoraNuPMA","pmtrack"]
+physics.analyzers.analysistree.VertexModuleLabel:               ["pandoraNu", "pandoraCosmic","pmtrack","linecluster","trajcluster"]
 physics.analyzers.analysistree.PandoraNuVertexModuleLabel:      ["pandoraNu"]
-physics.analyzers.analysistree.CalorimetryModuleLabel:          ["trackkalmanhitcalo","stitchkalmanhitcalo","pandoraCosmiccalo","pandoraCosmicKHitcalo","pandoraNucalo","pandoraNuKHitcalo","pandoraNuPMAcalo","pmtrackcalo"]
-physics.analyzers.analysistree.ParticleIDModuleLabel:           ["trackkalmanhitpid","stitchkalmanhitpid","pandoraCosmicpid","pandoraCosmicKHitpid","pandoraNupid","pandoraNuKHitpid","pandoraNuPMApid","pmtrackpid"]
-physics.analyzers.analysistree.CosmicTaggerAssocLabel:          ["trackkalmanhittag","stitchkalmanhittag","pandoraCosmictag","pandoraCosmicKHitPFPart","pandoraNutag","pandoraNuKHittag","pandoraNuPMAtag","pmtracktag"]
-physics.analyzers.analysistree.ContainmentTaggerAssocLabel:     ["trackkalmanhitContTag","stitchkalmanhitContTag","pandoraCosmicContTag","dummy","pandoraNuContTag","dummy","pandoraNuPMAContTag","pmtrackContTag"]
-physics.analyzers.analysistree.FlashMatchAssocLabel:            ["trackkalmanhitflashmatch","stitchkalmanhitflashmatch","pandoraCosmicFlashMatch","pandoraCosmicKHitFlashMatch","pandoraNuFlashMatch","pandoraNuKHitFlashMatch","pandoraNuPMAFlashMath","pmtrackFlashMatch"]
+physics.analyzers.analysistree.CalorimetryModuleLabel:          ["pandoraCosmiccalo","pandoraCosmicKHitcalo","pandoraCosmicKalmanTrackcalo","pandoraNucalo","pandoraNuKHitcalo","pandoraNuKalmanTrackcalo","pandoraNuKalmanShowercalo","pandoraNuPMAcalo","pmtrackcalo"]
+physics.analyzers.analysistree.ParticleIDModuleLabel:           ["pandoraCosmicpid","pandoraCosmicKHitpid","pandoraCosmicKalmanTrackpid","pandoraNupid","pandoraNuKHitpid","pandoraNuKalmanTrackpid","pandoraNuKalmanShowerpid","pandoraNuPMApid","pmtrackpid"]
+physics.analyzers.analysistree.CosmicTaggerAssocLabel:          ["pandoraCosmictag","pandoraCosmicKHitPFPart","pandoraCosmicKalmantag","pandoraNutag","pandoraNuKHittag","pandoraNuKalmanTracktag","pandoraNuKalmanShowertag","pandoraNuPMAtag","pmtracktag"]
+physics.analyzers.analysistree.ContainmentTaggerAssocLabel:     ["pandoraCosmicContTag","dummy","dummy","pandoraNuContTag","dummy","dummy","dummy","pandoraNuPMAContTag","pmtrackContTag"]
+physics.analyzers.analysistree.FlashMatchAssocLabel:            ["pandoraCosmicFlashMatch","pandoraCosmicKHitFlashMatch","pandoraCosmicKalmanTrackFlashMatch","pandoraNuFlashMatch","pandoraNuKHitFlashMatch","pandoraNuKalmanTrackFlashMatch","pandoraNuKalmanShowerFlashMatch","pandoraNuPMAFlashMath","pmtrackFlashMatch"]
 physics.analyzers.analysistree.PFParticleModuleLabel:           "pandoraNu"
-physics.analyzers.analysistree.FlashT0FinderLabel:              ["t0","t0","t0","t0","t0","t0","t0","t0"]
-physics.analyzers.analysistree.MCT0FinderLabel:                 ["mct0","mct0","mct0","mct0","mct0","mct0","mct0", "mct0"]
-physics.analyzers.analysistree.T0RecoAnodeCathodePiercingLabel: ["t0reco","t0reco","t0reco","t0reco","t0reco","t0reco","t0reco", "mct0"]
+physics.analyzers.analysistree.FlashT0FinderLabel:              ["t0","t0","t0","t0","t0","t0","t0","t0","t0"]
+physics.analyzers.analysistree.MCT0FinderLabel:                 ["mct0","mct0","mct0","mct0","mct0","mct0","mct0","mct0","mct0"]
+physics.analyzers.analysistree.TrackMCSFitLabel:                ["pandoraCosmicMCSMu","pandoraCosmicKHitMCSMu","pandoraCosmicKalmanTrackMCSMu","pandoraNuMCSMu","pandoraNuKHitMCSMu","pandoraNuKalmanTrackMCSMu","pandoraNuKalmanShowerMCSMu","pandoraNuPMAMCSMu","pmtrackMCSMu"]
+physics.analyzers.analysistree.T0RecoAnodeCathodePiercingLabel: ["t0reco","t0reco","t0reco","t0reco","t0reco","t0reco","t0reco","t0reco","t0reco"]
 physics.analyzers.analysistree.CosmicScoreThresholds:           [0.0]
 physics.analyzers.analysistree.GenieGenModuleLabel:             "generator"
 physics.analyzers.analysistree.POTModuleLabel:                  "generator"
 physics.analyzers.analysistree.CryGenModuleLabel:               "cry"
-physics.analyzers.analysistree.ShowerModuleLabel:               ["showerrecofuzzy","showerrecopandora"]
+physics.analyzers.analysistree.ShowerModuleLabel:               ["showerrecopandora","pandoraCosmic","pandoraNu"]
 physics.analyzers.analysistree.SWTriggerModuleLabel:            "swtrigger"
+physics.analyzers.analysistree.OpticalFilterLabel:              "opfiltercommon"
 
 physics.analyzers.analysistree.IgnoreMissingShowers:            true
 physics.analyzers.analysistree.SavePandoraNuVertexInfo:         true
 physics.analyzers.analysistree.SavePFParticleInfo:              true
 physics.analyzers.analysistree.SaveCryInfo:                     false
 physics.analyzers.analysistree.SaveSWTriggerInfo:               true
+physics.analyzers.analysistree.SaveOpticalFilterInfo:           true
 
 physics.analyzers.pandoraNueff.TrackModuleLabel:       "pandoraNu"
 physics.analyzers.pandoraCosmiceff.TrackModuleLabel:   "pandoraCosmic"
 physics.analyzers.pandoraNuPMAeff.TrackModuleLabel:    "pandoraNuPMA"
 physics.analyzers.pandoraNuKHiteff.TrackModuleLabel:   "pandoraNuKHit"
+physics.analyzers.pandoraNuKalmanTrackeff.TrackModuleLabel: "pandoraNuKalmanTrack"
+physics.analyzers.pandoraNuKalmanShowereff.TrackModuleLabel: "pandoraNuKalmanShower"
 physics.analyzers.pmtrackeff.TrackModuleLabel:         "pmtrack"
 physics.analyzers.trackkalmanhiteff.TrackModuleLabel:  "trackkalmanhit"
 physics.analyzers.stitchkalmanhiteff.TrackModuleLabel: "stitchkalmanhit"
+
+

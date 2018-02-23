@@ -1,7 +1,11 @@
 #include "services_microboone.fcl"
 #include "time_memory_tracker_microboone.fcl"
 #include "seedservice_microboone.fcl"
-#include "genie_eventweight_microboone.fcl"
+#include "genie_eventweight.fcl" 
+
+#
+# The GENIE reweight driver is in larsim/EventWeight
+#
 
 process_name: GenieEventWeight
 
@@ -37,7 +41,7 @@ source:
 physics:
 {
  producers:{
-   genieeventweight:    @local::genie_microboone_eventweight
+   genieeventweight:    @local::genie_eventweight
    rns:                 { module_type: "RandomNumberSaver" }
  }
 

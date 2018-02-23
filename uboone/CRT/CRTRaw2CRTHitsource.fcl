@@ -25,6 +25,7 @@ services:
 source:
 {
 	module_type	:CRTRawtoCRTHit
+	maxEvents:   10        # Number of events to create
 	fileNames       :[]
 	ModuleLabel	:"crthit"
 	InstanceLabel	:""

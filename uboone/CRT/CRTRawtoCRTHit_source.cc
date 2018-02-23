@@ -40,7 +40,6 @@
 
 #include "uboone/CRT/CRTProducts/CRTHit.hh"
 #include "uboone/CRT/CRTProducts/CRTTrack.hh"
-//#include "uboone/CRT/pair_builder_debug_6msts1.h"
 #include "uboone/CRT/CRTAuxFunctions.hh"
 
 #include "TH1F.h"
@@ -170,7 +169,7 @@ public:
   
 private:
   
-  art::SourceHelper  fSourceHelper;
+  art::SourceHelper const& fSourceHelper;
   std::string        fModuleLabel;
   std::string        fInstanceLabel;
   std::ifstream      fInputStreamList;
@@ -677,11 +676,13 @@ bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::S
     }
   outE = fSourceHelper.makeEventPrincipal(run_num, subrun_num, fEventNumber++, v_crt_time);
   event_counter++;
-  if(event_counter%1==0){
+  /*
+    if(event_counter%1==0){
     const time_t ctt = time(0);
-    std::cout<<"Wrote event Nr: "<< event_counter << " at: " << asctime(localtime(&ctt));
-    std::cout<<"Found total: " << total_hits << " in the second: "<< allCRTHits[0].ts0_s <<std::endl;
-  }
+    //std::cout<<"Wrote event Nr: "<< event_counter << " at: " << asctime(localtime(&ctt));
+    //std::cout<<"Found total: " << total_hits << " in the second: "<< allCRTHits[0].ts0_s <<std::endl;
+    }
+  */
   //evt.put(std::move(CRTHiteventCol));
   art::put_product_in_principal(std::move(CRTHiteventCol),*outE, fModuleLabel, fInstanceLabel);
   allCRTHits.erase(allCRTHits.begin(), allCRTHits.end());
