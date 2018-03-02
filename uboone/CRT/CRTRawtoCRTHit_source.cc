@@ -308,7 +308,7 @@ private:
   int plane = -1;
   double td = -1e19;
   double pestot = -1e19;
-  std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
+  std::map< uint8_t, std::vector<std::pair<int,float> > > pesmap;
   ////////////////////////////////////////////////////////////////////////////////////////////////
 };
 
@@ -1215,8 +1215,8 @@ void crt::CRTRawInputDetail::make2DHit(){
     
     crt2Dhit.plane = pos_tevt1[3]; 
 
-    std::vector<std::pair<int,double> > vec_pes_tevt;
-    std::vector<std::pair<int,double> > vec_pes_st;
+    std::vector<std::pair<int,float> > vec_pes_tevt;
+    std::vector<std::pair<int,float> > vec_pes_st;
 
     for(size_t i_chan=0; i_chan<32; ++i_chan){
       int key_tevt = coincidence[0].mac5*100+i_chan;
@@ -1224,7 +1224,7 @@ void crt::CRTRawInputDetail::make2DHit(){
       std::pair<double,double> pedestal_tevt = crt::auxfunctions::getGain(key_tevt, SiPMpedestal);
       double pes_tevt = ( (coincidence[0].adc[i_chan]) - pedestal_tevt.first) / gain_tevt.first;
       //double pes_tevt =  (double)coincidence[0].adc[i_chan];
-      std::pair<int,double> pair_tevt = std::make_pair(i_chan,pes_tevt);
+      std::pair<int,float> pair_tevt = std::make_pair(i_chan,pes_tevt);
       vec_pes_tevt.push_back(pair_tevt);
 
       int key_st = coincidence[1].mac5*100+i_chan;
@@ -1232,11 +1232,11 @@ void crt::CRTRawInputDetail::make2DHit(){
       std::pair<double,double> pedestal_st = crt::auxfunctions::getGain(key_st, SiPMpedestal);
       double pes_st = ( coincidence[1].adc[i_chan] - pedestal_st.first) / gain_st.first;
       //double pes_st =  (double)coincidence[1].adc[i_chan];
-      std::pair<int,double> pair_st = std::make_pair(i_chan,pes_st);
+      std::pair<int,float> pair_st = std::make_pair(i_chan,pes_st);
       vec_pes_st.push_back(pair_st);
     }
     
-    std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap_hit;
+    std::map< uint8_t, std::vector<std::pair<int,float> > > pesmap_hit;
     pesmap_hit[coincidence[0].mac5] = vec_pes_tevt;
     pesmap_hit[coincidence[1].mac5] = vec_pes_st;
     crt2Dhit.pesmap = pesmap_hit;
