@@ -15,7 +15,8 @@
   <class name="art::Wrapper< std::vector<crt::CRTSimData> >"/>
  
   
-  <class name="crt::CRTHit" ClassVersion="16">
+  <class name="crt::CRTHit" ClassVersion="17">
+   <version ClassVersion="17" checksum="1715053766"/>
    <version ClassVersion="16" checksum="165578988"/>
    <version ClassVersion="15" checksum="3296007532"/>
    <version ClassVersion="14" checksum="1325563170"/>

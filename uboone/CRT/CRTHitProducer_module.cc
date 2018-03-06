@@ -387,11 +387,11 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 	      
 	      CRTHitevent.ts0_s = hit_time_s; //errors!!  missing
 	      CRTHitevent.ts0_ns = hit_time_ns; //errors!!  missing
-	      CRTHitevent.ts0_s_err = sqrt(hit_time_s); //errors!!  missing //just filling
-	      CRTHitevent.ts0_ns_err = sqrt(hit_time_ns); //errors!!  missing
+	      //  CRTHitevent.ts0_s_err = sqrt(hit_time_s); //errors!!  missing //just filling
+	      //CRTHitevent.ts0_ns_err = sqrt(hit_time_ns); //errors!!  missing
 	      
 	      CRTHitevent.ts1_ns = (this_event->Time_TS1() -  event_st->Time_TS1() ) /2    ; //errors!!  missing
-	      CRTHitevent.ts1_ns_err = sqrt ( (this_event->Time_TS1() -  event_st->Time_TS1() ) /2  )  ; //errors!!  missing
+	      //CRTHitevent.ts1_ns_err = sqrt ( (this_event->Time_TS1() -  event_st->Time_TS1() ) /2  )  ; //errors!!  missing
 	      	      
 	      CRTHitevent.plane = plane;
 	      

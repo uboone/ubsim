@@ -22,7 +22,6 @@ art_make( BASENAME_ONLY
   	CRTMerger_module.cc
 	TimeExtraction_module.cc
 	MergeTest_module.cc
-	mergeCRTHits_module.cc
 	CRTRawtoCRTHit_source.cc
 	CRTAnalyser_module.cc	
     LIBRARY_NAME  
@@ -182,17 +181,6 @@ simple_plugin(MergeTest "module"
           art_Framework_Services_Registry
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
-
-
-simple_plugin(mergeCRTHits "module"
-            CRT
-	  bernfebdaq-core_Overlays
-          art_Framework_Services_Optional
-          art_Framework_Services_Registry
-          art_Framework_Services_Optional_TFileService_service
-          ${ROOT_BASIC_LIB_LIST} )
-
-
 
 simple_plugin(CRTRawtoCRTHit "source"
             CRT
