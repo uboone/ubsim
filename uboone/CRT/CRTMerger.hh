@@ -46,7 +46,7 @@ namespace crt
 		
 		void produce( art::Event &evt ) override;
 		
-		void reconfigure(fhicl::ParameterSet const & p) override;
+		void reconfigure(fhicl::ParameterSet const & p) ;
 		private:
 		
 		std::vector< std::vector< artdaq::Fragment > > w;
