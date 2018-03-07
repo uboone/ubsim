@@ -26,8 +26,8 @@
 template class std::vector<crt::CRTSimData>;
 template class art::Wrapper< std::vector<crt::CRTSimData> >;
 
-template class std::vector< std::pair<int,double> >;
-template class std::map< unsigned char, std::vector< std::pair<int,double> > >;
+template class std::vector< std::pair<int,float> >;
+template class std::map< unsigned char, std::vector< std::pair<int,float> > >;
 
 template class std::vector<crt::CRTHit>;
 template class art::Wrapper< std::vector<crt::CRTHit> >;

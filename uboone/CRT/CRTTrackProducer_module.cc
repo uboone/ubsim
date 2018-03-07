@@ -242,9 +242,9 @@ void bernfebdaq::CRTTrackProducer::produce(art::Event & evt)
 	  for(unsigned int a=0; a<febsA.size(); a++)feb_id_track.push_back(febsA[a]);
 	  for(unsigned int b=0; b<febsB.size(); b++)feb_id_track.push_back(febsB[b]);
 	  
-	  std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap_track;
-	  std::map< uint8_t, std::vector<std::pair<int,double> > > pesmapA = CRTHiteventA.pesmap;
-	  std::map< uint8_t, std::vector<std::pair<int,double> > > pesmapB = CRTHiteventB.pesmap;
+	  std::map< uint8_t, std::vector<std::pair<int,float> > > pesmap_track;
+	  std::map< uint8_t, std::vector<std::pair<int,float> > > pesmapA = CRTHiteventA.pesmap;
+	  std::map< uint8_t, std::vector<std::pair<int,float> > > pesmapB = CRTHiteventB.pesmap;
 
 	  for(auto itA = begin(pesmapA); itA != end(pesmapA); ++itA)pesmap_track[(*itA).first] = (*itA).second;
 	  for(auto itB = begin(pesmapB); itB != end(pesmapB); ++itB)pesmap_track[(*itB).first] = (*itB).second;
