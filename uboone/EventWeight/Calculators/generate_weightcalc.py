@@ -43,8 +43,8 @@ def main(argv):
    print 'Genarating function', filename
 
    ofstr='''
-#include \"WeightCalcCreator.h\"
-#include \"WeightCalc.h\"
+#include \"larsim/EventWeight/Base/WeightCalcCreator.h\"
+#include \"larsim/EventWeight/Base/WeightCalc.h\"
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
