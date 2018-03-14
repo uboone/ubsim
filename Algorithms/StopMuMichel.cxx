@@ -43,11 +43,6 @@ namespace cosmictag {
  
   bool StopMuMichel::IsStopMuMichel(const cosmictag::SimpleCluster & cluster) {
 
-
-    //const int                    & _start_index      = cluster._start_index;
-    //const std::vector<SimpleHit> & _s_hit_v          = cluster._s_hit_v;
-    //const bool                   & _start_hit_is_set = cluster._start_hit_is_set;
-    //const std::vector<double>    & _dqds_v           = cluster._dqds_v;
     const std::vector<double>    & _dqds_slider      = cluster._dqds_slider;
     const std::vector<double>    & _linearity_v      = cluster._linearity_v;
 
@@ -145,39 +140,24 @@ namespace cosmictag {
     //dqds_end.clear();
     dqds_end = _dqds_slider;
 
-    // Remove first "_hits_to_remove" and last "_hits_to_remove" hits
-    /*if (offset > 0) {
-      dqds_end.erase(dqds_end.begin(), dqds_end.begin() + offset);
-    } else {
-      dqds_end.erase(dqds_end.begin(), dqds_end.begin() + _hits_to_remove);
-    }*/
-    std::cout << "_dqds_slider vector has size " << _dqds_slider.size() << std::endl;
-    std::cout << "dqds_end vector has size " << dqds_end.size() << std::endl;
     dqds_end.erase(dqds_end.begin(), dqds_end.begin() + bragg_index - (_pre_post_window + 5));
     dqds_end.erase(dqds_end.end() - _hits_to_remove, dqds_end.end());
-
-    std::cout << "dqds_end vector has size " << dqds_end.size() << std::endl;
 
     bragg_index = (_pre_post_window + 5);
 
     if (dqds_end.size() <= (size_t)bragg_index) {
-      std::cout << "Not enough hits." << std::endl;
+      CT_DEBUG() << "Not enough hits." << std::endl;
       return false;
     }
-    std::cout << "bragg index is " << bragg_index << std::endl;
-    std::cout << "at bragg index dqds_end vector is " << dqds_end.at(bragg_index) << std::endl;
 
     for (size_t i = 0; i < dqds_end.size(); i++) std::cout << i << ": dqds_end = " << dqds_end.at(i) << std::endl;
 
-    std::cout << "here1, dqds_end.size() is " << dqds_end.size() << ", _pre_post_window is " << _pre_post_window << std::endl;
     double start_mean = std::accumulate(dqds_end.begin(), dqds_end.begin() + _pre_post_window, 0);
     start_mean /= _pre_post_window;
 
-    std::cout << "here2" << std::endl;
     double end_mean = std::accumulate(dqds_end.end() - _pre_post_window, dqds_end.end(), 0);
     end_mean /= _pre_post_window;
 
-    std::cout << "here3" << std::endl;
     int edge = bragg_index + 5;
 
     if (dqds_end.size() - edge < (size_t) _pre_post_window) {

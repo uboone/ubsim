@@ -37,23 +37,14 @@ namespace cosmictag {
   bool StopMuBragg::IsStopMuBragg(const cosmictag::SimpleCluster & cluster) const {
 
 
-    //const int                    & _start_index      = cluster._start_index;
-    //const std::vector<SimpleHit> & _s_hit_v          = cluster._s_hit_v;
-    //const bool                   & _start_hit_is_set = cluster._start_hit_is_set;
-    //const std::vector<double>    & _dqds_v           = cluster._dqds_v;
     const std::vector<double>    & _dqds_slider      = cluster._dqds_slider;
     const std::vector<double>    & _linearity_v      = cluster._linearity_v;
-
 
     if (_dqds_slider.size() < (unsigned int) (_pre_post_window * 2)) {
       CT_DEBUG() << "Can't make decision, number of simple hits is " << _dqds_slider.size() 
                  << ", which is less then " << _pre_post_window * 2 << std::endl;
       return false;
     }
-
-    // Vertex must not be in the FV
-    //if (_fv.InFV(_vertex))
-      //return false;
 
     // Find the hits with the maximum dqds, that one will be the hit
     // where the Bragg peak is
@@ -67,6 +58,7 @@ namespace cosmictag {
         flag = false;
       }
     }
+
 
     CT_DEBUG() << "Bragg peak hit index is " << bragg_index << std::endl;
 
