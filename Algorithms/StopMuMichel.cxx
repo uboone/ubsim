@@ -150,7 +150,7 @@ namespace cosmictag {
       return false;
     }
 
-    for (size_t i = 0; i < dqds_end.size(); i++) std::cout << i << ": dqds_end = " << dqds_end.at(i) << std::endl;
+    for (size_t i = 0; i < dqds_end.size(); i++) CT_DEBUG() << i << ": dqds_end = " << dqds_end.at(i) << std::endl;
 
     double start_mean = std::accumulate(dqds_end.begin(), dqds_end.begin() + _pre_post_window, 0);
     start_mean /= _pre_post_window;
