@@ -32,6 +32,7 @@
 #include "microboone_dqmtpcbursts.fcl"
 #include "microboone_dqmgoodruns.fcl"
 #include "mcsfitproducer.fcl"
+#include "wcls.fcl"
 
 BEGIN_PROLOG
 
@@ -113,7 +114,9 @@ microboone_reco_data_producers:
   ### noise filtering (if needed)
 
   #digitfilter:                    @local::microboone_rawdigitfilter
-  wcNoiseFilter:                  @local::microboone_wirecellnoisefilter
+  #wcNoiseFilter:                  @local::microboone_wirecellnoisefilter
+  nfsp:                            @local::wcls.producers.nfsp
+  butcher:                         @local::wcls.producers.butcher
 
   ### calwire producers
   caldata:                        @local::microboone_calroi
@@ -310,7 +313,9 @@ microboone_reco_data_optical: [ saturation,
                                 simpleFlashBeamLowPE]
 
 microboone_reco_data_signalprocessing: [ #digitfilter,
-				         wcNoiseFilter,
+				         #wcNoiseFilter,
+					 nfsp,
+					 butcher,
 				         caldata,
                                          gaushit ]
 
@@ -485,7 +490,9 @@ microboone_dqm_ana: [                    @sequence::microboone_dqm_ana_stage1,
 # this turns on the truncation of the RawDigits
 #microboone_reco_data_producers.digitfilter.TruncateTicks:                        true
 
-microboone_reco_data_producers.caldata.DigitModuleLabel:                         "wcNoiseFilter"
+microboone_reco_data_producers.nfsp.wcls_main.configs:                           [ "ubnfsp-before.json.bz2" ]
+
+microboone_reco_data_producers.caldata.DigitModuleLabel:                         "butcher"
 microboone_reco_data_producers.caldata.Threshold:                                [0, 0, 0]  # Not what you think...
 microboone_reco_data_producers.caldata.NumSigma:                                 [9, 9, 9]  # Closer to what you think...
 microboone_reco_data_producers.caldata.ROIFinder.Threshold:                      [0, 0, 0]
