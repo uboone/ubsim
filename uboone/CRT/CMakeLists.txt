@@ -1,8 +1,7 @@
 # canvas_utlities
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( $ENV{NUTOOLS_INC} )
-#include_directories( $ENV{IFDHC_DIR}/Linux64bit+3.10-2.17-e10-p2711-prof/inc )
-#include_directories( $ENV{IFDHC_FQ_DIR}/inc )
+include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 
 add_subdirectory(CRTProducts)
 add_subdirectory(CRTBernFEBDAQCore)
@@ -201,27 +200,27 @@ simple_plugin(CRTAnalyser "module"
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
 
-#simple_plugin( CRTMerger "module"
-#  CRT
-#  bernfebdaq-core_Overlays
-#   lardataobj_RecoBase
-#  ${CETLIB}	
-#  ${ROOT_BASIC_LIB_LIST}
-#  ${ART_UTILITIES}
-#  ${ART_FRAMEWORK_SERVICES_REGISTRY}
-#  ${ART_FRAMEWORK_SERVICES_SYSTEM_FILECATALOGMETADATA_SERVICE}
-#  ${ARTDAQ_CORE}
-#  ${FHICLCPP}
-#  ${MF_MESSAGELOGGER}
-#  ${MF_UTILITIES}
-#  ${CETLIB}
-#  ${GALLERY}
-#  CRTProducts
-#  ifdh
-#  gallery
-#  boost_date_time
-#  cetlib #cetlib_except	
-#)
+simple_plugin( CRTMerger "module"
+  CRT
+  bernfebdaq-core_Overlays
+   lardataobj_RecoBase
+  ${CETLIB}	
+  ${ROOT_BASIC_LIB_LIST}
+  ${ART_UTILITIES}
+  ${ART_FRAMEWORK_SERVICES_REGISTRY}
+  ${ART_FRAMEWORK_SERVICES_SYSTEM_FILECATALOGMETADATA_SERVICE}
+  ${ARTDAQ_CORE}
+  ${FHICLCPP}
+  ${MF_MESSAGELOGGER}
+  ${MF_UTILITIES}
+  ${CETLIB}
+  ${GALLERY}
+  CRTProducts
+  ifdh
+  gallery
+  boost_date_time
+  cetlib #cetlib_except	
+)
 
 
 install_headers()
