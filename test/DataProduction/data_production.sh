@@ -23,17 +23,17 @@ do
   input=$output
 done
 
-for fcl in standard_larcv_uboone_data.fcl
-do
-  out=`basename $fcl .fcl`.out
-  err=`basename $fcl .fcl`.err
-  input=reco_uboone_data_mcc8_driver_stage2_reduced.root
-  cmd="lar --rethrow-all -c $fcl -s $input -n 5"
-  echo $cmd
-  $cmd > $out 2> $err
-  stat=$?
-  echo "Command finished with status $stat"
-  if [ $stat -ne 0 ]; then
-    exit $stat
-  fi
-done
+#for fcl in standard_larcv_uboone_data.fcl
+#do
+#  out=`basename $fcl .fcl`.out
+#  err=`basename $fcl .fcl`.err
+#  input=reco_uboone_data_mcc8_driver_stage2_reduced.root
+#  cmd="lar --rethrow-all -c $fcl -s $input -n 5"
+#  echo $cmd
+#  $cmd > $out 2> $err
+#  stat=$?
+#  echo "Command finished with status $stat"
+#  if [ $stat -ne 0 ]; then
+#    exit $stat
+#  fi
+#done
