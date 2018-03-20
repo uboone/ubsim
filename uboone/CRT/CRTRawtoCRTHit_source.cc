@@ -181,9 +181,11 @@ private:
   size_t             fPrevRunNumber;
   size_t             fPrevSubRunNumber;
 
+  bool               fDone;
+  
   std::vector<std::ifstream>                  fInputStreams;
   std::vector<art::Timestamp>                 fInputStreamLastPullTime;
-  
+
   //pair_builder stuff here////////////////////////////////////////////////////////////////////
   //pair functions///////////////////////////////////////
   void receive_data(); // receive data from zmq socket
@@ -324,7 +326,8 @@ crt::CRTRawInputDetail::CRTRawInputDetail(fhicl::ParameterSet const & ps,
     fInstanceLabel(ps.get<std::string>("InstanceLabel")),
     fEventNumber(0),
     fPrevRunNumber(0),
-    fPrevSubRunNumber(0)
+    fPrevSubRunNumber(0),
+    fDone(false)
 {
   helper.reconstitutes< std::vector<crt::CRTHit>, art::InEvent >(fModuleLabel,fInstanceLabel);
   run_mode_ = ps.get<int>("run_mode");
@@ -574,6 +577,10 @@ void crt::CRTRawInputDetail::closeCurrentFile()
 
 bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::SubRunPrincipal const* const inSR,
 				      art::RunPrincipal*& outR, art::SubRunPrincipal*& outSR, art::EventPrincipal*& outE){
+
+  if(fDone)
+    return false;
+ 
   //main loop until all 2d hits of a second are found //////////////////////////////////////////////
   while(save_event!=1 && EndOfFile==0){   //endless loop over all events receiving   
     //If one pro buffer is full->scan the whole buffer without scaling, else print status of buffer
@@ -643,6 +650,7 @@ bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::S
       total_hits+=hit_counter;
       uint32_t this_sec=allmyCRTHits[0].ts0_s;
       std::cout<<"Found: " << hit_counter << " of " << total_hits << " int the second: "<< this_sec << " End: "<< EndOfFile << std::endl << " no more hits in the file" << std::endl;
+      fDone = true;
     }
   }//end of end of file treatment///////////////////////////////////////////////////////////////////////////////////////////////
   
