@@ -31,10 +31,9 @@ art_make( BASENAME_ONLY
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        art_Persistency_Provenance 
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
 	lardataobj_RecoBase
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
         ${MF_MESSAGELOGGER}
@@ -68,10 +67,9 @@ simple_plugin( CRTGeometryHelper service
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        art_Persistency_Provenance 
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
         ${MF_MESSAGELOGGER}
         ${MF_UTILITIES}
@@ -86,10 +84,9 @@ simple_plugin( CRTDetSim module
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        art_Persistency_Provenance 
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
         lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
         nutools_RandomUtils_NuRandomService_service
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -108,10 +105,9 @@ simple_plugin(CRTCalibration "module"
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        art_Persistency_Provenance 
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
         lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
       nutools_RandomUtils_NuRandomService_service
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
