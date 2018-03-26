@@ -33,6 +33,7 @@ physics.producers.trajclusterTruthMatch.HitParticleAssociations.HitModuleLabel: 
 services.TFileService.fileName: "reco_stage_1b_hist.root"
 services.BackTrackerService:  @local::microboone_backtrackerservice
 services.BackTrackerService.OverrideRealData: true
+services.ParticleInventoryService:  @local::standard_particleinventoryservice
 physics.producers.btload:   { module_type: BackTrackerLoader }
 physics.producers.btload.OverrieRealData: true
 physics.reco: [ btload, gaushitTruthMatch ]
