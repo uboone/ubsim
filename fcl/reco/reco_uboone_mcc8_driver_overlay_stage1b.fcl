@@ -31,8 +31,8 @@ physics.producers.trajclusterTruthMatch.HitParticleAssociations.HitPartAssnsLabe
 physics.producers.trajclusterTruthMatch.HitParticleAssociations.HitModuleLabel:     "trajcluster"
 
 services.TFileService.fileName: "reco_stage_1b_hist.root"
-services.BackTracker:  @local::microboone_backtracker
-services.BackTracker.OverrideRealData: true
+services.BackTrackerService:  @local::microboone_backtrackerservice
+services.BackTrackerService.OverrideRealData: true
 physics.producers.btload:   { module_type: BackTrackerLoader }
 physics.producers.btload.OverrieRealData: true
 physics.reco: [ btload, gaushitTruthMatch ]
