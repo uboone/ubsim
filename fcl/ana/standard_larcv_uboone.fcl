@@ -5,6 +5,7 @@ process_name: DLprod
 
 services:
 {
+  TFileService: { fileName: "larcv.root" }
   scheduler:    { defaultExceptions: false }    # Make all uncaught exceptions fatal.
   TimeTracker:  {}
   MemoryTracker:     {} # default is one
