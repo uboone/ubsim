@@ -1,7 +1,6 @@
 # canvas_utlities
-#include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( $ENV{NUTOOLS_INC} )
-#include_directories( $ENV{IFDHC_DIR}/Linux64bit+3.10-2.17-e10-p2711-prof/inc )
 include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 
 add_subdirectory(CRTProducts)
@@ -33,9 +32,7 @@ art_make( BASENAME_ONLY
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
         art_Persistency_Common 
-        canvas
         art_Persistency_Provenance 
-        canvas
         art_Utilities 
         canvas
 	lardataobj_RecoBase
@@ -72,9 +69,7 @@ simple_plugin( CRTGeometryHelper service
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
         art_Persistency_Common 
-        canvas
         art_Persistency_Provenance 
-        canvas
         art_Utilities 
         canvas
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -92,9 +87,7 @@ simple_plugin( CRTDetSim module
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
         art_Persistency_Common 
-        canvas
         art_Persistency_Provenance 
-        canvas
         art_Utilities 
         canvas
         lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
@@ -116,9 +109,7 @@ simple_plugin(CRTCalibration "module"
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
         art_Persistency_Common 
-        canvas
         art_Persistency_Provenance 
-        canvas
         art_Utilities 
         canvas
         lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
