@@ -123,6 +123,8 @@ namespace detsim {
 
     int         fSample; // for histograms, -1 means no histos
 
+    double      fNoiseAmpScaleFactor; // For assessing systematic on noise amplitude 
+
     //std::vector<std::vector<std::vector<int> > > fYZwireOverlap; //channel ranges for shorted wires and corresponding channel ranges for wires effected on other planes
 
     //define max ADC value - if one wishes this can
@@ -219,6 +221,7 @@ namespace detsim {
     if(fTestIndex.size() != fTestCharge.size())
       throw cet::exception(__FUNCTION__)<<"# test pulse mismatched: check TestIndex and TestCharge fcl parameters...";
     fSample           = p.get<int                  >("Sample");
+    fNoiseAmpScaleFactor=p.get< double             >("NoiseAmpScaleFactor",1.0);
 
     //fYZwireOverlap    = p.get<std::vector<std::vector<std::vector<int> > > >("YZwireOverlap");
 
@@ -1212,7 +1215,7 @@ namespace detsim {
 
     // 0.77314 scale factor accounts for fact that original DDN designed based
     // on the Y plane, updated fit takes average of wires on 2400 on each plane
-    double scalefactor = 0.83 * (rms_quantilemethod/baseline) * sqrt(para*para + pow(parb*wirelength/100 + parc, 2));
+    double scalefactor = fNoiseAmpScaleFactor * 0.83 * (rms_quantilemethod/baseline) * sqrt(para*para + pow(parb*wirelength/100 + parc, 2));
     for(size_t i=0; i<waveform_size; ++i) {
       noise[i] = fb->GetBinContent(i+1)*scalefactor;
     }
