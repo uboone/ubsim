@@ -156,11 +156,19 @@ void crt::CRTMerger::produce(art::Event& event)
 	// Find the corresponding child artroot file
 	std::vector< std::string > crtrootfile;
 	std::vector< std::string > tmprootfile;
+
+
+	char const* ubchar = std::getenv( "UBOONECODE_VERSION" );
+	if ( ubchar == NULL ) {
+	  std::cout << "Did not retrieve value for UBOONECODE_VERSION. Will not find any proper CRT artroot daughters to merge." << std::endl;
+	}
+	std::string ubversion(ubchar);
 	
 	for(unsigned k =0; k<crtfiles.size(); k++)
 	{
 		std::ostringstream dim1;
-		dim1<<"file_format "<<"artroot"<<" and ischildof: (file_name "<<crtfiles[k]<<")"<<std::endl;
+		// add constraint that current CRTMerge job release must match that in which the CRTHits were created/swizzled.
+		dim1<<"file_format "<<"artroot"<<" and fcl.version " << ubversion << " and ischildof: (file_name "<<crtfiles[k]<<")"<<std::endl;
 		
 		if (_debug)
 		  std::cout<<"dim1 = "<<dim1.str()<<std::endl;
