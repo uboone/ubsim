@@ -46,11 +46,15 @@ crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset): data_label_DAQHeader
 	//setenv("IFDH_DATA_DIR","/uboone/data/users/kolahalb/MicroBooNE/",1);
 	//std::cout<<"ifdh_data_dir "<<getenv("IFDH_DATA_DIR")<<std::endl;
 	
+
+
+
 	this->reconfigure(pset);
 	produces< std::vector<crt::CRTHit> >();
 	fTag		= pset.get<art::InputTag> ("InputTagName");
 	_debug		= pset.get<bool>		 ("debug");
 	fTimeOffSet	= pset.get<std::vector< unsigned long > > ("test_t_offset");
+
 	previouscrtrootfile = "";
 	if ( ! tIFDH ) tIFDH = new ifdh_ns::ifdh;
 }
@@ -158,12 +162,12 @@ void crt::CRTMerger::produce(art::Event& event)
 	std::vector< std::string > tmprootfile;
 
 
-	char const* ubchar = std::getenv( "UBOONECODE_VERSION" );
-	if ( ubchar == NULL ) {
-	  std::cout << "Did not retrieve value for UBOONECODE_VERSION. Will not find any proper CRT artroot daughters to merge." << std::endl;
+	if ( fUBversion_CRTHits == NULL ) {
+	  std::cout << "Did not retrieve value for UBOONECODE_VERSION nor is there a specified CRTHits version to use. Will not find any proper CRT artroot daughters to merge." << std::endl;
 	}
-	std::string ubversion(ubchar);
-	
+
+	std::string ubversion(fUBversion_CRTHits);
+
 	for(unsigned k =0; k<crtfiles.size(); k++)
 	{
 		std::ostringstream dim1;
@@ -182,6 +186,9 @@ void crt::CRTMerger::produce(art::Event& event)
 		}
 	}
 	std::cout<<"total: "<<crtrootfile.size()<<std::endl;
+	if (!crtrootfile.size())
+	  std::cout << "\n\t CRTMerger_module: No child CRT files found that conform to constraints: " << "file_format "<<"artroot"<<" and fcl.version " << ubversion  << std::endl;
+	  
 	
 	std::unique_ptr<std::vector<crt::CRTHit> > CRTHitEventsSet(new std::vector<crt::CRTHit>); //collection of CRTHits for this event
 	
@@ -342,9 +349,11 @@ void crt::CRTMerger::produce(art::Event& event)
 void crt::CRTMerger::reconfigure(fhicl::ParameterSet const & pset)
 {
 	std::cout<<"crt::CRTMerger::reconfigure"<<std::endl;
+	char const* ubchar = std::getenv( "UBOONECODE_VERSION" );
 	
 	cTag = {pset.get<std::string>("data_label_CRTHit_")};
 	fTag = {pset.get<std::string>("InputTagName","crthit")};
 	fTimeWindow = pset.get<unsigned>("TimeWindow",5000000);
+	fUBversion_CRTHits   = pset.get<std::string>   ("ubversion_CRTHits",ubchar);
 }
 DEFINE_ART_MODULE(crt::CRTMerger)
