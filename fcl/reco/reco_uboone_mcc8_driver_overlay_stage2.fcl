@@ -5,8 +5,8 @@
 process_name: DataRecoStage2
 
 services.DetectorClocksService.InheritClockConfig:  false
-
 services.TFileService.fileName: "reco_stage_2_hist.root"
+services.FileCatalogMetadata.fileType: "overlay"
 
 physics.producers.trajcluster.TrajClusterAlg.MatchTruth: [ -1, -1, -1, -1 ]
 physics.producers.trajcluster.DoRawDigitAssns: false
@@ -53,4 +53,3 @@ physics.producers.pandoraNuKalmanTrackcali.CaloAlg: @local::microboone_calorimet
 physics.producers.pandoraNuPMAcali.CaloAlg: @local::microboone_calorimetryalgmcc84data
 physics.producers.pmtrackcali.CaloAlg: @local::microboone_calorimetryalgmcc84data
 
-services.FileCatalogMetadata.fileType: "mc"
