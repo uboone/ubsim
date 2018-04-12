@@ -21,6 +21,7 @@ art_make( EXCLUDE LLMetaMaker_service.cc
 		   uboonecode_uboone_MuCS
 		   larcore_Geometry_Geometry_service
 	   	   larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
+		   larsim_MCCheater_ParticleInventoryService_service
 		   lardataobj_RecoBase
 		   nusimdata_SimulationBase
 		   lardataobj_MCBase
