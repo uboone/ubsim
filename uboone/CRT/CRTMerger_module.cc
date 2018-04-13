@@ -321,7 +321,7 @@ void crt::CRTMerger::produce(art::Event& event)
 		      std::cout<<"TPC_ns: "<<TPCtime_s<<", CRT_ns: "<<CRTtime_s<<std::endl;
 		    }
 
-		  if(std::abs(CRTtime_s - TPCtime_s)<2)
+		  if(std::abs(CRTtime_s - TPCtime_s)<1 ) // was <2. Change at  DL's request. EC, 12-Apr-2018.
 		    {
 		      if ((CRTtime_ns > MergingWindow_start) && (CRTtime_ns < MergingWindow_end))
 			{
