@@ -40,7 +40,7 @@ physics.end_paths: [ larcv ]
 physics.analyzers.reco2d.SelectEvents:  [ dlfilter ]
 physics.analyzers.opreco.SelectEvents:  [ dlfilter ]
 physics.analyzers.mcinfo.SelectEvents:  [ dlfilter ]
-physics.analyzers.superaWholeView.SelectEvents:  [ dlfilter ]
+physics.analyzers.superaWholeViewMC.SelectEvents:  [ dlfilter ]
 physics.analyzers.superaMCTruthOnly.SelectEvents:  [ dlfilter ]
 
 # Configuration for TFileMetadataMicroBooNE service.
