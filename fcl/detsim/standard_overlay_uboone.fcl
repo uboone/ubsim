@@ -20,7 +20,6 @@ services : {
   @table::microboone_simulation_services
   FileCatalogMetadata:  @local::art_file_catalog_overlay
   message:      @local::standard_info
-  PMTRemap: @local::microboone_pmtremap_service
 }
 
 outputs: {
