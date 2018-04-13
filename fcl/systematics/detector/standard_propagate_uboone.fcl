@@ -22,7 +22,7 @@ source:
   module_type: RootInput
   maxEvents:  10        # Number of events to create
   saveMemoryObjectThreshold: 0
-  inputCommands: ["keep *_*_*_*", "drop sim::SimChannels_*_*_*", "drop sim::SimPhotonss_*_*_*", "drop sumdata::RunData_*_*_*"]
+  inputCommands: ["keep *_*_*_*","drop sumdata::RunData_*_*_*"]
 }
 
 # Define and configure some modules to do work on each event.
@@ -76,7 +76,7 @@ outputs:
    saveMemoryObjectThreshold: 0
    compressionLevel: 1
    fastCloning: false
-   outputCommands: ["keep *_*_*_*", "drop sim::SimEnergyDeposits_*_*_*" ]
+   outputCommands: ["keep *_*_*_*", "drop sim::SimEnergyDeposits_*_*_*","drop sim::SimChannels_*_*_G4*", "drop sim::SimPhotonss_*_*_G4*" ]
  }
 
 }
