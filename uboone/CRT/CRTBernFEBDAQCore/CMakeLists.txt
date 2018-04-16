@@ -1,3 +1,6 @@
+
+cet_add_compiler_flags(CXX -Wno-nested-anon-types )
+
 # Main library.
 
 

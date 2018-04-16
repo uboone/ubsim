@@ -838,7 +838,7 @@ void crt::CRTRawInputDetail::receive_data(){
               if(std::abs(event_time_diff_old-event_time_diff_now)>500){ // the jump has to be bigger than 500
                 all_fine=0;
                 //check for what referent event was missed or if it was a stucked event...
-                if(std::labs(event_time_diff_old-event_time_diff_now-1e9)<30000){ //check if ts0_ref was missed 30us > dead time FEB
+                if(std::abs(event_time_diff_old-event_time_diff_now-1e9)<30000){ //check if ts0_ref was missed 30us > dead time FEB
                   if(evbuf_pro[febnr][j-one_back].flags==5 || evbuf_pro[febnr][j-one_back].flags==7) all_fine=1;
                   if(all_fine!=1){
                     for(int counter=ev_counter_mac[febnr]; counter>=j; counter--){ //shift all events after one further
