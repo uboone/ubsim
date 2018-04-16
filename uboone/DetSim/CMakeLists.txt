@@ -1,3 +1,5 @@
+cet_add_compiler_flags(CXX -Wno-return-type-c-linkage )
+
 art_make( BASENAME_ONLY
           EXCLUDE SimWireMicroBooNE_module.cc 
           MODULE_LIBRARIES larcorealg_Geometry

@@ -135,7 +135,7 @@ namespace detsim {
     // Needed for post-filter noise (pfn) generator
     //
     TF1  *_pfn_f1;
-    TF1  *_pfn_MyPoisson;
+    //TF1  *_pfn_MyPoisson;
     TVirtualFFT *_pfn_ifft;
     std::vector<double> _pfn_rho_v;
     std::vector<double> _pfn_value_re;
