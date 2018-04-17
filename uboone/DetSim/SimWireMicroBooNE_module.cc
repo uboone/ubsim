@@ -155,7 +155,7 @@ namespace detsim {
   SimWireMicroBooNE::SimWireMicroBooNE(fhicl::ParameterSet const& pset)
   : fNoiseHist(0)
     , _pfn_f1(nullptr)
-    , _pfn_MyPoisson(nullptr)
+    //, _pfn_MyPoisson(nullptr)
     , _pfn_ifft(nullptr)
     , _pfn_rho_v()
     , _pfn_value_re()

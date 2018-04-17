@@ -108,9 +108,9 @@ public:
 
   // Required functions.
   void analyze(art::Event const & e) override;
-  void beginJob();
-  void endJob();
-  void beginSubRun(const art::SubRun& sr);
+  void beginJob() override;
+  void endJob() override;
+  void beginSubRun(const art::SubRun& sr) override;
 
 private:
 

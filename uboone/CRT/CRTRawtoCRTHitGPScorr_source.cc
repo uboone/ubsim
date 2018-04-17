@@ -233,7 +233,7 @@ private:
   int ts1ref_counter[100];
   uint32_t ts1ref_second[100];
   uint32_t previous_sec_mac[MAXFEBNR+1];
-  uint32_t previous_sec_mac2[MAXFEBNR+1];
+  //uint32_t previous_sec_mac2[MAXFEBNR+1];
   //////////////////////////////////
   int ts0ref_counter[MAXFEBNR+1];
   int ts1_ref_counter[MAXFEBNR+1]; // nrwm2[MAXFEBNR+1];
@@ -273,7 +273,7 @@ private:
   int ev_counter_filter_scan[MAXFEBNR+1];  //Number of events per module (mac) in the scanning buffer
   int ev_counter_filter[MAXFEBNR+1];
   //////////////////////////////////
-  uint32_t act_time[2][MAXFEBNR+1];    //number to read out the second and ms out of received special event [0]:sec, [1]:ms [][mac]:module [][MAXFEBNR]:time last poll
+  //uint32_t act_time[2][MAXFEBNR+1];    //number to read out the second and ms out of received special event [0]:sec, [1]:ms [][mac]:module [][MAXFEBNR]:time last poll
   //uint32_t previous_sec;// previous_ms;
   //uint32_t previous2_sec;
   int event_time_diff[MAXFEBNR+1];
@@ -286,9 +286,9 @@ private:
   crt::EVENT_tpro evbuf_scan[MAXFEBNR+1][4*EVSPERFEB+1]; //buffer for scanning for coincidences (same structure as the buffer for processing)
   crt::EVENT_tpro evbuf_filter[MAXFEBNR+1][4*EVSPERFEB+1];
   crt::EVENT_tpro evbuf_filter_scan[MAXFEBNR+1][4*EVSPERFEB+1];
-  crt::EVENT_t_send beam_ev[10][4*EVSPERFEB+1];    //buffer to send out the coincidences (structure idealy same as the received events)
-  crt::EVENT_t ts0_ref_event[2];
-  crt::EVENT_t_send ts0_ref_event_buffer[MAXFEBNR+1][2];
+  //crt::EVENT_t_send beam_ev[10][4*EVSPERFEB+1];    //buffer to send out the coincidences (structure idealy same as the received events)
+  //crt::EVENT_t ts0_ref_event[2];
+  //crt::EVENT_t_send ts0_ref_event_buffer[MAXFEBNR+1][2];
   crt::EVENT_t_send coincidence[MAXFEBNR+1];    //buffer to send out the coincidences (structure idealy same as the received events)
   crt::EOP_EVENT_t refevent;
   std::vector<crt::CRTHit>  allmyCRTHits;
