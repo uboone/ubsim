@@ -1,4 +1,6 @@
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 cet_add_compiler_flags(CXX -Wno-return-type-c-linkage )
+endif()
 
 art_make( BASENAME_ONLY
           EXCLUDE SimWireMicroBooNE_module.cc 
