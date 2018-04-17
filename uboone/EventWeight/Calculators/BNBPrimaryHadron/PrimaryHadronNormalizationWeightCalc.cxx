@@ -56,7 +56,7 @@ namespace evwgh {
     int fprimaryHad;
     std::string fWeightCalc;
     double fScaleFactor;
-    TFile* file;
+    //TFile* file;
     std::vector< double > fWeightArray; 
     std::string fMode;
     double fSeed;
