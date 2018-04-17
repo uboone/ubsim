@@ -27,7 +27,7 @@ physics.dlfilter: [ dlpmtprecuts ]
 
 # Define larcv analyzer sequence.
 physics.ana:   [ analysistree ]
-physics.larcv: [ opreco, mcinfo, superaWholeViewMC ]
+physics.larcv: [ opreco, mcinfo, superaMCFullSet ]
 
 # Add dl precut filter to trigger paths
 physics.trigger_paths: [ dlfilter ]
@@ -38,7 +38,7 @@ physics.end_paths: [ larcv ]
 # setup filter
 physics.analyzers.opreco.SelectEvents:  [ dlfilter ]
 physics.analyzers.mcinfo.SelectEvents:  [ dlfilter ]
-physics.analyzers.superaWholeViewMC.SelectEvents:  [ dlfilter ]
+physics.analyzers.superaMCFullSet.SelectEvents:  [ dlfilter ]
 
 # Configuration for TFileMetadataMicroBooNE service.
 microboone_tfile_metadata:

@@ -22,6 +22,7 @@ art_make( BASENAME_ONLY
 	TimeExtraction_module.cc
 	MergeTest_module.cc
 	CRTRawtoCRTHit_source.cc
+	CRTRawtoCRTHitGPScorr_source.cc
 	CRTAnalyser_module.cc	
     LIBRARY_NAME  
         CRTData
@@ -31,10 +32,9 @@ art_make( BASENAME_ONLY
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        art_Persistency_Provenance 
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
 	lardataobj_RecoBase
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
         ${MF_MESSAGELOGGER}
@@ -68,10 +68,9 @@ simple_plugin( CRTGeometryHelper service
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        art_Persistency_Provenance 
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
         ${MF_MESSAGELOGGER}
         ${MF_UTILITIES}
@@ -86,10 +85,9 @@ simple_plugin( CRTDetSim module
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        art_Persistency_Provenance 
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
         lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
         nutools_RandomUtils_NuRandomService_service
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -108,10 +106,9 @@ simple_plugin(CRTCalibration "module"
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        art_Persistency_Provenance 
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
         lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
       nutools_RandomUtils_NuRandomService_service
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -176,6 +173,14 @@ simple_plugin(MergeTest "module"
 simple_plugin(CRTRawtoCRTHit "source"
             CRT
 	  bernfebdaq-core_Overlays
+          art_Framework_Services_Optional
+          art_Framework_Services_Registry
+          art_Framework_Services_Optional_TFileService_service
+          ${ROOT_BASIC_LIB_LIST} )
+
+simple_plugin(CRTRawtoCRTHitGPScorr "source"
+            CRT
+          bernfebdaq-core_Overlays
           art_Framework_Services_Optional
           art_Framework_Services_Registry
           art_Framework_Services_Optional_TFileService_service
