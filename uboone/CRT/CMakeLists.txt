@@ -1,3 +1,7 @@
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+cet_add_compiler_flags(CXX -Wno-dynamic-exception-spec -Wno-return-type-c-linkage -Wno-undefined-var-template )
+endif()
+
 # canvas_utlities
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( $ENV{NUTOOLS_INC} )
