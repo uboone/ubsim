@@ -1,7 +1,10 @@
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+cet_add_compiler_flags(CXX -Wno-dynamic-exception-spec -Wno-return-type-c-linkage -Wno-undefined-var-template )
+endif()
+
 # canvas_utlities
-#include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( $ENV{NUTOOLS_INC} )
-#include_directories( $ENV{IFDHC_DIR}/Linux64bit+3.10-2.17-e10-p2711-prof/inc )
 include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 
 add_subdirectory(CRTProducts)
@@ -22,8 +25,8 @@ art_make( BASENAME_ONLY
   	CRTMerger_module.cc
 	TimeExtraction_module.cc
 	MergeTest_module.cc
-	mergeCRTHits_module.cc
 	CRTRawtoCRTHit_source.cc
+	CRTRawtoCRTHitGPScorr_source.cc
 	CRTAnalyser_module.cc	
     LIBRARY_NAME  
         CRTData
@@ -33,12 +36,9 @@ art_make( BASENAME_ONLY
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        canvas
-        art_Persistency_Provenance 
-        canvas
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
 	lardataobj_RecoBase
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
         ${MF_MESSAGELOGGER}
@@ -72,12 +72,9 @@ simple_plugin( CRTGeometryHelper service
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        canvas
-        art_Persistency_Provenance 
-        canvas
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
         ${MF_MESSAGELOGGER}
         ${MF_UTILITIES}
@@ -92,12 +89,9 @@ simple_plugin( CRTDetSim module
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        canvas
-        art_Persistency_Provenance 
-        canvas
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
         lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
         nutools_RandomUtils_NuRandomService_service
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -116,12 +110,9 @@ simple_plugin(CRTCalibration "module"
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
-        art_Persistency_Common 
-        canvas
-        art_Persistency_Provenance 
-        canvas
-        art_Utilities 
-        canvas
+        art_Persistency_Common canvas
+        art_Persistency_Provenance canvas
+        art_Utilities canvas
         lardata_DetectorInfoServices_DetectorClocksServiceStandard_service
       nutools_RandomUtils_NuRandomService_service
         ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -183,8 +174,7 @@ simple_plugin(MergeTest "module"
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
 
-
-simple_plugin(mergeCRTHits "module"
+simple_plugin(CRTRawtoCRTHit "source"
             CRT
 	  bernfebdaq-core_Overlays
           art_Framework_Services_Optional
@@ -192,11 +182,9 @@ simple_plugin(mergeCRTHits "module"
           art_Framework_Services_Optional_TFileService_service
           ${ROOT_BASIC_LIB_LIST} )
 
-
-
-simple_plugin(CRTRawtoCRTHit "source"
+simple_plugin(CRTRawtoCRTHitGPScorr "source"
             CRT
-	  bernfebdaq-core_Overlays
+          bernfebdaq-core_Overlays
           art_Framework_Services_Optional
           art_Framework_Services_Registry
           art_Framework_Services_Optional_TFileService_service

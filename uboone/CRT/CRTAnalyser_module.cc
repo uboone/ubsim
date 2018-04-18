@@ -217,21 +217,21 @@ void crt::CRTAnalyser::analyze(art::Event const & evt)
       feb_id1=CRTHitCollection[i].feb_id[0];
       feb_id2=CRTHitCollection[i].feb_id[1];
       
-      event_flag=CRTHitCollection[i].event_flag;
+      //event_flag=CRTHitCollection[i].event_flag;
       
-      lostcpu1=CRTHitCollection[i].lostcpu_map.find(CRTHitCollection[i].feb_id[0])->second;
-      lostcpu2=CRTHitCollection[i].lostcpu_map.find(CRTHitCollection[i].feb_id[1])->second;
-      lostfpga1=CRTHitCollection[i].lostfpga_map.find(CRTHitCollection[i].feb_id[0])->second;
-      lostfpga2=CRTHitCollection[i].lostfpga_map.find(CRTHitCollection[i].feb_id[1])->second;
+      //lostcpu1=CRTHitCollection[i].lostcpu_map.find(CRTHitCollection[i].feb_id[0])->second;
+      //lostcpu2=CRTHitCollection[i].lostcpu_map.find(CRTHitCollection[i].feb_id[1])->second;
+      //lostfpga1=CRTHitCollection[i].lostfpga_map.find(CRTHitCollection[i].feb_id[0])->second;
+      //lostfpga2=CRTHitCollection[i].lostfpga_map.find(CRTHitCollection[i].feb_id[1])->second;
 
       hit_time_s = CRTHitCollection[i].ts0_s;	
-      hit_time_s_err = CRTHitCollection[i].ts0_s_err;
+      //hit_time_s_err = CRTHitCollection[i].ts0_s_err;
 
       hit_time_ns = CRTHitCollection[i].ts0_ns;
-      hit_time_ns_err = CRTHitCollection[i].ts0_ns_err;
+      //hit_time_ns_err = CRTHitCollection[i].ts0_ns_err;
 
       beam_time_ns = CRTHitCollection[i].ts1_ns;
-      beam_time_ns_err = CRTHitCollection[i].ts1_ns_err;
+      //beam_time_ns_err = CRTHitCollection[i].ts1_ns_err;
 
       plane = CRTHitCollection[i].plane;
       peshit = CRTHitCollection[i].peshit;

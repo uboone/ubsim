@@ -113,7 +113,7 @@ private:
   double hit_time_s = -1e18;
   int plane = -1;
   double td = -1e19;
-  std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
+  std::map< uint8_t, std::vector<std::pair<int,float> > > pesmap;
 
   //test
   TH1F* hPES;
@@ -387,11 +387,11 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 	      
 	      CRTHitevent.ts0_s = hit_time_s; //errors!!  missing
 	      CRTHitevent.ts0_ns = hit_time_ns; //errors!!  missing
-	      CRTHitevent.ts0_s_err = sqrt(hit_time_s); //errors!!  missing //just filling
-	      CRTHitevent.ts0_ns_err = sqrt(hit_time_ns); //errors!!  missing
+	      //  CRTHitevent.ts0_s_err = sqrt(hit_time_s); //errors!!  missing //just filling
+	      //CRTHitevent.ts0_ns_err = sqrt(hit_time_ns); //errors!!  missing
 	      
 	      CRTHitevent.ts1_ns = (this_event->Time_TS1() -  event_st->Time_TS1() ) /2    ; //errors!!  missing
-	      CRTHitevent.ts1_ns_err = sqrt ( (this_event->Time_TS1() -  event_st->Time_TS1() ) /2  )  ; //errors!!  missing
+	      //CRTHitevent.ts1_ns_err = sqrt ( (this_event->Time_TS1() -  event_st->Time_TS1() ) /2  )  ; //errors!!  missing
 	      	      
 	      CRTHitevent.plane = plane;
 	      
@@ -400,26 +400,26 @@ void bernfebdaq::CRTHitProducer::produce(art::Event & evt)
 	      ids.push_back(feb_st);
 	      CRTHitevent.feb_id = ids;
 	      
-	      std::vector<std::pair<int,double> > vec_pes_tevt;
-	      std::vector<std::pair<int,double> > vec_pes_st;
+	      std::vector<std::pair<int,float> > vec_pes_tevt;
+	      std::vector<std::pair<int,float> > vec_pes_st;
 	      
 	      for(size_t i_chan=0; i_chan<32; ++i_chan){ //1st max                                                                                         
 		int key_tevt = feb_tevt*100+i_chan;
 		std::pair<double,double> gain_tevt = crt::auxfunctions::getGain(key_tevt, SiPMgain);
 		std::pair<double,double> pedestal_tevt = crt::auxfunctions::getGain(key_tevt, SiPMpedestal);
 		double pes_tevt = ( (this_event->adc[i_chan]) - pedestal_tevt.first) / gain_tevt.first;
-		std::pair<int,double> pair_tevt = std::make_pair(i_chan,pes_tevt);
+		std::pair<int,float> pair_tevt = std::make_pair(i_chan,pes_tevt);
 		vec_pes_tevt.push_back(pair_tevt);
 		
 		int key_st = feb_st*100+i_chan;
 		std::pair<double,double> gain_st = crt::auxfunctions::getGain(key_st, SiPMgain);
 		std::pair<double,double> pedestal_st = crt::auxfunctions::getGain(key_st, SiPMpedestal);
 		double pes_st = ( (event_st->adc[i_chan]) - pedestal_st.first) / gain_st.first;
-		std::pair<int,double> pair_st = std::make_pair(i_chan,pes_st);
+		std::pair<int,float> pair_st = std::make_pair(i_chan,pes_st);
 		vec_pes_st.push_back(pair_st);
 	      }
 	      
-	      std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap_hit;
+	      std::map< uint8_t, std::vector<std::pair<int,float> > > pesmap_hit;
 	      pesmap_hit[feb_tevt] = vec_pes_tevt;
 	      pesmap_hit[feb_st] = vec_pes_st;
 	      CRTHitevent.pesmap = pesmap_hit;

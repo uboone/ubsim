@@ -104,7 +104,10 @@ struct crt::EVENT_t_send {
     uint16_t lostcpu;
     uint16_t lostfpga;
 		uint32_t ts0;
+    uint32_t ts0_corr;
 		uint32_t ts1;
+    uint32_t sec;
+    uint32_t sec_corr;
 		uint16_t adc[32];
     uint16_t recover;
     uint32_t nrtrigger;
@@ -178,9 +181,11 @@ private:
   size_t             fPrevRunNumber;
   size_t             fPrevSubRunNumber;
 
+  bool               fDone;
+  
   std::vector<std::ifstream>                  fInputStreams;
   std::vector<art::Timestamp>                 fInputStreamLastPullTime;
-  
+
   //pair_builder stuff here////////////////////////////////////////////////////////////////////
   //pair functions///////////////////////////////////////
   void receive_data(); // receive data from zmq socket
@@ -240,7 +245,7 @@ private:
   std::string  CRTPedestals_;
   std::string  PartTop_;
   
-	int mac_part_top[3][100];
+  int mac_part_top[3][100];
   
   std::map <int, std::vector<double> > sensor_pos; //key = FEB*100+ch
   std::map <int, double > FEBDel; //key = FEB;
@@ -256,7 +261,7 @@ private:
   //////////////////////////////////
   uint32_t act_time[2][MAXFEBNR+1];    //number to read out the second and ms out of received special event [0]:sec, [1]:ms [][mac]:module [][MAXFEBNR]:time last poll
   uint32_t previous_sec;// previous_ms;
-  uint32_t previous2_sec;
+  //uint32_t previous2_sec;
   int event_time_diff[MAXFEBNR+1];
   int event_time_diff_old[MAXFEBNR+1];
   uint32_t event_ts0;
@@ -267,9 +272,9 @@ private:
   crt::EVENT_tpro evbuf_scan[MAXFEBNR+1][4*EVSPERFEB+1]; //buffer for scanning for coincidences (same structure as the buffer for processing)
   crt::EVENT_tpro evbuf_filter[MAXFEBNR+1][4*EVSPERFEB+1];
   crt::EVENT_tpro evbuf_filter_scan[MAXFEBNR+1][4*EVSPERFEB+1];
-  crt::EVENT_t_send beam_ev[10][4*EVSPERFEB+1];    //buffer to send out the coincidences (structure idealy same as the received events)
-  crt::EVENT_t ts0_ref_event[2];
-  crt::EVENT_t_send ts0_ref_event_buffer[MAXFEBNR+1][2];
+  //crt::EVENT_t_send beam_ev[10][4*EVSPERFEB+1];    //buffer to send out the coincidences (structure idealy same as the received events)
+  //crt::EVENT_t ts0_ref_event[2];
+  //crt::EVENT_t_send ts0_ref_event_buffer[MAXFEBNR+1][2];
   crt::EVENT_t_send coincidence[MAXFEBNR+1];    //buffer to send out the coincidences (structure idealy same as the received events)
   crt::EOP_EVENT_t refevent;
   std::vector<crt::CRTHit>  allmyCRTHits;
@@ -308,7 +313,7 @@ private:
   int plane = -1;
   double td = -1e19;
   double pestot = -1e19;
-  std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap;
+  std::map< uint8_t, std::vector<std::pair<int,float> > > pesmap;
   ////////////////////////////////////////////////////////////////////////////////////////////////
 };
 
@@ -321,7 +326,8 @@ crt::CRTRawInputDetail::CRTRawInputDetail(fhicl::ParameterSet const & ps,
     fInstanceLabel(ps.get<std::string>("InstanceLabel")),
     fEventNumber(0),
     fPrevRunNumber(0),
-    fPrevSubRunNumber(0)
+    fPrevSubRunNumber(0),
+    fDone(false)
 {
   helper.reconstitutes< std::vector<crt::CRTHit>, art::InEvent >(fModuleLabel,fInstanceLabel);
   run_mode_ = ps.get<int>("run_mode");
@@ -571,6 +577,10 @@ void crt::CRTRawInputDetail::closeCurrentFile()
 
 bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::SubRunPrincipal const* const inSR,
 				      art::RunPrincipal*& outR, art::SubRunPrincipal*& outSR, art::EventPrincipal*& outE){
+
+  if(fDone)
+    return false;
+ 
   //main loop until all 2d hits of a second are found //////////////////////////////////////////////
   while(save_event!=1 && EndOfFile==0){   //endless loop over all events receiving   
     //If one pro buffer is full->scan the whole buffer without scaling, else print status of buffer
@@ -640,6 +650,7 @@ bool crt::CRTRawInputDetail::readNext(art::RunPrincipal const* const inR, art::S
       total_hits+=hit_counter;
       uint32_t this_sec=allmyCRTHits[0].ts0_s;
       std::cout<<"Found: " << hit_counter << " of " << total_hits << " int the second: "<< this_sec << " End: "<< EndOfFile << std::endl << " no more hits in the file" << std::endl;
+      fDone = true;
     }
   }//end of end of file treatment///////////////////////////////////////////////////////////////////////////////////////////////
   
@@ -1112,7 +1123,10 @@ void crt::CRTRawInputDetail::scan_filter_buffer(int mac){  //scan over all event
              coincidence[0].flags=evbuf_filter_scan[mac][i].flags;
              coincidence[0].lostcpu=evbuf_filter_scan[mac][i].lostcpu;
              coincidence[0].lostfpga=evbuf_filter_scan[mac][i].lostfpga;
+             coincidence[0].ts0_corr=evbuf_filter_scan[mac][i].ts0_scaled;
              coincidence[0].ts0=evbuf_filter_scan[mac][i].ts0_scaled;
+             coincidence[0].sec_corr=evbuf_filter_scan[j][k].sec;
+             coincidence[0].sec=evbuf_filter_scan[j][k].sec;
              coincidence[0].ts1=evbuf_filter_scan[mac][i].ts1;
              for(int amp=0;amp<32;amp++) coincidence[0].adc[amp]=evbuf_filter_scan[mac][i].adc[amp];
              coincidence[0].recover=evbuf_filter_scan[mac][i].recover;
@@ -1123,7 +1137,10 @@ void crt::CRTRawInputDetail::scan_filter_buffer(int mac){  //scan over all event
              coincidence[1].flags=evbuf_filter_scan[j][k].flags;
              coincidence[1].lostcpu=evbuf_filter_scan[j][k].lostcpu;
              coincidence[1].lostfpga=evbuf_filter_scan[j][k].lostfpga;
+             coincidence[1].ts0_corr=evbuf_filter_scan[j][k].ts0_scaled;
              coincidence[1].ts0=evbuf_filter_scan[j][k].ts0_scaled;
+             coincidence[1].sec_corr=evbuf_filter_scan[j][k].sec;
+             coincidence[1].sec=evbuf_filter_scan[j][k].sec;
              coincidence[1].ts1=evbuf_filter_scan[j][k].ts1;
              for(int amp=0;amp<32;amp++) coincidence[1].adc[amp]=evbuf_filter_scan[j][k].adc[amp];
              coincidence[1].recover=evbuf_filter_scan[j][k].recover;
@@ -1199,6 +1216,9 @@ void crt::CRTRawInputDetail::make2DHit(){
 		&& ( (std::abs(pos_tevt1[4]-pos_st1[4])<2) || ((pos_tevt1[3]==2) && (pos_tevt1[4]==0 && pos_st1[4]==2)) || ((pos_tevt1[3]==2) && (pos_tevt1[4]==2 && pos_st1[4]==0)) )
     && (pos_tevt1[5]!=pos_st1[5])){
     
+    //hit_mac_1=coincidence[0].mac5;
+    //hit_mac_2=coincidence[1].mac5;
+    
     std::pair<double,double> gain_tevt2 = crt::auxfunctions::getGain(key_tevt2, SiPMgain);
     std::pair<double,double> pedestal_tevt2 = crt::auxfunctions::getGain(key_tevt2, SiPMpedestal);
     double pesmax_tevt2 = (max_temp2_tevt - pedestal_tevt2.first) / gain_tevt2.first;
@@ -1215,8 +1235,8 @@ void crt::CRTRawInputDetail::make2DHit(){
     
     crt2Dhit.plane = pos_tevt1[3]; 
 
-    std::vector<std::pair<int,double> > vec_pes_tevt;
-    std::vector<std::pair<int,double> > vec_pes_st;
+    std::vector<std::pair<int,float> > vec_pes_tevt;
+    std::vector<std::pair<int,float> > vec_pes_st;
 
     for(size_t i_chan=0; i_chan<32; ++i_chan){
       int key_tevt = coincidence[0].mac5*100+i_chan;
@@ -1224,7 +1244,7 @@ void crt::CRTRawInputDetail::make2DHit(){
       std::pair<double,double> pedestal_tevt = crt::auxfunctions::getGain(key_tevt, SiPMpedestal);
       double pes_tevt = ( (coincidence[0].adc[i_chan]) - pedestal_tevt.first) / gain_tevt.first;
       //double pes_tevt =  (double)coincidence[0].adc[i_chan];
-      std::pair<int,double> pair_tevt = std::make_pair(i_chan,pes_tevt);
+      std::pair<int,float> pair_tevt = std::make_pair(i_chan,pes_tevt);
       vec_pes_tevt.push_back(pair_tevt);
 
       int key_st = coincidence[1].mac5*100+i_chan;
@@ -1232,11 +1252,11 @@ void crt::CRTRawInputDetail::make2DHit(){
       std::pair<double,double> pedestal_st = crt::auxfunctions::getGain(key_st, SiPMpedestal);
       double pes_st = ( coincidence[1].adc[i_chan] - pedestal_st.first) / gain_st.first;
       //double pes_st =  (double)coincidence[1].adc[i_chan];
-      std::pair<int,double> pair_st = std::make_pair(i_chan,pes_st);
+      std::pair<int,float> pair_st = std::make_pair(i_chan,pes_st);
       vec_pes_st.push_back(pair_st);
     }
     
-    std::map< uint8_t, std::vector<std::pair<int,double> > > pesmap_hit;
+    std::map< uint8_t, std::vector<std::pair<int,float> > > pesmap_hit;
     pesmap_hit[coincidence[0].mac5] = vec_pes_tevt;
     pesmap_hit[coincidence[1].mac5] = vec_pes_st;
     crt2Dhit.pesmap = pesmap_hit;
@@ -1264,14 +1284,23 @@ void crt::CRTRawInputDetail::make2DHit(){
     double FEB_del2 = crt::auxfunctions::getFEBDel(coincidence[1].mac5,FEBDel); //cable_length FEB delay in ns.   
     
     //correct time propagation along the fiber, 6.2 ns/m.  Ttrue = Treg - correction.
-    double hit1_time_ns = crt::auxfunctions::getTcorr(interpos_tevt, interpos_st, (coincidence[0].ts0 + FEB_del1));
-    double hit2_time_ns = crt::auxfunctions::getTcorr(interpos_st, interpos_tevt, (coincidence[1].ts0 + FEB_del2));
+    double hit1_time_ns = crt::auxfunctions::getTcorr(interpos_tevt, interpos_st, (coincidence[0].ts0_corr + FEB_del1));
+    double hit2_time_ns = crt::auxfunctions::getTcorr(interpos_st, interpos_tevt, (coincidence[1].ts0_corr + FEB_del2));
 
     td = ((hit1_time_ns) - (hit2_time_ns));//in ns, corrected
     hit_time_ns=(hit1_time_ns+hit2_time_ns)/2;
-    hit_time_s=coincidence[2].ts0;
-    hit_time_ms=(double)(coincidence[2].adc[0]+coincidence[2].adc[1])/2;
+    hit_time_s=coincidence[0].sec_corr;
     
+    double hit1_time_ns_uncorr = crt::auxfunctions::getTcorr(interpos_tevt, interpos_st, (coincidence[0].ts0 + FEB_del1));
+    double hit2_time_ns_uncorr = crt::auxfunctions::getTcorr(interpos_st, interpos_tevt, (coincidence[1].ts0 + FEB_del2));
+    double hit_time_ns_uncorr=(hit1_time_ns_uncorr+hit2_time_ns_uncorr)/2;
+    
+    if(my_abs(coincidence[2].adc[0],coincidence[2].adc[1])>800){
+      if(my_abs(coincidence[2].adc[0],((uint32_t)hit_time_ns/1e6))<my_abs(coincidence[2].adc[1],((uint32_t)hit_time_ns/1e6))) hit_time_ms=coincidence[2].adc[0];
+      else hit_time_ms=coincidence[2].adc[1];
+    }
+    else hit_time_ms=((double)(coincidence[2].adc[0]+coincidence[2].adc[1]))/2.0;
+    //printf("ms1: %d,ms2: %d,diff: %d, hit_ns: %lf, hitms: %lf\n",coincidence[2].adc[0],coincidence[2].adc[1],my_abs(coincidence[2].adc[0],coincidence[2].adc[1]), hit_time_ns/1e6, hit_time_ms);
     beam_trigger=coincidence[0].nrtrigger;
     pps_trigger=coincidence[0].nrtrigger_11;
 
@@ -1290,8 +1319,6 @@ void crt::CRTRawInputDetail::make2DHit(){
     if( (interpos_st[6] !=3) && (interpos_tevt[6] != 3) ){ztot=(interpos_tevt[2] + interpos_st[2])/2;}
     
     /////////////////////////////
-    crt2Dhit.ts0_s=coincidence[2].ts0;
-    crt2Dhit.ts0_s_err=0;
     
     int ts1_local1=0, ts1_local2=0;
     if(coincidence[0].ts1>=4e9){ ts1_local1=-(coincidence[0].ts1-4e9);}
@@ -1305,19 +1332,15 @@ void crt::CRTRawInputDetail::make2DHit(){
     beam_time_ns=(beam1_time_ns+beam2_time_ns)/2;
     
     crt2Dhit.ts0_ns=hit_time_ns;
-    crt2Dhit.pollms=hit_time_ms;
-    crt2Dhit.ts0_ns_err=std::abs((coincidence[0].ts0+coincidence[0].ts0)/2-crt2Dhit.ts0_ns);
+    crt2Dhit.ts0_ns_corr=hit_time_ns - hit_time_ns_uncorr;
+    //crt2Dhit.pollms=hit_time_ms;
+    //crt2Dhit.ts0_ns_err=std::abs((coincidence[0].ts0+coincidence[0].ts0)/2-crt2Dhit.ts0_ns);
     crt2Dhit.ts1_ns=beam_time_ns;
-    crt2Dhit.ts1_ns_err=std::abs((ts1_local1+ts1_local2)/2-crt2Dhit.ts1_ns);
+    //crt2Dhit.ts1_ns_err=std::abs((ts1_local1+ts1_local2)/2-crt2Dhit.ts1_ns);
     
-    //fill with corrected gps values from data base...//////////
-    crt2Dhit.ts0_s_corr=0;
-    crt2Dhit.ts0_s_err_corr=0;
-    crt2Dhit.ts0_ns_corr=0;
-    crt2Dhit.ts0_ns_err_corr=0;
-    crt2Dhit.ts1_ns_corr=0;
-    crt2Dhit.ts1_ns_err_corr=0;
-    
+     crt2Dhit.ts0_s=coincidence[0].sec_corr;
+     crt2Dhit.ts0_s_corr=(long)coincidence[0].sec_corr-coincidence[0].sec;
+    /*
     std::map< uint8_t, uint16_t > lostcpu_map;
     lostcpu_map[coincidence[0].mac5] = coincidence[0].lostcpu;
     lostcpu_map[coincidence[1].mac5] = coincidence[1].lostcpu;
@@ -1327,9 +1350,9 @@ void crt::CRTRawInputDetail::make2DHit(){
     lostfpga_map[coincidence[0].mac5] = coincidence[0].lostfpga;
     lostfpga_map[coincidence[1].mac5] = coincidence[1].lostfpga;
     crt2Dhit.lostfpga_map = lostfpga_map;
-    
-    crt2Dhit.event_flag=0;
-    crt2Dhit.pollms=(coincidence[2].adc[1]+coincidence[2].adc[0])/2;
+    */
+    //crt2Dhit.event_flag=0;
+    //crt2Dhit.pollms=(coincidence[2].adc[1]+coincidence[2].adc[0])/2;
     
     crt2Dhit.x_pos= xtot;
     crt2Dhit.x_err=sqrt( pow(interpos_tevt_err,2) + pow(interpos_st_err,2) );

@@ -35,7 +35,18 @@
 #include <boost/date_time/c_local_time_adjustor.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
+
+namespace {
+
+  // Local function to calculate absolute difference between two unsigned longs.
+
+  unsigned int absdiff(unsigned long a, unsigned long b) {
+    return (a>b ? a-b : b-a);
+  }
+}
+
 using namespace boost::posix_time;
+
 crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset): data_label_DAQHeader_(pset.get<std::string>("data_label_DAQHeader_"))
 {
 	std::cout<<"crt::CRTMerger::CRTMerger"<<std::endl;
@@ -306,7 +317,7 @@ void crt::CRTMerger::produce(art::Event& event)
 		      std::cout<<"TPC_ns: "<<TPCtime_s<<", CRT_ns: "<<CRTtime_s<<std::endl;
 		    }
 
-		  if(std::abs(CRTtime_s - TPCtime_s)<2)
+		  if(absdiff(CRTtime_s, TPCtime_s)<2)
 		    {
 		      if ((CRTtime_ns > MergingWindow_start) && (CRTtime_ns < MergingWindow_end))
 			{
