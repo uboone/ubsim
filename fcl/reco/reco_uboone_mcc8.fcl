@@ -455,7 +455,6 @@ microboone_reco_mcc8_pandoraNu: [        pandoraNuPatRec,
 
 microboone_reco_mcc8_pandora: [          @sequence::microboone_reco_mcc8_pandoraFull,
                                          @sequence::microboone_reco_mcc8_pandoraCosmic,
-					 crHitRemovalTruthMatch,
                                          @sequence::microboone_reco_mcc8_pandoraNu ]
 
 microboone_reco_mcc8_mcreco: [           mchitfinder ]
