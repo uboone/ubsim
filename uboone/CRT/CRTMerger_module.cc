@@ -35,6 +35,16 @@
 #include <boost/date_time/c_local_time_adjustor.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/format.hpp>
+
+namespace {
+
+  // Local function to calculate absolute difference between two unsigned longs.
+
+  unsigned int absdiff(unsigned long a, unsigned long b) {
+    return (a>b ? a-b : b-a);
+  }
+}
+
 using namespace boost::posix_time;
 crt::CRTMerger::CRTMerger(const fhicl::ParameterSet& pset): data_label_DAQHeader_(pset.get<std::string>("data_label_DAQHeader_"))
 {
@@ -172,7 +182,7 @@ void crt::CRTMerger::produce(art::Event& event)
 	{
 		std::ostringstream dim1;
 		// add constraint that current CRTMerge job release must match that in which the CRTHits were created/swizzled.
-		dim1<<"file_format "<<"artroot"<<" and fcl.version " << ubversion << " and ischildof: (file_name "<<crtfiles[k]<<")"<<std::endl;
+		dim1<<"file_format "<<"artroot"<<" and ub_project.version " << ubversion << " and ischildof: (file_name "<<crtfiles[k]<<")"<<std::endl;
 		
 		if (_debug)
 		  std::cout<<"dim1 = "<<dim1.str()<<std::endl;
@@ -187,7 +197,7 @@ void crt::CRTMerger::produce(art::Event& event)
 	}
 	std::cout<<"total: "<<crtrootfile.size()<<std::endl;
 	if (!crtrootfile.size())
-	  std::cout << "\n\t CRTMerger_module: No child CRT files found that conform to constraints: " << "file_format "<<"artroot"<<" and fcl.version " << ubversion  << std::endl;
+	  std::cout << "\n\t CRTMerger_module: No child CRT files found that conform to constraints: " << "file_format "<<"artroot"<<" and ub_project.version " << ubversion  << std::endl;
 	  
 	
 	std::unique_ptr<std::vector<crt::CRTHit> > CRTHitEventsSet(new std::vector<crt::CRTHit>); //collection of CRTHits for this event
@@ -321,7 +331,7 @@ void crt::CRTMerger::produce(art::Event& event)
 		      std::cout<<"TPC_ns: "<<TPCtime_s<<", CRT_ns: "<<CRTtime_s<<std::endl;
 		    }
 
-		  if(std::abs(CRTtime_s - TPCtime_s)<1 ) // was <2. Change at  DL's request. EC, 12-Apr-2018.
+		  if(absdiff(CRTtime_s, TPCtime_s)<1 ) // was <2. Change at  DL's request. EC, 12-Apr-2018.
 		    {
 		      if ((CRTtime_ns > MergingWindow_start) && (CRTtime_ns < MergingWindow_end))
 			{
