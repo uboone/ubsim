@@ -993,7 +993,6 @@ namespace detsim {
 		if (!yzcorrectionMC) yzcorrectionMC = 1.0;
           	if (!xcorrectionMC) xcorrectionMC = 1.0;
 		double overlayDedicatedCalibration = yzcorrectionMC*xcorrectionMC/(yzcorrectionData*xcorrectionData);
-		overlayDedicatedCalibration = 1.;
 		charge *= overlayDedicatedCalibration;
 	    }
             tempWork.at(raw_digit_index) += charge;
