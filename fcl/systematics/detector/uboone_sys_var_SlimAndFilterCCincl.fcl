@@ -157,8 +157,8 @@ services.TFileMetadataMicroBooNE:
   fileFormat:            [ "root" ] #ccinc
 }
 services.FileCatalogMetadataMicroBooNE: {
-  FCLName: "data_supera.fcl"
-  FCLVersion: "develop"
+  FCLName: "uboone_sys_var_SlimAndFilterCCincl.fcl"
+  FCLVersion: "v06_26_01_15"
   ProjectName: "lite"
   ProjectStage: "lite"
   ProjectVersion: "develop"
