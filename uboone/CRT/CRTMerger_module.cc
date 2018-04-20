@@ -173,7 +173,7 @@ void crt::CRTMerger::produce(art::Event& event)
 	std::vector< std::string > tmprootfile;
 
 
-	if ( fUBversion_CRTHits == NULL ) {
+	if ( fUBversion_CRTHits.empty() ) {
 	  std::cout << "Did not retrieve value for UBOONECODE_VERSION nor is there a specified CRTHits version to use. Will not find any proper CRT artroot daughters to merge." << std::endl;
 	}
 
