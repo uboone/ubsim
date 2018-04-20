@@ -182,7 +182,7 @@ void crt::CRTMerger::produce(art::Event& event)
 	{
 		std::ostringstream dim1;
 		// add constraint that current CRTMerge job release must match that in which the CRTHits were created/swizzled.
-		dim1<<"file_format "<<"artroot"<<" and ub_project.version " << ubversion << " and ischildof: (file_name "<<crtfiles[k]<<")"<<std::endl;
+		dim1<<"file_format "<<"artroot"<<" and ub_project.version " << ubversion << " and ischildof: (file_name "<<crtfiles[k]<<" with availability physical )"<<std::endl;
 		
 		if (_debug)
 		  std::cout<<"dim1 = "<<dim1.str()<<std::endl;
