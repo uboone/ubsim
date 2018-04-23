@@ -8,8 +8,8 @@
 process_name: OverlayStage1b
 
 services.TFileService.fileName: "reco_stage_1b_hist.root"
-services.BackTracker:  @local::microboone_backtrackerservice
-services.BackTracker.OverrideRealData: true
+services.BackTrackerService:  @local::microboone_backtrackerservice
+services.BackTrackerService.OverrideRealData: true
 services.DetectorClocksService.TrigModuleName: "daqnonoise"  # note that the clock time needed for the backtracking hit matching is set using the MC trigger and not Data / Mix 
 services.DetectorPropertiesService.NumberTimeSamples:        6400
 services.DetectorPropertiesService.ReadOutWindowSize:        6400
@@ -52,7 +52,7 @@ outputs.out1.dataTier: "reconstructed-2d"
 #source.inputCommands: ["keep *_*_*_*", "drop *_*_*_McReco*" ]
 source.inputCommands: ["keep *_*_*_*" ]
 
-physics.producers.wcNoiseFilter.DigitModuleLabel: "mixer"
+#physics.producers.wcNoiseFilter.DigitModuleLabel: "mixer"
 #physics.producers.wcNoiseFilter.DigitModuleLabel: "daqnonoise"
 #physics.producers.digitfilter.DigitModuleLabel: "mixer"
 #physics.producers.ophit.InputModule: "mixer"
