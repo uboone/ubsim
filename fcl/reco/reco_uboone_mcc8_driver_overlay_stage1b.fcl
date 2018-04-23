@@ -8,7 +8,7 @@
 process_name: OverlayStage1b
 
 services.TFileService.fileName: "reco_stage_1b_hist.root"
-services.BackTracker:  @local::microboone_backtracker
+services.BackTracker:  @local::microboone_backtrackerservice
 services.BackTracker.OverrideRealData: true
 services.DetectorClocksService.TrigModuleName: "daqnonoise"  # note that the clock time needed for the backtracking hit matching is set using the MC trigger and not Data / Mix 
 services.DetectorPropertiesService.NumberTimeSamples:        6400
