@@ -1,0 +1,5 @@
+services.LArG4Parameters.TransverseDiffusion:12.3e-9 # DocDB 412, μ = 409.7 cm^2/Vs (273 V/cm, 89 K)
+
+#
+#  Range by eye at actual E-field
+# 
