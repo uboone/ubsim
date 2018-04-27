@@ -112,6 +112,8 @@ namespace detsim {
     //histograms for calibration
     std::vector<TH2F*> hCorr_YZ_MC;
     std::vector<TH1F*> hCorr_X_MC;
+    std::vector<double> fCalAreaConstantsMC;
+    std::vector<double> fCalAreaConstantsData;
 
     std::string             fDriftEModuleLabel; ///< module making the ionization electrons
     raw::Compress_t         fCompression;       ///< compression type to use
@@ -308,8 +310,14 @@ namespace detsim {
        fCorr_YZ_MC                = p.get< std::vector<std::string> >("Corr_YZ_MC");
        fCorr_X_MC                 = p.get< std::vector<std::string> >("Corr_X_MC");
        if (fCorr_YZ_MC.size()!=3 || fCorr_X_MC.size()!=3){
-       throw art::Exception(art::errors::Configuration)
-       <<"Size of Corr_YZ and Corr_X need to be 3.";
+          throw art::Exception(art::errors::Configuration)
+          <<"Size of Corr_YZ and Corr_X need to be 3.";
+       }
+       fCalAreaConstantsMC        = p.get< std::vector<double> >("CalAreaConstantsMC");
+       fCalAreaConstantsData      = p.get< std::vector<double> >("CalAreaConstantsData");
+       if (fCalAreaConstantsMC.size()!=3 || fCalAreaConstantsData.size()!=3){
+          throw art::Exception(art::errors::Configuration)
+          <<"Size of CalAreaConstants vectors need to be 3.";
        }
     }
     return;
@@ -992,8 +1000,16 @@ namespace detsim {
           	if (!xcorrectionData) xcorrectionData = 1.0;
 		if (!yzcorrectionMC) yzcorrectionMC = 1.0;
           	if (!xcorrectionMC) xcorrectionMC = 1.0;
-		double overlayDedicatedCalibration = yzcorrectionMC*xcorrectionMC/(yzcorrectionData*xcorrectionData);
-		charge *= overlayDedicatedCalibration;
+		double overlayDedicatedCalibration = yzcorrectionMC*xcorrectionMC*fCalAreaConstantsData[view]/(yzcorrectionData*xcorrectionData*fCalAreaConstantsMC[view]);
+		charge = charge*overlayDedicatedCalibration;
+		//std::cout<<"-----------------------------------------------------------------"<<std::endl;
+		//std::cout<<"wireIndex "<<wireIndex<<" chan "<<chan<<" view "<<view<<" raw_digit_index "<<raw_digit_index<<std::endl;
+		//std::cout<<" X "<<item->getX()<<" Y "<<item->getY()<<" Z "<<item->getZ()<<std::endl;
+		//std::cout<<"overlayDedicatedCalibration "<<overlayDedicatedCalibration<<std::endl;
+		//std::cout<<"yzcorrectionData "<<yzcorrectionData<<std::endl;
+		//std::cout<<"xcorrectionData "<<xcorrectionData<<std::endl;
+		//std::cout<<"yzcorrectionMC "<<yzcorrectionMC<<std::endl;
+		//std::cout<<"xcorrectionMC "<<xcorrectionMC<<std::endl;
 	    }
             tempWork.at(raw_digit_index) += charge;
 	  }
@@ -1079,13 +1095,31 @@ namespace detsim {
     if (bin == 0) bin = 1;
     if (bin == his->GetNbinsX()+1) bin = his->GetNbinsX();
 
-    return his->GetBinContent(bin);
+    if (his->GetBinContent(bin)) return his->GetBinContent(bin);
+    else return 1.0; 
 
   }
 
   double SimWireMicroBooNE::GetYZCorrection(double y, double z, TH2F *his){
 
-    if (!his){
+  if (!his){
+     throw art::Exception(art::errors::Configuration)
+     <<"Histogram is empty";
+  }
+  int biny = his->GetYaxis()->FindBin(y);
+  if (biny == 0) biny = 1;
+  if (biny == his->GetNbinsY()+1) biny = his->GetNbinsY();
+
+  int binz = his->GetXaxis()->FindBin(z);
+  if (binz == 0) binz = 1;
+  if (binz == his->GetNbinsX()+1) binz = his->GetNbinsX();
+
+  double corr = his->GetBinContent(binz, biny);
+
+  if (corr) return corr;
+  else return 1.0;
+
+    /*if (!his){
       throw art::Exception(art::errors::Configuration)
         <<"Histogram is empty";
     }
@@ -1127,7 +1161,7 @@ namespace detsim {
   
     //no nonzero correction found? just return 1
     return 1.;
-
+    */
 }
 
   //-------------------------------------------------
