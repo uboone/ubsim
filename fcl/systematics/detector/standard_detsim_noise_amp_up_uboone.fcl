@@ -1,15 +1,7 @@
-#include "standard_detsim_uboone.fcl"
+#include "standard_detsim_CV_prop_uboone.fcl"
 
 process_name: DetsimNoiseAmpUp
 
 outputs.out1.fileName: "detsyst_%tc_detsim_noise_amp_up.root"
 
-source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*", "drop sumdata::RunData_*_*_*" ]
-
-physics.producers.daq.GenNoise: 3
-physics.producers.daq.NoiseAmpScaleFactor: 1.1
-
-services.DetectorPropertiesService.NumberTimeSamples: 9600
-services.DetectorPropertiesService.ReadOutWindowSize: 9600
-services.DetectorClocksService.InheritClockConfig:    false
-services.DetectorClocksService.TriggerOffsetTPC:      -1600
+#include "sys_var_noise_amp_up_uboone.fcl"
