@@ -9,6 +9,29 @@
 
 #include "dlprod_fclbase_analyzers.fcl"
 
+microboone_tfile_metadata:
+{
+  JSONFileName:[ "ccpi0_larlite_reco2d.root.json",
+                 "ccpi0_larlite_opreco.root.json",
+                 "ccpi0_larlite_mcinfo.root.json",
+                 "ccpi0_larlite_pandora.root.json",
+                 "dllee_larlite_reco2d.root.json",
+                 "dllee_larlite_opreco.root.json",
+                 "dllee_larlite_mcinfo.root.json",
+                 "dllee_larcv_wholeview.root.json", 
+                 "dllee_larcv_mctruth.root.json"]
+  GenerateTFileMetadata: [ true, true, true, true,        #ccpi0
+                           true, true, true, true, true]  #dllee
+                           
+  dataTier:              [ "larlite_reco2d", "larlite_opreco", "larlite_mcinfo", "larlite_pandora",         #ccpi0
+                           "larlite_reco2d", "larlite_opreco", "larlite_mcinfo", "larcv_wholeview", "larcv_mctruth"]  #dllee
+                           
+  fileFormat:            [ "root", "root", "root", "root",          #ccpi0
+                           "root", "root", "root", "root", "root"]  #dllee
+                           
+}
+
+
 process_name: SlimAndFilterDLCCPi0
 
 services:
@@ -23,7 +46,8 @@ services:
   @table::microboone_reco_mcc8_services
   LLMetaMaker: {Enable: false}
   LArCVMetaMaker: {Enable: false}
-  TFileMetadataMicroBooNE: @local::microboone_tfile_metadata
+  # Should be commented out for grid running, but needed to test generation of .json files interactively
+  #TFileMetadataMicroBooNE: @local::microboone_tfile_metadata
 }
 
 source:
@@ -84,8 +108,8 @@ outputs:
  slim:
  {
    module_type: RootOutput
-   fileName:    "artroot_output.root"
-   dataTier:    "reconstructed-2d"
+   fileName:    "%ifb_reco2_superslim.root"
+   dataTier:    "reconstructed"
    compressionLevel: 1
    outputCommands: [ "drop *_*_*_*",
 #                     "drop sim::SimChannels_*_*_*",
@@ -165,32 +189,11 @@ physics.analyzers.opreco.out_filename:      "dllee_larlite_opreco.root"
 physics.analyzers.superaMCTruthOnly.out_filename: "dllee_larcv_mctruth.root"
 physics.analyzers.superaWholeViewMC.out_filename: "dllee_larcv_wholeview.root"
 
-services.FileCatalogMetadataMicroBooNE: {
-  FCLName: "uboone_sys_var_SlimAndFilterDLCCPi0.fcl"
-  FCLVersion: "v06_26_01_15"
-  ProjectName: "lite"
-  ProjectStage: "lite"
-  ProjectVersion: "develop"
-}
-
-services.TFileMetadataMicroBooNE:
-{
-  JSONFileName:[ "ccpi0_larlite_reco2d.root.json",
-                 "ccpi0_larlite_opreco.root.json",
-                 "ccpi0_larlite_mcinfo.root.json",
-                 "ccpi0_larlite_pandora.root.json",
-                 "dllee_larlite_reco2d.root.json",
-                 "dllee_larlite_opreco.root.json",
-                 "dllee_larlite_mcinfo.root.json",
-                 "dllee_larcv_wholeview.root.json", 
-                 "dllee_larcv_mctruth.root.json"]
-  GenerateTFileMetadata: [ true, true, true, true,        #ccpi0
-                           true, true, true, true, true]  #dllee
-                           
-  dataTier:              [ "larlite_reco2d", "larlite_opreco", "larlite_mcinfo", "larlite_pandora",         #ccpi0
-                           "larlite_reco2d", "larlite_opreco", "larlite_mcinfo", "larcv_wholeview", "larcv_mctruth"]  #dllee
-                           
-  fileFormat:            [ "root", "root", "root", "root",          #ccpi0
-                           "root", "root", "root", "root", "root"]  #dllee
-                           
-}
+# Will be overwritten by wrappers when running on the grid, but needed for testing generation of .json files interactively
+# services.FileCatalogMetadataMicroBooNE: {
+#  FCLName: "uboone_sys_var_SlimAndFilterDLCCPi0.fcl"
+#  FCLVersion: "v06_26_01_15"
+#  ProjectName: "lite"
+#  ProjectStage: "lite"
+#  ProjectVersion: "develop"
+#}

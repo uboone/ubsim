@@ -3,6 +3,14 @@
 #include "time_memory_tracker_microboone.fcl"
 #include "reco_uboone_mcc8.fcl"
 
+microboone_tfile_metadata:
+{
+  JSONFileName:[ "ubxsec_output_mc_bnbcosmic.root.json" ]
+  GenerateTFileMetadata: [ true ] #ccinc
+  dataTier:              [ "root-tuple" ] #ccinc
+  fileFormat:            [ "root" ] #ccinc
+}
+
 process_name: SlimAndFilterCCIncl
 
 services:
@@ -17,7 +25,8 @@ services:
   @table::microboone_reco_mcc8_services
   LLMetaMaker: {Enable: false}
   LArCVMetaMaker: {Enable: false}
-  TFileMetadataMicroBooNE: @local::microboone_tfile_metadata
+  # Should be commented out for running on the grid, but needed for testing generation of .json files interactively
+  #TFileMetadataMicroBooNE: @local::microboone_tfile_metadata
 }
 
 source:
@@ -63,8 +72,8 @@ outputs:
  slim:
  {
    module_type: RootOutput
-   fileName:    "artroot_output.root"
-   dataTier:    "reconstructed-2d"
+   fileName:    "%ifb_reco2_ccincl_superslim.root"
+   dataTier:    "reconstructed"
    compressionLevel: 1
    outputCommands: [ "drop *_*_*_*",
 #                     "drop sim::SimChannels_*_*_*",
@@ -149,17 +158,11 @@ physics.analyzers.CosmicTaggerAna.SelectEvents: [ ccinc ]
 physics.analyzers.SimpleAna.SelectEvents:       [ ccinc ]
 services.TFileService.fileName: "ubxsec_output_mc_bnbcosmic.root"
 
-services.TFileMetadataMicroBooNE:
-{
-  JSONFileName:[ "ubxsec_output_mc_bnbcosmic.root.json" ]
-  GenerateTFileMetadata: [ true ] #ccinc
-  dataTier:              [ "root-tuple" ] #ccinc
-  fileFormat:            [ "root" ] #ccinc
-}
-services.FileCatalogMetadataMicroBooNE: {
-  FCLName: "uboone_sys_var_SlimAndFilterCCincl.fcl"
-  FCLVersion: "v06_26_01_15"
-  ProjectName: "lite"
-  ProjectStage: "lite"
-  ProjectVersion: "develop"
-}
+# Will be overwritten by wrappers when running on the grid, but needed for testing generation of .json files interactively
+#services.FileCatalogMetadataMicroBooNE: {
+#  FCLName: "uboone_sys_var_SlimAndFilterCCincl.fcl"
+#  FCLVersion: "v06_26_01_15"
+#  ProjectName: "lite"
+#  ProjectStage: "lite"
+#  ProjectVersion: "develop"
+#}
