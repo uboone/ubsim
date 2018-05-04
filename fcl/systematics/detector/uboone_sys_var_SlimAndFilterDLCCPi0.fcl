@@ -108,7 +108,7 @@ outputs:
  slim:
  {
    module_type: RootOutput
-   fileName:    "%ifb_reco2_superslim.root"
+   fileName:    "%ifb_dlslim.root"
    dataTier:    "reconstructed"
    compressionLevel: 1
    outputCommands: [ "drop *_*_*_*",
