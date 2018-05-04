@@ -61,7 +61,8 @@ physics:
  #trigger_paths: [ ccpi0, dllee, ccinc ]
 
  stream1:  [ slim ]
- anaccinc: [ @sequence::ubxsec_mc_analyzers ]
+ #anaccinc: [ @sequence::ubxsec_mc_analyzers ]
+ anaccinc: [ CosmicTaggerAna ]
 
  #end_paths:     [ stream1, anaccpi0, larcv, anaccinc ]    
 
