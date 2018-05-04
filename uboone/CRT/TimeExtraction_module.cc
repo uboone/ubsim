@@ -24,7 +24,7 @@
 #include "uboone/CRT/CRTProducts/CRTHit.hh"
 #include "uboone/CRT/CRTProducts/CRTTrack.hh"
 #include "uboone/CRT/CRTAuxFunctions.hh"
-#include "uboone/RawData/utils/DAQHeaderTimeUBooNE.h"
+#include "ubooneobj/DAQHeaderTimeUBooNE.h"
 
 #include "TTree.h"
 

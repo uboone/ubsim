@@ -28,4 +28,62 @@
   <class name="art::Wrapper<art::Assns<raw::SparseRawDigit,recob::Wire,void> >"  />
   <class name="art::Wrapper<art::Assns<recob::Wire,raw::SparseRawDigit,void> >"  />
 
+  <class name="raw::ubdaqSoftwareTriggerData"/>
+  <class name="art::Wrapper<raw::ubdaqSoftwareTriggerData>"/>
+  <class name="std::pair<std::string, bool>"/>
+  <class name="std::vector<bool>"/>
+  <class name="std::vector<std::pair<std::string, bool> >"/>
+  <class name="raw::DAQHeaderTimeUBooNE"/>
+  <class name="art::Wrapper<raw::DAQHeaderTimeUBooNE>"/>
+
+  <ioread 
+   checksum="[2334756667]"
+   sourceClass="raw::ubdaqSoftwareTriggerData"
+   source="unsigned int PHMAX"
+   targetClass="raw::ubdaqSoftwareTriggerData"
+   target="PHMAX"
+   include="vector;ubooneobj/ubdaqSoftwareTriggerData.h">
+   <![CDATA[
+     PHMAX.push_back(onfile.PHMAX);
+   ]]>
+  </ioread> 
+
+  <ioread 
+   checksum="[2334756667]"
+   sourceClass="raw::ubdaqSoftwareTriggerData"
+   source="unsigned int multiplicity"
+   targetClass="raw::ubdaqSoftwareTriggerData"
+   target="multiplicity"
+   include="vector;ubooneobj/ubdaqSoftwareTriggerData.h">
+   <![CDATA[
+     multiplicity.push_back(onfile.multiplicity);
+   ]]>
+  </ioread> 
+
+  <ioread 
+   checksum="[2334756667]"
+   sourceClass="raw::ubdaqSoftwareTriggerData"
+   source="unsigned int triggerTick"
+   targetClass="raw::ubdaqSoftwareTriggerData"
+   target="triggerTick"
+   include="vector;ubooneobj/ubdaqSoftwareTriggerData.h">
+   <![CDATA[
+     triggerTick.push_back(onfile.triggerTick);
+   ]]>
+  </ioread> 
+
+  <ioread 
+   checksum="[2334756667]"
+   sourceClass="raw::ubdaqSoftwareTriggerData"
+   source="double triggerTime"
+   targetClass="raw::ubdaqSoftwareTriggerData"
+   target="triggerTime"
+   include="vector;ubooneobj/ubdaqSoftwareTriggerData.h">
+   <![CDATA[
+     triggerTime.push_back(onfile.triggerTime);
+   ]]>
+  </ioread> 
+
+
 </lcgdict>
+

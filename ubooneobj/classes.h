@@ -12,7 +12,10 @@
 #include "canvas/Persistency/Common/Assns.h"
 #include "ubooneobj/UbooneOpticalFilter.h"
 #include "ubooneobj/SparseRawDigit.h"
+#include "ubooneobj/ubdaqSoftwareTriggerData.h"
+#include "ubooneobj/DAQHeaderTimeUBooNE.h"
 #include "lardataobj/RecoBase/Wire.h"
+#include "canvas/Persistency/Common/Wrapper.h"
 
 //
 // Only include objects that we would like to be able to put into the event.
@@ -20,3 +23,8 @@
 //
 
 template class art::Wrapper< uboone::UbooneOpticalFilter >;
+template class std::vector< bool >;
+template class art::Wrapper< raw::ubdaqSoftwareTriggerData >;
+template class art::Wrapper< raw::DAQHeaderTimeUBooNE >;
+template struct std::pair< std::string, bool >;
+template class std::vector< std::pair< std::string, bool > >;

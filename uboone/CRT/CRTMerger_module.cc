@@ -7,7 +7,7 @@
 #include "art/Framework/Services/System/FileCatalogMetadata.h"
 #include "art/Framework/Principal/Handle.h"
 #include "IFDH_service.h"
-#include "uboone/RawData/utils/DAQHeaderTimeUBooNE.h"
+#include "ubooneobj/DAQHeaderTimeUBooNE.h"
 #include "uboone/CRT/CRTProducts/CRTHit.hh"
 
 #include <memory>
