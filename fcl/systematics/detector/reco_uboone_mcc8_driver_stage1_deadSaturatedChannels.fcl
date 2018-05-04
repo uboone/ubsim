@@ -2,6 +2,6 @@
 
 process_name: McRecoStage1deadSaturatedChannels
 
-outputs.out1.fileName: "%ifb_%tc_reco1_deadSaturatChans.root"
+outputs.out1.fileName: "%ifb_reco1_deadSaturatChans.root"
 
 #include "sys_var_deadSaturatedChannels_uboone.fcl"

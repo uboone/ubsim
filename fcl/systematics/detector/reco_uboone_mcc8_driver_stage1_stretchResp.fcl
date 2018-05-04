@@ -2,6 +2,6 @@
 
 process_name: McRecoStage1StretchResp
 
-outputs.out1.fileName: "%ifb_%tc_reco1_StretchResp.root"
+outputs.out1.fileName: "%ifb_reco1_StretchResp.root"
 
 #include "sys_var_stretchResp_uboone.fcl"
