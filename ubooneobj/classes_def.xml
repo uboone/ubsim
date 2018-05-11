@@ -11,31 +11,40 @@
    <version ClassVersion="10" checksum="4104666675"/>
   </class>
   
-  <class name="art::Wrapper< uboone::UbooneOpticalFilter >"/>
- 
   <class name="raw::SparseRawDigit" ClassVersion="10">
    <version ClassVersion="10" checksum="1103224008"/>
   </class>
 
+  <class name="raw::ubdaqSoftwareTriggerData" ClassVersion="11">
+   <version ClassVersion="11" checksum="617015816"/>
+   <version ClassVersion="10" checksum="1"/>
+  </class>
+
+  <class name="raw::DAQHeaderTimeUBooNE" ClassVersion="11">
+   <version ClassVersion="11" checksum="30000112"/>
+   <version ClassVersion="10" checksum="1"/>
+  </class>
+
+  <class name="art::Wrapper< uboone::UbooneOpticalFilter >"/>
+ 
   <class name="lar::sparse_vector<short>"                                        />
   <class name="lar::sparse_vector<short>::datarange_t"                           />
   <class name="std::vector< lar::sparse_vector<short>::datarange_t >"            />
   <class name="std::vector<raw::SparseRawDigit>"                                 />
   <class name="art::Wrapper< std::vector<raw::SparseRawDigit > >"                />
-
   <class name="art::Assns<recob::Wire,raw::SparseRawDigit,void>"                 />
   <class name="art::Assns<raw::SparseRawDigit,recob::Wire,void>"                 />
   <class name="art::Wrapper<art::Assns<raw::SparseRawDigit,recob::Wire,void> >"  />
   <class name="art::Wrapper<art::Assns<recob::Wire,raw::SparseRawDigit,void> >"  />
 
-  <class name="raw::ubdaqSoftwareTriggerData"/>
   <class name="art::Wrapper<raw::ubdaqSoftwareTriggerData>"/>
+
   <class name="std::pair<std::string, bool>"/>
   <class name="std::vector<bool>"/>
   <class name="std::vector<std::pair<std::string, bool> >"/>
-  <class name="raw::DAQHeaderTimeUBooNE"/>
   <class name="art::Wrapper<raw::DAQHeaderTimeUBooNE>"/>
 
+  <!--
   <ioread 
    checksum="[2334756667]"
    sourceClass="raw::ubdaqSoftwareTriggerData"
@@ -83,7 +92,7 @@
      triggerTime.push_back(onfile.triggerTime);
    ]]>
   </ioread> 
-
+  -->
 
 </lcgdict>
 
