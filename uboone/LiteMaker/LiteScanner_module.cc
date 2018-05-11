@@ -29,7 +29,7 @@
 // LArSoft includes
 #include "uboone/Geometry/UBOpChannelTypes.h"
 #include "uboone/Geometry/UBOpReadoutMap.h"
-#include "ubooneobj/ubdaqSoftwareTriggerData.h"
+#include "ubooneobj/Trigger/ubdaqSoftwareTriggerData.h"
 #include "uboone/MuCS/MuCSData.h"
 #include "uboone/MuCS/MuCSRecoData.h"
 #include "larsim/EventWeight/Base/MCEventWeight.h"

@@ -33,7 +33,7 @@
 #include "uboone/CRT/CRTProducts/CRTTrack.hh"
 #include "uboone/CRT/CRTAuxFunctions.hh"
 
-#include "ubooneobj/DAQHeaderTimeUBooNE.h"
+#include "ubooneobj/RawData/DAQHeaderTimeUBooNE.h"
 
 #include "TTree.h"
 #include "TH1F.h"

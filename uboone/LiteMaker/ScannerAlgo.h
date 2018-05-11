@@ -19,7 +19,7 @@
 // LArSoft includes
 #include "uboone/MuCS/MuCSData.h"
 #include "uboone/MuCS/MuCSRecoData.h"
-#include "ubooneobj/ubdaqSoftwareTriggerData.h"
+#include "ubooneobj/Trigger/ubdaqSoftwareTriggerData.h"
 #include "larcore/Geometry/Geometry.h"
 #include "lardataobj/RawData/RawDigit.h"
 #include "lardataobj/RawData/OpDetWaveform.h"

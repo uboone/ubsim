@@ -8,7 +8,7 @@
 ////////////////////////////////////////////////////////////////////////
 
 #include "lardataobj/RawData/DAQHeader.h"
-#include "ubooneobj/DAQHeaderTimeUBooNE.h"
+#include "ubooneobj/RawData/DAQHeaderTimeUBooNE.h"
 
 namespace raw{
 

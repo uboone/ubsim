@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
-#include "ubooneobj/UBTriggerTypes.h"
+#include "ubooneobj/Trigger/UBTriggerTypes.h"
 
 namespace raw{
 

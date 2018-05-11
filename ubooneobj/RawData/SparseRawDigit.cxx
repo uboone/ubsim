@@ -8,7 +8,7 @@
 //
 //==============================================================================
 
-#include "ubooneobj/SparseRawDigit.h"
+#include "ubooneobj/RawData/SparseRawDigit.h"
 
 namespace raw {
 
