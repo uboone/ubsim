@@ -9,7 +9,7 @@
 //
 
 #include "canvas/Persistency/Common/Wrapper.h"
-#include "uboone/DataOverlay/DataOverlayProducts/EventMixingSummary.h"
+#include "ubooneobj/DataOverlay/EventMixingSummary.h"
 #include <vector>
 
 //
