@@ -21,8 +21,8 @@
 
 #include "art/Framework/Services/Optional/TFileService.h"
 
-#include "uboone/CRT/CRTProducts/CRTHit.hh"
-#include "uboone/CRT/CRTProducts/CRTTrack.hh"
+#include "ubooneobj/CRT/CRTHit.hh"
+#include "ubooneobj/CRT/CRTTrack.hh"
 #include "uboone/CRT/CRTAuxFunctions.hh"
 
 #include <fstream>
@@ -38,8 +38,8 @@
 #include "TFile.h"
 #include <stdint.h>
 
-#include "uboone/CRT/CRTProducts/CRTHit.hh"
-#include "uboone/CRT/CRTProducts/CRTTrack.hh"
+#include "ubooneobj/CRT/CRTHit.hh"
+#include "ubooneobj/CRT/CRTTrack.hh"
 #include "uboone/CRT/CRTAuxFunctions.hh"
 
 #include "TH1F.h"

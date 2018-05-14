@@ -7,7 +7,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( $ENV{NUTOOLS_INC} )
 include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 
-add_subdirectory(CRTProducts)
 add_subdirectory(CRTBernFEBDAQCore)
 #add_subdirectory(CRTBinarySource)
 
@@ -85,7 +84,7 @@ simple_plugin( CRTGeometryHelper service
 simple_plugin( CRTDetSim module
         CRT
 	CRTData
-	CRTProducts
+	ubooneobj_CRT
         ${ART_FRAMEWORK_CORE}
         ${ART_FRAMEWORK_IO_SOURCES}
         ${ART_FRAMEWORK_PRINCIPAL}
@@ -212,7 +211,7 @@ simple_plugin( CRTMerger "module"
   ${MF_UTILITIES}
   ${CETLIB}
   ${GALLERY}
-  CRTProducts
+  ubooneobj_CRT
   ifdh
   gallery
   boost_date_time

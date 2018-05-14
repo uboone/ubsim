@@ -1,4 +1,4 @@
-#include "uboone/CRT/CRTProducts/CRTSimData.hh"
+#include "ubooneobj/CRT/CRTSimData.hh"
 #include "uboone/CRT/CRTDetSim.hh"
 
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"

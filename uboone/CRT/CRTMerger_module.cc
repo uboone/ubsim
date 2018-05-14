@@ -1,6 +1,6 @@
 #include "uboone/CRT/CRTMerger.hh"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-////#include "uboone/CRT/CRTProducts/MSetCRTFrag.hh"
+////#include "ubooneobj/CRT/MSetCRTFrag.hh"
 #include <artdaq-core/Data/Fragment.hh>
 #include "gallery/Event.h"
 #include "CRTBernFEBDAQCore/Overlays/BernZMQFragment.hh"
@@ -8,7 +8,7 @@
 #include "art/Framework/Principal/Handle.h"
 #include "IFDH_service.h"
 #include "ubooneobj/RawData/DAQHeaderTimeUBooNE.h"
-#include "uboone/CRT/CRTProducts/CRTHit.hh"
+#include "ubooneobj/CRT/CRTHit.hh"
 
 #include <memory>
 #include <string>
