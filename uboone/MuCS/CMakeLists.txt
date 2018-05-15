@@ -9,7 +9,6 @@ include_directories ( $ENV{CRYHOME}/src )
 include_directories( $ENV{IFDHC_FQ_DIR}/inc )
 
 art_make( BASENAME_ONLY
-	    LIBRARY_NAME  uboonecode_uboone_MuCS
       MODULE_LIBRARIES larcorealg_Geometry
 			larcore_Geometry_Geometry_service
 			larcoreobj_SummaryData
@@ -22,7 +21,7 @@ art_make( BASENAME_ONLY
 			lardataobj_RecoBase
 			lardata_RecoObjects larreco_Deprecated  
 			larreco_RecoAlg
-			uboonecode_uboone_MuCS
+			ubooneobj_MuCS
 			SignalShapingServiceMicroBooNE_service
 			lardataobj_AnalysisBase
       nusimdata_SimulationBase

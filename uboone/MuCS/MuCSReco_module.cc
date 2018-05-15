@@ -38,8 +38,8 @@
 #include "TTree.h"
 #include "TMath.h"
 #include <sqlite3.h> 
-#include "MuCSData.h"
-#include "MuCSRecoData.h"
+#include "ubooneobj/MuCS/MuCSData.h"
+#include "ubooneobj/MuCS/MuCSRecoData.h"
 
 using namespace std;
 

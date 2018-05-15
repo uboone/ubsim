@@ -33,7 +33,7 @@
 #include "nusimdata/SimulationBase/MCParticle.h"
 #include "nutools/EventGeneratorBase/evgenbase.h"
 
-#include "MuCSRecoData.h"
+#include "ubooneobj/MuCS/MuCSRecoData.h"
 
 /// A module to check the results from the Monte Carlo generator
 class MuCSRecoToMC : public art::EDProducer {

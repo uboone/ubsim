@@ -40,8 +40,8 @@
 #include "TTree.h"
 #include "TMath.h"
 
-#include "MuCSData.h"
-#include "MuCSDTOffset.h"
+#include "ubooneobj/MuCS/MuCSData.h"
+#include "ubooneobj/MuCS/MuCSDTOffset.h"
 #include "ifdh.h"  //to handle flux files
 
 using namespace std;

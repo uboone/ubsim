@@ -30,8 +30,8 @@
 #include "uboone/Geometry/UBOpChannelTypes.h"
 #include "uboone/Geometry/UBOpReadoutMap.h"
 #include "ubooneobj/Trigger/ubdaqSoftwareTriggerData.h"
-#include "uboone/MuCS/MuCSData.h"
-#include "uboone/MuCS/MuCSRecoData.h"
+#include "ubooneobj/MuCS/MuCSData.h"
+#include "ubooneobj/MuCS/MuCSRecoData.h"
 #include "larsim/EventWeight/Base/MCEventWeight.h"
 
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
