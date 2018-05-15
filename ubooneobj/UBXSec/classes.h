@@ -8,16 +8,16 @@
 #include "lardataobj/RecoBase/Vertex.h"
 #include "lardataobj/AnalysisBase/FlashMatch.h"
 
-#include "uboone/UBXSec/DataTypes/FlashMatch.h"
-#include "uboone/UBXSec/DataTypes/TPCObject.h"
-#include "uboone/UBXSec/DataTypes/MCGhost.h"
+#include "ubooneobj/UBXSec/FlashMatch.h"
+#include "ubooneobj/UBXSec/TPCObject.h"
+#include "ubooneobj/UBXSec/MCGhost.h"
 #include "lardataobj/AnalysisBase/CosmicTag.h"
 
 #include "nusimdata/SimulationBase/MCParticle.h"
 
-#include "uboone/UBXSec/DataTypes/UBXSecEvent.h"
+#include "ubooneobj/UBXSec/UBXSecEvent.h"
 
-#include "uboone/UBXSec/DataTypes/SelectionResult.h"
+#include "ubooneobj/UBXSec/SelectionResult.h"
 
 
 #include <vector>
