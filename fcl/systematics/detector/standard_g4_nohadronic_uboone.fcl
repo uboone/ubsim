@@ -2,7 +2,7 @@
 
 process_name: G4NoHadronic
 
-outputs.out1.fileName: "detsyst_%tc_g4_nohadronic.root"
+outputs.out1.fileName: "%ifb_%tc_g4_nohadronic.root"
 
 source.inputCommands: ["keep *_*_*_*","drop *_*_*_McReco*","drop *_*_*_Detsim*","drop *_*_*_G4*", "drop sumdata::RunData_*_*_*"]
 
