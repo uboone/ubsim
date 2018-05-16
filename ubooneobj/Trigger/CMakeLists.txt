@@ -1,9 +1,11 @@
 # for classes_def.xml!!
 
-art_make( LIB_LIBRARIES
-		${ROOT_BASIC_LIB_LIST}
-		${ROOT_EG}
+cet_make( LIBRARIES ${ROOT_BASIC_LIB_LIST}
+	  	    ${ROOT_EG}
+		    NO_DICTIONARY
 )
+
+art_dictionary( DICTIONARY_LIBRARIES ubooneobj_Trigger )
 
 install_headers()
 install_fhicl()
