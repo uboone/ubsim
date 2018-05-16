@@ -65,6 +65,11 @@
 #include "larevt/CalibrationDBI/Interface/ElectronicsCalibService.h"
 #include "larevt/CalibrationDBI/Interface/ElectronicsCalibProvider.h"
 
+#include "lardata/Utilities/AssociationUtil.h"
+#include "larreco/Calorimetry/CalorimetryAlg.h"
+#include "lardataobj/AnalysisBase/Calorimetry.h"
+#include "uboone/Database/TPCEnergyCalib/TPCEnergyCalibService.h"
+#include "uboone/Database/TPCEnergyCalib/TPCEnergyCalibProvider.h"
 ///Detector simulation of raw signals on wires
 namespace detsim {
 
@@ -362,9 +367,8 @@ namespace detsim {
     //--------------------------------------------------------------------
    
     //handle to tpc energy calibration provider for the overlay dedicated data driven variation to the wires signal
-    const lariov::TPCEnergyCalibProvider& energyCalibProvider
+	  const lariov::TPCEnergyCalibProvider& energyCalibProvider
        = art::ServiceHandle<lariov::TPCEnergyCalibService>()->GetProvider();
-
     //get pedestal conditions
     const lariov::DetPedestalProvider& pedestalRetrievalAlg 
        = art::ServiceHandle<lariov::DetPedestalService>()->GetPedestalProvider();
