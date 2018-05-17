@@ -29,9 +29,6 @@
 #include "lardataobj/AnalysisBase/CosmicTag.h"
 #include "lardata/Utilities/AssociationUtil.h"
 
-// pandora-specific
-#include "larpandora/LArPandoraInterface/LArPandoraHelper.h"
-
 // ROOT
 #include "TVector3.h"
 
