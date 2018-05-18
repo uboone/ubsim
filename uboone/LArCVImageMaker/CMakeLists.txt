@@ -23,7 +23,7 @@ art_make( EXCLUDE LArCVMetaMaker_service.cc
 		   lardataobj_MCBase
 		   larcoreobj_SummaryData
 		   lardataobj_RawData
-		   lardata_RecoObjects larreco_Deprecated
+		   lardata_RecoObjects
 		   ${UBOONECODE_LIB}
 		   nusimdata_SimulationBase
 		   ${LARRECO_LIB}
@@ -64,7 +64,7 @@ art_make( EXCLUDE LArCVMetaMaker_service.cc
 		   larcoreobj_SummaryData
 		   lardataobj_RawData
 		   lardataobj_RecoBase
-		   lardata_RecoObjects larreco_Deprecated
+		   lardata_RecoObjects
                    larevt_Filters
                    larevt_CalibrationDBI_IOVData
                    larevt_CalibrationDBI_Providers
