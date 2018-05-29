@@ -66,8 +66,6 @@
 #include "larevt/CalibrationDBI/Interface/ElectronicsCalibProvider.h"
 
 #include "lardata/Utilities/AssociationUtil.h"
-#include "larreco/Calorimetry/CalorimetryAlg.h"
-#include "lardataobj/AnalysisBase/Calorimetry.h"
 #include "uboone/Database/TPCEnergyCalib/TPCEnergyCalibService.h"
 #include "uboone/Database/TPCEnergyCalib/TPCEnergyCalibProvider.h"
 ///Detector simulation of raw signals on wires
