@@ -110,8 +110,8 @@ microboone_reco_data_producers:
     opflashCosmic:                    @local::microboone_opflash_saturation_cosmic
 
     ### noise filtering and signal processing from the wirecell toolkit
-    nfsp:                             @local::wcls.producers.nfsp
-    butcher:                          @local::wcls.producers.butcher
+    nfspl1:                           @local::wcls.nfspl1
+    butcher:                          @local::wcls.butcher
 
     ### uboonecode version of ROI/Wire production which is to be depracated
     caldata:                          @local::microboone_calroi
@@ -287,9 +287,9 @@ microboone_reco_data_optical:          [ saturation,
                                          simpleFlashBeamLowPE
                                        ]
 
-microboone_reco_data_signalprocessing: [ nfsp,
-					                               butcher,
-				                                 #caldata,
+microboone_reco_data_signalprocessing: [ nfspl1,
+					 butcher,
+				         #caldata,
                                          gaushit 
                                        ]
 
@@ -447,7 +447,7 @@ microboone_dqm_ana:                    [ @sequence::microboone_dqm_ana_stage1,
 ### These are for MCC 9
 ###        Variable to override                                                                                    Values overriding defaults ###
 
-microboone_reco_data_producers.nfsp.wcls_main.configs:                                                        [ "ubnfsp-before.json.bz2" ]
+#microboone_reco_data_producers.nfsp.wcls_main.configs:                                                        [ "ubnfsp-before.json.bz2" ]
 
 # Cal data is no longer used, below is historic
 microboone_reco_data_producers.caldata.DigitModuleLabel:                                                      "butcher"
