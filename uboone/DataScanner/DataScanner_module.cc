@@ -767,7 +767,7 @@ namespace datascanner {
   //#######################################################################################################
   {
     // Some detector constants
-    CONV_WIRE2CM = _geo->WirePitch(0,1,0);    //wire pitch in cm
+    CONV_WIRE2CM = _geo->WirePitch(); //wire pitch in cm
     CONV_TIME2CM = (_detp->SamplingRate()/1000.) * _detp->DriftVelocity(_detp->Efield(),_detp->Temperature());
   }
 
