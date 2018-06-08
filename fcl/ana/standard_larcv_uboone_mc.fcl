@@ -16,7 +16,7 @@ services:
 }
 services.DetectorClocksService.InheritClockConfig:           false
 services.DetectorClocksService.TriggerOffsetTPC:             -0.400e3
-services.SpaceCharge.EnableSimSpatialSCE: true
+services.SpaceCharge.EnableSimSpatialSCE:                    true
 
 #source is now a root file
 source:
@@ -31,11 +31,10 @@ physics.analyzers:  {
 		    @table::dlprod_analyzers
 		    }
 physics.analyzers.superaWholeView.out_filename: "larcv_wholeview.root"
-physics.analyzers.opreco.DataLookUpMap.trigger: ["daq"]
 
 # Define larcv analyzer sequence.
 
-physics.larcv: [ opreco, reco2d, superaWholeView ]
+physics.larcv: [ opreco, gaushitMCinfoBacktracker, superaWholeView ]
 
 # Add larcv sequence to end_paths.
 
@@ -46,9 +45,9 @@ physics.end_paths: [ larcv ]
 microboone_tfile_metadata:
 {
   JSONFileName:	[ "larlite_opreco.root.json",
-                  "larlite_reco2d.root.json",
+                  "larlite_gaushit_mcinfo_wbacktracker.root.json",
                   "larcv_wholeview.root.json" ]
   GenerateTFileMetadata: [ true, true, true ]
-  dataTier:              [ "larlite_opreco", "larlite_reco2d", "larcv_wholeview" ]
+  dataTier:              [ "larlite_opreco", "larlite_gaushit_mcinfo_wbacktracker", "larcv_wholeview" ]
   fileFormat:            [ "root", "root", "root" ]
 }
