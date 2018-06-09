@@ -19,9 +19,9 @@ art_make( BASENAME_ONLY
 		   ${ART_FRAMEWORK_SERVICES_REGISTRY}
 		   ${ART_FRAMEWORK_SERVICES_OPTIONAL}
 		   ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
-		   ${ART_PERSISTENCY_COMMON}
-		   ${ART_PERSISTENCY_PROVENANCE}
-		   ${ART_UTILITIES}
+		   art_Persistency_Common canvas
+		   art_Persistency_Provenance canvas
+		   art_Utilities canvas
 		   ${MF_MESSAGELOGGER}
 		   
 		   ${FHICLCPP}
@@ -44,9 +44,9 @@ art_make( BASENAME_ONLY
 		   ${ART_FRAMEWORK_SERVICES_REGISTRY}
 		   ${ART_FRAMEWORK_SERVICES_OPTIONAL}
 		   ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
-		   ${ART_PERSISTENCY_COMMON}
-		   ${ART_PERSISTENCY_PROVENANCE}
-		   ${ART_UTILITIES}
+		   art_Persistency_Common canvas
+		   art_Persistency_Provenance canvas
+		   art_Utilities canvas
 		   ${MF_MESSAGELOGGER}
 		   
 		   ${FHICLCPP}

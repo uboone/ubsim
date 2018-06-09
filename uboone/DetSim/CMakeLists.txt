@@ -7,6 +7,7 @@ art_make( BASENAME_ONLY
           MODULE_LIBRARIES larcorealg_Geometry
                         larcore_Geometry_Geometry_service
                         larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
+			lardata_Utilities_LArFFT_service
                         lardata_Utilities
                         larevt_Filters
                         lardataobj_RawData
@@ -38,6 +39,7 @@ simple_plugin(SimWireMicroBooNE "module"
               larcorealg_Geometry
               larcore_Geometry_Geometry_service
               larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
+	      lardata_Utilities_LArFFT_service
               lardata_Utilities
               larevt_Filters
               lardataobj_RawData

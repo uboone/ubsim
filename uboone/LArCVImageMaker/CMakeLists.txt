@@ -17,7 +17,7 @@ art_make( EXCLUDE LArCVMetaMaker_service.cc
 		   uboone_Geometry
 		   ubooneobj_MuCS
 		   larcore_Geometry_Geometry_service
-	   	   larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
+	   	   nutools_ParticleNavigation lardataobj_Simulation
 		   lardataobj_RecoBase
 		   nusimdata_SimulationBase
 		   lardataobj_MCBase
@@ -55,7 +55,7 @@ art_make( EXCLUDE LArCVMetaMaker_service.cc
 		   larcorealg_Geometry
 		   uboone_Geometry
 		   larcore_Geometry_Geometry_service
-		   larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
+		   nutools_ParticleNavigation lardataobj_Simulation
                    larevt_CalibrationDBI_IOVData
                    larevt_CalibrationDBI_Providers
 		   nusimdata_SimulationBase

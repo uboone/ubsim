@@ -32,9 +32,11 @@ art_make( BASENAME_ONLY
 			${ART_FRAMEWORK_SERVICES_REGISTRY}
 			${ART_FRAMEWORK_SERVICES_OPTIONAL}
 			${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
+			${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
 			art_Persistency_Common canvas
 			art_Persistency_Provenance canvas
 			art_Utilities canvas
+			nutools_RandomUtils_NuRandomService_service
 			${MF_MESSAGELOGGER}
 			
       ${FHICLCPP}

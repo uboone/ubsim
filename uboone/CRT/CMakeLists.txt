@@ -214,7 +214,7 @@ simple_plugin( CRTMerger "module"
   ubooneobj_CRT
   ifdh
   gallery
-  boost_date_time
+  ${Boost_DATE_TIME_LIBRARY}
   cetlib cetlib_except	
 )
 
