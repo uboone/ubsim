@@ -85,7 +85,7 @@ private:
   TStopwatch _evtwatch; // full event time
   TStopwatch _loopwatch;
   TStopwatch _watch;
-  double _time_loop, _time_get, _time_algo, _time_study, _time_calc, _time_swap, _time_ide, _time_read;
+  double _time_loop, _time_get, _time_algo, _time_calc, _time_swap;
 
   /// Compression Algorithm Object...performs compression
   std::unique_ptr< compress::CompressionAlgoBase > _compress_algo;
@@ -98,8 +98,8 @@ private:
 			    const std::vector<std::pair< compress::tick, compress::tick> > &ranges,
 			    int pl, int ch);
 
-  void beginJob();
-  void endJob();
+  void beginJob() override;
+  void endJob() override;
     
 };
 

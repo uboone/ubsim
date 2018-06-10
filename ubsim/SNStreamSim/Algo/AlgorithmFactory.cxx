@@ -26,7 +26,7 @@ namespace compress {
       throw std::runtime_error("ERROR in AlgorithmFactory: no registered algorithm by that name.");
     }
 
-    return std::move(ptr);
+    return ptr;
   }
 
 }
