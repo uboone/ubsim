@@ -5,6 +5,7 @@
 #include "uboone/MichelReco/Fmwk/MichelException.h"
 #include "uboone/MichelReco/Fmwk/ClusterVectorCalculator.h"
 #include <cmath>
+#include <cstdlib>
 #include <sstream>
 
 namespace michel {
@@ -92,7 +93,7 @@ namespace michel {
     if((dqdscandidate_loc >= cluster._hits.size()))
       return false;
     
-    if(abs(dqdscandidate_loc - candidate_loc) > _maxDistance)
+    if(std::abs(int(dqdscandidate_loc) - int(candidate_loc)) > _maxDistance)
       return false;
 
     size_t right = 0;

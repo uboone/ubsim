@@ -54,7 +54,7 @@ public:
   MichelRecoDriver & operator = (MichelRecoDriver &&) = delete;
 
   // Required functions.
-  void endJob();
+  void endJob() override;
   void produce(art::Event & e) override;
 
 
@@ -173,7 +173,7 @@ void MichelRecoDriver::produce(art::Event & e)
   // loop through all input clusters
   for (size_t i=0; i < input_cluster_h->size(); i++){
     
-    auto const cluster = input_cluster_h->at(i);
+    //auto const cluster = input_cluster_h->at(i);
 
     // grab hits associated to this cluster
     //std::vector<const recob::Hit*> hit_v = cluster_hit_assn_v.at(i);

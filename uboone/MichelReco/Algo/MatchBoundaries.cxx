@@ -5,6 +5,7 @@
 #include "uboone/MichelReco/Fmwk/MichelException.h"
 #include "uboone/MichelReco/Fmwk/ClusterVectorCalculator.h"
 #include <cmath>
+#include <cstdlib>
 #include <sstream>
 namespace michel {
   
@@ -93,7 +94,7 @@ namespace michel {
     if((dqdscandidate_loc >= cluster._hits.size()))
       return false;
     
-    if(abs(dqdscandidate_loc - candidate_loc) > _maxDistance)
+    if(std::abs(int(dqdscandidate_loc) - int(candidate_loc)) > _maxDistance)
       return false;
     
 
@@ -131,7 +132,7 @@ namespace michel {
     for (size_t i = start; i < (idx+4); i++){
       // make sure we fall in the vector's range
       if ( i < covariance.size() ){
-	avg_covariance += fabs(covariance[i]);
+	avg_covariance += std::abs(covariance[i]);
 	counts += 1;
       }
     }
