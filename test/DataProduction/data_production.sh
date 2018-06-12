@@ -4,6 +4,10 @@
 
 env > env.txt
 
+# Set environment
+
+export FW_SEARCH_PATH=${FW_SEARCH_PATH}:${UBOONEDATA_DIR}:${UBOONEDATA_DIR}/CRT:${UBOONEDATA_DIR}/Calibration:${UBOONEDATA_DIR}/Response
+
 # Exit if stash cache isn't mounted.
 
 UBOONE_EXAMPLE_DATA_DIR=/cvmfs/uboone.osgstorage.org/stash/uboone_example_data
