@@ -226,7 +226,8 @@ void crt::CRTMerger::produce(art::Event& event)
 	  catch(...)
 	    {
 	      std::cout << "This Root File does not exist. No Merger CRTHit candidates put on event for this TPC evt for this chunk of the CRT." << std::endl;
-	      continue;
+	      throw cet::exception("CRTMerger") << "Could not locate CRT file: " 
+						<< crtrootfile[crf_index] << "\n";
 	    }
 	  std::cout<<"xrootd URL: "<<crtrootFile_xrootd_url[0]<<std::endl;
 	
@@ -236,17 +237,6 @@ void crt::CRTMerger::produce(art::Event& event)
 	  // when you would like to launch a 'lar -c ... ... ...'
 	  // In batch mode, this step is automatically done
 	  
-	  //	  try{
-	    gallery::Event fCRTEvent_tmp(crtrootFile_xrootd_url);
-	    /*
-	  }
-	  catch(...)
-	    {
-	      std::cout << "This Root File can not be opened by gallery. No Merger CRTHit candidates put on event for this TPC evt for this chunk of the CRT." << std::endl;
-	      continue;
-	    }
-	    */
-
 	  gallery::Event fCRTEvent(crtrootFile_xrootd_url);
 	  std::cout<<"Opened the CRT root file from xrootd URL"<<std::endl;
 	
