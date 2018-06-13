@@ -213,6 +213,17 @@ void crt::CRTMerger::produce(art::Event& event)
 	{
 	  if (_debug)
 	    std::cout<<"The child artroot file is "<<crtrootfile[crf_index]<<std::endl;
+
+	  // Add this file to set of seen CRT files.
+
+	  if(fCRTFiles.count(crtrootfile[crf_index]) == 0) {
+	    std::cout << "Adding CRT parent file: " << crtrootfile[crf_index] << std::endl;
+	    art::ServiceHandle<art::FileCatalogMetadata> md;
+	    std::ostringstream ostr;
+	    ostr << "mixparent" << fCRTFiles.size();
+	    md->addMetadataString(ostr.str(), crtrootfile[crf_index]);
+	    fCRTFiles.insert(crtrootfile[crf_index]);
+	  }
 	
 	  // Read off the root file by streaming over internet. Use xrootd URL
 	  // This is alternative to use gsiftp URL. In that approach we use the URL to ifdh::fetchInput the crt file to local directory and keep it open as long as we make use of it

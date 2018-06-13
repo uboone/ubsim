@@ -15,6 +15,7 @@
 //#include "gallery/ValidHandle.h"
 #include <string>
 #include <istream>
+#include <set>
 //#include "ifdh.h"
 #include "IFDH_service.h"
 
@@ -56,6 +57,8 @@ namespace crt
 		
 		std::string data_label_DAQHeader_;
 		std::string cTag;
+
+		std::set<std::string> fCRTFiles;
 		
 	};
 }
