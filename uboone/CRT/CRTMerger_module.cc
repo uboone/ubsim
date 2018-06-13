@@ -198,6 +198,13 @@ void crt::CRTMerger::produce(art::Event& event)
 	std::cout<<"total: "<<crtrootfile.size()<<std::endl;
 	if (!crtrootfile.size())
 	  std::cout << "\n\t CRTMerger_module: No child CRT files found that conform to constraints: " << "file_format "<<"artroot"<<" and ub_project.version " << ubversion  << std::endl;
+
+	// Throw exception if there are fewer than six CRT files.
+
+	if(crtrootfile.size() < 6) {
+	  throw cet::exception("CRTMerger") << "Too few matching CRT files: " 
+					    << crtrootfile.size() << "\n";
+	}
 	  
 	
 	std::unique_ptr<std::vector<crt::CRTHit> > CRTHitEventsSet(new std::vector<crt::CRTHit>); //collection of CRTHits for this event
