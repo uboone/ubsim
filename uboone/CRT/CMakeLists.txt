@@ -215,7 +215,7 @@ simple_plugin( CRTMerger "module"
   CRTProducts
   ifdh
   gallery
-  boost_date_time
+  ${Boost_DATE_TIME_LIBRARY}
   cetlib cetlib_except	
 )
 
