@@ -50,6 +50,7 @@ find_ups_product( canvas )
 find_ups_product( ubevt v1_00_00 )
 find_ups_product( larsim v1_00_00 )
 find_ups_product( art v1_00_00 )
+find_ups_product( larcore )
 find_ups_product( nutools )
 
 # macros for dictionary and simple_plugin
