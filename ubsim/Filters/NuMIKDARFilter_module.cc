@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
-// Class:       NuMI_KDAR_Filter
+// Class:       NuMIKDARFilter
 // Plugin Type: filter (art v2_11_03)
-// File:        NuMI_KDAR_Filter_module.cc
+// File:        NuMIKDARFilter_module.cc
 //
 // Generated at Thu Sep  6 14:51:50 2018 by Wesley Ketchum using cetskelgen
 // from cetlib version v3_03_01.
@@ -20,21 +20,21 @@
 #include <memory>
 
 namespace sim {
-  class NuMI_KDAR_Filter;
+  class NuMIKDARFilter;
 }
 
 
-class sim::NuMI_KDAR_Filter : public art::EDFilter {
+class sim::NuMIKDARFilter : public art::EDFilter {
 public:
-  explicit NuMI_KDAR_Filter(fhicl::ParameterSet const & p);
+  explicit NuMIKDARFilter(fhicl::ParameterSet const & p);
   // The compiler-generated destructor is fine for non-base
   // classes without bare pointers or other resource use.
 
   // Plugins should not be copied or assigned.
-  NuMI_KDAR_Filter(NuMI_KDAR_Filter const &) = delete;
-  NuMI_KDAR_Filter(NuMI_KDAR_Filter &&) = delete;
-  NuMI_KDAR_Filter & operator = (NuMI_KDAR_Filter const &) = delete;
-  NuMI_KDAR_Filter & operator = (NuMI_KDAR_Filter &&) = delete;
+  NuMIKDARFilter(NuMIKDARFilter const &) = delete;
+  NuMIKDARFilter(NuMIKDARFilter &&) = delete;
+  NuMIKDARFilter & operator = (NuMIKDARFilter const &) = delete;
+  NuMIKDARFilter & operator = (NuMIKDARFilter &&) = delete;
 
   // Required functions.
   bool filter(art::Event & e) override;
@@ -46,18 +46,18 @@ private:
 };
 
 
-sim::NuMI_KDAR_Filter::NuMI_KDAR_Filter(fhicl::ParameterSet const &)
+sim::NuMIKDARFilter::NuMIKDARFilter(fhicl::ParameterSet const &)
 // :
 // Initialize member data here.
 {
   // Call appropriate produces<>() functions here.
 }
 
-bool sim::NuMI_KDAR_Filter::filter(art::Event &)
+bool sim::NuMIKDARFilter::filter(art::Event &)
 {
   // Implementation of required member function here.
 
   return true;
 }
 
-DEFINE_ART_MODULE(sim::NuMI_KDAR_Filter)
+DEFINE_ART_MODULE(sim::NuMIKDARFilter)
