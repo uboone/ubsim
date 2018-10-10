@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#include "art/Framework/Core/ModuleMacros.h"
+#include "art/Framework/Core/EDProducer.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 //#include "artextensions/SeedService/SeedService.hh"
@@ -79,11 +81,15 @@ namespace evwgh {
     frw.Close();
 
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
+    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
+                                                	moduleDescription().moduleLabel(),
+							GetName()));
     fWeightArray.resize(fNmultisims);
 
     if (fMode.find("multisim") != std::string::npos )
-      for (int i=0;i<fNmultisims;i++) fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+      for (int i=0;i<fNmultisims;i++) fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(art::ScheduleID::first(),
+                                                					  moduleDescription().moduleLabel(),
+											  GetName()),0,1.);
     else
       for (int i=0;i<fNmultisims;i++) fWeightArray[i]=1.;
   }

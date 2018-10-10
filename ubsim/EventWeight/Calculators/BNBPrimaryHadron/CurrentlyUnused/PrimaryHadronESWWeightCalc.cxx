@@ -8,6 +8,7 @@
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 
 #include "CLHEP/Random/RandGaussQ.h"
 #include "CLHEP/Random/RandomEngine.h"
@@ -87,7 +88,9 @@ namespace evwgh {
    
     //Prepare random generator
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::RandGaussQ GaussRandom(rng->getEngine(GetName()));
+    CLHEP::RandGaussQ GaussRandom(rng->getEngine(art::ScheduleID::first(),
+                                                 moduleDescription().moduleLabel(),
+						 GetName()));
 		
     fakeData = WeightCalc::MultiGaussianSmearing(xSecFitParameters, fitCovarianceMatrix, fNmultisims, GaussRandom);
 

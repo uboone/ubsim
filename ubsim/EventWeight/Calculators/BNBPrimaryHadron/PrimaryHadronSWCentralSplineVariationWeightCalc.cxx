@@ -15,6 +15,7 @@
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "CLHEP/Random/RandomEngine.h"
 #include "CLHEP/Random/RandGaussQ.h"
 
@@ -183,7 +184,9 @@ namespace evwgh {
 
     //Prepare random generator
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
+    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
+                                                	moduleDescription().moduleLabel(),
+							GetName()));
    
      //
     //  This part is very important. You will need more than a single random number
@@ -206,7 +209,9 @@ namespace evwgh {
 	fWeightArray[i].resize(HARPCov->GetNcols());
 	if (fMode.find("multisim") != std::string::npos ){
 	  for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
-	    fWeightArray[i][j]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+	    fWeightArray[i][j]=fGaussRandom->shoot(&rng->getEngine(art::ScheduleID::first(),
+                                                		   moduleDescription().moduleLabel(),
+								   GetName()),0,1.);
 	  }//Iterate over the covariance matrix size
 	}
 	else{

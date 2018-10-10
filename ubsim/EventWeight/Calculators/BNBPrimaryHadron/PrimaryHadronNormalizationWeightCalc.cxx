@@ -14,6 +14,7 @@
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "CLHEP/Random/RandomEngine.h"
 #include "CLHEP/Random/RandGaussQ.h"
 
@@ -87,7 +88,9 @@ namespace evwgh {
     fUseMBRands                 =   pset.get<bool>("use_MiniBooNE_random_numbers");
     //Prepare random generator
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
+    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
+                                                	moduleDescription().moduleLabel(),
+							GetName()));
     
     //
     // This is the meat of this, select random numbers that will be the 
@@ -101,7 +104,9 @@ namespace evwgh {
            
       for (unsigned int i=0;i<fWeightArray.size();i++) {
 	if (fMode.find("multisim") != std::string::npos ){
-	  fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+	  fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(art::ScheduleID::first(),
+                                                	      moduleDescription().moduleLabel(),
+							      GetName()),0,1.);
 	}	
 	else{
 	  fWeightArray[i] = 1.;

@@ -10,6 +10,7 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 #include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 
 #include "nusimdata/SimulationBase/MCFlux.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
@@ -140,7 +141,9 @@ namespace evwgh {
 
     //Setup the random number generator
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
+    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
+                                                	moduleDescription().moduleLabel(),
+							GetName()));
     
     //
     //   This part is important!!! You want to be sure to use the same random number throughout all the 
@@ -157,7 +160,9 @@ namespace evwgh {
       
       // This sets up if we want to reweight events or just assess 1sigma shifts 
       if (fMode.find("multisim") != std::string::npos )
-	for (int i=0;i<fNuni;i++) fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+	for (int i=0;i<fNuni;i++) fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(art::ScheduleID::first(),
+                                                				      moduleDescription().moduleLabel(),
+										      GetName()),0,1.);
       else
 	for (int i=0;i<fNuni;i++) fWeightArray[i]=1.;      
     }//Use LArSoft Randoms
