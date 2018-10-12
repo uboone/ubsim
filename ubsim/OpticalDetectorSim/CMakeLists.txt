@@ -14,10 +14,9 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			${ART_FRAMEWORK_SERVICES_OPTIONAL}
 			${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
                         ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-			art_Persistency_Common canvas
+                        art_Persistency_Common
 			art_Utilities canvas
 			${MF_MESSAGELOGGER}
-			
 	                ${FHICLCPP}
 			cetlib cetlib_except
                         ${ROOT_BASIC_LIB_LIST}
@@ -37,14 +36,15 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			${ART_FRAMEWORK_SERVICES_OPTIONAL}
 			${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
                         ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-			art_Persistency_Common canvas
-			art_Utilities canvas
+                        art_Persistency_Common
+                        art_Persistency_Provenance
+                        canvas
+                        art_Utilities
 			${MF_MESSAGELOGGER}
-			
 	                ${FHICLCPP}
-			cetlib cetlib_except
+                        cetlib
+                        cetlib_except
                         ${ROOT_BASIC_LIB_LIST}
-
          )
 
 simple_plugin(UBOpticalChConfig "service"
@@ -52,12 +52,12 @@ simple_plugin(UBOpticalChConfig "service"
 	      UBOpReadoutMap_service	
 	      larcore_Geometry_Geometry_service
 	      larcorealg_Geometry
-#	      uboonecode_uboone_OpticalDetectorSim
-	      art_Utilities canvas
+              art_Utilities
+              canvas
 	      ${MF_MESSAGELOGGER}
-	      
 	      ${FHICLCPP}
-	      cetlib cetlib_except
+              cetlib
+              cetlib_except
 	      ${ROOT_BASIC_LIB_LIST}
               BASENAME_ONLY
 )
@@ -80,12 +80,14 @@ simple_plugin(OpticalDRAMReadout "module"
                   ${ART_FRAMEWORK_SERVICES_OPTIONAL}
                   ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
                   ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-                  art_Persistency_Common canvas
-                  art_Utilities canvas
+                  art_Persistency_Common
+                  art_Persistency_Provenance
+                  art_Utilities
+                  canvas
                   ${MF_MESSAGELOGGER}
-                  
                   ${FHICLCPP}
-                  cetlib cetlib_except
+                  cetlib
+                  cetlib_except
                   ${ROOT_BASIC_LIB_LIST}
               BASENAME_ONLY
 )
