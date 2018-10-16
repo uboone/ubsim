@@ -5,17 +5,12 @@
 
 #include "art/Framework/Core/ModuleMacros.h"
 #include "art/Framework/Core/EDProducer.h"
-#include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/RandomNumberGenerator.h"
-//#include "artextensions/SeedService/SeedService.hh"
 #include "nutools/RandomUtils/NuRandomService.h"
 
 #include "CLHEP/Random/RandGaussQ.h"
 
 #include "nusimdata/SimulationBase/MCFlux.h"
-//#include "SimulationBase/MCFlux.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
-//#include "SimulationBase/MCTruth.h"
 
 #include "TFile.h"
 #include "TH1F.h"
@@ -24,16 +19,16 @@ namespace evwgh {
   class FluxHistWeightCalc : public WeightCalc
   {
   public:
-    FluxHistWeightCalc();
-    void Configure(fhicl::ParameterSet const& pset);
+    FluxHistWeightCalc() = default;
+    void Configure(fhicl::ParameterSet const& pset,
+                   CLHEP::HepRandomEngine& engine);
     std::vector<std::vector<double> > GetWeight(art::Event & e);
     
   private:    
-    CLHEP::RandGaussQ *fGaussRandom;
-    std::vector<double> fWeightArray;
-    int fNmultisims;
-    std::string fMode;
-    std::string fGenieModuleLabel;
+    std::vector<double> fWeightArray{};
+    int fNmultisims{};
+    std::string fMode{};
+    std::string fGenieModuleLabel{};
 
     //         pi+-,k+-,k0,mu+- 
     //         |  numu, numubar, nue, nuebar 
@@ -44,11 +39,9 @@ namespace evwgh {
     
     DECLARE_WEIGHTCALC(FluxHistWeightCalc)
   };
-  FluxHistWeightCalc::FluxHistWeightCalc()
-  {
-  }
 
-  void FluxHistWeightCalc::Configure(fhicl::ParameterSet const& p)
+  void FluxHistWeightCalc::Configure(fhicl::ParameterSet const& p,
+                                     CLHEP::HepRandomEngine& engine)
   {    
     //global config
     fGenieModuleLabel= p.get< std::string > ("genie_module_label");
@@ -80,25 +73,17 @@ namespace evwgh {
     fcv.Close();
     frw.Close();
 
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
-                                                	moduleDescription().moduleLabel(),
-							GetName()));
     fWeightArray.resize(fNmultisims);
 
     if (fMode.find("multisim") != std::string::npos )
-      for (int i=0;i<fNmultisims;i++) fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(art::ScheduleID::first(),
-                                                					  moduleDescription().moduleLabel(),
-											  GetName()),0,1.);
+      for (double& weight : fWeightArray) weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
     else
-      for (int i=0;i<fNmultisims;i++) fWeightArray[i]=1.;
+      for (double& weight : fWeightArray) weight = 1.;
   }
 
   std::vector<std::vector<double> > FluxHistWeightCalc::GetWeight(art::Event & e)
   {
     //calculate weight(s) here 
-    // art::ServiceHandle<art::RandomNumberGenerator> rng;
-    //    CLHEP::HepRandomEngine &engine = rng->getEngine(GetName());///***avisar Zarko q lo he quitado
     std::vector<std::vector<double> > weight;
 
     // * MC flux information

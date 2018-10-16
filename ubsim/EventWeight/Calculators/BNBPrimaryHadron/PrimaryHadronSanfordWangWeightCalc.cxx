@@ -12,9 +12,6 @@
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 
-#include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/RandomNumberGenerator.h"
-#include "art/Persistency/Provenance/ModuleContext.h"
 #include "CLHEP/Random/RandomEngine.h"
 #include "CLHEP/Random/RandGaussQ.h"
 
@@ -40,8 +37,8 @@ namespace evwgh {
   class PrimaryHadronSanfordWangWeightCalc : public WeightCalc
   {
   public:
-    PrimaryHadronSanfordWangWeightCalc();
-    void Configure(fhicl::ParameterSet const& p);
+    PrimaryHadronSanfordWangWeightCalc() = default;
+    void Configure(fhicl::ParameterSet const& p, CLHEP::HepRandomEngine& engine);
     std::pair< bool, double > MiniBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand);
     std::pair< bool, double > MicroBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand);
     virtual std::vector<std::vector<double> > GetWeight(art::Event & e);
@@ -49,31 +46,26 @@ namespace evwgh {
     
 
   private:
-    CLHEP::RandGaussQ *fGaussRandom;
     std::vector<double> ConvertToVector(TArrayD const* array);
-    std::string fGenieModuleLabel;
-    std::vector<std::string> fParameter_list;
-    float fParameter_sigma;
-    int fNmultisims;
-    std::vector<int> fprimaryHad;
-    std::string fWeightCalc;
-    std::string ExternalDataInput;
-    double fScaleFactor;
-    TFile* file;
-    std::vector< std::vector< double > > fWeightArray; 
-    std::string fMode;
-    std::vector<double> SWK0FitVal;
-    TMatrixD* SWK0FitCov;    
-    double fSeed;
-    bool fUseMBRands;
+
+    std::string fGenieModuleLabel{};
+    int fNmultisims{};
+    std::vector<int> fprimaryHad{};
+    std::string fWeightCalc{};
+    std::string ExternalDataInput{};
+    double fScaleFactor{};
+    std::vector< std::vector< double > > fWeightArray{};
+    std::string fMode{};
+    std::vector<double> SWK0FitVal{};
+    TMatrixD* SWK0FitCov{nullptr};
+    double fSeed{};
+    bool fUseMBRands{false};
 
      DECLARE_WEIGHTCALC(PrimaryHadronSanfordWangWeightCalc)
   };
-  PrimaryHadronSanfordWangWeightCalc::PrimaryHadronSanfordWangWeightCalc()
-  {
-  }
 
-  void PrimaryHadronSanfordWangWeightCalc::Configure(fhicl::ParameterSet const& p)
+  void PrimaryHadronSanfordWangWeightCalc::Configure(fhicl::ParameterSet const& p,
+                                                     CLHEP::HepRandomEngine& engine)
   {
 
     // Here we do all our fhicl file configureation
@@ -81,11 +73,10 @@ namespace evwgh {
     fhicl::ParameterSet const &pset=p.get<fhicl::ParameterSet> (GetName());
     std::cout << pset.to_string() << std::endl;
 
-    fParameter_list		=   pset.get<std::vector<std::string> >("parameter_list");
-    fParameter_sigma		=   pset.get<float>("parameter_sigma");
+    auto const parameter_list = pset.get<std::vector<std::string> >("parameter_list");
+    auto const dataInput      = pset.get< std::string >("ExternalData");
     fNmultisims			=   pset.get<int>("number_of_multisims");
     fprimaryHad			=   pset.get< std::vector< int > >("PrimaryHadronGeantCode");
-    std::string dataInput       =   pset.get< std::string >("ExternalData");
     fWeightCalc                 =   pset.get<std::string>("weight_calculator");
     fMode                       =   pset.get<std::string>("mode");
     fScaleFactor                =   pset.get<double>("scale_factor");
@@ -99,7 +90,7 @@ namespace evwgh {
     //   First: Pull in the file
     cet::search_path sp("FW_SEARCH_PATH");
     std::string ExternalDataInput = sp.find_file(dataInput);
-    file = new TFile(Form("%s",ExternalDataInput.c_str()));
+    TFile file{Form("%s",ExternalDataInput.c_str())};
     //  Second: Define what we want to gather from that file which is two fold
     std::vector< std::string > pname; // these are what we will extract from the file
     pname.resize(2); // there are two items
@@ -108,21 +99,15 @@ namespace evwgh {
     // which characterizes the uncertainties and how they correlate across the parameterization
     pname[0] = "SW/K0s/SWK0sFitVal";
     pname[1] = "SW/K0s/SWK0sFitCov";
-    TArrayD* SWK0FitValArray = (TArrayD*) file->Get(pname[0].c_str());
+    TArrayD* SWK0FitValArray = (TArrayD*) file.Get(pname[0].c_str());
     //TArrayD is the most annoying format I have ever experienced so let's convert it to a vector
     SWK0FitVal = PrimaryHadronSanfordWangWeightCalc::ConvertToVector(SWK0FitValArray);    
-    SWK0FitCov = (TMatrixD*) file->Get(pname[1].c_str());
+    SWK0FitCov = (TMatrixD*) file.Get(pname[1].c_str());
     *(SWK0FitCov) *= fScaleFactor*fScaleFactor;
     std::cout << "Scale Factor being applied : " << fScaleFactor << std::endl; 
 
     // This is done but it is important to note that the parameterization maps such that 
     // SWK0FitVal[0] corresponds to the diagonal element SWK0FitCov[0][0]
-    
-    //Prepare random generator
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
-                                                	moduleDescription().moduleLabel(),
-							GetName()));
     
     //
     //  This part is very important. You will need more than a single random number
@@ -134,8 +119,8 @@ namespace evwgh {
     //  in WeightCalc to help with this.
     //
     
-    if(fUseMBRands){//fParameter_list
-      fWeightArray = PrimaryHadronSanfordWangWeightCalc::MiniBooNERandomNumbers(fParameter_list.at(0));
+    if(fUseMBRands){//parameter_list
+      fWeightArray = PrimaryHadronSanfordWangWeightCalc::MiniBooNERandomNumbers(parameter_list.at(0));
     }//Use MiniBooNE Randoms
     else{
       fWeightArray.resize(2*fNmultisims);
@@ -144,9 +129,7 @@ namespace evwgh {
 	fWeightArray[i].resize(SWK0FitCov->GetNcols());      
 	if (fMode.find("multisim") != std::string::npos ){
 	  for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
-	    fWeightArray[i][j]=fGaussRandom->shoot(&rng->getEngine(art::ScheduleID::first(),
-                                                		   moduleDescription().moduleLabel(),
-								   GetName()),0,1.);
+            fWeightArray[i][j] = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
 	  }
 	}
 	else{
@@ -550,4 +533,3 @@ namespace evwgh {
 
   REGISTER_WEIGHTCALC(PrimaryHadronSanfordWangWeightCalc)
 }
-
