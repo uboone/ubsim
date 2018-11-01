@@ -41,7 +41,7 @@ namespace evwgh {
   {
   public:
     PrimaryHadronFeynmanScalingWeightCalc() = default;
-    void Configure(fhicl::ParameterSet const& p, CLHEP::HepRandomEngine& engine);
+    void Configure(fhicl::ParameterSet const& p, CLHEP::HepRandomEngine& engine) override;
     std::pair< bool, double > MiniBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand);
     std::pair< bool, double > MicroBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand);
     std::vector<std::vector<double> > GetWeight(art::Event & e) override;
