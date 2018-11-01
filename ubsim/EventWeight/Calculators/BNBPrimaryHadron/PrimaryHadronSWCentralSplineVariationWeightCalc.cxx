@@ -49,7 +49,7 @@ namespace evwgh {
     std::vector< std::vector< double > > MiniBooNERandomNumbers(std::string);
     
   private:
-    CLHEP::RandGaussQ *fGaussRandom{nullptr};
+    // unused CLHEP::RandGaussQ *fGaussRandom{nullptr};
     std::vector<double> ConvertToVector(TArrayD const* array);
     std::string fGenieModuleLabel{};
     std::vector<std::string> fParameter_list{};
