@@ -1,0 +1,86 @@
+#include "services_microboone.fcl"
+#include "triggersim_microboone.fcl"
+#include "opticaldetectorsim_microboone.fcl"
+#include "time_memory_tracker_microboone.fcl"
+#include "opticaldetectormodules_microboone.fcl"
+#include "correct_saturation.fcl"
+#include "ubflashfinder.fcl"
+process_name: FakePhotons
+
+services:
+{
+  scheduler:    { defaultExceptions: false }
+  TFileService: { fileName: "trump.root" }
+  RandomNumberGenerator: {}
+  @table::microboone_detsim_services
+}
+
+source:
+{
+  module_type: EmptyEvent
+  timestampPlugin: { plugin_type: "GeneratedEventTimestamp" }
+  maxEvents:1 firstRun:1 firstEvent:1
+}
+
+physics:
+{
+
+ analyzers:
+ {
+   fakeana0: { module_type: "FakePhotonsAna"
+               ModuleLabel: "pmtreadout:OpdetCosmicHighGain"
+               Threshold:   2058
+               StoreWaveform: 1
+               AnaFile: "ana_cosmic.root"
+            }
+   fakeana1: { module_type: "FakePhotonsAna"
+               ModuleLabel: "pmtreadout:OpdetBeamHighGain"
+               Threshold:   2058
+               StoreWaveform: 1
+               AnaFile: "ana_beam.root"
+            }
+ }
+
+ producers:
+ {
+   fakephotons:{  module_type: "FakePhotons"
+                  PMT0: [0.]
+                  Start: -8000000
+                  End:    8000000
+                  Period:  100000
+                  OpDetList: [0]
+               }
+   optdigitizer:   @local::microboone_optical_adc_sim
+   optfem:         @local::microboone_optical_fem_sim
+   triggersim:     @local::ubtrigger_dark_bnb
+   pmtreadout:     @local::microboone_optical_dram_readout_sim
+   ophitBeam         : @local::microboone_ophit_saturation_beam
+   ophitCosmic       : @local::microboone_ophit_saturation_cosmic
+   saturation        : @local::correct_saturation_mc
+   simpleFlashBeam   : @local::UBFlashBeamMC
+   simpleFlashCosmic : @local::UBFlashCosmicMC
+   
+   rns: { module_type: "RandomNumberSaver" }
+ }
+
+ simulate: [ rns, fakephotons, optdigitizer, optfem, triggersim, pmtreadout, saturation, ophitBeam, ophitCosmic, simpleFlashBeam, simpleFlashCosmic ]
+ analyze:  [ fakeana0, fakeana1 ]
+ outstrm:  [out]
+ trigger_paths: [simulate] 
+ end_paths:     [outstrm,analyze]
+}
+outputs:
+{
+ out:
+ {
+   module_type: RootOutput
+   fileName:    "larsoft.root"
+   dataTier:    "simulated"
+   saveMemoryObjectThreshold: 0
+   compressionLevel: 1
+   fastCloning: false
+ }
+}
+
+
+physics.producers.optdigitizer.G4ModName: "fakephotons"
