@@ -69,7 +69,8 @@ namespace opdet {
     std::vector<double> fPhotonTime;
 
     /// Algorithm to generate SPE waveform
-    WFAlgoAnalyticalSPE fSPE;
+    //WFAlgoAnalyticalSPE fSPE;
+    WFAlgoDigitizedSPE fSPE;
 
     /// Algorithm to generate Pedestal
     WFAlgoPedestal      fPED;

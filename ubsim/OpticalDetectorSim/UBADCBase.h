@@ -17,6 +17,7 @@
 #include "UBOpticalChConfig.h"
 #include "WFAlgoPedestal.h"
 #include "WFAlgoAnalyticalSPE.h"
+#include "WFAlgoDigitizedSPE.h"
 #include "RandomServer.h"
 
 namespace opdet {

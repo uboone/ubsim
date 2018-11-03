@@ -34,6 +34,7 @@ private:
   std::vector< std::vector<int> > _wf_v;
   std::vector< int > _max_v;
   std::vector< int > _ch_v;
+  std::vector< int > _tp_v;
   std::vector< double > _ts_v;
 };
 
@@ -52,7 +53,8 @@ FakePhotonsAna::FakePhotonsAna(fhicl::ParameterSet const & p)
   if(_store_wf) _tree->Branch("wf_v",&_wf_v);
   _tree->Branch("max_v",&_max_v);
   _tree->Branch("ch_v",&_ch_v);
-  _tree->Branch("ts_v",&_ts_v);
+  _tree->Branch("tpeak_v",&_tp_v);
+  _tree->Branch("tstart_v",&_ts_v);
 }
 
 FakePhotonsAna::~FakePhotonsAna() {
@@ -72,6 +74,7 @@ void FakePhotonsAna::analyze(art::Event const & evt) {
   _wf_v.clear();
   _max_v.clear();
   _ch_v.clear();
+  _tp_v.clear();
   _ts_v.clear();
 
   art::Handle< std::vector<raw::OpDetWaveform> > wf_h;
@@ -84,6 +87,7 @@ void FakePhotonsAna::analyze(art::Event const & evt) {
   _wf_v.reserve(wf_h->size());
   _max_v.reserve(wf_h->size());
   _ts_v.reserve(wf_h->size());
+  _tp_v.reserve(wf_h->size());
   _ch_v.reserve(wf_h->size());
 
   std::vector<int> out_wf;
@@ -91,7 +95,12 @@ void FakePhotonsAna::analyze(art::Event const & evt) {
     art::Ptr<::raw::OpDetWaveform> wf_ptr(wf_h,i);
     auto const& wf = (*wf_ptr);
     int max = 0;
-    for(auto const& v : wf) max = (max > v ? max : v);
+    int tpeak = 0;
+    for(int j=0; j<(int)(wf.size()); ++j) {
+      if(wf[j] <= max) continue;
+      max = wf[j];
+      tpeak = j;
+    }
     if(max<_threshold) continue;
     if(_store_wf) {
       out_wf.resize(wf.size());
@@ -100,6 +109,7 @@ void FakePhotonsAna::analyze(art::Event const & evt) {
     }
     _max_v.push_back(max);
     _ch_v.push_back(wf_ptr->ChannelNumber());
+    _tp_v.push_back(tpeak);
     _ts_v.push_back(wf_ptr->TimeStamp());
   }
   _tree->Fill();

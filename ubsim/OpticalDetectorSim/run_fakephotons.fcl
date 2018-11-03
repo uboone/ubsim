@@ -35,7 +35,7 @@ physics:
             }
    fakeana1: { module_type: "FakePhotonsAna"
                ModuleLabel: "pmtreadout:OpdetBeamHighGain"
-               Threshold:   2058
+               Threshold:   0
                StoreWaveform: 1
                AnaFile: "ana_beam.root"
             }
@@ -45,8 +45,25 @@ physics:
  {
    fakephotons:{  module_type: "FakePhotons"
                   PMT0: [0.]
+                  PMT1: [1.]
+                  PMT2: [2.]
+                  PMT3: [3.]
+                  PMT4: [4.]
+                  PMT5: [5.]
+                  PMT6: [6.]
+                  PMT7: [7.]
+                  PMT8: [8.]
+                  PMT9: [9.]
+                  PMT10: [10.]
+                  PMT11: [11.]
+                  PMT12: [12.]
+                  PMT13: [13.]
+                  PMT14: [14.]
+                  PMT15: [15.]
+                  PMT25: [0.]
+                  PELevel: 10
                   Start: -8000000
-                  End:    8000000
+                  End:   -8000000
                   Period:  100000
                   OpDetList: [0]
                }
@@ -63,7 +80,8 @@ physics:
    rns: { module_type: "RandomNumberSaver" }
  }
 
- simulate: [ rns, fakephotons, optdigitizer, optfem, triggersim, pmtreadout, saturation, ophitBeam, ophitCosmic, simpleFlashBeam, simpleFlashCosmic ]
+ #simulate: [ rns, fakephotons, optdigitizer, optfem, triggersim, pmtreadout, saturation, ophitBeam, ophitCosmic, simpleFlashBeam, simpleFlashCosmic ]
+ simulate: [ rns, fakephotons, optdigitizer, optfem, triggersim, pmtreadout ]
  analyze:  [ fakeana0, fakeana1 ]
  outstrm:  [out]
  trigger_paths: [simulate] 
