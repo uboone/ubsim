@@ -25,6 +25,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
           MODULE_LIBRARIES larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
 			lardataobj_OpticalDetectorData
 			larcoreobj_SummaryData
+			lardata_DetectorInfoServices_DetectorClocksServiceStandard_service # BUG note that we link to a specific service implementation
 			UBOpticalChConfig_service
 			UBOpReadoutMap_service
 			uboonecode_uboone_OpticalDetectorSim
@@ -32,6 +33,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			UBooNEGeometryHelper_service
 			ubcore_Geometry
                         nusimdata_SimulationBase
+			nutools_RandomUtils_NuRandomService_service
                         ${ART_FRAMEWORK_CORE}
 			${ART_FRAMEWORK_PRINCIPAL}
 			${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -42,7 +44,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			art_Persistency_Common canvas
 			art_Utilities canvas
 			${MF_MESSAGELOGGER}
-			
+			${CLHEP}			
 	                ${FHICLCPP}
 			cetlib cetlib_except
                         ${ROOT_BASIC_LIB_LIST}

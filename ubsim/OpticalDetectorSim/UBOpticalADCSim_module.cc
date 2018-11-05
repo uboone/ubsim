@@ -38,6 +38,7 @@
 /// LArSoft
 #include "lardataobj/OpticalDetectorData/ChannelDataGroup.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
+#include "lardata/DetectorInfoServices/DetectorClocksServiceStandard.h"
 #include "larcore/Geometry/Geometry.h"
 #include "lardataobj/Simulation/SimPhotons.h"
 #include "UBOpticalADC.h" // uboonecode
@@ -82,8 +83,8 @@ namespace opdet {
     /// Duration of waveform in ns to be generated as digitizer output
     double fDuration;
 
-    /// G4 time to start waveform generation (default 0)
-    double fG4StartTime;
+    /// Electronics time to start waveform generation (default 0)
+    double fElecStartTime;
 
     /// User-defined beamgate pulse (BNB) in G4 time ns
     std::vector<double> fUserBNBTime_v;
@@ -118,7 +119,7 @@ namespace opdet {
 
     fDuration = pset.get<double>("Duration");
 
-    fG4StartTime = pset.get<double>("G4StartTime",0);
+    fElecStartTime = pset.get<double>("ElecStartTime",0);
 
     fLogicGen.SetAmplitude(pset.get<double>("LogicPulseAmplitude"));
 
@@ -127,6 +128,8 @@ namespace opdet {
     fUserBNBTime_v = pset.get<std::vector<double> >("UserBNBTime");
 
     fUserNuMITime_v = pset.get<std::vector<double> >("UserNuMITime");
+
+    fOpticalGen.Verbose(pset.get<int>("Verbose",0));
 
     produces< optdata::ChannelDataGroup >();
 
@@ -143,11 +146,17 @@ namespace opdet {
   //############################################
   {
 
+    //TimeService
+    art::ServiceHandle<detinfo::DetectorClocksServiceStandard> tss;
+    // In case trigger simulation is run in the same job...
+    tss->preProcessEvent(evt);
+
     // 
     // Get services
     //
     ::art::ServiceHandle<geo::Geometry> geom;
     auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
+    double fG4StartTime = ts->ElecTimeToG4(fElecStartTime) * 1.e3;
 
     // allocate the container
     ::std::unique_ptr< optdata::ChannelDataGroup > wfs(new optdata::ChannelDataGroup);
@@ -328,7 +337,7 @@ namespace opdet {
     // Make sure to free memory
     fOpticalGen.Reset();
     fLogicGen.Reset();
-    
+
   }
 } 
 /** @} */ // end of doxygen group 

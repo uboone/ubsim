@@ -48,9 +48,14 @@ namespace opdet {
 
     virtual void Reset() {}
 
+    inline void Verbose(int verbosity) { fVerbose=verbosity; }
+
   protected:
 
     int fOpChannel;
+
+    int fVerbose;
+    
     /**
        A utility function to combine 2 vectors. out_wf is the output vector
        to which in_wf is added. The function adds in_wf from index=start_index

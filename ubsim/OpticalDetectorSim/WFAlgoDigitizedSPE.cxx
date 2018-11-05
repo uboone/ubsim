@@ -75,10 +75,9 @@ namespace opdet {
 
       // Figure out time stamp of the beginning of SPE
       rel_spe_start.SetTime(time - fSPETime.Time() - start_time.Time());
-      //float maxval = 0;
-      //int   argmax = 0;
-      //int start = rel_spe_start.Ticks();
-      //std::cout<<fSPE[51]<<std::endl;
+      float maxval = 0;
+      int   argmax = 0;
+      int start = rel_spe_start.Ticks();
       for(size_t i=0; i < fSPE.size(); ++i ) {
 
 	if(rel_spe_start.Ticks() >= (int)(wf.size())) break;
@@ -96,30 +95,30 @@ namespace opdet {
 	    val = ( RandomServer::GetME().Gaus(fGain,fGainSigma*fGain) * fSPE.at(i) );
 	  
 	  wf.at(rel_spe_start.Ticks()) += val;
-	  /*
-	  if(val > maxval) {
-	    maxval = val;
-	    argmax = rel_spe_start.Ticks() - start;
+	  if(fVerbose) {
+	    if(val > maxval) {
+	      maxval = val;
+	      argmax = rel_spe_start.Ticks() - start;
+	    }
 	  }
-	  */
 	}
 
 	rel_spe_start += unit_time;
 	if( (unit_time * i) > 300 && fabs(fGain * fSPE.at(i)) < 1)
 	  break;
       }
-      /*
-      std::cout << "OpCh: " << OpChannel() << std::endl;
-      std::cout << "  Max Value: " << maxval << " (gain) " << fGain << " added @ " << argmax << " (local vector)" << std::endl;
-      maxval = 0;
-      argmax = 0;
-      for(int i=start; i<(start+20); ++i) {
-	if(wf[i] <= maxval) continue;
-	maxval = wf[i];
-	argmax = i;
+      if(fVerbose) {
+	std::cout << "OpCh: " << OpChannel() << std::endl;
+	std::cout << "  Max Value: " << maxval << " (gain) " << fGain << " added @ " << argmax << " (local vector)" << std::endl;
+	maxval = 0;
+	argmax = 0;
+	for(int i=start; i<(start+20); ++i) {
+	  if(wf[i] <= maxval) continue;
+	  maxval = wf[i];
+	  argmax = i;
+	}
+	std::cout << "  Current local max: " << maxval << " @ " << argmax << " (local vector)" << std::endl;
       }
-      std::cout << "  Current local max: " << maxval << " @ " << argmax << " (local vector)" << std::endl;
-      */
     }
 
   }

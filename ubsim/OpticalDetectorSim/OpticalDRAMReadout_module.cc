@@ -63,6 +63,9 @@ namespace opdet {
       
   private:  
 
+    /// Verbose mode flag (0 or non-0)
+    int fVerbose;
+
     /// Producer module label for raw::FIFOChannel 
     std::string fFIFOModuleName; // (deprecated)
 
@@ -132,6 +135,7 @@ namespace opdet {
 
   void OpticalDRAMReadout::reconfigure(fhicl::ParameterSet const& p)
   {
+    fVerbose            = p.get<int> ("Verbose",0);
     
     fFIFOModuleName     = p.get<std::string> ("FIFOModuleName");
 
@@ -165,7 +169,9 @@ namespace opdet {
     tss->preProcessEvent(event); // sets trigger time
     auto const* ts = lar::providerFrom<detinfo::DetectorClocksServiceStandard>();
     ::detinfo::ElecClock clock = ts->OpticalClock();
-    //std::cout << "OpticalDRAM: Trigger time=" << ts->TriggerTime() << " Beam gate time=" << ts->BeamGateTime() << std::endl;
+    if(fVerbose)
+      std::cout << "OpticalDRAM: Trigger time=" << ts->TriggerTime() 
+		<< " Beam gate time=" << ts->BeamGateTime() << std::endl;
 
     // geometry and channel map services
     ::art::ServiceHandle<geo::Geometry> geom;
@@ -205,7 +211,7 @@ namespace opdet {
 
     if(trig_frame < fReadoutFrameOffset.at(0)) start_frame = 0;
     else start_frame = trig_frame - fReadoutFrameOffset.at(0);
-
+    std::cout<<start_frame<<" => "<<end_frame<< " ... trigger @ " << ts->TriggerTime() << " = frame " << trig_frame << std::endl;
     readout_frames.push_back(std::make_pair(start_frame,end_frame));
 
     /*
@@ -256,7 +262,7 @@ namespace opdet {
 	bool store=false;
 	for(auto const &period : readout_frames)
 	  
-	  if( period.first <= fifo_ptr->Frame() && fifo_ptr->Frame() < period.second ) {
+	  if( period.first <= fifo_ptr->Frame() && fifo_ptr->Frame() <= period.second ) {
 	    
 	    store=true;
 	    break;
@@ -276,14 +282,32 @@ namespace opdet {
 	  for ( size_t iadc=0; iadc< fifo_ptr->size(); iadc++ )
 	    rd.push_back( fifo_ptr->at(iadc) );
 	  (*it_wfarray).second->emplace_back( rd );
-	  // std::cout << "DRAM: Store FIFO from CH=" << data_product_ch_num 
-	  // 	    << " put into " << opdet::UBOpChannelEnumName( (opdet::UBOpticalChannelCategory_t)category ) 
-	  // 	    << " timestamp=" << window_timestamp 
-	  // 	    << " frame=" << fifo_ptr->Frame()
-	  // 	    << " timeslice/sample=" << fifo_ptr->TimeSlice()
-	  // 	    << " size=" << fifo_ptr->size()
-	  // 	    << std::endl;
+	  if(fVerbose) {
+	     std::cout << "DRAM: Store FIFO from CH=" << data_product_ch_num 
+		       << " put into " << opdet::UBOpChannelEnumName( (opdet::UBOpticalChannelCategory_t)category ) 
+		       << " timestamp=" << window_timestamp 
+		       << " frame=" << fifo_ptr->Frame()
+		       << " timeslice/sample=" << fifo_ptr->TimeSlice()
+		       << " size=" << fifo_ptr->size()
+		       << std::endl;
+	  }
 	}// if store
+	else if(fVerbose>1) {
+	  // if FIFO has correct categories, then fine.
+	  // but for now, get it using the channel number
+	  unsigned int data_product_ch_num = fifo_ptr->ChannelNumber();
+	  opdet::UBOpticalChannelCategory_t category = ub_pmt_channel_map->GetChannelCategory( data_product_ch_num );
+	  double window_timestamp = clock.Time( fifo_ptr->TimeSlice(), fifo_ptr->Frame() );
+
+	  std::cout << "DRAM: Ignore FIFO from CH=" << data_product_ch_num 
+		    << " put into " << opdet::UBOpChannelEnumName( (opdet::UBOpticalChannelCategory_t)category ) 
+		    << " timestamp=" << window_timestamp 
+		    << " frame=" << fifo_ptr->Frame()
+		    << " timeslice/sample=" << fifo_ptr->TimeSlice()
+		    << " size=" << fifo_ptr->size()
+		    << std::endl;
+
+	}
       }// loop over FIFO data
 
     }// if valid

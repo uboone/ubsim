@@ -12,6 +12,7 @@
 #include "fhiclcpp/ParameterSet.h"
 #include <iostream>
 #include "lardataobj/RawData/OpDetWaveform.h"
+#include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include <TTree.h>
 #include <TFile.h>
 
@@ -31,6 +32,7 @@ private:
   TFile* _file;
   int _threshold;
   int _store_wf;
+  double _trigger_time;
   std::vector< std::vector<int> > _wf_v;
   std::vector< int > _max_v;
   std::vector< int > _ch_v;
@@ -51,6 +53,7 @@ FakePhotonsAna::FakePhotonsAna(fhicl::ParameterSet const & p)
   _file = TFile::Open(ana_fname.c_str(),"RECREATE");
   _tree = new TTree("tree","tree");
   if(_store_wf) _tree->Branch("wf_v",&_wf_v);
+  _tree->Branch("trigger_time",&_trigger_time,"trigger_time/D");
   _tree->Branch("max_v",&_max_v);
   _tree->Branch("ch_v",&_ch_v);
   _tree->Branch("tpeak_v",&_tp_v);
@@ -71,6 +74,9 @@ void FakePhotonsAna::endJob() {
 
 void FakePhotonsAna::analyze(art::Event const & evt) {
 
+  auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
+  _trigger_time = ts->TriggerTime();
+
   _wf_v.clear();
   _max_v.clear();
   _ch_v.clear();
@@ -86,9 +92,9 @@ void FakePhotonsAna::analyze(art::Event const & evt) {
 
   _wf_v.reserve(wf_h->size());
   _max_v.reserve(wf_h->size());
+  _ch_v.reserve(wf_h->size());
   _ts_v.reserve(wf_h->size());
   _tp_v.reserve(wf_h->size());
-  _ch_v.reserve(wf_h->size());
 
   std::vector<int> out_wf;
   for(size_t i=0; i<wf_h->size(); ++i) {

@@ -108,6 +108,8 @@ microboone_optical_dram_readout_sim:
   TrigModuleName: "triggersim"
 
   ReadoutFrameOffset: [1,2]
+
+  Verbose: 0
 }
 
 microboone_optical_adc_sim:
@@ -121,9 +123,11 @@ microboone_optical_adc_sim:
 
   EnableSpread: true
 
-  Duration:     7.25e3
+  Duration:     6.4e3
 
-  G4StartTime:  -4.05e6
+  ElecStartTime: 0.
+
+  Verbosity: 0
 
   LogicPulseAmplitude: 3000
 

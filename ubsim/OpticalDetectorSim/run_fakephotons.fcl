@@ -27,23 +27,48 @@ physics:
 
  analyzers:
  {
+   #
+   # FakePhotonsAna analysis module stores some simple information about simulated waveforms.
+   # This is meant for testing the optical detector response simulation and timing simulation.
+   #
    fakeana0: { module_type: "FakePhotonsAna"
-               ModuleLabel: "pmtreadout:OpdetCosmicHighGain"
-               Threshold:   2058
-               StoreWaveform: 1
-               AnaFile: "ana_cosmic.root"
+               ModuleLabel: "pmtreadout:OpdetCosmicHighGain" # Specify a type of readout waveform to analyze
+               Threshold:   2058 # The minimum ADC value in an waveform to be stored in the output.
+               StoreWaveform: 1 # If 1, store an waveform itself. Else only summary info (start time, peak time, channel number, max adc) are stored.
+               AnaFile: "ana_cosmic.root" # Output root file name (make sure it's unique).
             }
    fakeana1: { module_type: "FakePhotonsAna"
-               ModuleLabel: "pmtreadout:OpdetBeamHighGain"
-               Threshold:   0
-               StoreWaveform: 1
-               AnaFile: "ana_beam.root"
+               ModuleLabel: "pmtreadout:OpdetBeamHighGain" # Specify a type of readout waveform to analyze
+               Threshold:   2058 # The minimum ADC value in an waveform to be stored in the output.
+               StoreWaveform: 1 # If 1, store an waveform itself. Else only summary info (start time, peak time, channel number, max adc) are stored.
+               AnaFile: "ana_beam.root" # Output root file name (make sure it's unique).
             }
  }
 
  producers:
  {
+   # We configure modules to generate photons & run optical simulation chain (including hardware trigger)
+   # Note 2 new modules introduced in addition to other "usual modules": electime and fakephotons.
+   # They will be commented massively below.
+   electime:   {  module_type: "ElectronicsClockSim"
+                  # This module is a "generator" that insert a data product called ElectronicsClockInfo.
+                  # ElectronicsClockInfo carries only 1 information: the electronics clock start time in G4 time frame.
+                  G4RefTime:   -3.2e3 # Electronics clock start time (T0) in G4 time frame BUT in MICRO-SECONDS [us]!
+                  RandomShift: 1600   # The Electronics clock T0 is varied between 0 to the RandomShift value (in [us]).
+                  MakeRunData: 1 # 1 if you starting with EmptyEvent (this fcl is, yes).
+               }
    fakephotons:{  module_type: "FakePhotons"
+                  # This module is a "generator" that can shoot fake photons into PMTs.
+                  # It is designed to study the optical detector response simulation chain.
+                  MakeRunData: 0  # 1 if you starting with EmptyEvent (no because we run electime)
+                  PELevel: 200 # Number of photons to inject into a PMT for a single "pulse".
+                  #
+                  # Per-PMT configuration...
+                  #
+                  # Configure individual OpDet (PMT) for an array of pulse timing in G4 ns.
+                  # You can specify by PMTX parameter where X goes from 0 to 31 (or geo->NOpDets() return value to be exact).
+                  # If not specified, no photon is fired.
+                  # Each entry in an array means a firing of N photons (where N is set by PELevel parameter) at the specified G4 time [ns]
                   PMT0: [0.]
                   PMT1: [1.]
                   PMT2: [2.]
@@ -61,11 +86,13 @@ physics:
                   PMT14: [14.]
                   PMT15: [15.]
                   PMT25: [0.]
-                  PELevel: 10
-                  Start: -8000000
-                  End:   -8000000
-                  Period:  100000
-                  OpDetList: [0]
+                  #
+                  # Periodic pulse configuration
+                  #
+                  Start: -3200000 # start time of pulsing in G4 ns
+                  End:   -4800000 # end time of pulsing in G4 ns
+                  Period:   10000 # period between pulsing (e.g. 1000 means 1us = 1MHz pulse)
+                  OpDetList: [0]  # list of OpDet to fire this periodic pulses
                }
    optdigitizer:   @local::microboone_optical_adc_sim
    optfem:         @local::microboone_optical_fem_sim
@@ -76,12 +103,16 @@ physics:
    saturation        : @local::correct_saturation_mc
    simpleFlashBeam   : @local::UBFlashBeamMC
    simpleFlashCosmic : @local::UBFlashCosmicMC
-   
+  
    rns: { module_type: "RandomNumberSaver" }
  }
 
+ # Run this chain if you want to include reconstruction
  #simulate: [ rns, fakephotons, optdigitizer, optfem, triggersim, pmtreadout, saturation, ophitBeam, ophitCosmic, simpleFlashBeam, simpleFlashCosmic ]
- simulate: [ rns, fakephotons, optdigitizer, optfem, triggersim, pmtreadout ]
+
+ # Or run this chain if you need just up to the end of optical/trigger simulation
+ simulate: [ rns, electime, fakephotons, optdigitizer, optfem, triggersim, pmtreadout ]
+
  analyze:  [ fakeana0, fakeana1 ]
  outstrm:  [out]
  trigger_paths: [simulate] 

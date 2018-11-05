@@ -8,6 +8,13 @@ max_v = ch.max_v
 tp_v  = ch.tpeak_v
 ts_v  = ch.tstart_v
 ch_v  = ch.ch_v
-print ch.max_v.size()
-for i in range(ch.max_v.size()):
-    print 'waveform',i,'Ch.',ch_v[i],'Tstart',ts_v[i],'[us] Max ADC',max_v[i],'@ index',tp_v[i]
+tmin  = 1e6
+tmax  = 0
+for entry in xrange(ch.GetEntries()):
+    ch.GetEntry(entry)
+    for i in range(ch.max_v.size()):
+        print 'waveform',i,'Ch.',ch_v[i],'Tstart',ts_v[i],'[us] Max ADC',max_v[i],'@ index',tp_v[i]
+        if ts_v[i] < tmin: tmin = ts_v[i]
+        if ts_v[i] > tmax: tmax = ts_v[i]
+    print
+print tmin,'=>',tmax

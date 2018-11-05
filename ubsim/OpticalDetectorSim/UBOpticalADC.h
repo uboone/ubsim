@@ -57,6 +57,9 @@ namespace opdet {
     /// Function to generate dark noise photon timings (called in GenWaveform)
     void GenDarkNoise(const unsigned int pmtid, const double g4start);
 
+    /// Verbose mode
+    void Verbose(int verbosity) { fSPE.Verbose(verbosity); fPED.Verbose(verbosity); }
+
   protected:
 
     /// G4 photon times for signal in G4 clock. Hits in an Optical detector

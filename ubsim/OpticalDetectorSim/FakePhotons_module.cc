@@ -18,9 +18,6 @@
 // LArSoft includes
 #include "lardataobj/Simulation/SimPhotons.h"
 #include "larcoreobj/SummaryData/RunData.h"
-//#include "lardataobj/RawData/TriggerData.h"
-//#include "lardata/DetectorInfoServices/DetectorClocksServiceStandard.h" // FIXME: this code is non-portable
-#include "ubsim/OpticalDetectorSim/UBOpticalException.h"
 #include "larcore/Geometry/Geometry.h" // larcore
 
 // ART includes.
@@ -67,6 +64,7 @@ namespace opdet {
     double _start, _end, _period;
     int _num_pe;
     std::vector<int> _ch_v;
+    int _make_rundata;
   };
 } // namespace opdet
 
@@ -86,7 +84,8 @@ namespace opdet {
   {
     this->reconfigure(parameterSet);
     produces<std::vector<sim::SimPhotons> >();
-    produces< sumdata::RunData, art::InRun >();
+    if(_make_rundata)
+      produces< sumdata::RunData, art::InRun >();
   }
 
   /// ------------------------------------------------------------------------------------
@@ -94,13 +93,15 @@ namespace opdet {
   void FakePhotons::reconfigure(fhicl::ParameterSet const& p)
   {
     _num_pe = p.get<int>("PELevel",10);
-
+    _make_rundata = p.get<int>("MakeRunData",0);
     ::art::ServiceHandle<geo::Geometry> geo;
     //auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
+    _photons.clear();
     _photons.resize((int)geo->NOpDets());
+    std::vector<double> empty;
     for(size_t i=0; i<_photons.size(); ++i) {
       std::string key = "PMT" + std::to_string(i);
-      _photons[i] = p.get< std::vector<double> >(key,_photons[i]);
+      _photons[i] = p.get< std::vector<double> >(key,empty);
     }
 
     _start = p.get<double>("Start",-1.e6);
@@ -114,13 +115,15 @@ namespace opdet {
 
   void FakePhotons::beginRun(art::Run& run)
   {
-    // grab the geometry object to see what geometry we are using                                                                   
-    ::art::ServiceHandle<geo::Geometry> geo;
-    
-    std::unique_ptr<sumdata::RunData> runData(new sumdata::RunData(geo->DetectorName()));
-    
-    run.put(std::move(runData));
-    
+    // grab the geometry object to see what geometry we are using
+
+    if(_make_rundata) {
+      ::art::ServiceHandle<geo::Geometry> geo;
+      
+      std::unique_ptr<sumdata::RunData> runData(new sumdata::RunData(geo->DetectorName()));
+      
+      run.put(std::move(runData));
+    }
     return;
   }
 
