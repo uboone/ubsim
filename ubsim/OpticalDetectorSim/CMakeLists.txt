@@ -3,6 +3,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 	  BASENAME_ONLY
 	  LIBRARY_NAME  uboonecode_uboone_OpticalDetectorSim
           LIB_LIBRARIES UBOpticalChConfig_service
+			larcoreobj_SummaryData
 			lardataobj_RawData
 			lardata_Utilities
 			larcorealg_Geometry
@@ -23,6 +24,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
                         ${ROOT_BASIC_LIB_LIST}
           MODULE_LIBRARIES larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
 			lardataobj_OpticalDetectorData
+			larcoreobj_SummaryData
 			UBOpticalChConfig_service
 			UBOpReadoutMap_service
 			uboonecode_uboone_OpticalDetectorSim

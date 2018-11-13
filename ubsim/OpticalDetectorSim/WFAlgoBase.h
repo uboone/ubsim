@@ -28,7 +28,7 @@ namespace opdet {
   public:
     
     /// Default constructor
-    WFAlgoBase(){}
+    WFAlgoBase() : fOpChannel(-1) {}
 
     /// Default destructor
     virtual ~WFAlgoBase(){}
@@ -42,10 +42,15 @@ namespace opdet {
     virtual void Process(std::vector<float> &wf,
 			 const ::detinfo::ElecClock &start_time) = 0;
 
+    inline void SetOpChannel(int ch) { fOpChannel = ch; }
+
+    inline int OpChannel() const { return fOpChannel; }
+
     virtual void Reset() {}
 
   protected:
 
+    int fOpChannel;
     /**
        A utility function to combine 2 vectors. out_wf is the output vector
        to which in_wf is added. The function adds in_wf from index=start_index

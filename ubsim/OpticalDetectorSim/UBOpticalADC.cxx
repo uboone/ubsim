@@ -123,7 +123,7 @@ namespace opdet {
     for(auto const &v : fDarkPhotonTime) fPhotonTime.push_back(v);
     for(auto const &v : fInputPhotonTime)
       if(RandomServer::GetME().Uniform(1.) < qe) fPhotonTime.push_back(v);
-
+    fSPE.SetOpChannel(ch);
     fSPE.SetPhotons(fPhotonTime);
     fSPE.Process(wfm_tmp,fTimeInfo);
     // convert from pe waveform to adc
