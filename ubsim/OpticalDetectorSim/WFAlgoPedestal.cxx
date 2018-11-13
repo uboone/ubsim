@@ -21,7 +21,6 @@ namespace opdet {
     fPedSigma = sigma;
   }
 
-
   //-------------------------------------------------------------------
   void WFAlgoPedestal::Process(std::vector<float> &wf,
 			       const ::detinfo::ElecClock &start_time)
