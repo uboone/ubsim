@@ -23,7 +23,7 @@ public:
   virtual ~FakePhotonsAna();
 
   void analyze(art::Event const & evt) override;
-  void endJob();
+  void endJob() override;
 
 private:
   std::string _module_label;
