@@ -41,8 +41,3 @@ outputs: {
  }
 }
 
-physics.producers.eventweight.weight_functions: [
-  @sequence::microboone_eventweight.weight_functions_beam,
-  @sequence::microboone_eventweight.weight_functions_genie
-]
-

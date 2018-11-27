@@ -1,0 +1,21 @@
+##########################################################
+## Flux uncertainties with the MiniBooNE-mode weight calculators
+##########################################################
+
+#include "eventweight_microboone_flux.fcl"
+
+microboone_eventweight_flux.piplus.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.horncurrent.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.expskin.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.piplus.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.piminus.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.kplus.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.kzero.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.kminus.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.pioninexsec.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.pionqexsec.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.piontotxsec.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.nucleontotxsec.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.nucleonqexsec.weight_calculator: "MiniBooNE"
+microboone_eventweight_flux.nucleoninexsec.weight_calculator: "MiniBooNE"
+

@@ -1,0 +1,22 @@
+##########################################################
+## Flux uncertainties with the MiniBooNE-mode weight calculators and random
+## numbers.
+##########################################################
+
+#include "eventweight_microboone_flux_mb.fcl"
+
+microboone_eventweight_flux.piplus.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.horncurrent.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.expskin.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.piplus.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.piminus.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.kplus.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.kzero.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.kminus.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.pioninexsec.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.pionqexsec.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.piontotxsec.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.nucleontotxsec.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.nucleonqexsec.use_MiniBooNE_random_numbers: true
+microboone_eventweight_flux.nucleoninexsec.use_MiniBooNE_random_numbers: true
+

@@ -1,4 +1,4 @@
-#include_directories ( $ENV{GENIE_INC}/GENIE )
+include_directories ( $ENV{GEANT4_FQ_DIR}/include )
 
 art_make(
   LIBRARY_NAME ubsim_EventWeight_Calculators
@@ -22,6 +22,7 @@ art_make(
     ${CLHEP}
     ${ROOT_BASIC_LIB_LIST}
     ${Boost_SYSTEM_LIBRARY}
+    ${G4_LIB_LIST}
 ) 
 
 install_headers()
