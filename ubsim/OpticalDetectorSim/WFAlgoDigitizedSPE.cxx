@@ -87,7 +87,7 @@ namespace opdet {
 
 	  float val = 0.;
 
-	  if(fEnableSpread) 
+	  if(!fEnableSpread) 
 
 	    val = (fGain * fSPE.at(i));
 
