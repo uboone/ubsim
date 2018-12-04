@@ -79,6 +79,9 @@ namespace opdet {
       //int   argmax = 0;
       //int start = rel_spe_start.Ticks();
       //std::cout<<fSPE[51]<<std::endl;
+
+      auto thisgain = RandomServer::GetME().Gaus(fGain,fGainSigma*fGain);
+
       for(size_t i=0; i < fSPE.size(); ++i ) {
 
 	if(rel_spe_start.Ticks() >= (int)(wf.size())) break;
@@ -92,9 +95,9 @@ namespace opdet {
 	    val = (fGain * fSPE.at(i));
 
 	  else
+
+	    val = (  thisgain * fSPE.at(i) );
 	    
-	    val = ( RandomServer::GetME().Gaus(fGain,fGainSigma*fGain) * fSPE.at(i) );
-	  
 	  wf.at(rel_spe_start.Ticks()) += val;
 	  /*
 	  if(val > maxval) {
