@@ -2,7 +2,7 @@
 #define WFALGODIGITIZEDSPE_CXX
 
 #include "WFAlgoDigitizedSPE.h"
-
+#include "WFAlgoUtilities.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 
 namespace opdet {
@@ -12,10 +12,19 @@ namespace opdet {
   //--------------------------------------------------------
   {
     Reset();
-    fSPE.clear();
     //fSPETime = detinfo::DetectorClocksService::GetME().OpticalClock();
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    fSPETime = ts->OpticalClock();
+    //auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
+    //auto spe_time = ts->OpticalClock();
+    //spe_time.SetTime(0);
+    ::detinfo::ElecClock spe_time(0., 1600., 1000.); // 1.6ms frame period, 1GHz frequency
+
+    std::vector<float> wf;
+    SetResponseNormal_BNLv1(wf);
+    SetSPE(wf,spe_time,0);
+    
+    SetResponseOpCh28_BNLv1(wf);
+    SetSPE(wf,spe_time,28);
+    
   }
 
   //------------------------------
@@ -27,13 +36,16 @@ namespace opdet {
 
   //--------------------------------------------------------------
   void WFAlgoDigitizedSPE::Process(std::vector<float> &wf,
-			  const ::detinfo::ElecClock &start_time)
+				   const ::detinfo::ElecClock &start_time)
   //--------------------------------------------------------------
   {
     // Predefine variables to save time later
     ::detinfo::ElecClock rel_spe_start = start_time;
 
     rel_spe_start.SetTime(0);
+
+    auto const& fSPETime = GetClock(OpChannel());
+    auto const& fSPE = GetSPE(OpChannel());
 
     double unit_time = fSPETime.TickPeriod();
 
@@ -63,34 +75,59 @@ namespace opdet {
 
       // Figure out time stamp of the beginning of SPE
       rel_spe_start.SetTime(time - fSPETime.Time() - start_time.Time());
-
+      //float maxval = 0;
+      //int   argmax = 0;
+      //int start = rel_spe_start.Ticks();
+      //std::cout<<fSPE[51]<<std::endl;
       for(size_t i=0; i < fSPE.size(); ++i ) {
 
 	if(rel_spe_start.Ticks() >= (int)(wf.size())) break;
 
 	if(rel_spe_start.Ticks() >= 0) {
 
+	  float val = 0.;
+
 	  if(fEnableSpread) 
 
-	    wf.at(rel_spe_start.Ticks()) += (fGain * fSPE.at(i));
+	    val = (fGain * fSPE.at(i));
 
 	  else
 	    
-	    wf.at(rel_spe_start.Ticks()) += ( RandomServer::GetME().Gaus(fGain,fGainSigma*fGain) * fSPE.at(i) );
+	    val = ( RandomServer::GetME().Gaus(fGain,fGainSigma*fGain) * fSPE.at(i) );
 	  
+	  wf.at(rel_spe_start.Ticks()) += val;
+	  /*
+	  if(val > maxval) {
+	    maxval = val;
+	    argmax = rel_spe_start.Ticks() - start;
+	  }
+	  */
 	}
 
 	rel_spe_start += unit_time;
-	
+	if( (unit_time * i) > 300 && fabs(fGain * fSPE.at(i)) < 1)
+	  break;
       }
-      
+      /*
+      std::cout << "OpCh: " << OpChannel() << std::endl;
+      std::cout << "  Max Value: " << maxval << " (gain) " << fGain << " added @ " << argmax << " (local vector)" << std::endl;
+      maxval = 0;
+      argmax = 0;
+      for(int i=start; i<(start+20); ++i) {
+	if(wf[i] <= maxval) continue;
+	maxval = wf[i];
+	argmax = i;
+      }
+      std::cout << "  Current local max: " << maxval << " @ " << argmax << " (local vector)" << std::endl;
+      */
     }
 
   }
   
   //----------------------------------------------------------------
   void WFAlgoDigitizedSPE::SetSPE( const std::vector<float> &wf,
-				   const detinfo::ElecClock &time_info)
+				   const detinfo::ElecClock &time_info,
+				   const int opch)
   //----------------------------------------------------------------
   {
     if(time_info.Time() < 0 || time_info.Ticks() >= (int)(wf.size()))
@@ -101,21 +138,43 @@ namespace opdet {
 				    )
 			       );
 
+    auto& fSPE = GetSPEWriteable(opch);
+    auto& fSPETime = GetClockWriteable(opch);
     fSPE.clear();
     fSPE.reserve(wf.size());
 
-    double area = 0;
+    //double area = 0;
     for(auto const &v : wf) {
       fSPE.push_back(v);
-      area += v;
+      //area += v;
     }
 
     // Normalize area
-    for(auto &v : fSPE) v /= area;
+    //for(auto &v : fSPE) v /= area;
 
     fSPETime = time_info;
     
   }
+
+  //----------------------------------------------------------------------
+  std::vector<float>& WFAlgoDigitizedSPE::GetSPEWriteable(const int opch)
+  //----------------------------------------------------------------------
+  { return ((opch%100) == 28 ? fSPE_OpCh28 : fSPE_Normal); }
+
+  //-------------------------------------------------------------------------
+  const std::vector<float>& WFAlgoDigitizedSPE::GetSPE(const int opch) const
+  //-------------------------------------------------------------------------
+  { return ((opch%100) == 28 ? fSPE_OpCh28 : fSPE_Normal); }
+
+  //-------------------------------------------------------------------------
+  ::detinfo::ElecClock& WFAlgoDigitizedSPE::GetClockWriteable(const int opch)
+  //-------------------------------------------------------------------------
+  { return ((opch%100) == 28 ? fSPETime_OpCh28 : fSPETime_Normal); }
+
+  //----------------------------------------------------------------------------
+  const ::detinfo::ElecClock& WFAlgoDigitizedSPE::GetClock(const int opch) const
+  //----------------------------------------------------------------------------
+  { return ((opch%100) == 28 ? fSPETime_OpCh28 : fSPETime_Normal); }
 
 }
 
