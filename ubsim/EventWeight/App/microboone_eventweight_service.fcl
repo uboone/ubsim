@@ -1,0 +1,8 @@
+BEGIN_PROLOG
+
+microboone_eventweight_service: {
+  module_type: UBEventWeight
+}
+
+END_PROLOG
+
