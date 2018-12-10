@@ -1,0 +1,53 @@
+##########################################################
+## Hadron reinteraction uncertainties
+##
+## References:
+##
+##   * A. Furmanski, Reinteraction Systematics, DocDB 17455
+##
+## Maintainer: Andy Mastbaum (mastbaum@uchicago.edu)
+##
+##########################################################
+
+microboone_eventweight_reint: {
+  weight_functions_reint: [
+    reinteractions_proton, reinteractions_piplus, reinteractions_piminus
+  ]
+
+  reinteractions_proton: {
+    type: Reinteraction
+    random_seed: 57
+    parameter_list: ["p"]
+    parameter_sigma: [ 1 ]
+    mode: multisim
+    number_of_multisims: 100
+  }
+
+  reinteractions_piplus: {
+    type: Reinteraction
+    random_seed: 58
+    parameter_list: ["pip"]
+    parameter_sigma: [ 1 ]
+    mode: multisim
+    number_of_multisims: 100
+  }
+
+  reinteractions_piminus: {
+    type: Reinteraction
+    random_seed: 59
+    parameter_list: ["pim"]
+    parameter_sigma: [ 1 ]
+    mode: multisim
+    number_of_multisims: 100
+  }
+
+  reinteractions_all: {
+    type: Reinteraction
+    random_seed: 60
+    parameter_list: ["p", "pip", "pim"]
+    parameter_sigma: [ 1, 1, 1 ]
+    mode: multisim
+    number_of_multisims: 100
+  }
+}
+
