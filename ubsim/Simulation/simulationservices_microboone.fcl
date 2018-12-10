@@ -1,3 +1,4 @@
+#include "microboone_eventweight_service.fcl"
 #include "simulationservices.fcl"
 
 BEGIN_PROLOG
