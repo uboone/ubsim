@@ -41,6 +41,7 @@ extern "C" {
 #include "art/Framework/Services/Optional/TFileService.h"
 #include "art/Framework/Services/Optional/TFileDirectory.h"
 #include "art/Framework/Core/EDProducer.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "cetlib/search_path.h"
 
@@ -321,7 +322,8 @@ namespace detsim{
 
     //ART random number service                                                                                                                       
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &engine = rng->getEngine();
+    CLHEP::HepRandomEngine &engine = rng->getEngine(art::ScheduleID::first(),
+                                                    moduleDescription().moduleLabel());
     CLHEP::RandGaussQ rGauss(engine, 0.0, fNoiseFact);
 
     std::vector<float> noise;

@@ -13,8 +13,6 @@
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 
-#include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 #include "CLHEP/Random/RandomEngine.h"
 #include "CLHEP/Random/RandGaussQ.h"
 
@@ -42,51 +40,49 @@ namespace evwgh {
   class PrimaryHadronSWCentralSplineVariationWeightCalc : public WeightCalc
   {
   public:
-    PrimaryHadronSWCentralSplineVariationWeightCalc();
-    void Configure(fhicl::ParameterSet const& p);
+    PrimaryHadronSWCentralSplineVariationWeightCalc() = default;
+    void Configure(fhicl::ParameterSet const& p,
+                   CLHEP::HepRandomEngine& engine);
     std::pair< bool, double > MiniBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand);
     std::pair< bool, double > MicroBooNEWeightCalc(simb::MCFlux flux,std::vector<double> rand);
     virtual std::vector<std::vector<double> > GetWeight(art::Event & e);
     std::vector< std::vector< double > > MiniBooNERandomNumbers(std::string);
     
   private:
-    CLHEP::RandGaussQ *fGaussRandom;
+    // unused CLHEP::RandGaussQ *fGaussRandom{nullptr};
     std::vector<double> ConvertToVector(TArrayD const* array);
-    std::string fGenieModuleLabel;
-    std::vector<std::string> fParameter_list;
-    float fParameter_sigma;
-    int fNmultisims;
-    int fprimaryHad;
-    std::string fWeightCalc;
-    std::string ExternalDataInput;
-    std::string ExternalFitInput;
-    double fScaleFactor;
-    double fSeed;
-    bool fUseMBRands;
-    
-    TFile* file;
-    TFile* Fitfile;
-    std::vector< std::vector< double > > fWeightArray; 
-    std::string fMode;
+    std::string fGenieModuleLabel{};
+    std::vector<std::string> fParameter_list{};
+    float fParameter_sigma{};
+    int fNmultisims{};
+    int fprimaryHad{};
+    std::string fWeightCalc{};
+    std::string ExternalDataInput{};
+    std::string ExternalFitInput{};
+    double fScaleFactor{};
+    double fSeed{};
+    bool fUseMBRands{};
 
-    TMatrixD* HARPCov;    
-    TMatrixD* HARPLowerTriangluarCov;    
-    TMatrixD* HARPXSec;    
+    TFile* file{nullptr};
+    TFile* Fitfile{nullptr};
+    std::vector< std::vector< double > > fWeightArray{};
+    std::string fMode{};
 
-    std::vector<double> HARPmomentumBounds;
-    std::vector<double> HARPthetaBounds;
-    std::vector<double> SWParam;
+    TMatrixD* HARPCov{nullptr};
+    TMatrixD* HARPLowerTriangluarCov{nullptr};
+    TMatrixD* HARPXSec{nullptr};
 
-    bool fIsDecomposed;
-    
+    std::vector<double> HARPmomentumBounds{};
+    std::vector<double> HARPthetaBounds{};
+    std::vector<double> SWParam{};
+
+    bool fIsDecomposed{false};
 
      DECLARE_WEIGHTCALC(PrimaryHadronSWCentralSplineVariationWeightCalc)
   };
-  PrimaryHadronSWCentralSplineVariationWeightCalc::PrimaryHadronSWCentralSplineVariationWeightCalc()
-  {
-  }
 
-  void PrimaryHadronSWCentralSplineVariationWeightCalc::Configure(fhicl::ParameterSet const& p)
+  void PrimaryHadronSWCentralSplineVariationWeightCalc::Configure(fhicl::ParameterSet const& p,
+                                                                  CLHEP::HepRandomEngine& engine)
   {
 
     // Here we do all our fhicl file configureation
@@ -178,13 +174,6 @@ namespace evwgh {
     SWParam = 
       PrimaryHadronSWCentralSplineVariationWeightCalc::ConvertToVector(SWParamArray);    
 
-
-
-
-    //Prepare random generator
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
-   
      //
     //  This part is very important. You will need more than a single random number
     //  per event. In fact you will need per universe as many random numbers as there
@@ -206,7 +195,7 @@ namespace evwgh {
 	fWeightArray[i].resize(HARPCov->GetNcols());
 	if (fMode.find("multisim") != std::string::npos ){
 	  for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
-	    fWeightArray[i][j]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+            fWeightArray[i][j] = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
 	  }//Iterate over the covariance matrix size
 	}
 	else{
@@ -952,4 +941,3 @@ namespace evwgh {
 
   REGISTER_WEIGHTCALC(PrimaryHadronSWCentralSplineVariationWeightCalc)
 }
-

@@ -14,6 +14,7 @@
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "CLHEP/Random/RandomEngine.h"
 #include "CLHEP/Random/RandGaussQ.h"
 
@@ -39,39 +40,37 @@ namespace evwgh {
   class PrimaryHadronFeynmanScalingWeightCalc : public WeightCalc
   {
   public:
-    PrimaryHadronFeynmanScalingWeightCalc();
-    void Configure(fhicl::ParameterSet const& p);
+    PrimaryHadronFeynmanScalingWeightCalc() = default;
+    void Configure(fhicl::ParameterSet const& p, CLHEP::HepRandomEngine& engine) override;
     std::pair< bool, double > MiniBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand);
     std::pair< bool, double > MicroBooNEWeightCalc(simb::MCFlux flux, std::vector<double> rand);
-    virtual std::vector<std::vector<double> > GetWeight(art::Event & e);
+    std::vector<std::vector<double> > GetWeight(art::Event & e) override;
     std::vector< std::vector< double > > MiniBooNERandomNumbers(std::string);
     
   private:
-    CLHEP::RandGaussQ *fGaussRandom;
     std::vector<double> ConvertToVector(TArrayD const* array);
-    std::string fGenieModuleLabel;
-    std::vector<std::string> fParameter_list;
-    float fParameter_sigma;
-    int fNmultisims;
-    int fprimaryHad;
-    std::string fWeightCalc;
-    std::string ExternalDataInput;
-    double fScaleFactor;
-    TFile* file;
-    std::vector< std::vector< double > > fWeightArray; 
-    std::string fMode;
-    std::vector<double> FSKPlusFitVal;
-    TMatrixD* FSKPlusFitCov;    
-    double fSeed;
-    bool fUseMBRands;
+
+    std::string fGenieModuleLabel{};
+    std::vector<std::string> fParameter_list{};
+    float fParameter_sigma{};
+    int fNmultisims{};
+    int fprimaryHad{};
+    std::string fWeightCalc{};
+    std::string ExternalDataInput{};
+    double fScaleFactor{};
+    TFile* file{nullptr};
+    std::vector< std::vector< double > > fWeightArray{};
+    std::string fMode{};
+    std::vector<double> FSKPlusFitVal{};
+    TMatrixD* FSKPlusFitCov{nullptr};
+    double fSeed{};
+    bool fUseMBRands{false};
 
      DECLARE_WEIGHTCALC(PrimaryHadronFeynmanScalingWeightCalc)
   };
-  PrimaryHadronFeynmanScalingWeightCalc::PrimaryHadronFeynmanScalingWeightCalc()
-  {
-  }
 
-  void PrimaryHadronFeynmanScalingWeightCalc::Configure(fhicl::ParameterSet const& p)
+  void PrimaryHadronFeynmanScalingWeightCalc::Configure(fhicl::ParameterSet const& p,
+                                                        CLHEP::HepRandomEngine& engine)
   {
 
     // Here we do all our fhicl file configureation
@@ -117,10 +116,6 @@ namespace evwgh {
     // This is done but it is important to note that the parameterization maps such that 
     // FSKPlusFitVal[0] corresponds to the diagonal element FSKPlusFitCov[0][0]
     
-    //Prepare random generator
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
-    
     //
     //  This part is very important. You will need more than a single random number
     //  per event. In fact you will need per universe as many random numbers as there
@@ -141,7 +136,7 @@ namespace evwgh {
 	fWeightArray[i].resize(FSKPlusFitCov->GetNcols());      
 	if (fMode.find("multisim") != std::string::npos ){
 	  for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
-	    fWeightArray[i][j]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+            fWeightArray[i][j] = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
 	  }
 	}
 	else{
@@ -584,4 +579,3 @@ namespace evwgh {
   }
   REGISTER_WEIGHTCALC(PrimaryHadronFeynmanScalingWeightCalc)
 }
-
