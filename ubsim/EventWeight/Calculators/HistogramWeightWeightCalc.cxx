@@ -29,6 +29,7 @@
 #include <iostream>
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "nutools/RandomUtils/NuRandomService.h"
 #include "nusimdata/SimulationBase/MCFlux.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
@@ -109,7 +110,7 @@ void HistogramWeightWeightCalc::Configure(fhicl::ParameterSet const& p) {
   fWeightArray.resize(fNmultisims);
   for (int i=0; i<fNmultisims; i++) {
     if (fMode == "multisim") {
-      fWeightArray[i] = fGaussRandom->shoot(&rng->getEngine(GetName()), 0, sigma);
+      fWeightArray[i] = fGaussRandom->shoot(&rng->getEngine(art::ScheduleID::first(),moduleDescription().moduleLabel(),GetName()), 0, sigma);
 
       // One sided uncertainty: upper half of standard normal
       if (fOneSided) {

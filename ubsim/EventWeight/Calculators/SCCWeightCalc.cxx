@@ -2,6 +2,7 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 #include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 #include "nutools/RandomUtils/NuRandomService.h"
@@ -91,7 +92,7 @@ namespace evwgh {
 
     if (fMode.find("multisim") != std::string::npos) {
       for (int i=0; i<fNmultisims; i++) {
-        fWeightArray[i] = fGaussRandom->shoot(&rng->getEngine(GetName()), 0, 1.0);
+        fWeightArray[i] = fGaussRandom->shoot(&rng->getEngine(art::ScheduleID::first(),moduleDescription().moduleLabel(),GetName()), 0, 1.0);
        }
     }
     else {

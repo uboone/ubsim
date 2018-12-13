@@ -19,6 +19,7 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 #include "art/Framework/Principal/Handle.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "canvas/Persistency/Common/FindManyP.h"
 #include "canvas/Persistency/Common/Ptr.h"
 #include "nusimdata/SimulationBase/MCParticle.h"
@@ -144,7 +145,7 @@ void ReinteractionWeightCalc::Configure(fhicl::ParameterSet const& p) {
     else if (mode == "multisim") {
       // multisim mode: Scale factors sampled within the given uncertainty
       for (unsigned j=0; j<fNsims; j++) {
-        double r = fGaussRandom->shoot(&rng->getEngine(GetName()), 0.0, 1.0);
+        double r = fGaussRandom->shoot(&rng->getEngine(art::ScheduleID::first(),moduleDescription().moduleLabel(),GetName()), 0.0, 1.0);
         it.second.sigmas.push_back(it.second.par_sigma * r);
       }
     }
