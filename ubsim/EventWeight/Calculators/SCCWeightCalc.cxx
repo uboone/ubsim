@@ -76,7 +76,9 @@ namespace evwgh {
 
     // Prepare random generator
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
+    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
+                                                	moduleDescription().moduleLabel(),
+							GetName()));    
 
     // Calc config
     fNmultisims = pset.get<int>("number_of_multisims");
@@ -267,7 +269,9 @@ namespace evwgh {
     std::cout<<xsecratio_Fa3[70][50]<<" "<<xsecratio_Fv3Fa3[70][50]<<std::endl;
 
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
+    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
+                                                	moduleDescription().moduleLabel(),
+							GetName()));    
 
 
     std::cout<<"start to get tthe reweighting sigmas and reweighting ratios:  "<<std::endl;

@@ -106,7 +106,9 @@ void ReinteractionWeightCalc::Configure(fhicl::ParameterSet const& p) {
 
   // Prepare random generator
   art::ServiceHandle<art::RandomNumberGenerator> rng;
-  fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));    
+  fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
+                                                	moduleDescription().moduleLabel(),
+							GetName()));    
 
   // Load interaction probabilities
   cet::search_path sp("FW_SEARCH_PATH");

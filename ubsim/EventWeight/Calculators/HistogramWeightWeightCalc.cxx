@@ -76,7 +76,9 @@ void HistogramWeightWeightCalc::Configure(fhicl::ParameterSet const& p) {
   // Global config
   fGenieModuleLabel = p.get<std::string>("genie_module_label");
   art::ServiceHandle<art::RandomNumberGenerator> rng;
-  fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));    
+  fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
+                                                	moduleDescription().moduleLabel(),
+							GetName()));    
 
   // Load weight histogram from a file
   double sigma = pset.get<double>("sigma");
