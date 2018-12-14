@@ -162,7 +162,8 @@ namespace opdet {
     // Obtain optical clock to be used for sample/frame number generation
     // FIXME: this code is non-portable
     art::ServiceHandle<detinfo::DetectorClocksServiceStandard> tss;
-    tss->preProcessEvent(event); // sets trigger time
+    //FIXME: you should let the framework call preProcessEvent
+    tss->preProcessEvent(event, art::ScheduleContext::invalid()); // sets trigger time
     auto const* ts = lar::providerFrom<detinfo::DetectorClocksServiceStandard>();
     ::detinfo::ElecClock clock = ts->OpticalClock();
     //std::cout << "OpticalDRAM: Trigger time=" << ts->TriggerTime() << " Beam gate time=" << ts->BeamGateTime() << std::endl;

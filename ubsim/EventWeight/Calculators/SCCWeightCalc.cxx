@@ -2,6 +2,7 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 #include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 #include "nutools/RandomUtils/NuRandomService.h"
@@ -19,7 +20,8 @@ namespace evwgh {
      public:
 
        SCCWeightCalc() {}
-       void Configure(fhicl::ParameterSet const& p);
+       void Configure(fhicl::ParameterSet const& p,
+                      CLHEP::HepRandomEngine& engine);
 
        std::array<std::array<double, 101>, 1001> reweightingRatio; 
        std::array<std::array<double, 101>, 1001> reweightingSigmas;
@@ -69,14 +71,14 @@ namespace evwgh {
      DECLARE_WEIGHTCALC(SCCWeightCalc)
   };
 
-  void SCCWeightCalc::Configure(fhicl::ParameterSet const& p) {
+  void SCCWeightCalc::Configure(fhicl::ParameterSet const& p,
+                                CLHEP::HepRandomEngine& engine) {
     // Global config
     fGenieModuleLabel= p.get<std::string>("genie_module_label");
     fhicl::ParameterSet const& pset = p.get<fhicl::ParameterSet>(GetName());
 
     // Prepare random generator
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
+    fGaussRandom = new CLHEP::RandGaussQ(engine);
 
     // Calc config
     fNmultisims = pset.get<int>("number_of_multisims");
@@ -89,7 +91,7 @@ namespace evwgh {
 
     if (fMode.find("multisim") != std::string::npos) {
       for (int i=0; i<fNmultisims; i++) {
-        fWeightArray[i] = fGaussRandom->shoot(&rng->getEngine(GetName()), 0, 1.0);
+        fWeightArray[i] = fGaussRandom->fire(0, 1.0);
        }
     }
     else {
@@ -266,10 +268,6 @@ namespace evwgh {
     std::cout<<xsecratio_nominal[70][50]<<" "<<xsecratio_Fv3[70][50]<<std::endl;
     std::cout<<xsecratio_Fa3[70][50]<<" "<<xsecratio_Fv3Fa3[70][50]<<std::endl;
 
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
-
-
     std::cout<<"start to get tthe reweighting sigmas and reweighting ratios:  "<<std::endl;
     for(unsigned int i_reweightingKnob=0; i_reweightingKnob<xsecratiorwgh.size(); i_reweightingKnob++){   
 
@@ -390,4 +388,3 @@ namespace evwgh {
 
   REGISTER_WEIGHTCALC(SCCWeightCalc)
 }
-

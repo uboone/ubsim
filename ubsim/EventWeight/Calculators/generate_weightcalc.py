@@ -48,6 +48,7 @@ def main(argv):
 
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 
 #include "CLHEP/Random/RandGaussQ.h"
 
@@ -74,7 +75,9 @@ namespace evwgh {
 
     //Prepare random generator
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));    
+    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(art::ScheduleID::first(),
+                                                	moduleDescription().moduleLabel(),
+							GetName()));    
   }
 
   std::vector<std::vector<double> > %(funcname)sWeightCalc::GetWeight(art::Event & e)

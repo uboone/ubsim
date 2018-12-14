@@ -10,6 +10,7 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 #include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 
 #include "nusimdata/SimulationBase/MCFlux.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
@@ -22,26 +23,25 @@ namespace evwgh {
   {
 
   public:
-    FluxUnisimWeightCalc();
+    FluxUnisimWeightCalc() = default;
     double MiniBooNEWeightCalc(double enu, int ptype, int ntype, int uni, bool noNeg);
     double MicroBooNEWeightCalc(double enu, int ptype, int ntype, int uni, bool noNeg);
-    void Configure(fhicl::ParameterSet const& p);
+    void Configure(fhicl::ParameterSet const& p, CLHEP::HepRandomEngine& engine);
     std::vector<std::vector<double> > GetWeight(art::Event & e);
     std::vector< double > MiniBooNERandomNumbers(std::string);
 
 
   private:
-    CLHEP::RandGaussQ *fGaussRandom;
-    std::vector<double> fWeightArray;
-    std::vector<std::string> fParameter_list;    
-    int fNuni;   // Number of universes you want to generate
-    double fScalePos; // Scale factor to enhance or degrade a given positive systematic uncertanity
-    double fScaleNeg; // Scale factor to enhance or degrade a given negative systematic uncertanity
-    std::string fMode;   // if you want multisim or +/- 1sigma
-    std::string fGenieModuleLabel;
-    std::string fWeightCalc; // if you want MiniBooNE or MicroBooNE calculator
-    double fSeed;
-    bool fUseMBRands;
+    std::vector<double> fWeightArray{};
+    std::vector<std::string> fParameter_list{};
+    int fNuni{};   // Number of universes you want to generate
+    double fScalePos{}; // Scale factor to enhance or degrade a given positive systematic uncertanity
+    double fScaleNeg{}; // Scale factor to enhance or degrade a given negative systematic uncertanity
+    std::string fMode{};   // if you want multisim or +/- 1sigma
+    std::string fGenieModuleLabel{};
+    std::string fWeightCalc{}; // if you want MiniBooNE or MicroBooNE calculator
+    double fSeed{};
+    bool fUseMBRands{false};
 
     //Weight Arrays
     // These will contain the systematic variations
@@ -56,17 +56,13 @@ namespace evwgh {
     double fRWneg[4][4][200];
 
     // This is for when there is only one systematic variation (i.e. skin depth)
-    bool PosOnly = false;
+    bool PosOnly{false};
        
      DECLARE_WEIGHTCALC(FluxUnisimWeightCalc)
   };
 
-  FluxUnisimWeightCalc::FluxUnisimWeightCalc()
-  {
-
-  }
-
-  void FluxUnisimWeightCalc::Configure(fhicl::ParameterSet const& p)
+  void FluxUnisimWeightCalc::Configure(fhicl::ParameterSet const& p,
+                                       CLHEP::HepRandomEngine& engine)
   {
     //Collect the fcl parameters from the fhicl file
     fhicl::ParameterSet const &pset=p.get<fhicl::ParameterSet> (GetName());
@@ -138,10 +134,6 @@ namespace evwgh {
     frwneg.Close(); 
 
 
-    //Setup the random number generator
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
-    
     //
     //   This part is important!!! You want to be sure to use the same random number throughout all the 
     //   events, otherwise you will be smearing over all the correlations. 
@@ -157,9 +149,9 @@ namespace evwgh {
       
       // This sets up if we want to reweight events or just assess 1sigma shifts 
       if (fMode.find("multisim") != std::string::npos )
-	for (int i=0;i<fNuni;i++) fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+        for (double& weight : fWeightArray) weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
       else
-	for (int i=0;i<fNuni;i++) fWeightArray[i]=1.;      
+        for (double& weight : fWeightArray) weight=1.;
     }//Use LArSoft Randoms
 
   }
