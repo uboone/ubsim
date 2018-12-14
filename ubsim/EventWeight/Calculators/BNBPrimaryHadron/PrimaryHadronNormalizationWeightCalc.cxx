@@ -12,8 +12,6 @@
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 
-#include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 #include "CLHEP/Random/RandomEngine.h"
 #include "CLHEP/Random/RandGaussQ.h"
 
@@ -39,72 +37,58 @@ namespace evwgh {
   class PrimaryHadronNormalizationWeightCalc : public WeightCalc
   {
   public:
-    PrimaryHadronNormalizationWeightCalc();
-    void Configure(fhicl::ParameterSet const& p);
+    PrimaryHadronNormalizationWeightCalc() = default;
+    void Configure(fhicl::ParameterSet const& p, CLHEP::HepRandomEngine& engine);
     std::pair< bool, double > MiniBooNEWeightCalc(simb::MCFlux flux, double rand);
     std::pair< bool, double > MicroBooNEWeightCalc(simb::MCFlux flux, double rand);
     virtual std::vector<std::vector<double> > GetWeight(art::Event & e);
     std::vector< double > MiniBooNERandomNumbers(std::string);
     
   private:
-    CLHEP::RandGaussQ *fGaussRandom;
     std::vector<double> ConvertToVector(TArrayD const* array);
-    std::string fGenieModuleLabel;
-    std::vector<std::string> fParameter_list;
-    float fParameter_sigma;
-    int fNmultisims;
-    int fprimaryHad;
-    std::string fWeightCalc;
-    double fScaleFactor;
-    //TFile* file;
-    std::vector< double > fWeightArray; 
-    std::string fMode;
-    double fSeed;
-    bool fUseMBRands;
+
+    std::string fGenieModuleLabel{};
+    int fNmultisims{};
+    int fprimaryHad{};
+    std::string fWeightCalc{};
+    std::vector< double > fWeightArray{};
+    std::string fMode{};
+    bool fUseMBRands{false};
        
      DECLARE_WEIGHTCALC(PrimaryHadronNormalizationWeightCalc)
   };
-  PrimaryHadronNormalizationWeightCalc::PrimaryHadronNormalizationWeightCalc()
-  {
-  }
 
-  void PrimaryHadronNormalizationWeightCalc::Configure(fhicl::ParameterSet const& p)
+  void PrimaryHadronNormalizationWeightCalc::Configure(fhicl::ParameterSet const& p,
+                                                       CLHEP::HepRandomEngine& engine)
   {
-
     // Here we do all our fhicl file configureation
     fGenieModuleLabel= p.get< std::string > ("genie_module_label");
-    fhicl::ParameterSet const &pset=p.get<fhicl::ParameterSet> (GetName());
+    auto const pset = p.get<fhicl::ParameterSet>(GetName());
     std::cout << pset.to_string() << std::endl;
 
-    fParameter_list		=   pset.get<std::vector<std::string> >("parameter_list");
-    fParameter_sigma		=   pset.get<float>("parameter_sigma");
+    auto const parameter_list = pset.get<std::vector<std::string> >("parameter_list");
     fNmultisims			=   pset.get<int>("number_of_multisims");
     fprimaryHad			=   pset.get< int >("PrimaryHadronGeantCode");
     fWeightCalc                 =   pset.get<std::string>("weight_calculator");
     fMode                       =   pset.get<std::string>("mode");
-    fScaleFactor                =   pset.get<double>("scale_factor");
-    fSeed 			=   pset.get<double>("random_seed");
     fUseMBRands                 =   pset.get<bool>("use_MiniBooNE_random_numbers");
-    //Prepare random generator
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));
     
     //
     // This is the meat of this, select random numbers that will be the 
     //   the reweighting
     //
     if(fUseMBRands){//fParameter_list
-      fWeightArray = PrimaryHadronNormalizationWeightCalc::MiniBooNERandomNumbers(fParameter_list.at(0));
+      fWeightArray = PrimaryHadronNormalizationWeightCalc::MiniBooNERandomNumbers(parameter_list.at(0));
     }//Use MiniBooNE Randoms
     else{
       fWeightArray.resize(2*fNmultisims);
            
-      for (unsigned int i=0;i<fWeightArray.size();i++) {
+      for (double& weight : fWeightArray) {
 	if (fMode.find("multisim") != std::string::npos ){
-	  fWeightArray[i]=fGaussRandom->shoot(&rng->getEngine(GetName()),0,1.);
+          weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
 	}	
 	else{
-	  fWeightArray[i] = 1.;
+          weight = 1.;
 	}
       }
     }//Use LArSoft Randoms
@@ -113,12 +97,9 @@ namespace evwgh {
 
   std::vector<std::vector<double> > PrimaryHadronNormalizationWeightCalc::GetWeight(art::Event & e)
   {
-
     //Collect the event's Flux information
     //     This specifically deals with the neutrino type and parentage
-    art::Handle< std::vector<simb::MCFlux> > mcFluxHandle;
-    e.getByLabel(fGenieModuleLabel,mcFluxHandle);
-    std::vector<simb::MCFlux> const& fluxlist = *mcFluxHandle;
+    auto const& fluxlist = *e.getValidHandle<std::vector<simb::MCFlux>>(fGenieModuleLabel);
 
     
     //Collect event's MC truth information
@@ -126,9 +107,7 @@ namespace evwgh {
     //  counting how many interactions there are per event 
     //  (neutrino counting is CRITICALLY important for applying the 
     //   correct weights and not ending up with unphysical values)
-    art::Handle< std::vector<simb::MCTruth> > mctruthHandle;
-    e.getByLabel(fGenieModuleLabel,mctruthHandle);
-    std::vector<simb::MCTruth> const& mclist = *mctruthHandle;
+    auto const& mclist = *e.getValidHandle<std::vector<simb::MCTruth>>(fGenieModuleLabel);
     
     //Create a vector of weights for each neutrino 
     std::vector< std::vector<double> > weight;
@@ -259,4 +238,3 @@ namespace evwgh {
 
   REGISTER_WEIGHTCALC(PrimaryHadronNormalizationWeightCalc)
 }
-

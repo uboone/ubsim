@@ -29,6 +29,7 @@
 #include <iostream>
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "nutools/RandomUtils/NuRandomService.h"
 #include "nusimdata/SimulationBase/MCFlux.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
@@ -47,7 +48,8 @@ public:
   HistogramWeightWeightCalc();
 
   /** Configure the calculator based on FHICL parameters. */
-  void Configure(fhicl::ParameterSet const& p);
+  void Configure(fhicl::ParameterSet const& p,
+                 CLHEP::HepRandomEngine& engine);
 
   /** Compute the list of weights. */
   std::vector<std::vector<double> > GetWeight(art::Event& e);
@@ -70,13 +72,14 @@ private:
 HistogramWeightWeightCalc::HistogramWeightWeightCalc() : fRWHist(NULL) {}
 
 
-void HistogramWeightWeightCalc::Configure(fhicl::ParameterSet const& p) {
+void HistogramWeightWeightCalc::Configure(fhicl::ParameterSet const& p,
+                                          CLHEP::HepRandomEngine& engine)
+{
   fhicl::ParameterSet const& pset = p.get<fhicl::ParameterSet>(GetName());
 
   // Global config
   fGenieModuleLabel = p.get<std::string>("genie_module_label");
-  art::ServiceHandle<art::RandomNumberGenerator> rng;
-  fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));    
+  fGaussRandom = new CLHEP::RandGaussQ(engine);
 
   // Load weight histogram from a file
   double sigma = pset.get<double>("sigma");
@@ -107,7 +110,7 @@ void HistogramWeightWeightCalc::Configure(fhicl::ParameterSet const& p) {
   fWeightArray.resize(fNmultisims);
   for (int i=0; i<fNmultisims; i++) {
     if (fMode == "multisim") {
-      fWeightArray[i] = fGaussRandom->shoot(&rng->getEngine(GetName()), 0, sigma);
+      fWeightArray[i] = fGaussRandom->fire(0, sigma);
 
       // One sided uncertainty: upper half of standard normal
       if (fOneSided) {
@@ -180,4 +183,3 @@ HistogramWeightWeightCalc::GetWeight(art::Event& e) {
 REGISTER_WEIGHTCALC(HistogramWeightWeightCalc)
 
 }  // namespace evwgh
-

@@ -172,7 +172,8 @@ namespace detsim {
 
   //-------------------------------------------------
   SimWireMicroBooNE::SimWireMicroBooNE(fhicl::ParameterSet const& pset)
-  : fNoiseHist(0)
+    : EDProducer{pset}
+    , fNoiseHist(0)
     , _pfn_f1(nullptr)
     //, _pfn_MyPoisson(nullptr)
     , _pfn_ifft(nullptr)
@@ -377,7 +378,9 @@ namespace detsim {
     
     //get rng for pedestals
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &engine = rng->getEngine("pedestal");   
+    CLHEP::HepRandomEngine &engine = rng->getEngine(art::ScheduleID::first(),
+                                                    moduleDescription().moduleLabel(),
+						    "pedestal");   
     
     //channel status for simulating dead channels
     const lariov::ChannelStatusProvider& ChannelStatusProvider
@@ -402,7 +405,8 @@ namespace detsim {
     //TimeService
     art::ServiceHandle<detinfo::DetectorClocksServiceStandard> tss;
     // In case trigger simulation is run in the same job...
-    tss->preProcessEvent(evt);
+    //FIXME: you should let the framework call preProcessEvent
+    tss->preProcessEvent(evt, art::ScheduleContext::invalid());
     auto const* ts = tss->provider();
     
     // Check if trigger data product exists or not. If not, throw a warning
@@ -706,7 +710,9 @@ namespace detsim {
   {
     //ART random number service
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &engine = rng->getEngine("noise");
+    CLHEP::HepRandomEngine &engine = rng->getEngine(art::ScheduleID::first(),
+                                                    moduleDescription().moduleLabel(),
+						    "noise");
     CLHEP::RandGaussQ rGauss(engine, 0.0, noise_factor);
 
     //In this case noise_factor is a value in ADC counts
@@ -722,7 +728,9 @@ namespace detsim {
   void SimWireMicroBooNE::GenNoiseInFreq(std::vector<float> &noise, double noise_factor) const
   {
     art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &engine = rng->getEngine("noise");
+    CLHEP::HepRandomEngine &engine = rng->getEngine(art::ScheduleID::first(),
+                                                    moduleDescription().moduleLabel(),
+						    "noise");
     CLHEP::RandFlat flat(engine,-1,1);
 
     if(noise.size() != fNTicks)
