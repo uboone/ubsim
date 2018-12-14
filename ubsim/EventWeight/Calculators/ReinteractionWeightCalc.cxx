@@ -17,8 +17,8 @@
 #include "Geant4/G4Material.hh"
 #include "Geant4/G4MaterialCutsCouple.hh"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/RandomNumberGenerator.h"
 #include "art/Framework/Principal/Handle.h"
+#include "art/Persistency/Provenance/ModuleContext.h"
 #include "canvas/Persistency/Common/FindManyP.h"
 #include "canvas/Persistency/Common/Ptr.h"
 #include "nusimdata/SimulationBase/MCParticle.h"
@@ -35,7 +35,7 @@ class ReinteractionWeightCalc : public WeightCalc {
 public:
   ReinteractionWeightCalc() {}
 
-  void Configure(fhicl::ParameterSet const& p);
+  void Configure(fhicl::ParameterSet const& p, CLHEP::HepRandomEngine& engine);
 
   std::vector<std::vector<double> > GetWeight(art::Event& e);
 
@@ -92,7 +92,9 @@ private:
 };
 
 
-void ReinteractionWeightCalc::Configure(fhicl::ParameterSet const& p) {
+void ReinteractionWeightCalc::Configure(fhicl::ParameterSet const& p,
+                                        CLHEP::HepRandomEngine& engine)
+{
   // Get configuration for this function
   fhicl::ParameterSet const& pset = p.get<fhicl::ParameterSet>(GetName());
   fMCParticleProducer = pset.get<std::string>("MCParticleProducer", "largeant");
@@ -105,8 +107,7 @@ void ReinteractionWeightCalc::Configure(fhicl::ParameterSet const& p) {
   fNsims = pset.get<int> ("number_of_multisims", 0);
 
   // Prepare random generator
-  art::ServiceHandle<art::RandomNumberGenerator> rng;
-  fGaussRandom = new CLHEP::RandGaussQ(rng->getEngine(GetName()));    
+  fGaussRandom = new CLHEP::RandGaussQ(engine);
 
   // Load interaction probabilities
   cet::search_path sp("FW_SEARCH_PATH");
@@ -142,7 +143,7 @@ void ReinteractionWeightCalc::Configure(fhicl::ParameterSet const& p) {
     else if (mode == "multisim") {
       // multisim mode: Scale factors sampled within the given uncertainty
       for (unsigned j=0; j<fNsims; j++) {
-        double r = fGaussRandom->shoot(&rng->getEngine(GetName()), 0.0, 1.0);
+        double r = fGaussRandom->fire(0.0, 1.0);
         it.second.sigmas.push_back(it.second.par_sigma * r);
       }
     }
@@ -218,4 +219,3 @@ ReinteractionWeightCalc::GetWeight(art::Event& e) {
 REGISTER_WEIGHTCALC(ReinteractionWeightCalc)
 
 }  // namespace evwgh
-
