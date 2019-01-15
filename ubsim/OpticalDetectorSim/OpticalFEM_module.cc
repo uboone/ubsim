@@ -272,7 +272,7 @@ namespace opdet {
 	// The time of the "beginBin[gateIndex]" slice within the gateFrame.
 	gateWindowTime[gateIndex] = ( beamBeginBin[gateIndex] % clock.FrameTicks() ); 
       
-	LOG_DEBUG("OpticalFEM") 
+	MF_LOG_DEBUG("OpticalFEM") 
 	//std::cout << "Beam gate #" << gateIndex
 	  << " begin beam gate bin to save = " << beamBeginBin[gateIndex]
 	  << "; end beam gate bin to save = " << beamEndBin[gateIndex]
@@ -723,7 +723,7 @@ namespace opdet {
 	      // slice to the list of slices for disc 0.
 	      fire0.push_back( slice );
 	      
-	      LOG_DEBUG("OpticalFEM")
+	      MF_LOG_DEBUG("OpticalFEM")
 		<< "Disc 0 fires, channel=" << channel
 		<< " at frame=" 
 		<< (*channelDataHandle).Frame() + slice / clock.FrameTicks()
@@ -775,7 +775,7 @@ namespace opdet {
 	    optdata::TimeSlice_t cosmicTime 
 	      = (firstSlice + saveSlice) % clock.FrameTicks();
 	    
-	    LOG_DEBUG("OpticalFEM")
+	    MF_LOG_DEBUG("OpticalFEM")
 	      << "Disc 1 fires, Writing cosmic channel=" << channel
 	      << " at frame=" << cosmicFrame
 	      << " slice=" << cosmicTime
@@ -883,7 +883,7 @@ namespace opdet {
 	    // Save this value for PMT trigger tests if not logic channel.
 	    if( !is_logic_channel ) maxADC3.push_back( maxADC );
 	    
-	    LOG_DEBUG("OpticalFEM")
+	    MF_LOG_DEBUG("OpticalFEM")
 	      << "Disc 3 fires, channel=" << channel
 	      << " at frame=" 
 	      << (*channelDataHandle).Frame() + slice / clock.FrameTicks()
@@ -1024,7 +1024,7 @@ namespace opdet {
 	  // Save the trigger in our list.
 	  triggers.push_back( trigger_t( optdata::kCosmicPMTTrigger, slice ) );
 	  
-	  LOG_DEBUG("OpticalFEM")
+	  MF_LOG_DEBUG("OpticalFEM")
 	    << "Cosmic PMT Trigger"
 	    << " at frame=" << frame
 	    << " slice=" << sample
@@ -1089,7 +1089,7 @@ namespace opdet {
 	  // Save the trigger in our list.
 	  triggers.push_back( trigger_t( optdata::kCosmicPMTTrigger, slice ) );
 	  
-	  LOG_DEBUG("OpticalFEM")
+	  MF_LOG_DEBUG("OpticalFEM")
 	    << "Beam PMT Trigger"
 	    << " at frame=" << frame
 	    << " slice=" << sample
