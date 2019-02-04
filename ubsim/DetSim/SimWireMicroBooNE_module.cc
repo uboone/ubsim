@@ -73,24 +73,20 @@ namespace detsim {
 
   // Base class for creation of raw signals on wires.
   class SimWireMicroBooNE : public art::EDProducer {
-
   public:
-
     explicit SimWireMicroBooNE(fhicl::ParameterSet const& pset);
     virtual ~SimWireMicroBooNE();
 
+  private:
     // read/write access to event
     void produce (art::Event& evt);
     void beginJob();
-    void endJob();
     void reconfigure(fhicl::ParameterSet const& p);
-
-  private:
 
     void GenNoiseInTime(std::vector<float> &noise, double noise_factor) const;
     void GenNoiseInFreq(std::vector<float> &noise, double noise_factor) const;
     void GenNoisePostFilter(std::vector<float> &noise, double noise_factor, size_t view, int chan);
-    void MakeADCVec(std::vector<short>& adc, std::vector<float> const& noise, 
+    void MakeADCVec(std::vector<short>& adc, std::vector<float> const& noise,
                     std::vector<double> const& charge, float ped_mean) const;
 
     double GetYZCorrection(double y, double z, TH2F *his);
@@ -105,7 +101,7 @@ namespace detsim {
     std::vector<TH2F*> hCorr_YZ_MC;
     std::vector<TH1F*> hCorr_X_MC;
     std::vector<double> fCalAreaConstantsMC;
-    std::vector<double> fCalAreaConstantsData; 
+    std::vector<double> fCalAreaConstantsData;
 
     std::string             fDriftEModuleLabel; ///< module making the ionization electrons
     raw::Compress_t         fCompression;       ///< compression type to use
@@ -115,8 +111,8 @@ namespace detsim {
     double                  fLowCutoff;         ///< low frequency filter cutoff (kHz)
     double                  fSampleRate;        ///< sampling rate in ns
 
-    size_t                  fNTicks;	        ///< number of ticks of the clock    
-    unsigned int            fNTimeSamples;      ///< number of ADC readout samples in all readout frames (per event)	 	   
+    size_t                  fNTicks;            ///< number of ticks of the clock
+    unsigned int            fNTimeSamples;      ///< number of ADC readout samples in all readout frames (per event)
 
     std::vector<TH1D*>      fNoiseDist;     ///< distribution of noise counts, one per plane
     bool                    fGetNoiseFromHisto; ///< if True -> Noise from Histogram of Freq. spectrum
@@ -127,7 +123,7 @@ namespace detsim {
 
     std::map< double, int > fShapingTimeOrder;
     std::string             fTrigModName;       ///< Trigger data product producer name
-    
+
     bool                    fSimDeadChannels;   ///< if True, simulate dead channels using the ChannelStatus service.  If false, do not simulate dead channels
 
     bool fMakeNoiseDists;
@@ -140,7 +136,7 @@ namespace detsim {
 
     int         fSample; // for histograms, -1 means no histos
 
-    double      fNoiseAmpScaleFactor; // For assessing systematic on noise amplitude 
+    double      fNoiseAmpScaleFactor; // For assessing systematic on noise amplitude
 
     //std::vector<std::vector<std::vector<int> > > fYZwireOverlap; //channel ranges for shorted wires and corresponding channel ranges for wires effected on other planes
 
@@ -156,18 +152,15 @@ namespace detsim {
     TF1  *_pfn_f1;
     //TF1  *_pfn_MyPoisson;
     TVirtualFFT *_pfn_ifft;
-    std::vector<double> _pfn_rho_v;
-    std::vector<double> _pfn_value_re;
-    std::vector<double> _pfn_value_im;
+    std::vector<double> _pfn_rho_v{};
+    std::vector<double> _pfn_value_re{};
+    std::vector<double> _pfn_value_im{};
     float gammaRand;
+    CLHEP::HepRandomEngine& noiseEngine_;
+    CLHEP::HepRandomEngine& pedestalEngine_;
 
   }; // class SimWireMicroBooNE
 
-  /*  namespace {
-    size_t _ch = 0;
-    size_t _wr = 0;
-  }
-  */
   DEFINE_ART_MODULE(SimWireMicroBooNE)
 
   //-------------------------------------------------
@@ -175,11 +168,11 @@ namespace detsim {
     : EDProducer{pset}
     , fNoiseHist(0)
     , _pfn_f1(nullptr)
-    //, _pfn_MyPoisson(nullptr)
     , _pfn_ifft(nullptr)
-    , _pfn_rho_v()
-    , _pfn_value_re()
-    , _pfn_value_im()
+    // create a default random engine; obtain the random seed from NuRandomService,
+    // unless overridden in configuration with key "Seed" and "SeedPedestal"
+    , noiseEngine_{art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "noise", pset, "Seed")}
+    , pedestalEngine_{art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "pedestal", pset, "SeedPedestal")}
   {
     fOverlay = false; // default for detsim
 
@@ -190,13 +183,6 @@ namespace detsim {
     fCompression = raw::kNone;
     TString compression(pset.get< std::string >("CompressionType"));
     if(compression.Contains("Huffman",TString::kIgnoreCase)) fCompression = raw::kHuffman;
-
-    // create a default random engine; obtain the random seed from NuRandomService,
-    // unless overridden in configuration with key "Seed" and "SeedPedestal"
-    art::ServiceHandle<rndm::NuRandomService> Seeds;
-    Seeds->createEngine(*this, "HepJamesRandom", "noise", pset, "Seed");
-    Seeds->createEngine(*this, "HepJamesRandom", "pedestal", pset, "SeedPedestal");
-
   }
 
   //-------------------------------------------------
@@ -252,7 +238,7 @@ namespace detsim {
       else
         throw cet::exception("SimWireMicroBooNE") << "Could not find noise histogram in Root file\n";
       in->Close();
-*/
+      */
     }
     //detector properties information
     auto const* detprop = lar::providerFrom<detinfo::DetectorPropertiesService>();
@@ -280,15 +266,11 @@ namespace detsim {
           <<"Size of CalAreaConstants vectors need to be 3.";
        }
     }
-
-    return;
   }
 
   //-------------------------------------------------
   void SimWireMicroBooNE::beginJob()
   {
-
-    // get access to the TFile service
     art::ServiceHandle<art::TFileService> tfs;
 
     char buff0[80], buff1[80];
@@ -303,7 +285,7 @@ namespace detsim {
     }
 
     if(fTest){
-      art::ServiceHandle<geo::Geometry> geo;  
+      art::ServiceHandle<geo::Geometry> geo;
       if(geo->Nchannels()<=fTestWire)
         throw cet::exception(__FUNCTION__)<<"Invalid test wire channel: "<<fTestWire;
 
@@ -347,41 +329,27 @@ namespace detsim {
         }
       }
     }
-
-    return;
-
   }
-
-  //-------------------------------------------------
-  void SimWireMicroBooNE::endJob()
-  {}
 
   void SimWireMicroBooNE::produce(art::Event& evt)
   {
-
     //--------------------------------------------------------------------
     //
     // Get all of the services we will be using
     //
     //--------------------------------------------------------------------
-   
+
     //handle to tpc energy calibration provider for the overlay dedicated data driven variation to the wires signal
-	  const lariov::TPCEnergyCalibProvider& energyCalibProvider
+          const lariov::TPCEnergyCalibProvider& energyCalibProvider
        = art::ServiceHandle<lariov::TPCEnergyCalibService>()->GetProvider();
     //get pedestal conditions
-    const lariov::DetPedestalProvider& pedestalRetrievalAlg 
+    const lariov::DetPedestalProvider& pedestalRetrievalAlg
        = art::ServiceHandle<lariov::DetPedestalService>()->GetPedestalProvider();
-    
+
     //electronics conditions
-    const lariov::ElectronicsCalibProvider& elec_provider 
+    const lariov::ElectronicsCalibProvider& elec_provider
        = art::ServiceHandle<lariov::ElectronicsCalibService>()->GetProvider();
-    
-    //get rng for pedestals
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &engine = rng->getEngine(art::ScheduleID::first(),
-                                                    moduleDescription().moduleLabel(),
-						    "pedestal");   
-    
+
     //channel status for simulating dead channels
     const lariov::ChannelStatusProvider& ChannelStatusProvider
        = art::ServiceHandle<lariov::ChannelStatusService>()->GetProvider();
@@ -401,14 +369,10 @@ namespace detsim {
 
     // TFileService
     art::ServiceHandle<art::TFileService> tfs;
-    
     //TimeService
     art::ServiceHandle<detinfo::DetectorClocksServiceStandard> tss;
-    // In case trigger simulation is run in the same job...
-    //FIXME: you should let the framework call preProcessEvent
-    tss->preProcessEvent(evt, art::ScheduleContext::invalid());
     auto const* ts = tss->provider();
-    
+
     // Check if trigger data product exists or not. If not, throw a warning
     art::Handle< std::vector<raw::Trigger> > trig_array;
     evt.getByLabel(fTrigModName, trig_array);
@@ -429,7 +393,7 @@ namespace detsim {
 
     art::ServiceHandle<util::SignalShapingServiceMicroBooNE> sss;
 
-   
+
     //--------------------------------------------------------------------
     //
     // Get the SimChannels, which we will use to produce RawDigits
@@ -460,19 +424,19 @@ namespace detsim {
     //first vector index is channel
     std::vector< std::vector<std::unique_ptr<util::ResponseParams> > > responseParamsVec;
     responseParamsVec.resize(N_CHANNELS);
-    
-   
+
+
     //--------------------------------------------------------------------
     //
     // Store energy deposits in ResponseParams objects
     //
     //--------------------------------------------------------------------
     std::vector<int> first_channel_in_view(N_VIEWS,-1);
-    for(unsigned int chan = 0; chan < N_CHANNELS; ++chan) {	
+    for(unsigned int chan = 0; chan < N_CHANNELS; ++chan) {
       size_t view = (size_t)geo->View(chan);
 
       if (first_channel_in_view[view] == -1) {
-	first_channel_in_view[view] = chan;
+        first_channel_in_view[view] = chan;
       }
 
       const sim::SimChannel* sc = channels.at(chan);
@@ -484,24 +448,24 @@ namespace detsim {
       int time_offset = 0;//sss->FieldResponseTOffset(chan);
 
       for(auto timeSlice : timeSlices) {
-	auto tdc = timeSlice.first;
-	if( tdc < 0 ) continue;
-	auto t = ts->TPCTDC2Tick(tdc)+1; // +1 added because nominal detsim rounds up (B. Russell)
+        auto tdc = timeSlice.first;
+        if( tdc < 0 ) continue;
+        auto t = ts->TPCTDC2Tick(tdc)+1; // +1 added because nominal detsim rounds up (B. Russell)
 
-	int raw_digit_index = (int)( (t + time_offset) >= 0 ? t+time_offset : (fNTicks + (t+time_offset)) );
-	if(raw_digit_index <= 0 || raw_digit_index >= (int)fNTicks) continue;
+        int raw_digit_index = (int)( (t + time_offset) >= 0 ? t+time_offset : (fNTicks + (t+time_offset)) );
+        if(raw_digit_index <= 0 || raw_digit_index >= (int)fNTicks) continue;
 
-	auto const& energyDeposits = timeSlice.second;
-	for(auto energyDeposit : energyDeposits) {
-	  double charge = (double)energyDeposit.numElectrons;
-	  double x = (double)energyDeposit.x;
-	  double y = (double)energyDeposit.y;
-	  double z = (double)energyDeposit.z;
-	  if(charge == 0) continue;
-	  if (fOverlay) {
+        auto const& energyDeposits = timeSlice.second;
+        for(auto energyDeposit : energyDeposits) {
+          double charge = (double)energyDeposit.numElectrons;
+          double x = (double)energyDeposit.x;
+          double y = (double)energyDeposit.y;
+          double z = (double)energyDeposit.z;
+          if(charge == 0) continue;
+          if (fOverlay) {
                 float yzcorrectionData = energyCalibProvider.YZdqdxCorrection(view, y, z);
                 float xcorrectionData  = energyCalibProvider.XdqdxCorrection(view, x);
-                float yzcorrectionMC = GetYZCorrection(y,z,hCorr_YZ_MC[view]); 
+                float yzcorrectionMC = GetYZCorrection(y,z,hCorr_YZ_MC[view]);
                 float xcorrectionMC = GetXCorrection(x, hCorr_X_MC[view]);
                 if (!yzcorrectionData) yzcorrectionData = 1.0;
                 if (!xcorrectionData) xcorrectionData = 1.0;
@@ -509,26 +473,26 @@ namespace detsim {
                 if (!xcorrectionMC) xcorrectionMC = 1.0;
                 double overlayDedicatedCalibration = yzcorrectionMC*xcorrectionMC*fCalAreaConstantsData[view]/(yzcorrectionData*xcorrectionData*fCalAreaConstantsMC[view]);
                 charge = charge*overlayDedicatedCalibration;
-	  }
-	  responseParamsVec[chan].emplace_back(new util::ResponseParams(charge, y, z, raw_digit_index));
-	}
+          }
+          responseParamsVec[chan].emplace_back(new util::ResponseParams(charge, y, z, raw_digit_index));
+        }
       }
     } // channels
 
-    
+
     //--------------------------------------------------------------------
     //
     // Loop over channels, generating pedestal and noise
     // Then loop over channel's energy deposits and convolute appropriate response
     //
     //--------------------------------------------------------------------
-       
+
     // vectors for working in the following for loop
     std::vector<short>    adcvec(fNTimeSamples, 0);
     std::vector<double>   chargeWork(fNTicks,0.);
     std::vector<double>   tempWork(fNTicks,0.);
     std::vector<float>    noisetmp(fNTicks,0.);
-    
+
     int step = 0;
     for(unsigned int chan = 0; chan < N_CHANNELS; chan++) {
 
@@ -539,49 +503,49 @@ namespace detsim {
       std::fill(chargeWork.begin(), chargeWork.end(), 0.);
       std::fill(tempWork.begin(),   tempWork.end(),   0.);
       std::fill(noisetmp.begin(),   noisetmp.end(),   0.);
-      
+
       // make sure chargeWork is correct size
       if (chargeWork.size() < fNTimeSamples)
         throw std::range_error("SimWireMicroBooNE: chargeWork vector too small");
-	
+
       //use channel number to set some useful numbers
       size_t view = (size_t)geo->View(chan);
-           
+
       //Get pedestal with random gaussian variation
-      CLHEP::RandGaussQ rGaussPed(engine, 0.0, pedestalRetrievalAlg.PedRms(chan));
+      CLHEP::RandGaussQ rGaussPed(pedestalEngine_, 0.0, pedestalRetrievalAlg.PedRms(chan));
       float ped_mean = pedestalRetrievalAlg.PedMean(chan) + rGaussPed.fire();
-        
+
       //Generate Noise
       if (fGenNoise) {
-	double noise_factor = 0.0;
-	auto tempNoiseVec = sss->GetNoiseFactVec();
-	double shapingTime = elec_provider.ShapingTime(chan);
-	double asicGain    = elec_provider.Gain(chan);
-	
-	double st_diff = 99999999.9;
-	for (auto iST = fShapingTimeOrder.begin(); iST != fShapingTimeOrder.end(); ++iST) {
-	  if ( fabs(iST->first - shapingTime) < st_diff ) {
-	    st_diff = fabs(iST->first - shapingTime);
-	    noise_factor = tempNoiseVec[view][iST->second];
-	  }
-	}
-	noise_factor *= asicGain/4.7;
+        double noise_factor = 0.0;
+        auto tempNoiseVec = sss->GetNoiseFactVec();
+        double shapingTime = elec_provider.ShapingTime(chan);
+        double asicGain    = elec_provider.Gain(chan);
+
+        double st_diff = 99999999.9;
+        for (auto iST = fShapingTimeOrder.begin(); iST != fShapingTimeOrder.end(); ++iST) {
+          if ( fabs(iST->first - shapingTime) < st_diff ) {
+            st_diff = fabs(iST->first - shapingTime);
+            noise_factor = tempNoiseVec[view][iST->second];
+          }
+        }
+        noise_factor *= asicGain/4.7;
 
         if (fGenNoise==1)
           GenNoiseInTime(noisetmp, noise_factor);
         else if(fGenNoise==2)
           GenNoiseInFreq(noisetmp, noise_factor);
-	else if(fGenNoise==3)
-	  GenNoisePostFilter(noisetmp, noise_factor, view, chan);
-	    
-   
-	//Add Noise to NoiseDist Histogram
-	if(fMakeNoiseDists) {
+        else if(fGenNoise==3)
+          GenNoisePostFilter(noisetmp, noise_factor, view, chan);
+
+
+        //Add Noise to NoiseDist Histogram
+        if(fMakeNoiseDists) {
           for (size_t i=step; i < fNTimeSamples; i+=1000) {
             fNoiseDist[view]->Fill(noisetmp[i]);
           }
-	  ++step;
-	}	
+          ++step;
+        }
       }//end Generate Noise
 
 
@@ -594,26 +558,26 @@ namespace detsim {
         digcol->push_back(std::move(rd));
         continue; //on to next channel
       }
-      
-      
+
+
       //Channel is good, so convolute response onto all charges and fill the chargeWork vector
       sss->Convolute(chan, tempWork, responseParamsVec[chan]);
       for(size_t bin = 0; bin < fNTicks; ++bin) {
         chargeWork[bin] += tempWork[bin];
       }
-      
-      
+
+
       /*for (auto& item : responseParamsVec[chan]) {
         std::fill(tempWork.begin(), tempWork.end(), 0.);
-	auto charge = item->getCharge();
+        auto charge = item->getCharge();
         if(charge==0) continue;
-	auto raw_digit_index = item->getTime();
-	if(raw_digit_index > 0 && raw_digit_index < fNTicks) {
+        auto raw_digit_index = item->getTime();
+        if(raw_digit_index > 0 && raw_digit_index < fNTicks) {
           tempWork.at(raw_digit_index) += charge;
-	}
-	
-	sss->Convolute(chan, tempWork, item->getY(), item->getZ());
-        
+        }
+
+        sss->Convolute(chan, tempWork, item->getY(), item->getZ());
+
         // now add the result into the "charge" vector
         for(size_t bin = 0; bin < fNTicks; ++bin) {
           chargeWork[bin] += tempWork[bin];
@@ -632,10 +596,10 @@ namespace detsim {
       raw::RawDigit rd(chan, fNTimeSamples, adcvec, fCompression);
       rd.SetPedestal(ped_mean);
       digcol->push_back(std::move(rd)); // we do move the raw digit copy, though
-      
+
     }// end of loop over channels
 
- 
+
     evt.put(std::move(digcol));
     return;
   }
@@ -643,23 +607,23 @@ namespace detsim {
 
   //-------------------------------------------------------------------------------
   double SimWireMicroBooNE::GetXCorrection(double x, TH1F *his){
-  
+
       if (!his){
         throw art::Exception(art::errors::Configuration)
           <<"Histogram is empty";
       }
-  
+
       int bin = his->GetXaxis()->FindBin(x);
       if (bin == 0) bin = 1;
       if (bin == his->GetNbinsX()+1) bin = his->GetNbinsX();
-  
+
       if (his->GetBinContent(bin)) return his->GetBinContent(bin);
       else return 1.0;
-  
+
     }
-  
+
   double SimWireMicroBooNE::GetYZCorrection(double y, double z, TH2F *his){
-  
+
     if (!his){
        throw art::Exception(art::errors::Configuration)
        <<"Histogram is empty";
@@ -667,19 +631,19 @@ namespace detsim {
     int biny = his->GetYaxis()->FindBin(y);
     if (biny == 0) biny = 1;
     if (biny == his->GetNbinsY()+1) biny = his->GetNbinsY();
-  
+
     int binz = his->GetXaxis()->FindBin(z);
     if (binz == 0) binz = 1;
     if (binz == his->GetNbinsX()+1) binz = his->GetNbinsX();
-  
+
     double corr = his->GetBinContent(binz, biny);
-  
+
     if (corr) return corr;
     else return 1.0;
   }
 
   //-------------------------------------------------
-  void SimWireMicroBooNE::MakeADCVec(std::vector<short>& adcvec, std::vector<float> const& noisevec, 
+  void SimWireMicroBooNE::MakeADCVec(std::vector<short>& adcvec, std::vector<float> const& noisevec,
                                      std::vector<double> const& chargevec, float ped_mean) const {
 
 
@@ -689,10 +653,10 @@ namespace detsim {
 
       //allow for ADC saturation
       if ( adcval > adcsaturation )
-	adcval = adcsaturation;
+        adcval = adcsaturation;
       //don't allow for "negative" saturation
       if ( adcval < 0 )
-	adcval = 0;
+        adcval = 0;
 
       adcvec[i] = (unsigned short)TMath::Nint(adcval);
 
@@ -708,12 +672,7 @@ namespace detsim {
   //-------------------------------------------------
   void SimWireMicroBooNE::GenNoiseInTime(std::vector<float> &noise, double noise_factor) const
   {
-    //ART random number service
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &engine = rng->getEngine(art::ScheduleID::first(),
-                                                    moduleDescription().moduleLabel(),
-						    "noise");
-    CLHEP::RandGaussQ rGauss(engine, 0.0, noise_factor);
+    CLHEP::RandGaussQ rGauss(noiseEngine_, 0.0, noise_factor);
 
     //In this case noise_factor is a value in ADC counts
     //It is going to be the Noise RMS
@@ -727,11 +686,7 @@ namespace detsim {
   //-------------------------------------------------
   void SimWireMicroBooNE::GenNoiseInFreq(std::vector<float> &noise, double noise_factor) const
   {
-    art::ServiceHandle<art::RandomNumberGenerator> rng;
-    CLHEP::HepRandomEngine &engine = rng->getEngine(art::ScheduleID::first(),
-                                                    moduleDescription().moduleLabel(),
-						    "noise");
-    CLHEP::RandFlat flat(engine,-1,1);
+    CLHEP::RandFlat flat(noiseEngine_,-1,1);
 
     if(noise.size() != fNTicks)
       throw cet::exception("SimWireMicroBooNE")
@@ -761,11 +716,11 @@ namespace detsim {
         // low frequency cutoff
         lofilter = 1.0/(1.0+exp(-(i-fLowCutoff/binWidth)/0.5));
         // randomize 10%
-        
+
         pval *= lofilter*((1-fNoiseRand)+2*fNoiseRand*rnd[0]);
       }
-      
-      
+
+
       else
       {
         // histogram starts in bin 1!
@@ -776,16 +731,16 @@ namespace detsim {
       TComplex tc(pval*cos(phase),pval*sin(phase));
       noiseFrequency.at(i) += tc;
     }
-    
-    
+
+
     // mf::LogInfo("SimWireMicroBooNE") << "filled noise freq";
-    
+
     // inverse FFT MCSignal
     art::ServiceHandle<util::LArFFT> fFFT;
     fFFT->DoInvFFT(noiseFrequency, noise);
-    
+
     noiseFrequency.clear();
-    
+
     // multiply each noise value by fNTicks as the InvFFT
     // divides each bin by fNTicks assuming that a forward FFT
     // has already been done.
@@ -793,21 +748,21 @@ namespace detsim {
     //in fhicl parameter (somewhat arbitrary scaling otherwise)
     //harcode this scaling factor (~20) for now
     for(unsigned int i = 0; i < noise.size(); ++i) noise.at(i) *= 1.*(fNTicks/20.);
-    
+
   }
-  
+
   //---------------------------------------------------------
 
   void SimWireMicroBooNE::GenNoisePostFilter(std::vector<float> &noise, double noise_factor, size_t view, int chan)
   {
-    
+
      //electronics conditions
-    const lariov::ElectronicsCalibProvider& elec_provider 
+    const lariov::ElectronicsCalibProvider& elec_provider
        = art::ServiceHandle<lariov::ElectronicsCalibService>()->GetProvider();
-    
+
     // noise is a vector of size fNTicks, which is the number of ticks
     const size_t waveform_size = noise.size();
-       
+
 
     Double_t ShapingTime = elec_provider.ShapingTime(chan);
 
@@ -843,22 +798,22 @@ namespace detsim {
       fitpar[4] = 2.4;
     }else
       throw cet::exception("SimWireMicroBooNE") << "<<" << __FUNCTION__ << ">> not supported shaping time " << ShapingTime << std::endl;
-    
+
     _pfn_f1->SetParameters(fitpar);
 
     Int_t n = waveform_size;
-    
+
     TVirtualFFT::SetTransform(0);
-    
+
     // seed gamma-distibuted random number with mean params[0]
     // replacing continuous Poisson distribution from ROOT
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
     std::default_random_engine generator(seed);
     std::gamma_distribution<double> distribution(params[0]);
-    
+
     // For every tick...
     for(size_t i=0; i<waveform_size; i++){
-      
+
       Double_t freq;
       if (i < n/2.){
         freq = (i)*2./n; //2 MHz digitization
@@ -867,62 +822,62 @@ namespace detsim {
       }
 
       // Draw gamma-dstributed random number
-      gammaRand = distribution(generator); 
-      
+      gammaRand = distribution(generator);
+
       // Define FFT parameters
       _pfn_rho_v[i] = _pfn_f1->Eval(freq) * gammaRand/params[0];
       Double_t rho = _pfn_rho_v[i];
       Double_t phi = gRandom->Uniform(0,1) * 2. * TMath::Pi();
-      
+
       _pfn_value_re[i] = rho*cos(phi)/((double)waveform_size);
       _pfn_value_im[i] = rho*sin(phi)/((double)waveform_size);
     }
-    
+
     // Inverse FFT
     if(!_pfn_ifft) _pfn_ifft = TVirtualFFT::FFT(1,&n,"C2R M K");
     _pfn_ifft->SetPointsComplex(&_pfn_value_re[0],&_pfn_value_im[0]);
     _pfn_ifft->Transform();
-    
+
     // Produce fit histogram from the FFT fo the real part
     TH1 *fb = 0;
     fb = TH1::TransformHisto(_pfn_ifft,fb,"Re");
-    
-    // Get wire length 
+
+    // Get wire length
     geo::GeometryCore const* geom = lar::providerFrom<geo::Geometry>();
     std::vector<geo::WireID> wireIDs = geom->ChannelToWire(chan);
     geo::WireGeo const& wire = geom->Wire(wireIDs.front());
     double wirelength = wire.HalfL() * 2;
-  
+
     // Calculate RMS -----------------------------------------------------
     // Calculating using the 16th, 50th, and 84th percentiles.
-    // Because the signal is expected to be above the 84th percentile, this 
+    // Because the signal is expected to be above the 84th percentile, this
     // effectively vetos the signal.
-    
+
     Double_t min = fb->GetMinimum();
-    Double_t max = fb->GetMaximum();	 
+    Double_t max = fb->GetMaximum();
     TH1F* h_rms = new TH1F("h_rms", "h_rms", Int_t(10*(max-min+1)), min, max+1);
-    
-    
+
+
     for(size_t i=0; i < waveform_size; ++i){
       h_rms->Fill(fb->GetBinContent(i+1));
     }
-    
+
     double par[3];
     double rms_quantilemethod = 0.0;
     if (h_rms->GetSum()>0){
       double xq = 0.5-0.34;
       h_rms->GetQuantiles(1, &par[0], &xq);
-      
+
       xq = 0.5;
       h_rms->GetQuantiles(1, &par[1], &xq);
-      
+
       xq = 0.5+0.34;
       h_rms->GetQuantiles(1, &par[2], &xq);
-      
+
       rms_quantilemethod = sqrt((pow(par[1]-par[0],2)+pow(par[2]-par[1],2))/2.);
-    
+
     }
-    
+
     // Scaling noise RMS with wire length dependance
     double baseline = 1.17764;
 
@@ -944,5 +899,5 @@ namespace detsim {
     */
     delete fb;
   }
-  
+
 }
