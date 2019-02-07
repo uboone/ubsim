@@ -171,8 +171,8 @@ namespace detsim {
     , _pfn_ifft(nullptr)
     // create a default random engine; obtain the random seed from NuRandomService,
     // unless overridden in configuration with key "Seed" and "SeedPedestal"
-    , noiseEngine_{art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "noise", pset, "Seed")}
-    , pedestalEngine_{art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "pedestal", pset, "SeedPedestal")}
+    , noiseEngine_(art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "noise", pset, "Seed"))
+    , pedestalEngine_(art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "pedestal", pset, "SeedPedestal"))
   {
     fOverlay = false; // default for detsim
 
