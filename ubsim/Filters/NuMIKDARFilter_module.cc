@@ -133,77 +133,62 @@ bool sim::NuMIKDARFilter::filter(art::Event &e)
   std::cout << "Length of 'MCFlux' object in this event = " << parent_h->size() << "." << std::endl;
   std::cout << "Length of 'MCTruth' object in this event = " << neutrino_h->size() << "." << std::endl;
 
-  // loop through neutrino parents.                                                                                                                                                                      
-  size_t parent_ctr = 0;
+  // Loop through the neutrino parents.
+  kaon_parent_from_dump = false;
 
   for (auto& parent : ParentVec){
 
-    // Reset 'kaon_parent_from_dump' to 'false'.                                                                                                                                                         
-    kaon_parent_from_dump = true;
-
     // Continue if the parent is not a kaon and/or it does not decay at the dump.                                                                                                                       
-    if ( parent->fptype != 321 || parent->fvz < 72300 || parent->fvz > 72800 ) {
-      parent_ctr++;
-      kaon_parent_from_dump = false;
-      continue;
+    if ( parent->fptype == 321 && parent->fvz > 72300 && parent->fvz < 72800 ) {
+      kaon_parent_from_dump = true;
+      break;
     }
 
-    size_t neutrino_ctr = 0;
+  }
 
-    // loop through neutrinos themselves.                                                                                                                                                                
-    for (auto& neutrino : NeutrinoVec ) {
+  if ( kaon_parent_from_dump == false ) 
+    return false;
 
-      // Reset 'kdar_energy', 'CCNC_interaction', and 'neutrino_contained' to true.                                                                                  
-      kdar_energy        = true;
-      CCNC_interaction   = true;
-      neutrino_contained = true;
+  // loop through neutrinos themselves.                                                                                                                                                                
+  for (auto& neutrino : NeutrinoVec ) {
 
-      // Continue if the index for 'parent_ctr' and that for 'neutrino_ctr' are not the same.                                                                                                           
-      if ( parent_ctr != neutrino_ctr ) {
-        neutrino_ctr++;
-        continue;
-      }
+    // Reset 'kdar_energy', 'CCNC_interaction', and 'neutrino_contained' to true.                                                                                  
+    kdar_energy        = true;
+    CCNC_interaction   = true;
+    neutrino_contained = true;
 
-      // Unpack the neutrino object to find an MCParticle.                                                                                                                                              
-      const simb::MCNeutrino& truth_neutrino = neutrino->GetNeutrino();
-      const simb::MCParticle& truth_particle = truth_neutrino.Nu();
+    // Unpack the neutrino object to find an MCParticle.                                                                                                                                              
+    const simb::MCNeutrino& truth_neutrino = neutrino->GetNeutrino();
+    const simb::MCParticle& truth_particle = truth_neutrino.Nu();
 
-      // Unpack the coordinates for the vertex as well.                                                                                                                                                 
-      nu_vtx_x_truth               = truth_particle.Vx(0);
-      nu_vtx_y_truth               = truth_particle.Vy(0);
-      nu_vtx_z_truth               = truth_particle.Vz(0);
+    // Unpack the coordinates for the vertex as well.                                                                                                                                                 
+    nu_vtx_x_truth               = truth_particle.Vx(0);
+    nu_vtx_y_truth               = truth_particle.Vy(0);
+    nu_vtx_z_truth               = truth_particle.Vz(0);
 
-      // Only look at those events which decay via the charged current channel.                                                                                                                         
-      if ( truth_neutrino.CCNC() != 0 )
-        CCNC_interaction = false;
-
-      // Continue if the particle's energy is outside of the correct peak.                                                                                                                               
-      if ( truth_particle.E(0) < 0.2355 || truth_particle.E(0) > 0.2356 ) {
-        kdar_energy = false;
-      }
-
-      // Check to see if the neutrino vertex is contained.                                                                                                                                              
-      if ( nu_vtx_x_truth < 0.0 || nu_vtx_x_truth > 256.4 || nu_vtx_y_truth < -116.5 || nu_vtx_y_truth > 116.5 || nu_vtx_z_truth < 0.0 || nu_vtx_z_truth > 1036.8 ) {
-        neutrino_contained = false;
-      }
-
-      // Return 'true' if all of the conditions are met.
-      if ( kaon_parent_from_dump && kdar_energy && CCNC_interaction && neutrino_contained ) {
-	std::cout << "Hurray! We found an event with a KDAR neutrino." << std::endl;
-	return true;
-      }
-
-      // Increment 'neutrino_ctr' and close the loop.                                                                                                                                                   
-      neutrino_ctr++;
-
+    // Only look at those events which decay via the charged current channel.                                                                                                                         
+    if ( truth_neutrino.CCNC() != 0 )
+      CCNC_interaction = false;
+    
+    // Continue if the particle's energy is outside of the correct peak.                                                                                                                               
+    if ( truth_particle.E(0) < 0.2355 || truth_particle.E(0) > 0.2356 ) {
+      kdar_energy = false;
     }
 
-    // Increment 'parent_ctr' and close the loop.                                                                                                                                                      
-    parent_ctr++;
+    // Check to see if the neutrino vertex is contained.                                                                                                                                              
+    if ( nu_vtx_x_truth < 0.0 || nu_vtx_x_truth > 256.4 || nu_vtx_y_truth < -116.5 || nu_vtx_y_truth > 116.5 || nu_vtx_z_truth < 0.0 || nu_vtx_z_truth > 1036.8 ) {
+      neutrino_contained = false;
+    }
 
-  }// End of the loop over the parent particles.                                                                                                                                                    
+    // Return 'true' if all of the conditions are met.
+    if ( kdar_energy && CCNC_interaction && neutrino_contained ) {
+      std::cout << "Hurray! We found an event with a KDAR neutrino." << std::endl;
+      return true;
+    }
 
-  // Return true otherwise.
+  } // End of the loop over the neutrino candidates in the event.
+
+  // Return false otherwise - the conditions in the neutrino loop were not met.
   return false;
 
 }
