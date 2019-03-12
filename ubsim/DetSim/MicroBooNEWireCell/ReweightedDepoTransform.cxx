@@ -70,12 +70,12 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
 			      << " so we're setting correction scale to " << scale_corr << std::endl;
 		}
 		
-		if(std::isnan(scale_corr)){
+		if(std::isnan(scale_corr) || std::isinf(scale_corr)){
 		    std::cout << "WARNING! for xbin " << xbin 
 			      << " and ybin " << ybin
 			      << " we had scaleMC=" << scaleMC 
 			      << " and scaleDATA=" << scaleDATA
-			      << " and somehow scale ratio was still a nan so setting to 1.0" << std::endl;
+			      << " and somehow scale ratio was still a nan/inf so setting to 1.0" << std::endl;
 		    scale_corr = 1.0;
 		}
 		    
@@ -125,7 +125,7 @@ IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDep
     double scale = m_hists[wpid.index()]->GetBinContent(zbin, ybin);
 
     //added by Wes to just make sure we don't do insane scaling...
-    if(scale<0.0001 || scale>1000. || std::isnan(scale)){
+    if(scale<0.0001 || scale>1000. || std::isnan(scale) || std::isinf(scale) ){
 
 	std::cout << "WARNING! Found crazy scale " << scale 
 		  << " in modify_depo for pos (y,z) " 
