@@ -52,7 +52,34 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
                 double ycenter = m_hists[iplane]->GetYaxis()->GetBinCenter(ybin); // cm
                 double scaleMC = m_hists[iplane]->GetBinContent(xbin, ybin);
                 double scaleDATA = energyCalibProvider.YZdqdxCorrection(iplane, ycenter, zcenter);
-                m_hists[iplane]->SetBinContent(xbin, ybin, scaleMC/scaleDATA);
+
+		//Wes, 11 March 2019
+		//adding some protection in the case that scaleMC or scaleDATA are unreasonable ranges
+		//Saying reasonable is <0.0001 or >1000
+		//In either case, set the ratio to 1.
+
+		double scale_corr = 1.0;
+		if(scaleMC>0.0001 && scaleMC<1000. && scaleDATA>0.0001 && scaleDATA<1000.)
+		    scale_corr = scaleDATA/scaleMC;
+		else {
+		    std::cout << "WARNING! for xbin " << xbin 
+			      << " and ybin " << ybin
+			      << " we had scaleMC=" << scaleMC 
+			      << " and scaleDATA=" << scaleDATA
+			      << " so we're setting correction scale to " << scale_corr << std::endl;
+		}
+		
+		if(std::isnan(scale_corr)){
+		    std::cout << "WARNING! for xbin " << xbin 
+			      << " and ybin " << ybin
+			      << " we had scaleMC=" << scaleMC 
+			      << " and scaleDATA=" << scaleDATA
+			      << " and somehow scale ratio was still a nan so setting to 1.0" << std::endl;
+		    scale_corr = 1.0;
+		}
+		    
+
+                m_hists[iplane]->SetBinContent(xbin, ybin, scale_corr);
             }
         }
     }
