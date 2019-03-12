@@ -18,6 +18,7 @@
 #include "WireCellIface/SimpleDepo.h"
 
 #include <memory>
+#include <math.h>
 
 WIRECELL_FACTORY(wclsReweightedDepoTransform, wcls::ReweightedDepoTransform,
 		 wcls::IArtEventVisitor, WireCell::IDepoFramer)
@@ -122,6 +123,16 @@ IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDep
     Int_t ybin = m_hists[wpid.index()]->GetYaxis()->FindBin(pos.y()/units::cm);
     Int_t zbin = m_hists[wpid.index()]->GetXaxis()->FindBin(pos.z()/units::cm);
     double scale = m_hists[wpid.index()]->GetBinContent(zbin, ybin);
+
+    //added by Wes to just make sure we don't do insane scaling...
+    if(scale<0.0001 || scale>1000. || std::isnan(scale)){
+
+	std::cout << "WARNING! Found crazy scale " << scale 
+		  << " in modify_depo for pos (y,z) " 
+		  << pos.y()/units::cm << "," << pos.z()/units::cm << ")"
+		  << " --> Setting it to 1.0" << std::endl;
+	scale=1.;
+    }
 
     auto newdepo = std::make_shared<SimpleDepo>(depo->time(), pos, depo->charge()*scale, 
             depo, depo->extent_long(), depo->extent_tran());
