@@ -28,6 +28,7 @@ using namespace WireCell;
 
 wcls::ReweightedDepoTransform::ReweightedDepoTransform()
     : DepoTransform()
+    , m_scale_perplane{1.0, 1.0, 1.0}
 {
 }
 
@@ -84,6 +85,8 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
             }
         }
     }
+
+    /// m_scale_perplane[iplane] can be used
 }
 
 
@@ -116,6 +119,18 @@ void wcls::ReweightedDepoTransform::configure(const WireCell::Configuration& cfg
         }
         m_hists.push_back(h);
     }
+   
+    auto scale_planes = cfg["scale_perplane"]; 
+    if (scale_planes.empty()){
+        std::cout << "wclsReweightedDepoTransform: per plane scaling factors not found and default (1.0) will be used!\n";
+    }
+    else{
+        m_scale_perplane.clear();
+        for (auto scale_perplane : scale_planes) {
+            m_scale_perplane.push_back(scale_perplane.asDouble());
+        }
+    }
+    //std::cout << "Plane scale: "<< m_scale_perplane[0] << " " << m_scale_perplane[1] << " " << m_scale_perplane[2] << std::endl;
 }
 
 IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDepo::pointer depo){
