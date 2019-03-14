@@ -28,7 +28,8 @@ using namespace WireCell;
 
 wcls::ReweightedDepoTransform::ReweightedDepoTransform()
     : DepoTransform()
-    , m_scale_perplane{1.0, 1.0, 1.0}
+    , m_scaleDATA_perplane{1.0, 1.0, 1.0}
+    , m_scaleMC_perplane{1.0, 1.0, 1.0}
 {
 }
 
@@ -86,7 +87,8 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
         }
     }
 
-    /// m_scale_perplane[iplane] can be used
+    /// m_scaleDATA_perplane[iplane] can be used
+    /// m_scaleMC_perplane[iplane] can be used
 }
 
 
@@ -120,17 +122,30 @@ void wcls::ReweightedDepoTransform::configure(const WireCell::Configuration& cfg
         m_hists.push_back(h);
     }
    
-    auto scale_planes = cfg["scale_perplane"]; 
-    if (scale_planes.empty()){
-        std::cout << "wclsReweightedDepoTransform: per plane scaling factors not found and default (1.0) will be used!\n";
+    auto scaleDATA_planes = cfg["scaleDATA_perplane"]; 
+    if (scaleDATA_planes.empty()){
+        std::cout << "wclsReweightedDepoTransform: DATA per plane scaling factors not found and default (1.0) will be used!\n";
     }
     else{
-        m_scale_perplane.clear();
-        for (auto scale_perplane : scale_planes) {
-            m_scale_perplane.push_back(scale_perplane.asDouble());
+        m_scaleDATA_perplane.clear();
+        for (auto scale_perplane : scaleDATA_planes) {
+            m_scaleDATA_perplane.push_back(scale_perplane.asDouble());
         }
     }
-    std::cout << "Plane scale: "<< m_scale_perplane[0] << " " << m_scale_perplane[1] << " " << m_scale_perplane[2] << std::endl;
+    std::cout << "DATA scaling per plane: "<< m_scaleDATA_perplane[0] << " " << m_scaleDATA_perplane[1] << " " << m_scaleDATA_perplane[2] << std::endl;
+
+    auto scaleMC_planes = cfg["scaleMC_perplane"]; 
+    if (scaleMC_planes.empty()){
+        std::cout << "wclsReweightedDepoTransform: MC per plane scaling factors not found and default (1.0) will be used!\n";
+    }
+    else{
+        m_scaleMC_perplane.clear();
+        for (auto scale_perplane : scaleMC_planes) {
+            m_scaleMC_perplane.push_back(scale_perplane.asDouble());
+        }
+    }
+    std::cout << "MC scaling per plane: "<< m_scaleMC_perplane[0] << " " << m_scaleMC_perplane[1] << " " << m_scaleMC_perplane[2] << std::endl;
+
 }
 
 IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDepo::pointer depo){
