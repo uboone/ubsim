@@ -2,11 +2,7 @@
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version must be of the form vxx_yy_zz (e.g. v01_02_03)
-<<<<<<< HEAD
-parent ubsim v08_12_00
-=======
 parent ubsim v08_00_00_08
->>>>>>> 100d66f74caa4eecb4cb1dc9c08baa25570ccc0c
 
 defaultqual e17
 
@@ -33,14 +29,9 @@ table_fragment_end
 # Add the dependent product and version
 
 product                 version
-<<<<<<< HEAD
-ubevt                   v08_12_00
-larsim                  v08_03_05
-=======
 ubevt                   v08_00_00_08
 larsim                  v08_02_00_03
 larwirecell             v08_02_00_04
->>>>>>> 100d66f74caa4eecb4cb1dc9c08baa25570ccc0c
 cetbuildtools	        v7_11_00	-	only_for_build
 end_product_list
 
