@@ -56,6 +56,21 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
                 double scaleMC = m_hists[iplane]->GetBinContent(xbin, ybin);
                 double scaleDATA = energyCalibProvider.YZdqdxCorrection(iplane, ycenter, zcenter);
 
+
+		//we want a scale to apply to compensate for differnces in relative scale of data and MC adc
+		//this is a scale to make the mc look more like data
+		//would multiply this by an MC scale
+		//these are adc/electron, from stopping muon calibration
+		//(from fcl, CalAreaConstants per plane)
+		double scale_gain_mc2data = m_scaleMC_perplane[iplane]/m_scaleDATA_perplane[iplane];
+		if(std::isnan(scale_gain_mc2data) || std::isinf(scale_gain_mc2data) || 
+		   scale_gain_mc2data<0.0001 || scale_gain_mc2data>1000.){
+		    std::cout << "WARNING! mc2data GAIN SCALE OUT OF RANGE! " << scale_gain_mc2data 
+			      << " ... setting to 1.0" << std::endl;
+		    scale_gain_mc2data = 1.0;
+		}
+		//std::cout << "Using ... scale_gain_mc2data = " << scale_gain_mc2data << std::endl;
+
 		//Wes, 11 March 2019
 		//adding some protection in the case that scaleMC or scaleDATA are unreasonable ranges
 		//Saying reasonable is <0.0001 or >1000
@@ -63,7 +78,7 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
 
 		double scale_corr = 1.0;
 		if(scaleMC>0.0001 && scaleMC<1000. && scaleDATA>0.0001 && scaleDATA<1000.)
-		    scale_corr = scaleDATA/scaleMC;
+		    scale_corr = scaleMC/scaleDATA;
 		else {
 		    std::cout << "WARNING! for xbin " << xbin 
 			      << " and ybin " << ybin
@@ -81,8 +96,10 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
 		    scale_corr = 1.0;
 		}
 		    
-
-                m_hists[iplane]->SetBinContent(xbin, ybin, scale_corr);
+		//divide by the mc2data scale, since it would be multiplied in denominator of scale_corr
+                m_hists[iplane]->SetBinContent(xbin, ybin, scale_corr/scale_gain_mc2data);
+		//std::cout << "final scale appled was " << scale_corr << "/" << scale_gain_mc2data << "="
+		//	  << scale_corr/scale_gain_mc2data << std::endl;
             }
         }
     }
