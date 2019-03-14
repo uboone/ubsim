@@ -130,7 +130,7 @@ void wcls::ReweightedDepoTransform::configure(const WireCell::Configuration& cfg
             m_scale_perplane.push_back(scale_perplane.asDouble());
         }
     }
-    //std::cout << "Plane scale: "<< m_scale_perplane[0] << " " << m_scale_perplane[1] << " " << m_scale_perplane[2] << std::endl;
+    std::cout << "Plane scale: "<< m_scale_perplane[0] << " " << m_scale_perplane[1] << " " << m_scale_perplane[2] << std::endl;
 }
 
 IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDepo::pointer depo){
