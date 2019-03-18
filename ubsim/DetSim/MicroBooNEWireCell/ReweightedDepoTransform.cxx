@@ -18,6 +18,7 @@
 #include "WireCellIface/SimpleDepo.h"
 
 #include <memory>
+#include <math.h>
 
 WIRECELL_FACTORY(wclsReweightedDepoTransform, wcls::ReweightedDepoTransform,
 		 wcls::IArtEventVisitor, WireCell::IDepoFramer)
@@ -27,6 +28,8 @@ using namespace WireCell;
 
 wcls::ReweightedDepoTransform::ReweightedDepoTransform()
     : DepoTransform()
+    , m_scaleDATA_perplane{1.0, 1.0, 1.0}
+    , m_scaleMC_perplane{1.0, 1.0, 1.0}
 {
 }
 
@@ -52,10 +55,57 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
                 double ycenter = m_hists[iplane]->GetYaxis()->GetBinCenter(ybin); // cm
                 double scaleMC = m_hists[iplane]->GetBinContent(xbin, ybin);
                 double scaleDATA = energyCalibProvider.YZdqdxCorrection(iplane, ycenter, zcenter);
-                m_hists[iplane]->SetBinContent(xbin, ybin, scaleMC/scaleDATA);
+
+
+		//we want a scale to apply to compensate for differnces in relative scale of data and MC adc
+		//this is a scale to make the mc look more like data
+		//would multiply this by an MC scale
+		//these are adc/electron, from stopping muon calibration
+		//(from fcl, CalAreaConstants per plane)
+		double scale_gain_mc2data = m_scaleMC_perplane[iplane]/m_scaleDATA_perplane[iplane];
+		if(std::isnan(scale_gain_mc2data) || std::isinf(scale_gain_mc2data) || 
+		   scale_gain_mc2data<0.0001 || scale_gain_mc2data>1000.){
+		    std::cout << "WARNING! mc2data GAIN SCALE OUT OF RANGE! " << scale_gain_mc2data 
+			      << " ... setting to 1.0" << std::endl;
+		    scale_gain_mc2data = 1.0;
+		}
+		//std::cout << "Using ... scale_gain_mc2data = " << scale_gain_mc2data << std::endl;
+
+		//Wes, 11 March 2019
+		//adding some protection in the case that scaleMC or scaleDATA are unreasonable ranges
+		//Saying reasonable is <0.0001 or >1000
+		//In either case, set the ratio to 1.
+
+		double scale_corr = 1.0;
+		if(scaleMC>0.0001 && scaleMC<1000. && scaleDATA>0.0001 && scaleDATA<1000.)
+		    scale_corr = scaleMC/scaleDATA;
+		else {
+		    std::cout << "WARNING! for xbin " << xbin 
+			      << " and ybin " << ybin
+			      << " we had scaleMC=" << scaleMC 
+			      << " and scaleDATA=" << scaleDATA
+			      << " so we're setting correction scale to " << scale_corr << std::endl;
+		}
+		
+		if(std::isnan(scale_corr) || std::isinf(scale_corr)){
+		    std::cout << "WARNING! for xbin " << xbin 
+			      << " and ybin " << ybin
+			      << " we had scaleMC=" << scaleMC 
+			      << " and scaleDATA=" << scaleDATA
+			      << " and somehow scale ratio was still a nan/inf so setting to 1.0" << std::endl;
+		    scale_corr = 1.0;
+		}
+		    
+		//divide by the mc2data scale, since it would be multiplied in denominator of scale_corr
+                m_hists[iplane]->SetBinContent(xbin, ybin, scale_corr/scale_gain_mc2data);
+		//std::cout << "final scale appled was " << scale_corr << "/" << scale_gain_mc2data << "="
+		//	  << scale_corr/scale_gain_mc2data << std::endl;
             }
         }
     }
+
+    /// m_scaleDATA_perplane[iplane] can be used
+    /// m_scaleMC_perplane[iplane] can be used
 }
 
 
@@ -88,6 +138,31 @@ void wcls::ReweightedDepoTransform::configure(const WireCell::Configuration& cfg
         }
         m_hists.push_back(h);
     }
+   
+    auto scaleDATA_planes = cfg["scaleDATA_perplane"]; 
+    if (scaleDATA_planes.empty()){
+        std::cout << "wclsReweightedDepoTransform: DATA per plane scaling factors not found and default (1.0) will be used!\n";
+    }
+    else{
+        m_scaleDATA_perplane.clear();
+        for (auto scale_perplane : scaleDATA_planes) {
+            m_scaleDATA_perplane.push_back(scale_perplane.asDouble());
+        }
+    }
+    std::cout << "DATA scaling per plane: "<< m_scaleDATA_perplane[0] << " " << m_scaleDATA_perplane[1] << " " << m_scaleDATA_perplane[2] << std::endl;
+
+    auto scaleMC_planes = cfg["scaleMC_perplane"]; 
+    if (scaleMC_planes.empty()){
+        std::cout << "wclsReweightedDepoTransform: MC per plane scaling factors not found and default (1.0) will be used!\n";
+    }
+    else{
+        m_scaleMC_perplane.clear();
+        for (auto scale_perplane : scaleMC_planes) {
+            m_scaleMC_perplane.push_back(scale_perplane.asDouble());
+        }
+    }
+    std::cout << "MC scaling per plane: "<< m_scaleMC_perplane[0] << " " << m_scaleMC_perplane[1] << " " << m_scaleMC_perplane[2] << std::endl;
+
 }
 
 IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDepo::pointer depo){
@@ -95,6 +170,16 @@ IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDep
     Int_t ybin = m_hists[wpid.index()]->GetYaxis()->FindBin(pos.y()/units::cm);
     Int_t zbin = m_hists[wpid.index()]->GetXaxis()->FindBin(pos.z()/units::cm);
     double scale = m_hists[wpid.index()]->GetBinContent(zbin, ybin);
+
+    //added by Wes to just make sure we don't do insane scaling...
+    if(scale<0.0001 || scale>1000. || std::isnan(scale) || std::isinf(scale) ){
+
+	std::cout << "WARNING! Found crazy scale " << scale 
+		  << " in modify_depo for pos (y,z) " 
+		  << pos.y()/units::cm << "," << pos.z()/units::cm << ")"
+		  << " --> Setting it to 1.0" << std::endl;
+	scale=1.;
+    }
 
     auto newdepo = std::make_shared<SimpleDepo>(depo->time(), pos, depo->charge()*scale, 
             depo, depo->extent_long(), depo->extent_tran());

@@ -40,6 +40,9 @@ namespace wcls {
     std::vector<std::string> m_histnames;
     
     std::vector<TH2F*> m_hists;
+
+    std::vector<double> m_scaleDATA_perplane;
+    std::vector<double> m_scaleMC_perplane;
     };
 
 }  // wcls
