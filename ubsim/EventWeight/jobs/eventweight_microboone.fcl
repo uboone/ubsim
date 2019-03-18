@@ -4,6 +4,7 @@ BEGIN_PROLOG
 #include "eventweight_microboone_genie.fcl"
 #include "eventweight_microboone_xs.fcl"
 #include "eventweight_microboone_reint.fcl"
+#include "eventweight_microboone_lee.fcl"
 
 microboone_eventweight: {
   module_type: "EventWeight"
@@ -28,6 +29,21 @@ microboone_eventweight.weight_functions: [
   @sequence::microboone_eventweight.weight_functions_xs,
   @sequence::microboone_eventweight.weight_functions_reint
 ]
- 
+
+#event weighting for LEE
+microboone_eventweight_LEE: {
+  module_type: "EventWeight"
+
+  min_weight: -0.001
+  max_weight: 100
+
+  genie_module_label: "generator"
+  @table::microboone_eventweight_eLEE
+
+}
+
+#just the eLEE weight function
+microboone_eventweight_LEE.weight_functions: [ eLEE_Combined_Oct2018 ]
+
 END_PROLOG
 
