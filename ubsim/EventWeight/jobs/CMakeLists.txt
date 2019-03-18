@@ -6,5 +6,5 @@ add_subdirectory(flux)
 add_subdirectory(genie)
 add_subdirectory(xs)
 add_subdirectory(reint)
-add_subdirectory(lee)
+add_subdirectory(lee_weights)
 
