@@ -77,8 +77,10 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
 		//In either case, set the ratio to 1.
 
 		double scale_corr = 1.0;
-		if(scaleMC>0.0001 && scaleMC<1000. && scaleDATA>0.0001 && scaleDATA<1000.)
-		    scale_corr = scaleMC/scaleDATA;
+		if(scaleMC>0.0001 && scaleMC<1000. && scaleDATA>0.0001 && scaleDATA<1000.){
+		    //scale_corr = scaleMC/scaleDATA;
+		    scale_corr = scaleDATA/scaleMC;
+		}
 		else {
 		    std::cout << "WARNING! for xbin " << xbin 
 			      << " and ybin " << ybin
@@ -95,6 +97,8 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
 			      << " and somehow scale ratio was still a nan/inf so setting to 1.0" << std::endl;
 		    scale_corr = 1.0;
 		}
+		    
+		scale_gain_mc2data = 1.0;
 		    
 		//divide by the mc2data scale, since it would be multiplied in denominator of scale_corr
                 m_hists[iplane]->SetBinContent(xbin, ybin, scale_corr/scale_gain_mc2data);
