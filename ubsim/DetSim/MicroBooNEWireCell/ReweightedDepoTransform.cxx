@@ -78,8 +78,8 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
 
 		double scale_corr = 1.0;
 		if(scaleMC>0.0001 && scaleMC<1000. && scaleDATA>0.0001 && scaleDATA<1000.){
-		    //scale_corr = scaleMC/scaleDATA;
-		    scale_corr = scaleDATA/scaleMC;
+		    scale_corr = scaleMC/scaleDATA;
+		    //scale_corr = scaleDATA/scaleMC;
 		}
 		else {
 		    std::cout << "WARNING! for xbin " << xbin 
@@ -98,12 +98,24 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
 		    scale_corr = 1.0;
 		}
 		    
-		scale_gain_mc2data = 1.0;
-		    
+		//scale_gain_mc2data = 1.0;
+		scale_corr = 1.0;
+  
 		//divide by the mc2data scale, since it would be multiplied in denominator of scale_corr
                 m_hists[iplane]->SetBinContent(xbin, ybin, scale_corr/scale_gain_mc2data);
 		//std::cout << "final scale appled was " << scale_corr << "/" << scale_gain_mc2data << "="
 		//	  << scale_corr/scale_gain_mc2data << std::endl;
+
+
+		/*
+		std::cout << iplane << " " << xbin << " " << ybin << " " << zcenter << " " << ycenter << " "
+			  << m_scaleMC_perplane[iplane] << " " << m_scaleDATA_perplane[iplane] << " "
+			  << scale_gain_mc2data << " "
+			  << scaleMC << " " << scaleDATA << " " << scale_corr << " " << 1./scale_corr << " "
+			  << scale_corr/scale_gain_mc2data << " "
+			  << m_hists[iplane]->GetBinContent(xbin,ybin) << std::endl;
+		*/
+
             }
         }
     }
@@ -175,6 +187,14 @@ IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDep
     Int_t zbin = m_hists[wpid.index()]->GetXaxis()->FindBin(pos.z()/units::cm);
     double scale = m_hists[wpid.index()]->GetBinContent(zbin, ybin);
 
+    /*
+    std::cout << "Edep scaling: " << depo->charge() << " at (" 
+	      << pos.x()/units::cm << "," << pos.y()/units::cm << "," << pos.z()/units::cm << ") "
+	      << "ybin=" << ybin << " zbin=" << zbin 
+	      << "wpid=" << wpid.index() << " scale=" << scale
+	      << " final_charge=" << depo->charge()*scale << std::endl;
+    */
+
     //added by Wes to just make sure we don't do insane scaling...
     if(scale<0.0001 || scale>1000. || std::isnan(scale) || std::isinf(scale) ){
 
@@ -184,6 +204,9 @@ IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDep
 		  << " --> Setting it to 1.0" << std::endl;
 	scale=1.;
     }
+
+
+
 
     auto newdepo = std::make_shared<SimpleDepo>(depo->time(), pos, depo->charge()*scale, 
             depo, depo->extent_long(), depo->extent_tran());
