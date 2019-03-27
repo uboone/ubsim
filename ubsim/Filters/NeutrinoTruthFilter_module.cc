@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////
-// Class:       NeutrinoFilter
+// Class:       NeutrinoTruthFilter
 // Plugin Type: filter (art v3_01_01)
-// File:        NeutrinoFilter_module.cc
+// File:        NeutrinoTruthFilter_module.cc
 //
 // Generated at Mon Feb 25 09:55:32 2019 by Wesley Ketchum using cetskelgen
 // from cetlib version v3_05_01.
@@ -30,21 +30,21 @@
 #include "nusimdata/SimulationBase/MCTruth.h"
 
 namespace sim {
-  class NeutrinoFilter;
+  class NeutrinoTruthFilter;
 }
 
 
-class sim::NeutrinoFilter : public art::EDFilter {
+class sim::NeutrinoTruthFilter : public art::EDFilter {
 public:
-  explicit NeutrinoFilter(fhicl::ParameterSet const& p);
+  explicit NeutrinoTruthFilter(fhicl::ParameterSet const& p);
   // The compiler-generated destructor is fine for non-base
   // classes without bare pointers or other resource use.
 
   // Plugins should not be copied or assigned.
-  NeutrinoFilter(NeutrinoFilter const&) = delete;
-  NeutrinoFilter(NeutrinoFilter&&) = delete;
-  NeutrinoFilter& operator=(NeutrinoFilter const&) = delete;
-  NeutrinoFilter& operator=(NeutrinoFilter&&) = delete;
+  NeutrinoTruthFilter(NeutrinoTruthFilter const&) = delete;
+  NeutrinoTruthFilter(NeutrinoTruthFilter&&) = delete;
+  NeutrinoTruthFilter& operator=(NeutrinoTruthFilter const&) = delete;
+  NeutrinoTruthFilter& operator=(NeutrinoTruthFilter&&) = delete;
 
   // Required functions.
   bool filter(art::Event& e) override;
@@ -61,14 +61,14 @@ private:
 };
 
 
-sim::NeutrinoFilter::NeutrinoFilter(fhicl::ParameterSet const& p)
+sim::NeutrinoTruthFilter::NeutrinoTruthFilter(fhicl::ParameterSet const& p)
   : EDFilter{p}  // ,
   // More initializers here.
 {
   reconfigure(p);
 }
 
-bool sim::NeutrinoFilter::filter(art::Event& e)
+bool sim::NeutrinoTruthFilter::filter(art::Event& e)
 {
 
   // Get MCTruths in the event ...
@@ -95,11 +95,11 @@ bool sim::NeutrinoFilter::filter(art::Event& e)
 
 }
 
-void sim::NeutrinoFilter::reconfigure(fhicl::ParameterSet const& p)
+void sim::NeutrinoTruthFilter::reconfigure(fhicl::ParameterSet const& p)
 {
   fMCTruthLabel = p.get<art::InputTag>("MCTruthLabel");
   fEMin = p.get<float>("EMin");
   fEMax = p.get<float>("EMax");
 }
 
-DEFINE_ART_MODULE(sim::NeutrinoFilter)
+DEFINE_ART_MODULE(sim::NeutrinoTruthFilter)
