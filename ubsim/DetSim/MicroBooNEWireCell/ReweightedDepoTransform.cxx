@@ -48,12 +48,12 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
     /// energyCalibProvider.YZdqdxCorrection(view, y, z); 
     //view: plane 0, 1, 2
     //y, z: yz positions in units of cm
-    for(Int_t xbin=1; xbin <=m_hists[0]->GetNbinsX(); xbin++){
-        for(Int_t ybin=1; ybin <=m_hists[0]->GetNbinsY(); ybin++){
-            for(size_t iplane=0; iplane<m_hists.size(); iplane++){
-                double zcenter = m_hists[iplane]->GetXaxis()->GetBinCenter(xbin); // cm
-                double ycenter = m_hists[iplane]->GetYaxis()->GetBinCenter(ybin); // cm
-                double scaleMC = m_hists[iplane]->GetBinContent(xbin, ybin);
+    for(Int_t xbin=1; xbin <=m_hists_orig[0]->GetNbinsX(); xbin++){
+        for(Int_t ybin=1; ybin <=m_hists_orig[0]->GetNbinsY(); ybin++){
+            for(size_t iplane=0; iplane<m_hists_orig.size(); iplane++){
+                double zcenter = m_hists_orig[iplane]->GetXaxis()->GetBinCenter(xbin); // cm
+                double ycenter = m_hists_orig[iplane]->GetYaxis()->GetBinCenter(ybin); // cm
+                double scaleMC = m_hists_orig[iplane]->GetBinContent(xbin, ybin);
                 double scaleDATA = energyCalibProvider.YZdqdxCorrection(iplane, ycenter, zcenter);
 
 
@@ -99,7 +99,7 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
 		}
 		    
 		//scale_gain_mc2data = 1.0;
-		scale_corr = 1.0;
+		//scale_corr = 1.0;
   
 		//divide by the mc2data scale, since it would be multiplied in denominator of scale_corr
                 m_hists[iplane]->SetBinContent(xbin, ybin, scale_corr/scale_gain_mc2data);
@@ -120,6 +120,7 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
         }
     }
 
+    std::cout << " ONE FINAL TEST : " <<  m_hists[0]->GetBinContent(1,4) << std::endl; 
     /// m_scaleDATA_perplane[iplane] can be used
     /// m_scaleMC_perplane[iplane] can be used
 }
@@ -149,10 +150,12 @@ void wcls::ReweightedDepoTransform::configure(const WireCell::Configuration& cfg
     for(size_t i=0; i<m_histnames.size(); i++)
     {
         TH2F* h = (TH2F*)f->Get(m_histnames.at(i).c_str());
+	TH2F* h1 = (TH2F*)h->Clone("h1");
         if (!h){
             THROW(IOError() << errmsg{"Cannot find hist: " + m_histnames.at(i)});
         }
-        m_hists.push_back(h);
+        m_hists_orig.push_back(h);
+        m_hists.push_back(h1);
     }
    
     auto scaleDATA_planes = cfg["scaleDATA_perplane"]; 
