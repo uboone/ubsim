@@ -1,7 +1,7 @@
 #include <iostream>
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
-#include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art_root_io/TFileDirectory.h"
 #include "art/Persistency/Provenance/ModuleContext.h"
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
