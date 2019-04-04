@@ -120,7 +120,6 @@ void wcls::ReweightedDepoTransform::visit(art::Event & event)
         }
     }
 
-    std::cout << " ONE FINAL TEST : " <<  m_hists[0]->GetBinContent(1,4) << std::endl; 
     /// m_scaleDATA_perplane[iplane] can be used
     /// m_scaleMC_perplane[iplane] can be used
 }
