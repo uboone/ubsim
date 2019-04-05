@@ -83,6 +83,7 @@ namespace opdet {
   /// ------------------------------------------------------------------------------------
   /// Constructor
   FakePhotons::FakePhotons(fhicl::ParameterSet const& parameterSet)
+  : EDProducer(parameterSet)
   {
     this->reconfigure(parameterSet);
     produces<std::vector<sim::SimPhotons> >();

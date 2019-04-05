@@ -138,6 +138,7 @@ namespace opdet {
   //###############################################################
 
   UBFlasherMC::UBFlasherMC(fhicl::ParameterSet const& pset)
+  : EDProducer(pset)
   {
 
     if(pset.get<bool>("EnableSpread")) fOpticalGen.EnableSpread(true);

@@ -96,6 +96,7 @@ namespace opdet {
   /// ------------------------------------------------------------------------------------
   /// Constructor
   OpticalDRAMReadout::OpticalDRAMReadout(fhicl::ParameterSet const& parameterSet)
+  : EDProducer(parameterSet)
   {
 
     // Read in the parameters from the .fcl file.

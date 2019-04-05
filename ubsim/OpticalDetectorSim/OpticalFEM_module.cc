@@ -119,6 +119,7 @@ namespace opdet {
 namespace opdet {
   
   OpticalFEM::OpticalFEM(fhicl::ParameterSet const& parameterSet)
+  : EDProducer(parameterSet)
   {
     // Describe the data products we can write.
     produces< std::vector< optdata::FIFOChannel > >();

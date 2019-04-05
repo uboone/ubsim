@@ -138,7 +138,7 @@ void ExecuteCompression::endJob()
 
 
 ExecuteCompression::ExecuteCompression(fhicl::ParameterSet const & p)
-  : _compress_algo(nullptr)
+  : EDProducer(p), _compress_algo(nullptr)
     // Initialize member data here.
 {
   

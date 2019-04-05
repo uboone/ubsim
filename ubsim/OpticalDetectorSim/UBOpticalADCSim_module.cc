@@ -108,6 +108,7 @@ namespace opdet {
   //###############################################################
   UBOpticalADCSim::UBOpticalADCSim(fhicl::ParameterSet const& pset)
   //###############################################################
+  : EDProducer(pset)
   {
     fG4ModName = pset.get<std::string>("G4ModName");
 
