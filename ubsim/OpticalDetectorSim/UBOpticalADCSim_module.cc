@@ -32,8 +32,8 @@
 #include "canvas/Persistency/Common/Ptr.h"
 #include "canvas/Persistency/Common/PtrVector.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/TFileService.h"
-#include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art_root_io/TFileService.h"
+#include "art_root_io/TFileDirectory.h"
 
 /// LArSoft
 #include "lardataobj/OpticalDetectorData/ChannelDataGroup.h"
@@ -108,6 +108,7 @@ namespace opdet {
   //###############################################################
   UBOpticalADCSim::UBOpticalADCSim(fhicl::ParameterSet const& pset)
   //###############################################################
+  : EDProducer(pset)
   {
     fG4ModName = pset.get<std::string>("G4ModName");
 
