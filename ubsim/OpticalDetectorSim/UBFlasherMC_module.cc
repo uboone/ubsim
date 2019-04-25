@@ -34,8 +34,8 @@
 #include "canvas/Persistency/Common/Ptr.h"
 #include "canvas/Persistency/Common/PtrVector.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/TFileService.h"
-#include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art_root_io/TFileService.h"
+#include "art_root_io/TFileDirectory.h"
 
 /// LArSoft
 #include "lardataobj/OpticalDetectorData/ChannelDataGroup.h"
@@ -138,6 +138,7 @@ namespace opdet {
   //###############################################################
 
   UBFlasherMC::UBFlasherMC(fhicl::ParameterSet const& pset)
+  : EDProducer(pset)
   {
 
     if(pset.get<bool>("EnableSpread")) fOpticalGen.EnableSpread(true);
