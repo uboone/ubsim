@@ -13,7 +13,7 @@
 #include "art/Framework/Principal/Run.h"
 #include "art/Framework/Principal/SubRun.h"
 #include "canvas/Utilities/InputTag.h"
-#include "art/Framework/Services/Optional/TFileService.h"
+#include "art_root_io/TFileService.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
@@ -138,7 +138,7 @@ void ExecuteCompression::endJob()
 
 
 ExecuteCompression::ExecuteCompression(fhicl::ParameterSet const & p)
-  : _compress_algo(nullptr)
+  : EDProducer(p), _compress_algo(nullptr)
     // Initialize member data here.
 {
   
