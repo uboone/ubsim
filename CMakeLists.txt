@@ -55,6 +55,8 @@ find_ups_product( art v1_00_00 )
 find_ups_product(art_root_io)
 find_ups_product( larcore )
 find_ups_product( nutools )
+find_ups_product( nugen )
+find_ups_product( nurandom )
 
 # macros for dictionary and simple_plugin
 include(ArtDictionary)
