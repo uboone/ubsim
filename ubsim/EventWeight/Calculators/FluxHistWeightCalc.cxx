@@ -5,7 +5,7 @@
 
 #include "art/Framework/Core/ModuleMacros.h"
 #include "art/Framework/Core/EDProducer.h"
-#include "nutools/RandomUtils/NuRandomService.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 
 #include "CLHEP/Random/RandGaussQ.h"
 

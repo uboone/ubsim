@@ -9,7 +9,7 @@ art_make( BASENAME_ONLY
                         lardata_Utilities
                         larevt_Filters
                         lardataobj_RawData
-                        nutools_RandomUtils_NuRandomService_service
+                        nurandom_RandomUtils_NuRandomService_service
                         ${ART_FRAMEWORK_CORE}
                         ${ART_FRAMEWORK_PRINCIPAL}
                         ${ART_FRAMEWORK_SERVICES_REGISTRY}
