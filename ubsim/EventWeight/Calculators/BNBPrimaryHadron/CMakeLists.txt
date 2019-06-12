@@ -13,10 +13,10 @@ art_make(LIBRARY_NAME  ubsim_EventWeight_Calculators_BNBPrimaryHadron
                        ${CLHEP}
                        ${ROOT_BASIC_LIB_LIST}
                        ${Boost_SYSTEM_LIBRARY}
-                       nutools_NuReweight_art   
-                       nutools_NuReweight       
+                       nugen_NuReweight_art   
+                       nugen_NuReweight       
                        larsim_Simulation
-                       nutools_RandomUtils_NuRandomService_service
+                       nurandom_RandomUtils_NuRandomService_service
                        nusimdata_SimulationBase
                        art_Persistency_Common canvas canvas
                        art_Persistency_Provenance canvas canvas

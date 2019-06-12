@@ -13,7 +13,7 @@ art_make( BASENAME_ONLY
                         lardataobj_RawData
                         SignalShapingServiceMicroBooNE_service
 			larevt_CalibrationDBI_Providers
-                        nutools_RandomUtils_NuRandomService_service
+                        nurandom_RandomUtils_NuRandomService_service
                         ${ART_FRAMEWORK_CORE}
                         ${ART_FRAMEWORK_PRINCIPAL}
                         ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -46,7 +46,7 @@ simple_plugin(SimWireMicroBooNE "module"
               lardata_DetectorInfoServices_DetectorClocksServiceStandard_service # BUG note that we link to a specific service implementation
               SignalShapingServiceMicroBooNE_service
               larevt_CalibrationDBI_Providers
-              nutools_RandomUtils_NuRandomService_service
+              nurandom_RandomUtils_NuRandomService_service
               ${ART_FRAMEWORK_CORE}
               ${ART_FRAMEWORK_PRINCIPAL}
               ${ART_FRAMEWORK_SERVICES_REGISTRY}
