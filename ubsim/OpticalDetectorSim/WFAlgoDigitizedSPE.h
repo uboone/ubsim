@@ -15,6 +15,7 @@
 #define WFALGODIGITIZEDSPE_H
 
 #include "WFAlgoSPEBase.h"
+#include "fhiclcpp/ParameterSet.h"
 
 namespace opdet {
 
@@ -26,6 +27,8 @@ namespace opdet {
   class WFAlgoDigitizedSPE : public WFAlgoSPEBase{
     
   public:
+
+    typedef enum { kFullMC=0, kOverlay, kOther, kMax } DataType; // indicates flow pattern
     
     /// Default constructor
     WFAlgoDigitizedSPE();
@@ -64,7 +67,7 @@ namespace opdet {
     ::detinfo::ElecClock& GetClockWriteable(const int opch);
 
   protected:
-
+    
     /// SPE waveform
     std::vector<float> fSPE_Normal;
     std::vector<float> fSPE_OpCh28;

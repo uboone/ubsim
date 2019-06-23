@@ -23,6 +23,7 @@ namespace opdet {
     fGainSigma = 0; // 0 spread
     fT0        = 0; // 0 ns delay
     fT0Sigma   = 0; // 0 ns spread
+    //fDataType  = 0; // do not reset at every wfm
   }
 
   //---------------------------------------------------------------

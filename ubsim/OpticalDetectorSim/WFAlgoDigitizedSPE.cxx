@@ -12,6 +12,10 @@ namespace opdet {
   //--------------------------------------------------------
   {
     Reset();
+    // We initialize abnormal ch here b/c we do not want to reset every time
+    // SPE is reset
+    fAbnormCh = 0;
+ 
     //fSPETime = detinfo::DetectorClocksService::GetME().OpticalClock();
     //auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
     //auto spe_time = ts->OpticalClock();
@@ -24,7 +28,7 @@ namespace opdet {
     
     SetResponseOpCh28_BNLv1(wf);
     SetSPE(wf,spe_time,28);
-    
+
   }
 
   //------------------------------
@@ -156,28 +160,28 @@ namespace opdet {
     //for(auto &v : fSPE) v /= area;
 
     fSPETime = time_info;
-    
+
   }
 
   //----------------------------------------------------------------------
   std::vector<float>& WFAlgoDigitizedSPE::GetSPEWriteable(const int opch)
   //----------------------------------------------------------------------
-  { return ((opch%100) == 28 ? fSPE_OpCh28 : fSPE_Normal); }
+  { return ((opch%100) == fAbnormCh ? fSPE_OpCh28 : fSPE_Normal); }
 
   //-------------------------------------------------------------------------
   const std::vector<float>& WFAlgoDigitizedSPE::GetSPE(const int opch) const
   //-------------------------------------------------------------------------
-  { return ((opch%100) == 28 ? fSPE_OpCh28 : fSPE_Normal); }
+  { return ((opch%100) == fAbnormCh ? fSPE_OpCh28 : fSPE_Normal); }
 
   //-------------------------------------------------------------------------
   ::detinfo::ElecClock& WFAlgoDigitizedSPE::GetClockWriteable(const int opch)
   //-------------------------------------------------------------------------
-  { return ((opch%100) == 28 ? fSPETime_OpCh28 : fSPETime_Normal); }
+  { return ((opch%100) == fAbnormCh ? fSPETime_OpCh28 : fSPETime_Normal); }
 
   //----------------------------------------------------------------------------
   const ::detinfo::ElecClock& WFAlgoDigitizedSPE::GetClock(const int opch) const
   //----------------------------------------------------------------------------
-  { return ((opch%100) == 28 ? fSPETime_OpCh28 : fSPETime_Normal); }
+  { return ((opch%100) == fAbnormCh ? fSPETime_OpCh28 : fSPETime_Normal); }
 
 }
 
