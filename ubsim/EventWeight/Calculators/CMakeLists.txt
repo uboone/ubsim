@@ -30,4 +30,4 @@ install_fhicl()
 install_source()
 
 add_subdirectory(BNBPrimaryHadron)
-
+add_subdirectory(Splines)

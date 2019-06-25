@@ -72,7 +72,6 @@ set(WIRECELL_LIBS ${WIRECELL_APPS_LIB} ${WIRECELL_SIGPROC_LIB} ${WIRECELL_IFACE_
 
 cet_find_library( JSONCPP NAMES jsoncpp PATHS ENV JSONCPP_LIB NO_DEFAULT_PATH )
 
-
 # macros for dictionary and simple_plugin
 include(ArtDictionary)
 include(ArtMake)
