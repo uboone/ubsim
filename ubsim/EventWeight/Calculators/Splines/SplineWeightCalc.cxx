@@ -200,6 +200,10 @@ namespace evwgh {
       // Get the (old) total cross section from the event record
       double total_xsec = ev_rec->XSec();
 
+      mf::LogInfo("evwgh::SplineWeightCalc") << interaction_str << " event"
+        << " with Ev = " << E_probe << " GeV had total cross section "
+        << total_xsec << " GeV^(-2)";
+
       if ( fCheckOldXSec && have_old_spline ) {
         const genie::Spline& old_spline = *fOldSplineMap.at( old_spline_key );
         double old_total_xsec = old_spline.Evaluate( E_probe );
@@ -220,6 +224,9 @@ namespace evwgh {
 
         double new_total_xsec = new_spline.Evaluate( E_probe );
 
+        mf::LogInfo("evwgh::SplineWeightCalc") << "New spline has total"
+          << " cross section " << new_total_xsec << " GeV^(-2)";
+
         // Protect against a NaN weight in case the total cross section
         // in the event record is zero. This shouldn't ever happen, but
         // it might if, e.g., the GTruth object wasn't loaded properly.
@@ -230,6 +237,11 @@ namespace evwgh {
           weight = BOGUS;
         }
       }
+      else {
+        mf::LogInfo("evwgh::SplineWeightCalc") << "No matching new spline found";
+      }
+
+      mf::LogInfo("evwgh::SplineWeightCalc") << "Weight = " << weight;
 
       weights[ mc_idx ].push_back( weight );
     }
