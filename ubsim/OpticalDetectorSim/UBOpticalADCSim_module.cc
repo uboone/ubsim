@@ -91,9 +91,6 @@ namespace opdet {
     /// User-defined beamgate pulse (NuMI)
     std::vector<double> fUserNuMITime_v;
 
-    /// DataType: FullMC, Overlay or Other
-    int fDataType;
-
     /// OpCh with abnormal SPE response
     int fAbnormCh;
   };
@@ -132,9 +129,6 @@ namespace opdet {
     fUserBNBTime_v = pset.get<std::vector<double> >("UserBNBTime");
 
     fUserNuMITime_v = pset.get<std::vector<double> >("UserNuMITime");
-
-    fDataType = pset.get<int>("DataType",0);
-    fOpticalGen.SetDataType(fDataType);
 
     fAbnormCh = pset.get<int>("AbnormalOpCh",28);
     fOpticalGen.SetAbnormalCh(fAbnormCh);

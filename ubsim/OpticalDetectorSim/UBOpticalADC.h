@@ -57,9 +57,6 @@ namespace opdet {
     /// Function to generate dark noise photon timings (called in GenWaveform)
     void GenDarkNoise(const unsigned int pmtid, const double g4start);
 
-    /// Function to set DataType (FullMC or Overlay)
-    void SetDataType(int datatype) { fSPE.SetDataType(datatype); }
-
     /// Function to set abnormal SPE response opch
     void SetAbnormalCh(int opch) { fSPE.SetAbnormalCh(opch); }
 

@@ -28,8 +28,6 @@ namespace opdet {
     
   public:
 
-    typedef enum { kFullMC=0, kOverlay, kOther, kMax } DataType; // indicates flow pattern
-    
     /// Default constructor
     WFAlgoDigitizedSPE();
     
@@ -70,12 +68,12 @@ namespace opdet {
     
     /// SPE waveform
     std::vector<float> fSPE_Normal;
-    std::vector<float> fSPE_OpCh28;
+    std::vector<float> fSPE_Abnormal;
 
     /// SPE waveform timing information for normal response (tick period & signal timing)
     ::detinfo::ElecClock fSPETime_Normal;
     /// SPE waveform timing information for opch 28 response (tick period & signal timing)
-    ::detinfo::ElecClock fSPETime_OpCh28;
+    ::detinfo::ElecClock fSPETime_Abnormal;
 
   };
 }

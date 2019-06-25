@@ -27,7 +27,9 @@ namespace opdet {
     SetSPE(wf,spe_time,0);
     
     SetResponseOpCh28_BNLv1(wf);
-    SetSPE(wf,spe_time,28);
+    SetSPE(wf,spe_time,28); 
+    // important: opch is arbitrary in this implementation
+    // but needs to match SetSPE definition
 
   }
 
@@ -166,22 +168,24 @@ namespace opdet {
   //----------------------------------------------------------------------
   std::vector<float>& WFAlgoDigitizedSPE::GetSPEWriteable(const int opch)
   //----------------------------------------------------------------------
-  { return ((opch%100) == fAbnormCh ? fSPE_OpCh28 : fSPE_Normal); }
+  // Note: opch 28 is arbitrary in this implementation
+  { return ((opch%100) == 28 ? fSPE_Abnormal : fSPE_Normal); }
 
   //-------------------------------------------------------------------------
   const std::vector<float>& WFAlgoDigitizedSPE::GetSPE(const int opch) const
   //-------------------------------------------------------------------------
-  { return ((opch%100) == fAbnormCh ? fSPE_OpCh28 : fSPE_Normal); }
+  { return ((opch%100) == fAbnormCh ? fSPE_Abnormal : fSPE_Normal); }
 
   //-------------------------------------------------------------------------
   ::detinfo::ElecClock& WFAlgoDigitizedSPE::GetClockWriteable(const int opch)
   //-------------------------------------------------------------------------
-  { return ((opch%100) == fAbnormCh ? fSPETime_OpCh28 : fSPETime_Normal); }
+  // Note: opch 28 is arbitrary in this implementation
+  { return ((opch%100) == 28 ? fSPETime_Abnormal : fSPETime_Normal); }
 
   //----------------------------------------------------------------------------
   const ::detinfo::ElecClock& WFAlgoDigitizedSPE::GetClock(const int opch) const
   //----------------------------------------------------------------------------
-  { return ((opch%100) == fAbnormCh ? fSPETime_OpCh28 : fSPETime_Normal); }
+  { return ((opch%100) == fAbnormCh ? fSPETime_Abnormal : fSPETime_Normal); }
 
 }
 
