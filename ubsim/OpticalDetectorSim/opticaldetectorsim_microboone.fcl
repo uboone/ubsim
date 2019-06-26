@@ -131,7 +131,7 @@ microboone_optical_adc_sim:
 
   UserNuMITime: []  # G4 Time [ns] to force opening NuMI beamgate for the case there is no BeamGateInfo created by GENIE
 
-  AbnormalOpCh: 29
+  AbnormalOpCh: 28
 }
 
 microboone_optical_fem_sim: @local::microboone_optical_3fem_sim
