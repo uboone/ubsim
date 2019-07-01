@@ -1,0 +1,4 @@
+lyscaling: {
+    module_type: "LYSimPhotonScaling"
+    SimPhotonProducer: "largeant"
+    }

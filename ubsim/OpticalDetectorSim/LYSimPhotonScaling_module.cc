@@ -71,6 +71,8 @@ LYSimPhotonScaling::LYSimPhotonScaling(fhicl::ParameterSet const& p)
 {
 
   produces<std::vector<sim::SimPhotons> >();
+  fSimPhotonProducer = p.get< art::InputTag >("SimPhotonProducer");
+
 }
 
 void LYSimPhotonScaling::produce(art::Event& e)
@@ -105,8 +107,13 @@ void LYSimPhotonScaling::produce(art::Event& e)
 
     std::cout << "For OpChannel " << opchannel << " LY scaling is " << LYscaling << std::endl;
 
+    int ntot = 0;
+    int nfin = 0;
+
     // each SimPhoton is a vector of photons. Loop through each
     for (size_t p=0; p < simphoton.size(); p++) {
+
+      ntot += 1;
 
       // draw random number
       float prob = CLHEP::RandFlat::shoot(&fEngine, 0., 1.);
@@ -115,9 +122,15 @@ void LYSimPhotonScaling::produce(art::Event& e)
 
 	newsimphoton.emplace_back( simphoton[p] );
 
+	nfin += 1;
+
       }// if random number above LY for this PMT
 
     }// for all photosn on this PMT
+
+    std::cout << "\t " << ntot << " -> " << nfin << " simphotons simulated" << std::endl;
+
+    SimPhoton_v->emplace_back( newsimphoton );
 
   }// for all SimPhotons
 
