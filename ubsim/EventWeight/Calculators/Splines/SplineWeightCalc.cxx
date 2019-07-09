@@ -182,6 +182,11 @@ namespace evwgh {
       // will be auto-deleted.
       std::unique_ptr<genie::EventRecord> ev_rec(evgb::RetrieveGHEP( mc_truth, g_truth ));
 
+      // Reset the multiplicities in the exclusive tag (shouldn't appear in the form of
+      // genie::Interaction::AsString() used to make spline keys)
+      ev_rec->Summary()->ExclTagPtr()->ResetNNucleons();
+      ev_rec->Summary()->ExclTagPtr()->ResetNPions();
+
       // Translate the interaction mode into a string that can be used to look
       // up matching cross section splines
       std::string interaction_str = ev_rec->Summary()->AsString();
