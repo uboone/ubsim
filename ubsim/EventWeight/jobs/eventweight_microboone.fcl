@@ -5,6 +5,7 @@ BEGIN_PROLOG
 #include "eventweight_microboone_xs.fcl"
 #include "eventweight_microboone_reint.fcl"
 #include "eventweight_microboone_lee.fcl"
+#include "eventweight_microboone_spline.fcl"
 
 microboone_eventweight: {
   module_type: "EventWeight"
@@ -44,6 +45,20 @@ microboone_eventweight_LEE: {
 
 #just the eLEE weight function
 microboone_eventweight_LEE.weight_functions: [ eLEE_Combined_Oct2018 ]
+
+#event weighting for switching between splines
+microboone_eventweight_justSplines: {
+  module_type: "EventWeight"
+
+  min_weight: 0.0
+  max_weight: 100
+
+  genie_module_label: "generator"
+  @table::microboone_eventweight_spline
+}
+
+#just the spline weight function
+microboone_eventweight_justSplines.weight_functions: [ splines_general ]
 
 END_PROLOG
 
