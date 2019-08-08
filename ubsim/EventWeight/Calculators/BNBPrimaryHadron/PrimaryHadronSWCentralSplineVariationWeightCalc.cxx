@@ -16,6 +16,10 @@
 #include "CLHEP/Random/RandomEngine.h"
 #include "CLHEP/Random/RandGaussQ.h"
 
+#include "art/Framework/Principal/Event.h"
+#include "canvas/Utilities/Exception.h"
+#include "fhiclcpp/ParameterSet.h"
+
 #include "nusimdata/SimulationBase/MCFlux.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/GTruth.h"
