@@ -40,6 +40,8 @@
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 
+#include "CLHEP/Random/RandGaussQ.h"
+
 namespace evwgh {
 
 class HistogramWeightWeightCalc : public WeightCalc {
