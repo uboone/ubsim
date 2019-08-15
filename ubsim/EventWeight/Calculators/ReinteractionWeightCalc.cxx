@@ -17,6 +17,7 @@
 #include "Geant4/G4Material.hh"
 #include "Geant4/G4MaterialCutsCouple.hh"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
+#include "art/Framework/Principal/Event.h"
 #include "art/Framework/Principal/Handle.h"
 #include "art/Persistency/Provenance/ModuleContext.h"
 #include "canvas/Persistency/Common/FindManyP.h"

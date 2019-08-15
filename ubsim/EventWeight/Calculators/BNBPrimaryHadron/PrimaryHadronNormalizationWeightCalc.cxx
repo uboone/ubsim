@@ -9,6 +9,9 @@
 //    Current person adding comments and functions is Joseph Zennamo (jaz8600@fnal.gov)
 //
 
+#include "art/Framework/Principal/Event.h"
+#include "fhiclcpp/ParameterSet.h"
+
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 
