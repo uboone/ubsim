@@ -20,7 +20,7 @@ source: {
 
 physics: {
  producers: {
-   eventweightSplines:  @local::microboone_eventweight_justSplines
+   eventweight4to4aFix: @local::microboone_eventweight_justSplines
    rns: {
      module_type: "RandomNumberSaver"
    }
