@@ -3,7 +3,7 @@
 #include "seedservice_microboone.fcl"
 #include "eventweight_microboone.fcl"
 
-process_name: EventWeight
+process_name: EventWeight4to4aFix
 
 services: {
   TimeTracker: {}
