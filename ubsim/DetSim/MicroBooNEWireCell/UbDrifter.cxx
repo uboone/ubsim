@@ -7,6 +7,8 @@
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 #include "ubevt/Database/TPCEnergyCalib/TPCEnergyCalibService.h"
 #include "ubevt/Database/TPCEnergyCalib/TPCEnergyCalibProvider.h"
+#include "ubevt/Database/UbooneElectronLifetimeProvider.h"
+#include "ubevt/Database/UbooneElectronLifetimeService.h"
 #include "larcore/Geometry/Geometry.h"
 
 #include "WireCellUtil/NamedFactory.h"
@@ -37,15 +39,27 @@ void wcls::UbDrifter::visit(art::Event & event)
     
     /// access lifetime database and fetch the value
     //m_lifetime_to_set = ??? from database 
+    const lariov::UBElectronLifetimeProvider& elifetimeCalibProvider
+        = art::ServiceHandle<lariov::UBElectronLifetimeService>()->GetProvider();
+    float elifetime  = elifetimeCalibProvider.Lifetime(); // [ms]
     /// end 
-    
-    Drifter::set_lifetime(m_lifetime_to_set);
+    if (fELifetimeCorrection) {
+      Drifter::set_lifetime(elifetime*units::ms);
+      //std::cout << "www: lifetime from database = " << elifetime << std::endl;
+      //std::cout << "www: lifetime from database = " << elifetime*units::ms << std::endl;
+    }
+    else {
+      Drifter::set_lifetime(m_lifetime_to_set);
+      //std::cout << "www: defaul lifetime = " << m_lifetime_to_set << std::endl;
+      //std::cout << "www: defaul lifetime = " << 1000.0*units::ms << std::endl;
+    }
 }
 
 
 void wcls::UbDrifter::configure(const WireCell::Configuration& cfg)
 {
     Drifter::configure(cfg);
+    fELifetimeCorrection = cfg["ELifetimeCorrection"].asBool();
 }
 
 

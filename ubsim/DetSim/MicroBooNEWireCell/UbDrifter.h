@@ -30,6 +30,7 @@ namespace wcls {
    
     private:
         double m_lifetime_to_set;
+        bool fELifetimeCorrection;
     };
 
 }  // wcls

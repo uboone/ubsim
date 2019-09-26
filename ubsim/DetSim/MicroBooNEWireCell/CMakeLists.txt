@@ -23,4 +23,6 @@ art_make_library(
 	larevt_CalibrationDBI_IOVData
 	larevt_CalibrationDBI_Providers
         ${WIRECELL_LIBS}
+        ${FHICLCPP}
+        cetlib cetlib_except
 )
