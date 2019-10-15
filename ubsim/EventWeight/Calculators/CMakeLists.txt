@@ -5,15 +5,21 @@ art_make(
   LIB_LIBRARIES
     larsim_EventWeight_Base
     lardata_Utilities
-    nutools_NuReweight_art   
-    nutools_NuReweight       
+    nutools_NuReweight_art
+    nutools_NuReweight
     larsim_Simulation
+    larcorealg_Geometry
+    larcore_Geometry_Geometry_service
     nutools_RandomUtils_NuRandomService_service
     nusimdata_SimulationBase
+    ReweightBaseLib
+    PropBaseLib
     ${ART_FRAMEWORK_CORE}
     ${ART_FRAMEWORK_PRINCIPAL}
     ${ART_FRAMEWORK_SERVICES_REGISTRY}
     ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
+    ${ART_FRAMEWORK_SERVICES_OPTIONAL}
+    ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
     art_Persistency_Common canvas canvas
     art_Persistency_Provenance canvas canvas
     art_Utilities canvas canvas
@@ -23,7 +29,7 @@ art_make(
     ${ROOT_BASIC_LIB_LIST}
     ${Boost_SYSTEM_LIBRARY}
     ${G4_LIB_LIST}
-) 
+)
 
 install_headers()
 install_fhicl()
