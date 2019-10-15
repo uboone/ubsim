@@ -1,0 +1,45 @@
+#include "services_microboone.fcl"
+#include "microboone_eventweight_service.fcl"
+#include "seedservice_microboone.fcl"
+#include "eventweight_microboone.fcl"
+
+process_name: EventWeight
+
+services: {
+  TimeTracker: {}
+  MemoryTracker: {}
+  RandomNumberGenerator: {}
+  FileCatalogMetadata: @local::art_file_catalog_mc
+  NuRandomService: @local::microboone_seedservice
+  UBEventWeight: @local::microboone_eventweight_service
+  TFileService: { fileName: "microboone_reint_trees.root" }
+  @table::microboone_simulation_services
+}
+
+source: {
+  module_type: RootInput
+    fileNames : [ "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/40/24/reco1_20190924T230120_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T020604_reco2.root" ]
+}
+
+physics: {
+ producers: {
+   eventweightreint:  @local::microboone_eventweight_justreint
+   rns: {
+     module_type: "RandomNumberSaver"
+   }
+ }
+
+ simulate: [ rns, eventweightreint ]
+ stream1: [ out1 ]
+ trigger_paths: [ simulate ]
+ end_paths: [ stream1 ]
+}
+
+outputs: {
+ out1: {
+   module_type: RootOutput
+   fileName: "%ifb_%tc_eventweightreint.root"
+   dataTier: "simulated"
+   compressionLevel: 1
+ }
+}
