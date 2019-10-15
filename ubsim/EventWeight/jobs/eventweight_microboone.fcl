@@ -1,21 +1,23 @@
+#include "microboone_piplus_reweight_parameters.fcl"
+
 BEGIN_PROLOG
 
 #include "eventweight_microboone_flux.fcl"
 #include "eventweight_microboone_genie.fcl"
 #include "eventweight_microboone_xs.fcl"
-#include "eventweight_microboone_reint.fcl"
+#include "eventweight_microboone_g4rwt_reint.fcl"
 #include "eventweight_microboone_lee.fcl"
 #include "eventweight_microboone_spline.fcl"
 
 microboone_eventweight: {
   module_type: "EventWeight"
- 
+
   # Throw exception if weight outside limits
   min_weight: 0
   max_weight: 100
- 
-  genie_module_label: generator  
- 
+
+  genie_module_label: generator
+
   # Load calculator configurations
   @table::microboone_eventweight_flux
   @table::microboone_eventweight_genie
@@ -60,5 +62,16 @@ microboone_eventweight_justSplines: {
 #just the spline weight function
 microboone_eventweight_justSplines.weight_functions: [ splines_general ]
 
-END_PROLOG
+#event weighting for reinteraction
+microboone_eventweight_justreint: {
+  module_type: "EventWeight"
 
+  min_weight: 0.0
+  max_weight: 100
+  @table::microboone_eventweight_reint
+}
+
+#just the reinteraction weight function
+microboone_eventweight_justreint.weight_functions: [ reinteractions_piplus ]
+
+END_PROLOG
