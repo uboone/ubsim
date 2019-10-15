@@ -1,0 +1,74 @@
+##########################################################
+## Hadron reinteraction uncertainties
+##
+## References:
+##
+##   * K. Duffy, Pion Secondary Interaction Systematics (from GEANTReweight), DocDB 25379
+##   * J. Calcutt, GEANTReweight documentation DocDB 25084, repository https://cdcvs.fnal.gov/redmine/projects/geant4reweight/repository
+##
+## Maintainer: Kirsty Duffy (kduffy@fnal.gov)
+##
+##########################################################
+
+microboone_eventweight_reint: {
+  # weight_functions_reint: [
+  #   reinteractions_proton, reinteractions_piplus, reinteractions_piminus
+  # ]
+  weight_functions_reint: [ reinteractions_piplus ]
+  # reinteractions_proton: {
+  # }
+  reinteractions_piplus: {
+    type: Geant4
+    random_seed: 58
+    parameters: @local::PiPlusParameters
+    mode: pm1sigma
+    number_of_multisims: 100
+    fracsfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/cascade_out_50_to_2000_redo.root"
+    xsecfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/cross_section_out.root"
+    makeoutputtree: true
+  }
+  # reinteractions_piminus: {
+  # }
+  # reinteractions_all: {
+  #   type: Reinteraction
+  #   random_seed: 60
+  #   parameter_list: ["p", "pip", "pim"]
+  #   parameter_sigma: [ 1, 1, 1 ]
+  #   mode: multisim
+  #   number_of_multisims: 100
+  # }
+}
+
+###
+# Reweighting parameters should be defined as
+#
+# TheParameters: [
+#  {
+#    Cut:    "reac"
+#    Name: "fReacLow"
+#    Range: [10., 200.]
+#    Nominal: 1.0
+#    Sigma: 0.3
+#  },
+# {...}
+# ]
+#
+# - Range defines the energy range over which that parameter has an effect (MeV)
+# - Nominal is not used in "multisim" mode. In "pm1sigma" mode it defines the
+#   nominal (around which you calculate +/- 1 sigma variations). In any other
+#   mode, the parameter is set to the value under Nominal (so it's not really a
+#   "nominal" value in that case, just the set value)
+# - Sigma defines the 1-sigma range for multisims and unisims. Currently the
+#   code can only accept a single value for sigma, giving symmetric
+#   uncertainty bounds: nominal-sigma and nominal+sigma
+# - Cut must be one of the following:
+#      "reac" <- total inelastic scattering cross section
+#      "abs" <- absorption cross section
+#      "cex" <- charge exchange cross section
+#      "dcex" <- double charge exchange cross section
+#      "prod" <- pion production cross section
+#      "inel" <- quasi-elastic inelastic scattering cross section
+#      "elast" <- total elastic scattering cross section
+# - Name can be anything you like (but should uniquely identify that parameter/
+#   variation)
+###
