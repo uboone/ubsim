@@ -9,6 +9,11 @@
 //    Current person adding comments and functions is Joseph Zennamo (jaz8600@fnal.gov)
 //        [this code was designed follow the style of PrimaryHadronFeynmanScalingWeightCalc] 
 //
+// N.B. Because the MiniBooNERandomNumbers function has *such large*
+//      hard-coded vectors, the Clang 7 compiler is unable to optimize
+//      the code in a reasonable time scale.  For that reason,
+//      optimization has been turned off for that function.  The way
+//      these numbers are provided should be fixed!
 
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
@@ -18,6 +23,7 @@
 
 #include "art/Framework/Principal/Event.h"
 #include "canvas/Utilities/Exception.h"
+#include "cetlib/compiler_macros.h"
 #include "fhiclcpp/ParameterSet.h"
 
 #include "nusimdata/SimulationBase/MCFlux.h"
@@ -922,9 +928,13 @@ namespace evwgh {
   } // ConvertToVector()
 
 
+  // See note above regarding 'optnone' attribute
    
-   
-  std::vector< std::vector< double > > PrimaryHadronSWCentralSplineVariationWeightCalc::MiniBooNERandomNumbers(std::string pdg){
+  std::vector< std::vector< double > > PrimaryHadronSWCentralSplineVariationWeightCalc::MiniBooNERandomNumbers
+#if CLANG_IS_AT_LEAST(7, 0, 0)
+  [[clang::optnone]]
+#endif
+  (std::string pdg){
     
     if(pdg.compare("piplus") == 0){	 
       
