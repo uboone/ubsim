@@ -1,0 +1,25 @@
+BEGIN_PROLOG
+
+#include "eventweight_microboone_reint.fcl"
+
+microboone_eventweight: {
+  module_type: "EventWeight"
+ 
+  # Throw exception if weight outside limits
+  min_weight: 0
+  max_weight: 100
+ 
+  genie_module_label: generator  
+ 
+  # Load calculator configurations
+  @table::microboone_eventweight_reint
+}
+
+# All available weight functions
+microboone_eventweight.weight_functions: [
+  @sequence::microboone_eventweight.weight_functions_reint
+]
+
+
+END_PROLOG
+
