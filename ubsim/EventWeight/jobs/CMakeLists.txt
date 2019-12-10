@@ -6,6 +6,7 @@ add_subdirectory(flux)
 add_subdirectory(genie)
 add_subdirectory(xs)
 add_subdirectory(reint)
+add_subdirectory(phonu)
 add_subdirectory(lee_weights)
 add_subdirectory(splines)
 
