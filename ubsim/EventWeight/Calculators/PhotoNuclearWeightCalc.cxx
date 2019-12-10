@@ -54,9 +54,14 @@ public:
       pint = dynamic_cast<TH1D*>(probFile->Get(objname.c_str()));
       assert(pint);
 
+      std::cout << "objname : " << objname.c_str() << std::endl;
+
       // Reconstitute the cross section vs. KE
       char hname[100];
       snprintf(hname, 100, "_xs_%s", name.c_str());
+
+      std::cout << "hname : " << hname << std::endl; 
+
       xs = dynamic_cast<TH1D*>(pint->Clone(hname));
       assert(xs);
 
@@ -105,38 +110,73 @@ void PhotoNuclearWeightCalc::Configure(fhicl::ParameterSet const& p,
   std::vector<float> sigmas = pset.get<std::vector<float> >("parameter_sigma");	
   std::string mode = pset.get<std::string>("mode");//"multisim"
   fXSUncertainty = pset.get<float>("xs_uncertainty", 0.3);
-  std::string probFileName = pset.get<std::string>("ProbFileName", "/pnfs/uboone/persistent/users/yjwa/photonuprob.root");//systematics/reint/interaction_probabilities.root");//what is this file?
+  std::string probFileName = pset.get<std::string>("ProbFileName", "photonuprob.root");//systematics/reint/interaction_probabilities.root");//what is this file?
   fNsims = pset.get<int> ("number_of_multisims", 0);
+
+  std::cout << ":: 1 :: here? " << std::endl;
 
   // Prepare random generator
   fGaussRandom = new CLHEP::RandGaussQ(engine);
 
+  std::cout << ":: 2 :: here? "<< std::endl;
+
   // Load interaction probabilities
   cet::search_path sp("FW_SEARCH_PATH");
+
+  std::cout << ":: 3 :: here? "<< std::endl;
+
   std::string probFilePath = sp.find_file(probFileName);
+
+  std::cout << ":: 4 :: here? "<< std::endl;
+
   fProbFile = TFile::Open(probFilePath.c_str());
+
+  std::cout << ":: 5 :: here? "<< std::endl;
+
   assert(fProbFile && fProbFile->IsOpen());
+
+  std::cout << ":: 6 :: here? "<< std::endl;
 
   // Build parameter list
   for (size_t i=0; i<pars.size(); i++) {
+
+    std::cout << ":: 7 :: here? #pars? " << pars.size() << " , iterator? " << i << " , #sigmas? "  << sigmas.size() << std::endl;
+
     if (pars[i] == "gamma") {
-      fParticles[22] = ParticleDef("gamma",   "prob_nuc_phot_e",  22, sigmas[i], fProbFile);
+
+      std::cout << ":: 8 :: here? "<< std::endl;
+
+      fParticles[22] = ParticleDef("gamma",   "prob_nuc_e",  22, sigmas[i], fProbFile);
     }
     else {
+
+      std::cout << ":: 8.1 :: here? "<< std::endl;
+
       std::cerr << "Unknown particle type: " << pars[i] << std::endl;
       assert(false);
     }
   };
 
+  std::cout << ":: 9 :: here? "<< std::endl;
+
   // Set up universes
   for (auto& it : fParticles) {
+
+    std::cout << ":: 10 :: here? "<< std::endl;
+
     if (mode == "pm1sigma") {
+
+      std::cout << ":: 11 :: here? "<< std::endl;
+
       // pm1sigma mode: 0 = +1sigma, 1 = -1sigma
       it.second.sigmas.push_back( 1.0);
       it.second.sigmas.push_back(-1.0);
       fNsims = 2;
     }
     else if (mode == "multisim") {
+
+      std::cout << ":: 12 :: here? "<< std::endl;
+
       // multisim mode: Scale factors sampled within the given uncertainty
       for (unsigned j=0; j<fNsims; j++) {
         double r = fGaussRandom->fire(0.0, 1.0);
@@ -151,9 +191,13 @@ void PhotoNuclearWeightCalc::Configure(fhicl::ParameterSet const& p,
   }
 }
 
+  
 
 std::vector<std::vector<double> >
 PhotoNuclearWeightCalc::GetWeight(art::Event& e) {
+
+  std::cout << ":: 13 :: here? "<< std::endl;
+
   // Get MCParticles for each MCTruth in this event
   art::Handle<std::vector<simb::MCTruth> > truthHandle;
   e.getByLabel(fMCTruthProducer, truthHandle);
