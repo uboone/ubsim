@@ -2,15 +2,17 @@
 #include "cetlib/compiler_macros.h"
 
 // N.B. Because the functions below have *such large* hard-coded
-//      vectors, the Clang 7 compiler is unable to optimize the code
-//      in a reasonable time scale.  For that reason, optimization has
-//      been turned off for that function.  The way these numbers are
+//      vectors, the compilers are unable to optimize the code in a
+//      reasonable time scale.  For that reason, optimization has been
+//      turned off for that function.  The way these numbers are
 //      provided should be fixed!
 
 namespace opdet {
 
   void SetResponseNormal_BNLv1
-#if CLANG_IS_AT_LEAST(7, 0, 0)
+#if GCC_IS_AT_LEAST(8, 2, 0)
+  [[gnu::optimize(0)]]
+#elif CLANG_IS_AT_LEAST(7, 0, 0)
   [[clang::optnone]]
 #endif
   (std::vector<float>& wf)
@@ -24019,7 +24021,9 @@ wf[23999]=-8.17966e-06;
   }
 
   void SetResponseOpCh28_BNLv1
-#if CLANG_IS_AT_LEAST(7, 0, 0)
+#if GCC_IS_AT_LEAST(8, 2, 0)
+  [[gnu::optimize(0)]]
+#elif CLANG_IS_AT_LEAST(7, 0, 0)
   [[clang::optnone]]
 #endif
   (std::vector<float>& wf)

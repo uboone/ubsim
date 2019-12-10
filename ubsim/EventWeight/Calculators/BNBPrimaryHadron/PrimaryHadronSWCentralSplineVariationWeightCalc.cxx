@@ -10,7 +10,7 @@
 //        [this code was designed follow the style of PrimaryHadronFeynmanScalingWeightCalc] 
 //
 // N.B. Because the MiniBooNERandomNumbers function has *such large*
-//      hard-coded vectors, the Clang 7 compiler is unable to optimize
+//      hard-coded vectors, that the compilers are unable to optimize
 //      the code in a reasonable time scale.  For that reason,
 //      optimization has been turned off for that function.  The way
 //      these numbers are provided should be fixed!
@@ -931,7 +931,9 @@ namespace evwgh {
   // See note above regarding 'optnone' attribute
    
   std::vector< std::vector< double > > PrimaryHadronSWCentralSplineVariationWeightCalc::MiniBooNERandomNumbers
-#if CLANG_IS_AT_LEAST(7, 0, 0)
+#if GCC_IS_AT_LEAST(8, 2, 0)
+  [[gnu::optimize(0)]]
+#elif CLANG_IS_AT_LEAST(7, 0, 0)
   [[clang::optnone]]
 #endif
   (std::string pdg){
