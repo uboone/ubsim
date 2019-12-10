@@ -250,6 +250,9 @@ PhotoNuclearWeightCalc::GetWeight(art::Event& e) {
 
           // Total weight is the product of track weights in the event
           weight[itruth][j] *= std::max((float)0.0, w);
+
+	  std::cout << "itruth : " << itruth << " , j-th univ : " << j << " , weight : " << std::max((float)0.0, w) << std::endl;
+
         }
       }
     }
