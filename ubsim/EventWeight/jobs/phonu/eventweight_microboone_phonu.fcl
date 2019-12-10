@@ -11,43 +11,17 @@
 
 microboone_eventweight_phonu: {
   weight_functions_phonu: [
-    photonuclear_proton, photonuclear_piplus, photonuclear_piminus
+    photonuclear_photon
   ]
 
-  photonuclear_proton: {
-    type: Phonu
+  photonuclear_photon: {
+    type: PhotoNuclear
     random_seed: 57
-    parameter_list: ["p"]
+    parameter_list: ["gamma"]
     parameter_sigma: [ 1 ]
     mode: multisim
     number_of_multisims: 100
   }
 
-  photonuclear_piplus: {
-    type: Phonu
-    random_seed: 58
-    parameter_list: ["pip"]
-    parameter_sigma: [ 1 ]
-    mode: multisim
-    number_of_multisims: 100
-  }
-
-  photonuclear_piminus: {
-    type: Phonu
-    random_seed: 59
-    parameter_list: ["pim"]
-    parameter_sigma: [ 1 ]
-    mode: multisim
-    number_of_multisims: 100
-  }
-
-  photonuclear_all: {
-    type: Phonu
-    random_seed: 60
-    parameter_list: ["p", "pip", "pim"]
-    parameter_sigma: [ 1, 1, 1 ]
-    mode: multisim
-    number_of_multisims: 100
-  }
 }
 

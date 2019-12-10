@@ -3,8 +3,7 @@
  * \brief PhotoNuclear interaction event rewighting
  * \author Y. Jwa <yj2429@columbia.edu>, 2019/12
  *
- * \Shamelessly Largily adopting ReinteractionWeightCalc 
- * \written by A. Mastbaum <mastbaum@uchicago.edu>
+ * \Largily adopting ReinteractionWeightCalc written by A. Mastbaum <mastbaum@uchicago.edu>
  *
  * Reweight events based on photonuclear interaction possibilities.
  */
@@ -102,9 +101,9 @@ void PhotoNuclearWeightCalc::Configure(fhicl::ParameterSet const& p,
   fhicl::ParameterSet const& pset = p.get<fhicl::ParameterSet>(GetName());
   fMCParticleProducer = pset.get<std::string>("MCParticleProducer", "largeant");
   fMCTruthProducer = pset.get<std::string>("MCTruthProducer", "generator");
-  std::vector<std::string> pars = pset.get< std::vector<std::string> >("parameter_list");	
+  std::vector<std::string> pars = pset.get< std::vector<std::string> >("parameter_list");//"gamma"	
   std::vector<float> sigmas = pset.get<std::vector<float> >("parameter_sigma");	
-  std::string mode = pset.get<std::string>("mode");
+  std::string mode = pset.get<std::string>("mode");//"multisim"
   fXSUncertainty = pset.get<float>("xs_uncertainty", 0.3);
   std::string probFileName = pset.get<std::string>("ProbFileName", "/pnfs/uboone/persistent/users/yjwa/photonuprob.root");//systematics/reint/interaction_probabilities.root");//what is this file?
   fNsims = pset.get<int> ("number_of_multisims", 0);
@@ -120,14 +119,8 @@ void PhotoNuclearWeightCalc::Configure(fhicl::ParameterSet const& p,
 
   // Build parameter list
   for (size_t i=0; i<pars.size(); i++) {
-    if (pars[i] == "p") {
-      fParticles[2212] = ParticleDef("p",   "h_protonIntProb",  2212, sigmas[i], fProbFile);
-    }
-    else if (pars[i] == "pip") {
-      fParticles[211]  = ParticleDef("pip", "h_piplusIntProb",   211, sigmas[i], fProbFile);
-    }
-    else if (pars[i] == "pim") {
-      fParticles[-211] = ParticleDef("pim", "h_piminusIntProb", -211, sigmas[i], fProbFile);
+    if (pars[i] == "gamma") {
+      fParticles[22] = ParticleDef("gamma",   "prob_nuc_phot_e",  22, sigmas[i], fProbFile);
     }
     else {
       std::cerr << "Unknown particle type: " << pars[i] << std::endl;
@@ -184,7 +177,9 @@ PhotoNuclearWeightCalc::GetWeight(art::Event& e) {
       int pdg = p.PdgCode();
       double ke = p.E() - p.Mass();
       std::string endProc = p.EndProcess();
-      bool interacted = (endProc.find("Inelastic") != std::string::npos);
+
+      bool photonu_absorbed = (endProc.find("Photonuclear") != std::string::npos);
+      //      bool interaced = (endProc.find("Inelastic") != std::string::npos);
 
       // Reweight particles under consideration
       if (fParticles.find(pdg) != fParticles.end()) {
@@ -202,7 +197,7 @@ PhotoNuclearWeightCalc::GetWeight(art::Event& e) {
           }
 
           float w;
-          if (interacted) {
+          if (photonu_absorbed) {
             w = (1.0 - sprob) / def.pint->GetBinContent(kebin);
           }
           else {

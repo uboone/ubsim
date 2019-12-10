@@ -4,6 +4,7 @@ BEGIN_PROLOG
 #include "eventweight_microboone_genie.fcl"
 #include "eventweight_microboone_xs.fcl"
 #include "eventweight_microboone_reint.fcl"
+#include "eventweight_microboone_phonu.fcl"
 #include "eventweight_microboone_lee.fcl"
 #include "eventweight_microboone_spline.fcl"
 
@@ -21,6 +22,7 @@ microboone_eventweight: {
   @table::microboone_eventweight_genie
   @table::microboone_eventweight_xs
   @table::microboone_eventweight_reint
+  @table::microboone_eventweight_phonu
 }
 
 # All available weight functions
@@ -29,6 +31,7 @@ microboone_eventweight.weight_functions: [
   @sequence::microboone_eventweight.weight_functions_genie,
   @sequence::microboone_eventweight.weight_functions_xs,
   @sequence::microboone_eventweight.weight_functions_reint
+  @sequence::microboone_eventweight.weight_functions_phonu
 ]
 
 #event weighting for LEE
