@@ -15,12 +15,20 @@ microboone_eventweight: {
   max_weight: 100
  
   genie_module_label: generator  
+
+  genie_central_values: {
+    MaCCQE: 7.55 # GENIE knob setting, gives Ma = 1.18 GeV
+    RPA_CCQE: 0.4 # 0 --> Nieves CCQE default, 1 --> RPA off
+    NormCCMEC: 0.52 # GENIE knob setting, gives scaling factor of 1.26
+    XSecShape_CCMEC: 0.22 # 0 --> Nieves CCMEC default, 1 --> GENIE empirical
+  }
  
   # Load calculator configurations
   @table::microboone_eventweight_flux
   @table::microboone_eventweight_genie
   @table::microboone_eventweight_xs
   @table::microboone_eventweight_reint
+  @table::microboone_eventweight_spline
 }
 
 # All available weight functions
@@ -29,6 +37,7 @@ microboone_eventweight.weight_functions: [
   @sequence::microboone_eventweight.weight_functions_genie,
   @sequence::microboone_eventweight.weight_functions_xs,
   @sequence::microboone_eventweight.weight_functions_reint
+  @sequence::microboone_eventweight.weight_functions_spline
 ]
 
 #event weighting for LEE
@@ -61,4 +70,3 @@ microboone_eventweight_justSplines: {
 microboone_eventweight_justSplines.weight_functions: [ splines_general ]
 
 END_PROLOG
-
