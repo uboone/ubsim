@@ -36,7 +36,7 @@ microboone_eventweight.weight_functions: [
   @sequence::microboone_eventweight.weight_functions_flux,
   @sequence::microboone_eventweight.weight_functions_genie,
   @sequence::microboone_eventweight.weight_functions_xs,
-  @sequence::microboone_eventweight.weight_functions_reint
+  @sequence::microboone_eventweight.weight_functions_reint,
   @sequence::microboone_eventweight.weight_functions_spline
 ]
 

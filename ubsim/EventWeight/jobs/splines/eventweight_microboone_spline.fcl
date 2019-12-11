@@ -7,10 +7,10 @@
 microboone_eventweight_spline: {
 
   weight_functions_spline: [
-    CCQE_v304_to_v304a
+    splines_general
   ]
 
-  CCQE_v304_to_v304a: {
+  splines_general: {
     type: Spline
     new_splines_file: "systematics/splines/splines_CCQE_v304a_G18_10a_02_11a.xml"
     check_old_xsec: false
@@ -19,3 +19,4 @@ microboone_eventweight_spline: {
   }
 
 }
+
