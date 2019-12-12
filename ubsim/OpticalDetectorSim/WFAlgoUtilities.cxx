@@ -1,9 +1,21 @@
 #include "WFAlgoUtilities.h"
-#ifndef WFALGO_UTILITIES_CXX
-#define WFALGO_UTILITIES_CXX
+#include "cetlib/compiler_macros.h"
+
+// N.B. Because the functions below have *such large* hard-coded
+//      vectors, the compilers are unable to optimize the code in a
+//      reasonable time scale.  For that reason, optimization has been
+//      turned off for that function.  The way these numbers are
+//      provided should be fixed!
+
 namespace opdet {
 
-  void SetResponseNormal_BNLv1(std::vector<float>& wf)
+  void SetResponseNormal_BNLv1
+#if GCC_IS_AT_LEAST(8, 2, 0)
+  [[gnu::optimize(0)]]
+#elif CLANG_IS_AT_LEAST(7, 0, 0)
+  [[clang::optnone]]
+#endif
+  (std::vector<float>& wf)
   {
     wf.resize(24000);
 wf[0]=0;
@@ -24008,7 +24020,13 @@ wf[23998]=-8.18032e-06;
 wf[23999]=-8.17966e-06;
   }
 
-  void SetResponseOpCh28_BNLv1(std::vector<float>& wf)
+  void SetResponseOpCh28_BNLv1
+#if GCC_IS_AT_LEAST(8, 2, 0)
+  [[gnu::optimize(0)]]
+#elif CLANG_IS_AT_LEAST(7, 0, 0)
+  [[clang::optnone]]
+#endif
+  (std::vector<float>& wf)
   {
     wf.resize(4000);
 wf[0]=0;
@@ -28014,4 +28032,3 @@ wf[3999]=-2.35692e-07;
   }
 
 }
-#endif
