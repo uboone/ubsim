@@ -1,15 +1,15 @@
 BEGIN_PROLOG
 
-PiPlusParameters: [
+PiMinusParameters: [ 
   {
-    Name:       "fPiPlusReacLow"
+    Name:       "fPiMinusReacLow"
     Cut:        "reac"
     Range:      [10., 200.]
     Nominal:    1
     Sigma:      0.2
   } ,
   {
-    Name:       "fPiPlusReacHigh"
+    Name:       "fPiMinusReacHigh"
     Cut:        "reac"
     Range:      [700., 2005.]
     Nominal:    1.0
@@ -17,7 +17,7 @@ PiPlusParameters: [
   } ,
 
   {
-    Name:       "fPiPlusAbs"
+    Name:       "fPiMinusAbs"
     Cut:        "abs"
     # Range:      [200.0, 700.00]
     Range:      [10.0, 2005.00]
@@ -26,7 +26,7 @@ PiPlusParameters: [
   },
 
   {
-    Name:       "fPiPlusCex"
+    Name:       "fPiMinusCex"
     Cut:        "cex"
     # Range:      [200.0, 700.00]
     Range:      [10.0, 2005.00]
@@ -35,7 +35,7 @@ PiPlusParameters: [
   },
 
   {
-    Name:       "fPiPlusDCex"
+    Name:       "fPiMinusDCex"
     Cut:        "dcex"
     # Range:      [200.0, 700.00]
     Range:      [10.0, 2005.00]
@@ -44,7 +44,7 @@ PiPlusParameters: [
   },
 
   {
-    Name:       "fPiPlusPiProd"
+    Name:       "fPiMinusPiProd"
     Cut:        "prod"
     # Range:      [200.0, 700.00]
     Range:      [10.0, 2005.00]
@@ -53,7 +53,7 @@ PiPlusParameters: [
   },
 
   {
-    Name:       "fPiPlusElast"
+    Name:       "fPiMinusElast"
     Cut:        "elast"
     Range:      [10.0, 2005.00]
     Nominal:    1.0
