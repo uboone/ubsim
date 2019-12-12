@@ -11,32 +11,43 @@
 ##########################################################
 
 microboone_eventweight_reint: {
-  # weight_functions_reint: [
-  #   reinteractions_proton, reinteractions_piplus, reinteractions_piminus
-  # ]
-  weight_functions_reint: [ reinteractions_piplus ]
-  # reinteractions_proton: {
-  # }
+  weight_functions_reint: [ reinteractions_piplus, reinteractions_piminus, reinteractions_proton ]
   reinteractions_piplus: {
     type: Geant4
     random_seed: 58
     parameters: @local::PiPlusParameters
     mode: pm1sigma
     number_of_multisims: 100
-    fracsfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/cascade_out_50_to_2000_redo.root"
-    xsecfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/cross_section_out.root"
+    fracsfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piplus.root"
+    xsecfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piplus.root"
     makeoutputtree: true
+    pdg_to_reweight: 211
+    debug: true
   }
-  # reinteractions_piminus: {
-  # }
-  # reinteractions_all: {
-  #   type: Reinteraction
-  #   random_seed: 60
-  #   parameter_list: ["p", "pip", "pim"]
-  #   parameter_sigma: [ 1, 1, 1 ]
-  #   mode: multisim
-  #   number_of_multisims: 100
-  # }
+  reinteractions_piminus: {
+    type: Geant4
+    random_seed: 59
+    parameters: @local::PiMinusParameters
+    mode: pm1sigma
+    number_of_multisims: 100
+    fracsfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piminus.root"
+    xsecfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piminus.root"
+    makeoutputtree: true
+    pdg_to_reweight: -211
+    debug: true
+  }
+  reinteractions_proton: {
+    type: Geant4
+    random_seed: 60
+    parameters: @local::ProtonParameters
+    mode: pm1sigma
+    number_of_multisims: 100
+    fracsfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_proton.root"
+    xsecfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
+    makeoutputtree: true
+    pdg_to_reweight: 2212
+    debug: true
+  }
 }
 
 ###
@@ -63,11 +74,11 @@ microboone_eventweight_reint: {
 #   uncertainty bounds: nominal-sigma and nominal+sigma
 # - Cut must be one of the following:
 #      "reac" <- total inelastic scattering cross section
-#      "abs" <- absorption cross section
-#      "cex" <- charge exchange cross section
-#      "dcex" <- double charge exchange cross section
-#      "prod" <- pion production cross section
-#      "inel" <- quasi-elastic inelastic scattering cross section
+#      "abs" <- absorption cross section (pi+ and pi- only at the moment -- Oct 2019)
+#      "cex" <- charge exchange cross section (pi+ and pi- only at the moment -- Oct 2019)
+#      "dcex" <- double charge exchange cross section (pi+ and pi- only at the moment -- Oct 2019)
+#      "prod" <- pion production cross section (pi+ and pi- only at the moment -- Oct 2019)
+#      "inel" <- quasi-elastic inelastic scattering cross section (pi+ and pi- only at the moment -- Oct 2019)
 #      "elast" <- total elastic scattering cross section
 # - Name can be anything you like (but should uniquely identify that parameter/
 #   variation)

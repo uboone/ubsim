@@ -13,12 +13,34 @@ services: {
   NuRandomService: @local::microboone_seedservice
   UBEventWeight: @local::microboone_eventweight_service
   TFileService: { fileName: "microboone_reint_trees.root" }
-  @table::microboone_simulation_services
+  ExptGeoHelperInterface: @local::microboone_geometry_helper
+  Geometry: @local::microboone_geo
 }
 
 source: {
   module_type: RootInput
-    fileNames : [ "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/40/24/reco1_20190924T230120_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T020604_reco2.root" ]
+    fileNames : [
+    "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/37/80/reco1_20190924T222629_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T012343_reco2.root",
+    "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/36/98/reco1_20190924T230545_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T012812_reco2.root",
+    "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/40/32/reco1_20190924T230300_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T012715_reco2.root",
+    "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/40/04/reco1_20190924T234833_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T012652_reco2.root",
+    "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/37/73/reco1_20190924T235126_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T013639_reco2.root",
+    "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/38/61/reco1_20190924T231514_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T013446_reco2.root"
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/41/08/reco1_20190924T235419_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T013745_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/40/00/reco1_20190924T232031_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T013937_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/38/62/reco1_20190925T000552_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T014657_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/37/05/reco1_20190924T231910_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T015355_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/37/21/reco1_20190924T234356_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T015437_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/40/17/reco1_20190925T000548_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T020301_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/40/24/reco1_20190924T230120_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T020604_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/37/93/reco1_20190924T232532_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T020410_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/38/68/reco1_20190924T234500_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T021200_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/38/65/reco1_20190924T230550_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T021225_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/41/03/reco1_20190924T211447_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T021022_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/38/09/reco1_20190924T230853_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T022547_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/39/28/reco1_20190924T230505_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T022558_reco2.root",
+    # "/pnfs/uboone/data/uboone/reconstructed/prod_v08_00_00_22/bnb_nu_overlay_mcc9.1_run3_v08_00_00_22/reco2_F/00/01/40/40/reco1_20190925T003846_crtmerge_detsim_mix_r1a_postwcct_postdlmc_20190925T023113_reco2.root"
+    ]
 }
 
 physics: {
