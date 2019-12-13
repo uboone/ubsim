@@ -213,7 +213,6 @@ PhotoNuclearWeightCalc::GetWeight(art::Event& e) {
 	  primary_photon_count++;
 	  std::cout <<itruth<<"-th truth, "<< primary_photon_count<<"-th primary photon :: EndProcess : " << p.EndProcess() << " , Mother: " << p.Mother() << " , Statuscode : " << p.StatusCode() << " , TrackID : " << p.TrackId() << " , P : " << p.P() << " , primary? :" <<is_from_pi0<<std::endl;
 	}
-	
       }
       
       if (!is_from_pi0) continue;
@@ -221,9 +220,7 @@ PhotoNuclearWeightCalc::GetWeight(art::Event& e) {
       double ke = p.E() - p.Mass();
       std::string endProc = p.EndProcess();
 
-
-
-      bool photonu_absorbed = (endProc.find("Photonuclear") != std::string::npos);
+      bool photonu_absorbed = (endProc.find("photonNuclear") != std::string::npos);
       //      bool interaced = (endProc.find("Inelastic") != std::string::npos);
 
       // Reweight particles under consideration
@@ -256,11 +253,11 @@ PhotoNuclearWeightCalc::GetWeight(art::Event& e) {
           float w;
           if (photonu_absorbed) {
             w = (1.0 - sprob) / def.pint->GetBinContent(kebin);
-	    std::cout << "photonu! , nominal sprob : " << 1-def.pint->GetBinContent(kebin) << " , sprob= "<<sprob<<", when r= "<< def.sigmas[j] << " , weight  : "<< w <<std::endl; 
+	    std::cout << "photonu! , nominal sprob : " << 1-def.pint->GetBinContent(kebin) << " , sprob= "<<sprob<<" , when r= "<< def.sigmas[j] << " , weight  : "<< w <<std::endl; 
           }
           else {
             w = sprob / (1.0 - def.pint->GetBinContent(kebin));
-	    std::cout << "no photonu!, nominal sprob : " << 1-def.pint->GetBinContent(kebin) << " , sprob= "<<sprob<<", when r= "<< def.sigmas[j]<< " , weight: " << w << std::endl;
+	    //std::cout << "no photonu!, nominal sprob : " << 1-def.pint->GetBinContent(kebin) << " , sprob= "<<sprob<<" , when r= "<< def.sigmas[j]<< " , weight: " << w << std::endl;
           }
 	  
 
