@@ -253,11 +253,11 @@ PhotoNuclearWeightCalc::GetWeight(art::Event& e) {
           float w;
           if (photonu_absorbed) {
             w = (1.0 - sprob) / def.pint->GetBinContent(kebin);
-	    std::cout << "photonu! , nominal sprob : " << 1-def.pint->GetBinContent(kebin) << " , sprob= "<<sprob<<" , when r= "<< def.sigmas[j] << " , weight  : "<< w <<std::endl; 
+	    std::cout << "photonu end process! , nominal sprob : " << 1-def.pint->GetBinContent(kebin) << " , sprob= "<<sprob<<" , when r= "<< def.sigmas[j] << " , weight  : "<< w <<std::endl; 
           }
           else {
             w = sprob / (1.0 - def.pint->GetBinContent(kebin));
-	    //std::cout << "no photonu!, nominal sprob : " << 1-def.pint->GetBinContent(kebin) << " , sprob= "<<sprob<<" , when r= "<< def.sigmas[j]<< " , weight: " << w << std::endl;
+	    std::cout << "other end process !, nominal sprob : " << 1-def.pint->GetBinContent(kebin) << " , sprob= "<<sprob<<" , when r= "<< def.sigmas[j]<< " , weight: " << w << std::endl;
           }
 	  
 
