@@ -18,11 +18,11 @@ microboone_eventweight_reint: {
     parameters: @local::PiPlusParameters
     mode: pm1sigma
     number_of_multisims: 100
-    fracsfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piplus.root"
-    xsecfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piplus.root"
+    fracsfile: "systematics/reint/g4rwt/g4_fracs_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piplus.root"
+    xsecfile: "systematics/reint/g4rwt/g4_cross_section_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piplus.root"
     makeoutputtree: true
     pdg_to_reweight: 211
-    debug: true
+    debug: false
   }
   reinteractions_piminus: {
     type: Geant4
@@ -30,11 +30,11 @@ microboone_eventweight_reint: {
     parameters: @local::PiMinusParameters
     mode: pm1sigma
     number_of_multisims: 100
-    fracsfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piminus.root"
-    xsecfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piminus.root"
+    fracsfile: "systematics/reint/g4rwt/g4_fracs_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piminus.root"
+    xsecfile: "systematics/reint/g4rwt/g4_cross_section_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piminus.root"
     makeoutputtree: true
     pdg_to_reweight: -211
-    debug: true
+    debug: false
   }
   reinteractions_proton: {
     type: Geant4
@@ -42,11 +42,11 @@ microboone_eventweight_reint: {
     parameters: @local::ProtonParameters
     mode: pm1sigma
     number_of_multisims: 100
-    fracsfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_proton.root"
-    xsecfile: "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
+    fracsfile: "systematics/reint/g4rwt/g4_fracs_proton.root" #"/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_proton.root"
+    xsecfile: "systematics/reint/g4rwt/g4_cross_section_proton.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
     makeoutputtree: true
     pdg_to_reweight: 2212
-    debug: true
+    debug: false
   }
 }
 
