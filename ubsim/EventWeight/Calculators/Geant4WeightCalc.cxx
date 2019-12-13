@@ -126,7 +126,7 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
   art::ServiceHandle<art::TFileService> tfs;
 
   if (fMakeOutputTrees){
-    fOutTree_Particle = tfs->make<TTree>("ByParticleValidTree","");
+    fOutTree_Particle = tfs->make<TTree>(Form("%s_%i","ByParticleValidTree",fPdg),"");
     fOutTree_Particle->Branch("event_num",&event_num);
     fOutTree_Particle->Branch("run_num",&run_num);
     fOutTree_Particle->Branch("subrun_num",&subrun_num);
@@ -143,7 +143,7 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
     fOutTree_Particle->Branch("sliceInts",&p_sliceInts);
     fOutTree_Particle->Branch("nElasticScatters",&p_nElasticScatters);
 
-    fOutTree_MCTruth = tfs->make<TTree>("ByMCTruthValidTree","");
+    fOutTree_MCTruth = tfs->make<TTree>(Form("%s_%i","ByMCTruthValidTree",fPdg),"");
     fOutTree_MCTruth->Branch("event_num",&event_num);
     fOutTree_MCTruth->Branch("run_num",&run_num);
     fOutTree_MCTruth->Branch("subrun_num",&subrun_num);
