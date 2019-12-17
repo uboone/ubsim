@@ -1,6 +1,6 @@
 
 
-double BetheBloch(double energy){
+double BetheBloch(double energy, double mass){
 
   //Need to make this configurable? Or delete...
   double K = .307075;
@@ -8,7 +8,6 @@ double BetheBloch(double energy){
   double Z = 18;
   double A = 40;
   double I = 188E-6;
-  double mass = 139.57;
   double me = .511;
   //Need to make sure this is total energy, not KE
   double gamma = energy/mass;
@@ -21,7 +20,7 @@ double BetheBloch(double energy){
   return dEdX;
 }
 
-std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTraj, double res){
+std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTraj, double res, double mass, bool isElastic){
 
   std::vector< std::pair<double, int> > result;
 
@@ -61,9 +60,9 @@ std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTr
       interactInSlice = 0;
 
       //Update the energy
-      sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy);
-      if( sliceEnergy - 139.57 < 0.){
-        //std::cout << "Warning! Negative energy " << sliceEnergy - 139.57 << std::endl;
+      sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy, mass);
+      if( sliceEnergy - mass < 0.){
+        //std::cout << "Warning! Negative energy " << sliceEnergy - mass << std::endl;
         //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
         sliceEnergy = 0.0001;
       }
@@ -74,15 +73,18 @@ std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTr
         result.push_back( std::make_pair(sliceEnergy, 0) );
 
         //Update the energy again
-        sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy);
-        if( sliceEnergy - 139.57 < 0.){
-          //std::cout << "Warning! Negative energy " << sliceEnergy - 139.57 << std::endl;
+        sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy, mass);
+        if( sliceEnergy - mass < 0.){
+          //std::cout << "Warning! Negative energy " << sliceEnergy - mass << std::endl;
           //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
           sliceEnergy = 0.0001;
         }
       }
 
-      if( ( theProc == "pi+Inelastic") ) interactInSlice = 1;
+      if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) || (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {
+          // std::cout << "found! " << theProc << '\n';
+          interactInSlice = 1;
+      }
     }
     //It's crossed a slice and it's the last step. Save both info
     else if( oldSlice != currentSlice && is == nSteps - 1 ){
@@ -90,9 +92,9 @@ std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTr
       interactInSlice = 0;
 
       //Update the energy
-      sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy);
-      if( sliceEnergy - 139.57 < 0.){
-        //std::cout << "Warning! Negative energy " << sliceEnergy - 139.57 << std::endl;
+      sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy, mass);
+      if( sliceEnergy - mass < 0.){
+        //std::cout << "Warning! Negative energy " << sliceEnergy - mass << std::endl;
         //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
         sliceEnergy = 0.0001;
       }
@@ -103,26 +105,35 @@ std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTr
         result.push_back( std::make_pair(sliceEnergy, 0) );
 
         //Update the energy again
-        sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy);
-        if( sliceEnergy - 139.57 < 0.){
-          //std::cout << "Warning! Negative energy " << sliceEnergy - 139.57 << std::endl;
+        sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy, mass);
+        if( sliceEnergy - mass < 0.){
+          //std::cout << "Warning! Negative energy " << sliceEnergy - mass << std::endl;
           //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
           sliceEnergy = 0.0001;
         }
       }
 
       //Save the last slice
-      if( (theProc == "pi+Inelastic") ) interactInSlice = 1;
+      if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) || (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {
+          // std::cout << "found! " << theProc << '\n';
+          interactInSlice = 1;
+      }
       result.push_back( std::make_pair(sliceEnergy, interactInSlice) );
     }
     //It's the end, so just save this last info
     else if( oldSlice == currentSlice && is == nSteps - 1 ){
-      if( (theProc == "pi+Inelastic") ) interactInSlice = 1;
+      if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) || (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {
+              // std::cout << "found! " << theProc << '\n';
+              interactInSlice = 1;
+          }
       result.push_back( std::make_pair(sliceEnergy, interactInSlice) );
     }
     //Same slice, not the end. Check for interactions
     else{
-      if( (theProc == "pi+Inelastic") ) interactInSlice = 1;
+      if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) || (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {
+          // std::cout << "found! " << theProc << '\n';
+          interactInSlice = 1;
+      }
     }
 
     //Update oldslice

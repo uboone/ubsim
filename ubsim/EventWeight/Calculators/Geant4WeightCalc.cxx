@@ -76,8 +76,10 @@ private:
   std::string p_final_proc; //!< Variables for by-particle output tree
   double p_init_momentum; //!< Variables for by-particle output tree
   double p_final_momentum; //!< Variables for by-particle output tree
-  std::vector< double > p_energies; //!< Variables for by-particle output tree
-  std::vector< int > p_sliceInts; //!< Variables for by-particle output tree
+  std::vector< double > p_energies_el; //!< Variables for by-particle output tree
+  std::vector< int > p_sliceInts_el; //!< Variables for by-particle output tree
+  std::vector< double > p_energies_inel; //!< Variables for by-particle output tree
+  std::vector< int > p_sliceInts_inel; //!< Variables for by-particle output tree
   int p_nElasticScatters; //!< Variables for by-particle output tree
   std::vector<double> p_inel_weight; //!< Variables for by-particle output tree
   std::vector<double> p_elastic_weight; //!< Variables for by-particle output
@@ -139,8 +141,10 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
     fOutTree_Particle->Branch("final_proc",&p_final_proc);
     fOutTree_Particle->Branch("init_momentum",&p_init_momentum);
     fOutTree_Particle->Branch("final_momentum",&p_final_momentum);
-    fOutTree_Particle->Branch("energies",&p_energies);
-    fOutTree_Particle->Branch("sliceInts",&p_sliceInts);
+    fOutTree_Particle->Branch("energies_el",&p_energies_el);
+    fOutTree_Particle->Branch("sliceInts_el",&p_sliceInts_el);
+    fOutTree_Particle->Branch("energies_inel",&p_energies_inel);
+    fOutTree_Particle->Branch("sliceInts_inel",&p_sliceInts_inel);
     fOutTree_Particle->Branch("nElasticScatters",&p_nElasticScatters);
 
     fOutTree_MCTruth = tfs->make<TTree>(Form("%s_%i","ByMCTruthValidTree",fPdg),"");
@@ -273,8 +277,10 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
       p_final_proc="dummy";
       p_init_momentum=-9999;
       p_final_momentum=-9999;
-      p_energies.clear();
-      p_sliceInts.clear();
+      p_energies_el.clear();
+      p_sliceInts_el.clear();
+      p_energies_inel.clear();
+      p_sliceInts_inel.clear();
       p_nElasticScatters=-9999;
 
 
@@ -284,7 +290,7 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
       std::string EndProcess  = p.EndProcess();
 
       double mass = 0.;
-      if( p_PDG == 211 ) mass = 139.57;
+      if( TMath::Abs(p_PDG) == 211 ) mass = 139.57;
       else if( p_PDG == 2212 ) mass = 938.28;
 
       // We only want to record weights for one type of particle (defined by fPDG from the fcl file), so skip other particles
@@ -420,13 +426,21 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
             std::pow( theTraj.GetStep( theTraj.GetNSteps() - 1 )->GetPreStepPz(), 2 )
         );
 
-        std::vector< std::pair< double, int > > thin_slice = ThinSliceBetheBloch( &theTraj, .5 );
+        std::vector< std::pair< double, int > > thin_slice_inelastic = ThinSliceBetheBloch( &theTraj, .5, mass , false);
+        std::vector< std::pair< double, int > > thin_slice_elastic = ThinSliceBetheBloch( &theTraj, .5, mass , true);
 
-        p_energies.clear();
-        p_sliceInts.clear();
-        for( size_t islice = 0; islice < thin_slice.size(); ++islice ){
-          p_energies.push_back( thin_slice[islice].first );
-          p_sliceInts.push_back( thin_slice[islice].second );
+        p_energies_inel.clear();
+        p_sliceInts_inel.clear();
+        for( size_t islice = 0; islice < thin_slice_inelastic.size(); ++islice ){
+          p_energies_inel.push_back( thin_slice_inelastic[islice].first );
+          p_sliceInts_inel.push_back( thin_slice_inelastic[islice].second );
+        }
+
+        p_energies_el.clear();
+        p_sliceInts_el.clear();
+        for( size_t islice = 0; islice < thin_slice_elastic.size(); ++islice ){
+          p_energies_el.push_back( thin_slice_elastic[islice].first );
+          p_sliceInts_el.push_back( thin_slice_elastic[islice].second );
         }
 
         // Loop through universes (j)
