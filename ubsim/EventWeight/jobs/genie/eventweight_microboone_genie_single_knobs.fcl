@@ -21,7 +21,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "MaCCQE" ]
     parameter_sigma: [ 4.16128 ] # +/- 0.12 GeV
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 1000
   }
 
   RPA_CCQE: {
@@ -41,7 +41,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NormCCMEC" ]
     parameter_sigma: [ 1.4 ] # +/- 70%
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 1000
   }
 
   XSecShape_CCMEC: {
@@ -85,7 +85,7 @@ microboone_eventweight_genie_knobs: {
     parameter_min: [ 0.0 ]
     parameter_max: [ 1.0 ]
     mode: minmax
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
 
   MaNCEL: {
@@ -94,7 +94,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "MaNCEL" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
 
   EtaNCEL: {
@@ -103,7 +103,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "EtaNCEL" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
 
   NormNCMEC: {
@@ -112,7 +112,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NormNCMEC" ]
     parameter_sigma: [ 2 ] # +/-100%
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
 
   FracPN_CCMEC: {
@@ -121,7 +121,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FracPN_CCMEC" ]
     parameter_sigma: [ 1 ] # +/-20%
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
 
   FracDelta_CCMEC: {
@@ -130,7 +130,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FracDelta_CCMEC" ]
     parameter_sigma: [ 1.5 ] # +/-30%
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
 
   NormCCRES: {
@@ -139,7 +139,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NormCCRES" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   MaCCRESshape: {
@@ -148,7 +148,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "MaCCRESshape" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   MvCCRESshape: {
@@ -157,7 +157,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "MvCCRESshape" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NormNCRES: {
@@ -166,7 +166,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NormNCRES" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   MaNCRESshape: {
@@ -175,7 +175,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "MaNCRESshape" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   MvNCRESshape: {
@@ -184,7 +184,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "MvNCRESshape" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   MaCOHpi: {
@@ -193,7 +193,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "MaCOHpi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   R0COHpi: {
@@ -202,7 +202,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "R0COHpi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvpCC1pi: {
@@ -211,7 +211,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvpCC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvpCC2pi: {
@@ -220,7 +220,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvpCC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvpNC1pi: {
@@ -229,7 +229,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvpNC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvpNC2pi: {
@@ -238,7 +238,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvpNC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvnCC1pi: {
@@ -247,7 +247,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvnCC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvnCC2pi: {
@@ -256,7 +256,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvnCC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvnNC1pi: {
@@ -265,7 +265,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvnNC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvnNC2pi: {
@@ -274,7 +274,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvnNC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvbarpCC1pi: {
@@ -283,7 +283,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvbarpCC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvbarpCC2pi: {
@@ -292,7 +292,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvbarpCC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvbarpNC1pi: {
@@ -301,7 +301,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvbarpNC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvbarpNC2pi: {
@@ -310,7 +310,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvbarpNC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvbarnCC1pi: {
@@ -319,7 +319,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvbarnCC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvbarnCC2pi: {
@@ -328,7 +328,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvbarnCC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvbarnNC1pi: {
@@ -337,7 +337,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvbarnNC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   NonRESBGvbarnNC2pi: {
@@ -346,7 +346,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "NonRESBGvbarnNC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   AhtBY: {
@@ -355,7 +355,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "AhtBY" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   BhtBY: {
@@ -364,7 +364,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "BhtBY" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   CV1uBY: {
@@ -373,7 +373,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "CV1uBY" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   CV2uBY: {
@@ -382,7 +382,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "CV2uBY" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   AGKYxF1pi: {
@@ -391,7 +391,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "AGKYxF1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   AGKYpT1pi: {
@@ -400,7 +400,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "AGKYpT1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   MFP_pi: {
@@ -409,7 +409,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "MFP_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   MFP_N: {
@@ -418,7 +418,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "MFP_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   FrCEx_pi: {
@@ -427,7 +427,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FrCEx_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   FrInel_pi: {
@@ -436,7 +436,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FrInel_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   FrAbs_pi: {
@@ -445,7 +445,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FrAbs_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   FrCEx_N: {
@@ -454,7 +454,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FrCEx_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   FrInel_N: {
@@ -463,7 +463,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FrInel_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   FrAbs_N: {
@@ -472,7 +472,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FrAbs_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   RDecBR1gamma: {
@@ -481,7 +481,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "RDecBR1gamma" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   RDecBR1eta: {
@@ -490,7 +490,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "RDecBR1eta" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
   
   Theta_Delta2Npi: {
@@ -510,7 +510,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FrPiProd_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
 
   FrPiProd_N: {
@@ -519,7 +519,7 @@ microboone_eventweight_genie_knobs: {
     parameter_list: [ "FrPiProd_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 10
+    number_of_multisims: 100
   }
 
   # Single function that applies all weights needed to obtain
