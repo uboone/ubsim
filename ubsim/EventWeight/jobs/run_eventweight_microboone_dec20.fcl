@@ -40,3 +40,5 @@ outputs: {
    compressionLevel: 1
  }
 }
+
+physics.producers.eventweight.eLEE_Combined_Oct2018.number_of_multisims: 1

@@ -3,6 +3,7 @@ BEGIN_PROLOG
 #include "eventweight_microboone_flux.fcl"
 #include "eventweight_microboone_genie_dec20.fcl"
 #include "eventweight_microboone_spline.fcl"
+#include "eventweight_microboone_lee.fcl"
 
 microboone_eventweight_dec20: {
   module_type: "EventWeight"
@@ -24,13 +25,15 @@ microboone_eventweight_dec20: {
   @table::microboone_eventweight_flux
   @table::microboone_eventweight_genie_dec20
   @table::microboone_eventweight_spline
+  @table::microboone_eventweight_eLEE
 }
 
 # All available weight functions
 microboone_eventweight_dec20.weight_functions: [
   @sequence::microboone_eventweight_dec20.weight_functions_flux,
   @sequence::microboone_eventweight_dec20.weight_functions_genie,
-  @sequence::microboone_eventweight_dec20.weight_functions_spline
+  @sequence::microboone_eventweight_dec20.weight_functions_spline,
+  eLEE_Combined_Oct2018
 ]
 
 END_PROLOG
