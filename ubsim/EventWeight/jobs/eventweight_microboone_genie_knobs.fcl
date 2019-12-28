@@ -1,7 +1,7 @@
 BEGIN_PROLOG
 
 #include "eventweight_microboone_genie_single_knobs.fcl"
-#include "eventweight_microboone_spline.fcl"
+#include "eventweight_microboone_bug_fixes.fcl"
 
 microboone_eventweight_genie_knobs: {
   module_type: "EventWeight"
@@ -21,13 +21,13 @@ microboone_eventweight_genie_knobs: {
  
   # Load calculator configurations
   @table::microboone_eventweight_genie_knobs
-  @table::microboone_eventweight_spline
+  @table::microboone_eventweight_bug_fixes
 }
 
 # All available weight functions
 microboone_eventweight_genie_knobs.weight_functions: [
   @sequence::microboone_eventweight_genie_knobs.weight_functions_genie,
-  @sequence::microboone_eventweight_genie_knobs.weight_functions_spline
+  @sequence::microboone_eventweight_genie_knobs.weight_functions_bug_fixes
 ]
 
 END_PROLOG

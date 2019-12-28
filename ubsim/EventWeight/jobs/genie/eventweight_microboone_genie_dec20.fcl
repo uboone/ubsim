@@ -82,8 +82,9 @@ microboone_eventweight_genie_dec20: {
   # Single function that applies all weights needed to obtain
   # a new tuned central value
   # NOTE: For samples generated with GENIE v3.0.4 splines, the
-  # spline weight to convert v3.0.4 --> v3.0.4a cross sections
-  # still needs to be applied as well.
+  # bug-fix weights (e.g., the CCQE spline weight to convert
+  # v3.0.4 --> v3.0.4a cross sections) still need to be applied
+  # as well.
   TunedCentralValue: {
     type: Genie
     random_seed: 99
@@ -113,7 +114,7 @@ microboone_eventweight_genie_dec20: {
       "MvNCRESshape",
 
       # COH
-      "MaCOHpi", "R0COHpi",
+      #"MaCOHpi", "R0COHpi",
 
       # Non-resonant background
       "NonRESBGvpCC1pi", "NonRESBGvpCC2pi", "NonRESBGvpNC1pi", "NonRESBGvpNC2pi",

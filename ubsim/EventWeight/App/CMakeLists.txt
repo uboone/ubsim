@@ -9,7 +9,7 @@ simple_plugin(
   larsim_EventWeight_Calculators
   ubsim_EventWeight_Calculators
   ubsim_EventWeight_Calculators_BNBPrimaryHadron
-  ubsim_EventWeight_Calculators_Splines
+  ubsim_EventWeight_Calculators_BugFixes
   ${MF_MESSAGELOGGER}
 )
 

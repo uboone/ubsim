@@ -1,0 +1,33 @@
+##############################################################
+## Reweighting tools used to work around bugs in GENIE v3.0.4
+##
+## Maintainer: Steven Gardiner <gardiner@fnal.gov>
+##############################################################
+
+microboone_eventweight_bug_fixes: {
+
+  weight_functions_bug_fixes: [
+    ccqe_spline, res_rootino
+  ]
+
+  # Addresses a problem with CCQE spline integration in GENIE v3.0.4
+  # (see GENIE docDB #129)
+  # https://genie-docdb.pp.rl.ac.uk/cgi-bin/ShowDocument?docid=129
+  ccqe_spline: {
+    type: Spline
+    new_splines_file: "systematics/splines/splines_CCQE_v304a_G18_10a_02_11a.xml"
+    check_old_xsec: false
+    new_tune: "G18_10a_02_11a"
+    number_of_multisims: 1 # Unused. More than one doesn't make sense for this calculator
+  }
+
+  # Addresses a problem in which the P33(1600) and F17(1970) resonances are mislabeled
+  # as "rootinos" (PDG code == 0) in GENIE v3.0.4
+  # (see GENIE docDB #153)
+  # https://genie-docdb.pp.rl.ac.uk/cgi-bin/ShowDocument?docid=153
+  res_rootino: {
+    type: RESBugFix
+    number_of_multisims: 1 # Unused. More than one doesn't make sense for this calculator
+  }
+
+}

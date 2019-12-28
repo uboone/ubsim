@@ -12,7 +12,7 @@ cet_find_library( GFWNUM NAMES GFwNum PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
 cet_find_library( GFWUTL NAMES GFwUtl PATHS ENV GENIE_LIB NO_DEFAULT_PATH )
 
 art_make(
-  LIBRARY_NAME ubsim_EventWeight_Calculators_Splines
+  LIBRARY_NAME ubsim_EventWeight_Calculators_BugFixes
   LIB_LIBRARIES
     ${XML2}
     ${GHEP}

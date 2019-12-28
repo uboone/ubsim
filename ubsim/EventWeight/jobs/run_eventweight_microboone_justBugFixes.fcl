@@ -3,7 +3,7 @@
 #include "seedservice_microboone.fcl"
 #include "eventweight_microboone.fcl"
 
-process_name: EventWeight4to4aFix
+process_name: EventWeightBugFixesOnly
 
 services: {
   TimeTracker: {}
@@ -20,13 +20,13 @@ source: {
 
 physics: {
  producers: {
-   eventweight4to4aFix: @local::microboone_eventweight_justSplines
+   eventweightBugFixes: @local::microboone_eventweight_justBugFixes
    rns: {
      module_type: "RandomNumberSaver"
    }
  }
  
- simulate: [ rns, eventweight4to4aFix ]
+ simulate: [ rns, eventweightBugFixes ]
  stream1: [ out1 ]
  trigger_paths: [ simulate ]
  end_paths: [ stream1 ]
