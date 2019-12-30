@@ -11,7 +11,8 @@ double BetheBloch(double energy, double mass){
   double me = .511;
   //Need to make sure this is total energy, not KE
   double gamma = energy/mass;
-  double beta = sqrt( 1. - (1. / (gamma*gamma)) );  double Tmax = 2 * me * beta*beta * gamma*gamma;
+  double beta = sqrt( 1. - (1. / (gamma*gamma)) );
+  double Tmax = 2 * me * beta*beta * gamma*gamma;
 
   double first = K * (Z/A) * rho / (beta*beta);
   double second = .5 * log(Tmax*Tmax/(I*I)) - beta*beta;
