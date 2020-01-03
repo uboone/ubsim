@@ -53,6 +53,9 @@ namespace compress {
     /// Setter function for debug mode
     virtual void SetDebug(bool doit=true) { _debug = doit; }
 
+    ///Setter function for static baseline
+    virtual void  SetStatBas(bool doit=true) {_statBas = doit;}
+
     /// Get Baselines vector
     virtual const std::vector<double> GetBaselines() { return _baselines; }
 
@@ -72,6 +75,9 @@ namespace compress {
 
     /// Boolean to choose debug mode.
     bool _debug;
+
+    /// Boolean to choose static baseline
+    bool _statBas;
 
     /// Waveform read in by algorithm...to be scanned and compressed
     std::vector<short> _InWF;

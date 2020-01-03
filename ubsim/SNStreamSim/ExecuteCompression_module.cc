@@ -35,6 +35,8 @@
 #include "TVector3.h"
 #include <TTree.h>
 #include <TStopwatch.h>
+#include "TFile.h"
+#include "TH1D.h"
 
 // C++
 #include <memory>
@@ -86,6 +88,18 @@ private:
   TStopwatch _loopwatch;
   TStopwatch _watch;
   double _time_loop, _time_get, _time_algo, _time_calc, _time_swap;
+
+ //set variables to inject flipping bits
+  TH1F *_uPDF;
+  TH1F *_vPDF;
+  TH1F *_yPDF;
+  std::string _uFlipBitPDFName;
+  std::string _vFlipBitPDFName;
+  std::string _yFlipBitPDFName;
+  bool _flipBit;
+ //functions to set flipping bit PDFs and Injecting Flipping Bits
+  void SetPDFs(TFile *file, std::string ukey, std::string vkey, std::string ykey);
+  void InjectFlipBit(int channel, int& ADC); 
 
   /// Compression Algorithm Object...performs compression
   std::unique_ptr< compress::CompressionAlgoBase > _compress_algo;
@@ -143,12 +157,32 @@ ExecuteCompression::ExecuteCompression(fhicl::ParameterSet const & p)
 {
   
   produces< std::vector< recob::Wire > >();
-
+  std::string  FlipBitPDFfileName;
   _debug             = p.get<bool>       ("debug");
+  _flipBit           = p.get<bool>       ("FlipBit");
+  _uFlipBitPDFName   = p.get<std::string>   ("Plane0RootKey");
+  _vFlipBitPDFName   = p.get<std::string>   ("Plane1RootKey");
+  _yFlipBitPDFName   = p.get<std::string>   ("Plane2RootKey");
+  FlipBitPDFfileName    = p.get<std::string>   ("PDFfileName");
+
+
   
   if (_debug) { std::cout << "setting up default compression algo" << std::endl; }
   _compress_algo =  compress::AlgorithmFactory().MakeCompressionAlgo(p);
-  
+
+  if (_flipBit)
+  {
+        std::cout << "SETTING FLIPBITS INFO" << std::endl;
+
+     TFile *_PDFfile = TFile::Open(FlipBitPDFfileName.c_str(),"READ");
+
+     if (_PDFfile == NULL) {std::cout << " root file not opened correctly " << std::endl;}
+     SetPDFs(_PDFfile,_uFlipBitPDFName,_vFlipBitPDFName,_yFlipBitPDFName);
+     std::cout <<" double check " << _uPDF->GetEntries() <<std::endl;
+  } 
+
+
+ 
 }
 
 void ExecuteCompression::produce(art::Event & e)
@@ -161,8 +195,13 @@ void ExecuteCompression::produce(art::Event & e)
   std::unique_ptr< std::vector<recob::Wire> > wire_v(new std::vector<recob::Wire>);
 
   // load rawdigits
-  art::Handle<std::vector<raw::RawDigit> > rawdigit_h;
-  e.getByLabel("daq",rawdigit_h);
+  //art::Handle<std::vector<raw::RawDigit> > rawdigit_h;
+//  e.getByLabel("daq",rawdigit_h);
+  //art::InputTag wires_tag("driftWC","orig","OverlayDetsim");
+  //
+  art::InputTag wires_tag("driftWC","orig","Detsim");
+  auto const &rawdigit_h = e.getValidHandle<std::vector<raw::RawDigit>>(wires_tag);
+
 
   // make sure rawdigits look good
   if(!rawdigit_h.isValid()) {
@@ -187,8 +226,90 @@ void ExecuteCompression::produce(art::Event & e)
 
     if (_debug) { std::cout << "\t chan number : " << chan << std::endl; }
     
+    //fixing ADC values
+    const std::vector<short> adc = rawdigit->ADCs();
+    std::cout << "RawDigits adc sizes " << adc.size() <<std::endl;
+
     lar::sparse_vector<float> wf_ROIs;
-    
+
+    //fixing previous bug
+    std::vector<std::pair<short,short>> outTicks;
+    outTicks.reserve(ranges.size());
+    std::cout << " Ticks received " <<  ranges.size() << std::endl;    
+    //this loop is getting the starticks and endticks of all the rois
+    for (unsigned int iTicks = 0; iTicks<ranges.size();iTicks++)
+    {
+        std::pair<short,short> ticks;
+        ticks = std::make_pair((short)(ranges[iTicks].first - _compress_algo->GetInputBegin()),(short)(ranges[iTicks].second - _compress_algo->GetInputBegin()));
+        outTicks.push_back(ticks);
+
+
+
+    }
+    int badROIs = 0;
+
+    //now for this is retrieving the data from the RawDigits for the give endTick and starticks
+    for (unsigned int waveformROI = 0; waveformROI<outTicks.size(); waveformROI++)
+    {
+        std::vector<short> wvform;//where we store our ADC
+        if ((outTicks[waveformROI].second - outTicks[waveformROI].first)<0) {
+          std::cout << "waveform difference is < 0" << std::endl;
+          assert(0);
+        }
+
+        if (waveformROI >= outTicks.size()) {
+          std::cout << "access invalid element @" << waveformROI << std::endl;
+          std::cout << "waveformROI sz=" << outTicks.size() << std::endl;
+          assert(0);
+        }
+
+        wvform.reserve(outTicks[waveformROI].second - outTicks[waveformROI].first);
+         for (short iROI = outTicks[waveformROI].first; iROI<outTicks[waveformROI].second; iROI++)
+        {
+           //make sure that we don't have a 1tick waveform!
+           if (outTicks[waveformROI].second-outTicks[waveformROI].first > 0)
+           {
+                //making sure our time ticks are within the correct bounds
+                if ((int)iROI >= (int)adc.size())
+                 {
+                  std::cout << "access invalid element @" << iROI << std::endl;
+                  std::cout << "adc sz=" << adc.size() << std::endl;
+                  assert(0);
+                 }
+                int signal = adc[iROI];
+                //injecting flipping bits to our ROIs if needed 
+                if(_flipBit)
+                {
+                  InjectFlipBit(chan,signal);
+                  if (_debug)
+                  {
+                    //this will allow you to keep track of the flipping bits that were injected if needed
+                    if (signal!= adc[iROI])
+                    {
+                        std::cout <<"FLIP BIT of " << signal-adc[iROI] << " channel " << chan << " timeTick " << iROI <<std::endl;
+
+                    }
+                  }
+                }
+                wvform.push_back(signal);
+             }
+            else //1 tick ROIs are not fun!
+            {
+                badROIs++;
+            }
+        }
+if(_debug){std:: cout<< outTicks[waveformROI].first << "," << wvform.size() << "," << wf_ROIs.size() << std::endl;}
+        wf_ROIs.add_range( outTicks[waveformROI].first, std::move(wvform) );//now we add all the ROIs into a lar::sparse vector
+    }
+
+    if(_debug)
+    {
+        std::cout << "after moving things into the sparse vector" << std::endl;
+        std::cout << "BAD ROIS " << badROIs << " channel " << chan << std::endl;
+    }
+
+/*
+ ///OLD METHOD
     //loop over new waveforms created
     for (size_t n=0; n < ranges.size(); n++){
       // prepare output waveform
@@ -204,10 +325,12 @@ void ExecuteCompression::produce(art::Event & e)
       wf_ROIs.add_range( start_tick, std::move(out) );
       
     }// for all saved ROIs
-    
+*/    
     _time_swap += _watch.RealTime();
 
     if (wf_ROIs.size() == 0) continue;
+    //resize the sparse vector to have the same nominal length as the Raw::Digit
+    wf_ROIs.resize(adc.size());
 
     recob::Wire wire(std::move(wf_ROIs), chan, _geom->View(chan) );
 
@@ -312,6 +435,46 @@ void ExecuteCompression::CalculateCompression(const std::vector<short> &beforeAD
   _compress_chch_tree->Fill();
   
   return;
+}
+
+void ExecuteCompression::SetPDFs(TFile *file, std::string ukey, std::string vkey, std::string ykey)
+{
+    file->GetObject(ukey.c_str(),_uPDF);
+       if (_uPDF == NULL) std::cout << "bad uPDF allocation" <<std::endl;
+    file->GetObject(vkey.c_str(),_vPDF);
+       if (_vPDF == NULL) std::cout << "bad vPDF allocation" <<std::endl;
+    file->GetObject(ykey.c_str(),_yPDF);
+        if (_yPDF == NULL) std::cout << "bad yPDF allocation" <<std::endl;
+}
+
+void ExecuteCompression::InjectFlipBit(int channel, int& ADC)
+{
+     // if(_uPDF == NULL) std::cout << "bad uPDF allocation" <<std::endl;
+        if(channel < 2400)
+    {
+        //we are drawing from the pdf which flip to injected (no decimals allowed --floor)
+        int injectedFlip = floor(_uPDF->GetRandom());
+        if (ADC + injectedFlip <=4095)
+        {
+            ADC=ADC+injectedFlip;
+        }
+    }
+    else if(channel <4800 and channel >=2400)
+    {
+        int injectedFlip = floor(_vPDF->GetRandom());
+        if (ADC + injectedFlip <= 4095)
+        {
+            ADC=ADC+injectedFlip;
+        }
+    }
+    else
+    {
+        int injectedFlip = floor(_yPDF->GetRandom());
+        if (ADC + injectedFlip <= 4095)
+        {
+           ADC=ADC+injectedFlip;
+        }
+    }
 }
 
 DEFINE_ART_MODULE(ExecuteCompression)

@@ -12,12 +12,18 @@ namespace compress {
     : CompressionAlgoBase()
   {
 
-    _thresh = std::vector<int>(3,0.);
+    _thresh = std::vector<int>(8256,0.);
     _pol    = std::vector<int>(3,0);
     std::vector<std::vector<int> > tmp(3,std::vector<int>(2,0));
     _buffer = tmp;
-    
-    std::vector<int> fCompressThresholds   = pset.get< std::vector<int> > ("CompressThresholds");
+    double _plane = 0;
+    double _ts = 0;
+    double _pedestalBaseline = 0;
+    double _loop = 0;
+    //static baseline
+        _baseln = std::vector<int>(8256,0);
+
+    std::string fCompressThresholds        = pset.get< std::string >      ("CompressThresholds");    
     std::vector<int> fPolarity             = pset.get< std::vector<int> > ("Polarity");
     _maxADC                                = pset.get< int >              ("MaxADC");
     std::vector<int> fPlaneBuffers         = pset.get< std::vector<int> > ("PlaneBuffers");
@@ -25,9 +31,14 @@ namespace compress {
     _deltaB                                = pset.get< int >              ("BaselineThreshold");
     _deltaV                                = pset.get< int >              ("VarianceThreshold");
     bool fDebug                            = pset.get< bool >             ("Debug");
-
+    bool fstatBas                          = pset.get< bool >             ("StaticBaseline");
     // the input for _deltaB is in ADC but the value used in the algorithm is in ADC^2:
     _deltaB *= _deltaB;
+
+    if (fstatBas){
+        std::cout << "Setting static Baselines" << std::endl;
+    }
+
 
     if (fPlaneBuffers.size() != 6) {
       throw std::runtime_error("ERROR in MicrobooneFirmware: incorrect size of input for plane-buffer values.");
@@ -42,11 +53,15 @@ namespace compress {
 
     SetPolarity(fPolarity[0], fPolarity[1], fPolarity[2]);
 
-    if (fCompressThresholds.size() != 3) {
+    //set channel thresholds and static baselines       
+    std::ifstream _stream(fCompressThresholds);
+    SetCompressThresh(_stream,_plane,_ts,_loop,fstatBas,_pedestalBaseline);
+    std::cout << _thresh.at(1) << " THreshold set" << std::endl;
+    if (_thresh.size() != 8256 or _thresh.at(1) == 0) {
       throw std::runtime_error("ERROR in MicrobooneFirmware: incorrect size of input for CompressThresholds values.");
     }
 
-    SetCompressThresh(fCompressThresholds[0], fCompressThresholds[1], fCompressThresholds[2]);
+    //SetCompressThresh(fCompressThresholds[0], fCompressThresholds[1], fCompressThresholds[2]);
 
     SetDebug(fDebug);
 
@@ -92,7 +107,7 @@ namespace compress {
     std::pair<tick,tick> thisRange; 
     
     _pl = mode;
-
+    _channel = ch;
     if (_debug) { std::cout << "\t algo operating on wf of size " << waveform.size() << std::endl; }
 
     for (size_t n = 0; n < waveform.size(); n++) {
@@ -196,17 +211,22 @@ namespace compress {
 	  std::cout << "Variance. Block 1: " << _variance[0] << "\tBlock 2: " << _variance[1] << "\tBlock 3: " << _variance[2] << std::endl;
 	}
 
-
+	if(!(_statBas)){
 	// Determine if the 3 blocks are quiet enough to update the baseline
-	if ( ( (_baseline[2] - _baseline[1]) * (_baseline[2] - _baseline[1]) < _deltaB ) && 
+	 if ( ( (_baseline[2] - _baseline[1]) * (_baseline[2] - _baseline[1]) < _deltaB ) && 
 	     ( (_baseline[2] - _baseline[0]) * (_baseline[2] - _baseline[0]) < _deltaB ) && 
 	     ( (_baseline[1] - _baseline[0]) * (_baseline[1] - _baseline[0]) < _deltaB ) &&
 	     ( (_variance[2] - _variance[1]) * (_variance[2] - _variance[1]) < _deltaV ) &&
 	     ( (_variance[2] - _variance[0]) * (_variance[2] - _variance[0]) < _deltaV ) &&
 	     ( (_variance[1] - _variance[0]) * (_variance[1] - _variance[0]) < _deltaV ) ){
-	  _baselineMap[ch] = _baseline[1];
-	  if (_debug) std::cout << "Baseline updated to value " << _baselineMap[ch] << std::endl;
+	   _baselineMap[ch] = _baseline[1];
+	   if (_debug) std::cout << "Baseline updated to value " << _baselineMap[ch] << std::endl;
+	 }
 	}
+	//set the pedestal baseline
+	if (_statBas){
+	  _baselineMap[ch] = _baseln[_channel];
+        }
       }// if we hit the end of a new block
 
       _v1 = _variance[0];
@@ -221,6 +241,9 @@ namespace compress {
 	
 	double base = _baselineMap[ch];
 	
+        if (_statBas){
+          base=_baseln[_channel];
+        }
 	// reset maxima
 	_max = 0;
 
@@ -307,24 +330,24 @@ namespace compress {
 
         //if positive threshold
 	  if (_thresh[_pl] >= 0){
-          if (thisADC > base + _thresh[_pl])
+          if (thisADC > base + _thresh[_channel])
     	return true;
        }
 
 	// if negative threshold
         else{
-          if (thisADC < base + _thresh[_pl])
+          if (thisADC < base + _thresh[_channel])
     	return true;
         }
 
 	  }
 
     else { //bipolar setting set at command line
-	  if  (thisADC >= base + _thresh[_pl]) {
+	  if  (thisADC >= base + _thresh[_channel]) {
 	    return true;
 	  }
 
-	  if (thisADC <= base - _thresh[_pl]) {
+	  if (thisADC <= base - _thresh[_channel]) {
 	      return true;
 	    }
 	  }
