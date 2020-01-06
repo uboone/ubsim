@@ -112,8 +112,8 @@ microboone_eventweight_genie_dec20: {
       "NormCCRES", "MaCCRESshape", "MvCCRESshape", "NormNCRES", "MaNCRESshape",
       "MvNCRESshape",
 
-      # COH
-      "MaCOHpi", "R0COHpi",
+      # COH -- turned off for now due to a bug in v33
+      #"MaCOHpi", "R0COHpi",
 
       # Non-resonant background
       "NonRESBGvpCC1pi", "NonRESBGvpCC2pi", "NonRESBGvpNC1pi", "NonRESBGvpNC2pi",
