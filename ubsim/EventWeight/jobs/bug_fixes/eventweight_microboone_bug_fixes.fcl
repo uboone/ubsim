@@ -7,7 +7,7 @@
 microboone_eventweight_bug_fixes: {
 
   weight_functions_bug_fixes: [
-    ccqe_spline, res_rootino
+    ccqe_spline, res_rootino, coh_norm
   ]
 
   # Addresses a problem with CCQE spline integration in GENIE v3.0.4
@@ -28,6 +28,18 @@ microboone_eventweight_bug_fixes: {
   res_rootino: {
     type: RESBugFix
     number_of_multisims: 1 # Unused. More than one doesn't make sense for this calculator
+  }
+
+  # Alternative to the existing MaCOHpi and R0COHpi knobs in GENIE v3.0.4, which
+  # do not work correctly with our chosen model set and are non-trivial to fix.
+  # This calculator varies the total coherent pion production cross section
+  # using a fractional uncertainty given by the "fractional_one_sigma" FHiCL
+  # parameter
+  coh_norm: {
+    type: COHNorm
+    mode: pm1sigma
+    number_of_multisims: 2
+    fractional_one_sigma: 0.5 # 50% normalization uncertainty
   }
 
 }
