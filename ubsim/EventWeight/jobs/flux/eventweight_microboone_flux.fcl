@@ -91,7 +91,7 @@ microboone_eventweight_flux: {
     scale_factor: 1
     number_of_multisims: 1000
     PrimaryHadronGeantCode: -321 # geant code for particle production on Be
-    weight_calculator: "MicroBooNE" # "MicroBooNE" OR "MiniBooNE"
+    weight_calculator: "MiniBooNE" # "MiniBooNE", because implementation is the same but code never got copied over into a separate function for "MicroBooNE"
     use_MiniBooNE_random_numbers: false
   }
 
