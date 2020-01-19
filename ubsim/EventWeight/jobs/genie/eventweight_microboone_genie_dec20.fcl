@@ -108,9 +108,11 @@ microboone_eventweight_genie_dec20: {
       # MEC
       "NormCCMEC", "NormNCMEC", "FracPN_CCMEC", "FracDelta_CCMEC",
 
-      # RES -- shape knobs turned off for now due to slowness at runtime
-      "NormCCRES", #"MaCCRESshape", "MvCCRESshape",
-      "NormNCRES", #"MaNCRESshape", "MvNCRESshape",
+      # RES -- switching from norm+shape to Ma+Mv due to slowness at runtime
+      #"NormCCRES", "MaCCRESshape", "MvCCRESshape",
+      #"NormNCRES", "MaNCRESshape", "MvNCRESshape",
+      "MaCCRES", "MvCCRES",
+      "MaNCRES", "MvNCRES",
 
       # COH -- turned off for now due to a bug in v33
       #"MaCOHpi", "R0COHpi",
@@ -138,7 +140,8 @@ microboone_eventweight_genie_dec20: {
       1.4, # NormCCMEC uses +/-70%
       2.0, # NormNCMEC uses +/-100%
       1, 1,
-      1, 1, #1, 1, 1, 1,  # RES shape knobs
+      #1, 1, 1, 1, 1, 1,  # RES norm+shape knobs
+      1, 1, 1, 1,  # RES Ma+Mv knobs
       #1, 1,  # COH knobs
       1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
       1, 1,
