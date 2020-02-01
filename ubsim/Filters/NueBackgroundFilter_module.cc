@@ -49,19 +49,18 @@ private:
   art::InputTag fMCShowerLabel;
   float fMaxMuonEGeV;
   float fMinElecMCShwEMeV;
+  float fMinProtonEGeV;
 };
 
 
 NueBackgroundFilter::NueBackgroundFilter(fhicl::ParameterSet const& p)
-  : EDFilter{p}  // ,
-  // More initializers here.
+  : EDFilter{p}
 {
   fMCTruthLabel = p.get<art::InputTag>("MCTruthLabel");
-  fMCShowerLabel = p.get<art::InputTag>("MCShowerLabel");
-  fMaxMuonEGeV = p.get<float>("MaxMuonEGeV");
-  fMinElecMCShwEMeV = p.get<float>("MinElecMCShwEMeV");
-  // Call appropriate produces<>() functions here.
-  // Call appropriate consumes<>() for any products to be retrieved by this module.
+  fMCShowerLabel = p.get<art::InputTag>("MCShowerLabel","");
+  fMaxMuonEGeV = p.get<float>("MaxMuonEGeV",-1.);
+  fMinElecMCShwEMeV = p.get<float>("MinElecMCShwEMeV",-1.);
+  fMinProtonEGeV = p.get<float>("MinProtonEGeV",-1.);
 }
 
 bool NueBackgroundFilter::filter(art::Event& e)
@@ -75,27 +74,27 @@ bool NueBackgroundFilter::filter(art::Event& e)
 
   auto mct = truthVec.at(0);
   auto neutrino = mct.GetNeutrino();
-  // auto nu = neutrino.Nu();
-  // auto ccnc = neutrino.CCNC();
-  // auto interaction = neutrino.Mode();
-  // auto nu_pdg = nu.PdgCode();
-  // auto nu_e = nu.Trajectory().E(0);
   auto lep_e = neutrino.Lepton().E();
   auto lep_pdg = neutrino.Lepton().PdgCode();
 
-  //need to check position in FV
+  if (fMaxMuonEGeV>=0.) {
+    if (abs(lep_pdg)==13 && (lep_e-0.105)>0.02 && lep_e<fMaxMuonEGeV) {
+      // if (1) std::cout << "returning true" << std::endl;
+      return true;
+    }
+  }
 
-  // if (1) {
-  //   std::cout << "ccnc=" << ccnc << " interaction=" << interaction << " nu_pdg=" << nu_pdg << " nu_e=" << nu_e << " lep_pdg=" << lep_pdg << " lep_e=" << lep_e << std::endl;
-  // }
-
-  if (abs(lep_pdg)==13 && (lep_e-0.105)>0.02 && lep_e<fMaxMuonEGeV) {
-    // if (1) std::cout << "returning true" << std::endl;
-    return true;
+  if (fMinProtonEGeV>=0.) {
+    size_t npart = mct.NParticles();
+    for (size_t i = 0; i < npart; i++) {
+      auto const &part = mct.GetParticle(i);
+      if (part.StatusCode() != 1) continue;
+      if (part.PdgCode() == 2212 && part.StatusCode() == 1 && part.Momentum(0).E()>fMinProtonEGeV) return true;
+    }
   }
 
   // Get MCShowers in the event
-  if (fMCShowerLabel!="") { 
+  if (fMCShowerLabel!="" && fMinElecMCShwEMeV>=0.) {
     art::Handle<std::vector<sim::MCShower> > mcShwowerHandle;
     e.getByLabel(fMCShowerLabel, mcShwowerHandle);
     std::vector<sim::MCShower> const&  mcShwowerVec(*mcShwowerHandle);
