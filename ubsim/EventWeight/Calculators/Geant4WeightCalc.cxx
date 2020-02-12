@@ -206,7 +206,7 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
       // In each multisim universe, loop through all parameters. For each parameter, generate a new random number from Nominal-Sigma to Nominal+Sigma.
       std::map<std::string, double> tmp_vals;
       for (size_t i_parset=0; i_parset<n_parsets; ++i_parset){
-        double r = fGaussRandom->fire(-1.0,1.0);
+        double r = fGaussRandom->fire(0.0,1.0);
         tmp_vals[FitParNames.at(i_parset)] = FitParNominals.at(i_parset)+(FitParSigmas.at(i_parset)*r);
       } // loop over parameters (i_parset)
       // Now save this universe
