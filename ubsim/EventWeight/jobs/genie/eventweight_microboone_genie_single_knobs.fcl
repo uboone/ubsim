@@ -1,49 +1,4 @@
-##########################################################
-## GENIE weight calculators for MCC9 tuned central value
-## and systematic uncertainty studies
-##
-## One function is defined for each GENIE parameter.
-## There are also two functions that manipulate multiple
-## GENIE parameters simultaneously:
-##
-## "All" throws all GENIE knobs together (except a few
-## which need to be handled as unisims)
-##
-## "TunedCentralValue" produces weights for a single
-## universe that should be applied when filling histograms
-## with the tuned MCC9 central value prediction. See the
-## interaction uncertainties supporting note for details
-## on the procedure used for fits to external data (T2K)
-##
-## If *pm1sigma* is specifed:
-##
-##     Two weights will be evaluated for each parameter,
-##     one with +1 sigma the other with -1 sigma, it
-##     doesn't matter what you write in parameter_sigma
-##     and number _of_multisims if pm1sigma is specifed
-##
-## Defining one function for each parameter means that
-## the reweighting procedure is done separately for each
-## parameter. We can define one function with more
-## parameters in parameter_list and in this case the
-## reweight will be done simultaneously for all the
-## parameters specified.
-##
-## This FHiCL configuration includes functions for
-## all existing GENIE knobs that should be used in MCC9.
-## In the comments describing the "All" function, a list
-## the remaining GENIE knobs is given with brief justifications
-## for their exclusion.
-##
-## References:
-##
-##   * E.g. MicroBooNE DocDB 5464 (M. Del Tutto, A. Furmanski)
-##
-## Maintainer: Steven Gardiner <gardiner@fnal.gov>
-##
-##########################################################
-
-microboone_eventweight_genie: {
+microboone_eventweight_genie_knobs: {
 
   weight_functions_genie: [
     MaCCQE, RPA_CCQE, NormCCMEC, XSecShape_CCMEC, AxFFCCQEshape,
@@ -57,12 +12,8 @@ microboone_eventweight_genie: {
     NonRESBGvbarnNC2pi, AhtBY, BhtBY, CV1uBY, CV2uBY, AGKYxF1pi, AGKYpT1pi,
     MFP_pi, MFP_N, FrCEx_pi, FrInel_pi, FrAbs_pi, FrCEx_N, FrInel_N, FrAbs_N,
     RDecBR1gamma, RDecBR1eta, Theta_Delta2Npi, FrPiProd_pi, FrPiProd_N,
-    TunedCentralValue, All
+    TunedCentralValue
   ]
-
-  # INDIVIDUAL WEIGHT CALCULATORS
-  # Those that use "minmax" mode represent a variation between
-  # two extremes, with the full spread taken as the uncertainty.
 
   MaCCQE: {
     type: Genie
@@ -70,7 +21,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "MaCCQE" ]
     parameter_sigma: [ 4.16128 ] # +/- 0.12 GeV
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
 
   RPA_CCQE: {
@@ -90,7 +41,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NormCCMEC" ]
     parameter_sigma: [ 1.4 ] # +/- 70%
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
 
   XSecShape_CCMEC: {
@@ -134,7 +85,7 @@ microboone_eventweight_genie: {
     parameter_min: [ 0.0 ]
     parameter_max: [ 1.0 ]
     mode: minmax
-    number_of_multisims: 2
+    number_of_multisims: 10
   }
 
   MaNCEL: {
@@ -143,7 +94,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "MaNCEL" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
 
   EtaNCEL: {
@@ -152,7 +103,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "EtaNCEL" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
 
   NormNCMEC: {
@@ -161,7 +112,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NormNCMEC" ]
     parameter_sigma: [ 2 ] # +/-100%
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
 
   FracPN_CCMEC: {
@@ -170,7 +121,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FracPN_CCMEC" ]
     parameter_sigma: [ 1 ] # +/-20%
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
 
   FracDelta_CCMEC: {
@@ -179,7 +130,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FracDelta_CCMEC" ]
     parameter_sigma: [ 1.5 ] # +/-30%
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
 
   NormCCRES: {
@@ -188,7 +139,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NormCCRES" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   MaCCRESshape: {
@@ -197,7 +148,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "MaCCRESshape" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   MvCCRESshape: {
@@ -206,7 +157,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "MvCCRESshape" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NormNCRES: {
@@ -215,7 +166,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NormNCRES" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   MaNCRESshape: {
@@ -224,7 +175,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "MaNCRESshape" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   MvNCRESshape: {
@@ -233,7 +184,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "MvNCRESshape" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   MaCOHpi: {
@@ -242,7 +193,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "MaCOHpi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   R0COHpi: {
@@ -251,7 +202,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "R0COHpi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvpCC1pi: {
@@ -260,7 +211,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvpCC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvpCC2pi: {
@@ -269,7 +220,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvpCC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvpNC1pi: {
@@ -278,7 +229,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvpNC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvpNC2pi: {
@@ -287,7 +238,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvpNC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvnCC1pi: {
@@ -296,7 +247,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvnCC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvnCC2pi: {
@@ -305,7 +256,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvnCC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvnNC1pi: {
@@ -314,7 +265,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvnNC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvnNC2pi: {
@@ -323,7 +274,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvnNC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvbarpCC1pi: {
@@ -332,7 +283,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvbarpCC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvbarpCC2pi: {
@@ -341,7 +292,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvbarpCC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvbarpNC1pi: {
@@ -350,7 +301,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvbarpNC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvbarpNC2pi: {
@@ -359,7 +310,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvbarpNC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvbarnCC1pi: {
@@ -368,7 +319,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvbarnCC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvbarnCC2pi: {
@@ -377,7 +328,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvbarnCC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvbarnNC1pi: {
@@ -386,7 +337,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvbarnNC1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   NonRESBGvbarnNC2pi: {
@@ -395,7 +346,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "NonRESBGvbarnNC2pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   AhtBY: {
@@ -404,7 +355,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "AhtBY" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   BhtBY: {
@@ -413,7 +364,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "BhtBY" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   CV1uBY: {
@@ -422,7 +373,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "CV1uBY" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   CV2uBY: {
@@ -431,7 +382,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "CV2uBY" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   AGKYxF1pi: {
@@ -440,7 +391,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "AGKYxF1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   AGKYpT1pi: {
@@ -449,7 +400,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "AGKYpT1pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   MFP_pi: {
@@ -458,7 +409,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "MFP_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   MFP_N: {
@@ -467,7 +418,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "MFP_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   FrCEx_pi: {
@@ -476,7 +427,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FrCEx_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   FrInel_pi: {
@@ -485,7 +436,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FrInel_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   FrAbs_pi: {
@@ -494,7 +445,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FrAbs_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   FrCEx_N: {
@@ -503,7 +454,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FrCEx_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   FrInel_N: {
@@ -512,7 +463,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FrInel_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   FrAbs_N: {
@@ -521,7 +472,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FrAbs_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   RDecBR1gamma: {
@@ -530,7 +481,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "RDecBR1gamma" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   RDecBR1eta: {
@@ -539,7 +490,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "RDecBR1eta" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
   
   Theta_Delta2Npi: {
@@ -559,7 +510,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FrPiProd_pi" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
 
   FrPiProd_N: {
@@ -568,7 +519,7 @@ microboone_eventweight_genie: {
     parameter_list: [ "FrPiProd_N" ]
     parameter_sigma: [ 1 ]
     mode: multisim
-    number_of_multisims: 4
+    number_of_multisims: 10
   }
 
   # Single function that applies all weights needed to obtain
@@ -587,117 +538,4 @@ microboone_eventweight_genie: {
     number_of_multisims: 1
   }
 
-  # Single function to reweight all GENIE parameters at once
-  All: {
-    type: Genie
-    random_seed: 100
-
-    # NOT IMPLEMENTED IN GENIE v3.0.4 MicroBooNE patch 01
-    # "NormCCQEenu" # Varies CCQE normalization in an energy-dependent way
-    # "NormDISCC"   # Scales CCDIS total cross section by a constant factor
-    # "DISNuclMod"  # Unclear. Whatever was intended was never implemented.
-    # "RnubarnuCC"  # Scale ratio of neutrino to antineutrino total cross sections
-
-    # NOT RECOMMENDED
-    # "FormZone"    # Issues discovered in GENIE v3, excluded as described in supporting note
-    # "NormCCQE"    # Incompatible with MaCCQE (used in norm + shape mode)
-    # "MaCCQEshape" # Incompatible with MaCCQE (used in norm + shape mode)
-    # "E0CCQE"      # Used by "running Ma" CCQE axial form factors models only
-    # "E0CCQEshape" # Used by "running Ma" CCQE axial form factors models only
-    # "ZNormCCQE"   # Used by "z-expansion" CCQE axial form factors models only
-    # "ZExpA1CCQE"  # Used by "z-expansion" CCQE axial form factors models only
-    # "ZExpA2CCQE"  # Used by "z-expansion" CCQE axial form factors models only
-    # "ZExpA3CCQE"  # Used by "z-expansion" CCQE axial form factors models only
-    # "ZExpA4CCQE"  # Used by "z-expansion" CCQE axial form factors models only
-    # "MaCCRES"     # Incompatible with MaCCRESshape (used in Ma + Mv mode)
-    # "MvCCRES"     # Incompatible with MaCCRESshape (used in Ma + Mv mode)
-    # "MaNCRES"     # Incompatible with MaNCRESshape (used in Ma + Mv mode)
-    # "MvNCRES"     # Incompatible with MaNCRESshape (used in Ma + Mv mode)
-    # "AhtBYshape"  # Incompatible with AhtBY (used in ABCV12uShape mode)
-    # "BhtBYshape"  # Incompatible with BhtBY (used in ABCV12uShape mode)
-    # "CV1uBYshape" # Incompatible with CV1uBY (used in ABCV12uShape mode)
-    # "CV2uBYshape" # Incompatible with CV2uBY (used in ABCV12uShape mode)
-
-    # "EmpMEC_Mq2d" # Applies only to the GENIE empirical MEC model
-    # "EmpMEC_Mass" # Applies only to the GENIE empirical MEC model
-    # "EmpMEC_Width"     # Applies only to the GENIE empirical MEC model
-    # "EmpMEC_FracPN_NC" # Applies only to the GENIE empirical MEC model
-    # "EmpMEC_FracPN_CC" # Applies only to the GENIE empirical MEC model
-    # "EmpMEC_FracCCQE"  # Applies only to the GENIE empirical MEC model
-    # "EmpMEC_FracNCQE"  # Applies only to the GENIE empirical MEC model
-    # "EmpMEC_FracPN_EM" # Applies only to the GENIE empirical MEC model
-    # "EmpMEC_FracEMQE"  # EM knob, applies only to the GENIE empirical MEC model
-    # "NormEMMEC"        # EM knob
-
-    # "FrElas_pi"        # Pion elastic rescattering fate removed in hA2018
-    # "FrElas_N"         # Nucleon elastic rescattering fate removed in hA2018
-
-    # "CCQEPauliSupViaKF" # Updated to behave correctly in GENIE v3.0.4 MicroBooNE
-                          # patch 01, however, can only reweight kF up (killing off
-                          # more events). Adjusting RPA knob expected to give similar
-                          # results, so this one was omitted for the time being.
-
-    # "CCQEMomDistroFGtoSF" # Assumes use of a global Bodek-Ritchie Fermi gas,
-                            # spectral function unavailable in GENIE v3.0.4 for argon
-
-    # "NC" # Scales the inclusive NC total cross section up and down. Could be added
-           # if needed, not expected to be important for LEE analyses. Possibility
-           # of double-counting should be addressed when using, e.g., NormNCRES
-           # simultaneously.
-
-    # FSI CUSHION TERMS
-    # These are recommended for use in the supporting note. However, when throwing
-    # all FSI knobs at once, at least one hadron fate for both nucleons and pions
-    # must be used as a "cushion term" to preserve unitarity. In the genie_all
-    # weight calculator configuration, we choose the pion production fate to be
-    # the cushion fate.
-    
-    #"FrPiProd_N", "FrPiProd_pi",
-
-    # RECOMMENDED FULL GENIE PARAMETER LIST
-    # See supporting note for descriptions
-    parameter_list: [
-
-      # QE
-      "MaCCQE", "MaNCEL", "EtaNCEL",
-
-      # MEC
-      "NormCCMEC", "NormNCMEC", "FracPN_CCMEC", "FracDelta_CCMEC",
-
-      # RES
-      "NormCCRES", "MaCCRESshape", "MvCCRESshape", "NormNCRES", "MaNCRESshape",
-      "MvNCRESshape",
-
-      # COH
-      "MaCOHpi", "R0COHpi",
-
-      # Non-resonant background
-      "NonRESBGvpCC1pi", "NonRESBGvpCC2pi", "NonRESBGvpNC1pi", "NonRESBGvpNC2pi",
-      "NonRESBGvnCC1pi", "NonRESBGvnCC2pi", "NonRESBGvnNC1pi", "NonRESBGvnNC2pi",
-      "NonRESBGvbarpCC1pi", "NonRESBGvbarpCC2pi", "NonRESBGvbarpNC1pi",
-      "NonRESBGvbarpNC2pi", "NonRESBGvbarnCC1pi", "NonRESBGvbarnCC2pi", "NonRESBGvbarnNC1pi",
-      "NonRESBGvbarnNC2pi", "AhtBY", "BhtBY", "CV1uBY", "CV2uBY",
-
-      # Hadronization
-      "AGKYxF1pi", "AGKYpT1pi",
-
-      # FSI
-      "MFP_pi", "MFP_N", "FrCEx_pi", "FrInel_pi", "FrAbs_pi",
-      "FrCEx_N", "FrInel_N", "FrAbs_N",
-
-      # Delta resonance decays
-      "RDecBR1gamma", "RDecBR1eta"
-    ]
-    parameter_sigma: [
-      4.16128, # MaCCQE uses +/-0.12 GeV about the tuned central value
-      1, 1,
-      1.4, # NormCCMEC uses +/-70%
-      2.0, # NormNCMEC uses +/-100%
-      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-      1, 1, 1, 1, 1, 1
-    ]
-    mode: multisim
-    number_of_multisims: 4 
-  }
 }
