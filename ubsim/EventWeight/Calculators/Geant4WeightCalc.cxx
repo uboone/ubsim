@@ -255,12 +255,10 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
     weight[itruth].resize(fNsims, 1.0);
 
     // Reset things to be saved in the output tree for fast validation
-    if (fMakeOutputTrees){
       e_inel_weight[itruth].clear();
       e_inel_weight[itruth].resize(fNsims,1.0);
       e_elastic_weight[itruth].clear();
       e_elastic_weight[itruth].resize(fNsims,1.0);
-    }
 
     // Loop over MCParticles in the event
     auto const& mcparticles = truthParticles.at(itruth);
