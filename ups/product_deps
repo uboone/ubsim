@@ -32,19 +32,20 @@ product                 version
 ubevt                   v08_00_00_35
 larsim                  v08_02_00_08
 larwirecell             v08_02_00_09
+geant4reweight		v01_00_03
 cetbuildtools	        v7_11_00	-	only_for_build
 end_product_list
 
-qualifier      ubevt          larsim        larwirecell
-c2:debug       c2:debug       c2:debug      c2:debug
-c2:opt         c2:opt         c2:opt        c2:opt
-c2:prof        c2:prof        c2:prof       c2:prof
-e15:debug      e15:debug      e15:debug     e15:debug
-e15:opt        e15:opt        e15:opt       e15:opt
-e15:prof       e15:prof       e15:prof      e15:prof
-e17:debug      e17:debug      e17:debug     e17:debug
-e17:opt        e17:opt        e17:opt       e17:opt
-e17:prof       e17:prof       e17:prof      e17:prof
+qualifier      ubevt          larsim        larwirecell		geant4reweight
+c2:debug       c2:debug       c2:debug      c2:debug		c2:debug:s78
+c2:opt         c2:opt         c2:opt        c2:opt		-nq-
+c2:prof        c2:prof        c2:prof       c2:prof		c2:prof:s78
+e15:debug      e15:debug      e15:debug     e15:debug		-nq-
+e15:opt        e15:opt        e15:opt       e15:opt		-nq-
+e15:prof       e15:prof       e15:prof      e15:prof		-nq-
+e17:debug      e17:debug      e17:debug     e17:debug		e17:debug:s78
+e17:opt        e17:opt        e17:opt       e17:opt		-nq-
+e17:prof       e17:prof       e17:prof      e17:prof		e17:prof:s78
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
