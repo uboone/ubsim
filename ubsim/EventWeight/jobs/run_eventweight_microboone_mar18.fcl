@@ -1,7 +1,7 @@
 #include "services_microboone.fcl"
 #include "microboone_eventweight_service.fcl"
 #include "seedservice_microboone.fcl"
-#include "eventweight_microboone_dec20.fcl"
+#include "eventweight_microboone_mar18.fcl"
 
 process_name: EventWeightDec20
 
@@ -20,7 +20,7 @@ source: {
 
 physics: {
  producers: {
-   eventweight:  @local::microboone_eventweight_dec20
+   eventweight:  @local::microboone_eventweight_mar18
    rns: {
      module_type: "RandomNumberSaver"
    }

@@ -20,7 +20,7 @@ microboone_eventweight_genie_knobs: {
   }
  
   # Load calculator configurations
-  @table::microboone_eventweight_genie_knobs
+  @table::microboone_eventweight_genie_single_knobs
   @table::microboone_eventweight_spline
 }
 

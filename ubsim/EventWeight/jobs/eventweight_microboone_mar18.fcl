@@ -1,10 +1,11 @@
 BEGIN_PROLOG
 
 #include "eventweight_microboone_flux.fcl"
-#include "eventweight_microboone_genie_dec20.fcl"
+#include "eventweight_microboone_genie.fcl"
 #include "eventweight_microboone_spline.fcl"
+#include "eventweight_microboone_xs.fcl"
 
-microboone_eventweight_dec20: {
+microboone_eventweight: {
   module_type: "EventWeight"
  
   # Throw exception if weight outside limits
@@ -22,15 +23,17 @@ microboone_eventweight_dec20: {
  
   # Load calculator configurations
   @table::microboone_eventweight_flux
-  @table::microboone_eventweight_genie_dec20
+  @table::microboone_eventweight_genie
   @table::microboone_eventweight_spline
+  @table::microboone_eventweight_xs
 }
 
 # All available weight functions
-microboone_eventweight_dec20.weight_functions: [
-  @sequence::microboone_eventweight_dec20.weight_functions_flux,
-  @sequence::microboone_eventweight_dec20.weight_functions_genie,
-  @sequence::microboone_eventweight_dec20.weight_functions_spline
+microboone_eventweight.weight_functions: [
+  @sequence::microboone_eventweight.weight_functions_flux,
+  @sequence::microboone_eventweight.weight_functions_genie,
+  @sequence::microboone_eventweight.weight_functions_spline,
+  @sequence::microboone_eventweight.weight_functions_xs
 ]
 
 END_PROLOG
