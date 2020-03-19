@@ -3,7 +3,7 @@
 #include "seedservice_microboone.fcl"
 #include "eventweight_microboone_mar18.fcl"
 
-process_name: EventWeightDec20
+process_name: EventWeightMar18
 
 services: {
   TimeTracker: {}

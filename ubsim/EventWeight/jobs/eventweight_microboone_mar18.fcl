@@ -5,7 +5,7 @@ BEGIN_PROLOG
 #include "eventweight_microboone_spline.fcl"
 #include "eventweight_microboone_xs.fcl"
 
-microboone_eventweight: {
+microboone_eventweight_mar18: {
   module_type: "EventWeight"
  
   # Throw exception if weight outside limits
@@ -29,11 +29,11 @@ microboone_eventweight: {
 }
 
 # All available weight functions
-microboone_eventweight.weight_functions: [
-  @sequence::microboone_eventweight.weight_functions_flux,
-  @sequence::microboone_eventweight.weight_functions_genie,
-  @sequence::microboone_eventweight.weight_functions_spline,
-  @sequence::microboone_eventweight.weight_functions_xs
+microboone_eventweight_mar18.weight_functions: [
+  @sequence::microboone_eventweight_mar18.weight_functions_flux,
+  @sequence::microboone_eventweight_mar18.weight_functions_genie,
+  @sequence::microboone_eventweight_mar18.weight_functions_spline,
+  @sequence::microboone_eventweight_mar18.weight_functions_xs
 ]
 
 END_PROLOG
