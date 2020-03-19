@@ -151,6 +151,7 @@ art_make(
     ${Boost_SYSTEM_LIBRARY}
     ${G4_LIB_LIST}
     ${LOG4CPP}
+    ${MF_MESSAGELOGGER}
 )
 
 install_headers()
