@@ -16,7 +16,7 @@ microboone_eventweight: {
 
   # Throw exception if weight outside limits
   min_weight: 0
-  max_weight: 100
+  max_weight: 1000
  
   genie_module_label: generator  
 

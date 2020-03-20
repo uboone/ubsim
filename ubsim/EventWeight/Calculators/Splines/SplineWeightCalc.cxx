@@ -161,10 +161,24 @@ namespace evwgh {
   {
     // Get truth-level information created by GENIE from the event
     art::Handle< std::vector<simb::MCTruth> > mcTruthHandle;
-    e.getByLabel(fGenieModuleLabel, mcTruthHandle);
+    e.getByLabel( fGenieModuleLabel, mcTruthHandle );
 
-    const art::FindOneP<simb::GTruth> gTruths(mcTruthHandle, e, fGenieModuleLabel);
-    assert( gTruths.isValid() );
+    // NOTE: This is the best way to find the matching GTruth objects (via
+    // their associations). However, the TreeReader workflow used by the gLEE
+    // analysis doesn't reproduce those. We therefore rely instead on MCTruth
+    // and GTruth objects being placed in the art::Event in the same order. I
+    // believe this is always done by the GenieGen module. Your mileage may
+    // vary. -- S. Gardiner, 17 March 2020.
+    //const art::FindOneP<simb::GTruth> gTruths(mcTruthHandle, e, fGenieModuleLabel);
+    //assert( gTruths.isValid() );
+
+    art::Handle< std::vector<simb::GTruth> > gTruthHandle;
+    e.getByLabel( fGenieModuleLabel, gTruthHandle );
+
+    // Verify that we have the same number of MCTruth and GTruth objects in the
+    // event that were produced by the GenieGen module. This is intended to
+    // help prevent accidental mismatches.
+    assert( mcTruthHandle->size() == gTruthHandle->size() );
 
     // Initialize the vector of event weights. Each MCTruth will have a single
     // associated weight (multisims don't make sense for this calculator)
@@ -175,7 +189,7 @@ namespace evwgh {
       // Reconsitute the full GENIE event record using the current
       // MCTruth object and its associated GTruth object
       const simb::MCTruth& mc_truth = mcTruthHandle->at( mc_idx );
-      const simb::GTruth& g_truth = *gTruths.at( mc_idx );
+      const simb::GTruth& g_truth = gTruthHandle->at( mc_idx );
 
       // Note that the caller takes ownership of the event record produced by
       // evgb::RetrieveGHEP(). We wrap it in a std::unique_ptr here so that it
