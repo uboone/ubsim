@@ -16,11 +16,12 @@
 #define OPTICALDRAMREADOUT_MODULE_CC
 
 // LArSoft includes
+#include "larcore/CoreUtils/ServiceUtil.h"
 #include "lardataobj/OpticalDetectorData/FIFOChannel.h"
 #include "lardataobj/OpticalDetectorData/OpticalRawDigit.h"
 #include "lardataobj/RawData/TriggerData.h"
 #include "lardataobj/RawData/OpDetWaveform.h"
-#include "lardata/DetectorInfoServices/DetectorClocksServiceStandard.h" // FIXME: this code is non-portable
+#include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include "ubsim/OpticalDetectorSim/UBOpticalException.h"
 #include "larcore/Geometry/Geometry.h" // larcore
 #include "ubcore/Geometry/UBOpChannelTypes.h"  // uboonecode
@@ -161,11 +162,7 @@ namespace opdet {
     // Get needed services
 
     // Obtain optical clock to be used for sample/frame number generation
-    // FIXME: this code is non-portable
-    art::ServiceHandle<detinfo::DetectorClocksServiceStandard> tss;
-    //FIXME: you should let the framework call preProcessEvent
-    tss->preProcessEvent(event, art::ScheduleContext::invalid()); // sets trigger time
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksServiceStandard>();
+    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
     ::detinfo::ElecClock clock = ts->OpticalClock();
     //std::cout << "OpticalDRAM: Trigger time=" << ts->TriggerTime() << " Beam gate time=" << ts->BeamGateTime() << std::endl;
 

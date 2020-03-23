@@ -55,7 +55,7 @@
 #include "larcorealg/Geometry/GeometryCore.h"
 #include "lardata/Utilities/LArFFT.h"
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
-#include "lardata/DetectorInfoServices/DetectorClocksServiceStandard.h" // FIXME: this is not portable
+#include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include "ubevt/Utilities/SignalShapingServiceMicroBooNE.h"
 #include "lardataobj/Simulation/sim.h"
 #include "larevt/CalibrationDBI/Interface/DetPedestalService.h"
@@ -370,7 +370,7 @@ namespace detsim {
     // TFileService
     art::ServiceHandle<art::TFileService> tfs;
     //TimeService
-    art::ServiceHandle<detinfo::DetectorClocksServiceStandard> tss;
+    art::ServiceHandle<detinfo::DetectorClocksService> tss;
     auto const* ts = tss->provider();
 
     // Check if trigger data product exists or not. If not, throw a warning

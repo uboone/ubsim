@@ -3,6 +3,7 @@
 
 #include "WFAlgoAnalyticalSPE.h"
 
+#include "larcore/CoreUtils/ServiceUtil.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 
 namespace opdet {
