@@ -23,7 +23,7 @@ microboone_eventweight_reint: {
     random_seed: 58
     parameters: @local::PiPlusParameters
     mode: multisim
-    number_of_multisims: 100
+    number_of_multisims: 1000
     fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piplus.root"
     xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piplus.root"
     makeoutputtree: false
@@ -35,7 +35,7 @@ microboone_eventweight_reint: {
     random_seed: 59
     parameters: @local::PiMinusParameters
     mode: multisim
-    number_of_multisims: 100
+    number_of_multisims: 1000
     fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piminus.root"
     xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piminus.root"
     makeoutputtree: false
@@ -47,7 +47,7 @@ microboone_eventweight_reint: {
     random_seed: 60
     parameters: @local::ProtonParameters
     mode: multisim
-    number_of_multisims: 100
+    number_of_multisims: 1000
     fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_proton.root" #"/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_proton.root"
     xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_proton.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
     makeoutputtree: false
