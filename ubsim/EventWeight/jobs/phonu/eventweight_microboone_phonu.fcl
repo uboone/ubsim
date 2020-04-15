@@ -18,9 +18,11 @@ microboone_eventweight_phonu: {
     type: PhotoNuclear
     random_seed: 57
     parameter_list: ["gamma"]
-    parameter_sigma: [ 1 ]
-    mode: multisim
-    number_of_multisims: 100
+    parameter_sigma: [1 ] # not used in pm1sigma mode
+    xs_uncertainty: 0.3
+    mode: pm1sigma
+    number_of_multisims: 2
+##    ProbFileName: "/pnfs/uboone/resilient/users/yjwa/photonuprob.root"
   }
 
 }

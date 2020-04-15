@@ -112,14 +112,16 @@ void PhotoNuclearWeightCalc::Configure(fhicl::ParameterSet const& p,
   std::vector<float> sigmas = pset.get<std::vector<float> >("parameter_sigma");	
   std::string mode = pset.get<std::string>("mode");//"multisim"
   fXSUncertainty = pset.get<float>("xs_uncertainty", 1.0);
-  std::string probFileName = pset.get<std::string>("ProbFileName", "photonuprob.root");//systematics/reint/interaction_probabilities.root");//what is this file?
+  std::string probFileName = pset.get<std::string>("ProbFileName", "/systematics/reint/photonuprob.root");//systematics/reint/interaction_probabilities.root");//what is this file?
   fNsims = pset.get<int> ("number_of_multisims", 0);
 
   // Prepare random generator
   fGaussRandom = new CLHEP::RandGaussQ(engine);
   // Load interaction probabilities
-  cet::search_path sp("FW_SEARCH_PATH");
-  std::string probFilePath = sp.find_file(probFileName);
+   cet::search_path sp("FW_SEARCH_PATH");
+   std::string probFilePath = sp.find_file(probFileName);
+   std::cout << "Prob. File Path : " <<probFilePath << std::endl;
+
   fProbFile = TFile::Open(probFilePath.c_str());
   assert(fProbFile && fProbFile->IsOpen());
 
