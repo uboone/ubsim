@@ -12,6 +12,9 @@ services: {
   FileCatalogMetadata: @local::art_file_catalog_mc
   NuRandomService: @local::microboone_seedservice
   UBEventWeight: @local::microboone_eventweight_service
+  TFileService: { fileName: "microboone_reint_hist.root" }
+  ExptGeoHelperInterface: @local::microboone_geometry_helper
+  Geometry: @local::microboone_geo
 }
 
 source: {
