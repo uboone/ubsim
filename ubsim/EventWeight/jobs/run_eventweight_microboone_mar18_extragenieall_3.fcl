@@ -8,12 +8,12 @@
 
 #include "run_eventweight_microboone_mar18.fcl"
 
-process_name: EventWeightMar18ExtraGENIE1
+process_name: EventWeightMar18ExtraGENIE3
 
 outputs: {
  out1: {
    module_type: RootOutput
-   fileName: "%ifb_%tc_eventweight_extragenie1.root"
+   fileName: "%ifb_%tc_eventweight_extragenie3.root"
    dataTier: "detector-simulated"
    compressionLevel: 1
  }
