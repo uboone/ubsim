@@ -153,19 +153,19 @@ namespace opdet {
     // Get services
     //
     ::art::ServiceHandle<geo::Geometry> geom;
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
+    auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(evt);
 
     // allocate the container
     ::std::unique_ptr< optdata::ChannelDataGroup > wfs(new optdata::ChannelDataGroup);
     ::std::unique_ptr< std::vector<sim::BeamGateInfo > > beam_info_ptr(new std::vector<sim::BeamGateInfo>);
 
     // get the clock definition
-    ::detinfo::ElecClock clock = ts->OpticalClock();
-    clock.SetTime(ts->G4ToElecTime(fG4StartTime));
+    ::detinfo::ElecClock clock = clockData.OpticalClock();
+    clock = clock.WithTime(clockData.G4ToElecTime(fG4StartTime));
     if(clock.Time()<0)
       throw UBOpticalException(Form("Cannot start readout @ %g (before Electronics Clock start time %g)",
 				    fG4StartTime,
-				    (-1)*(ts->G4ToElecTime(0))
+                                    (-1)*(clockData.G4ToElecTime(0))
 				    )
 			       );
     fOpticalGen.SetTimeInfo(clock,fDuration);
@@ -234,7 +234,7 @@ namespace opdet {
 	unsigned int channel_num = geom->OpChannel( ipmt, ireadout );
 	optdata::ChannelData adc_wfm( channel_num );
 	//fOpticalGen.GenWaveform(ipmt, adc_wfm );
-	fOpticalGen.GenWaveform(channel_num, adc_wfm );
+        fOpticalGen.GenWaveform(clockData, channel_num, adc_wfm );
 	/*
 	if(channel_num<32) {
 	  double pe=0;
@@ -314,7 +314,7 @@ namespace opdet {
       }
       
       optdata::ChannelData logic_wfm( ch );
-      fLogicGen.GenWaveform( logic_wfm );
+      fLogicGen.GenWaveform( logic_wfm, clockData );
       wfs->emplace_back( logic_wfm );
       
     }//loop over logic channels

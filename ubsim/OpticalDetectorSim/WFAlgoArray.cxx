@@ -14,6 +14,7 @@ namespace opdet {
 
   //------------------------------------------------------------
   void WFAlgoArray::Process(std::vector<float> &wf,
+                            const detinfo::DetectorClocksData& clockData,
 			    const ::detinfo::ElecClock &start_time)
   //------------------------------------------------------------
   {
@@ -23,7 +24,7 @@ namespace opdet {
     for(size_t i=0; i<fAlgoArray.size(); ++i) {
 
       fWatch.Start();
-      fAlgoArray.at(i)->Process(wf,start_time);
+      fAlgoArray.at(i)->Process(wf,clockData, start_time);
       fTimeArray.at(i) = fWatch.RealTime();
 
     }

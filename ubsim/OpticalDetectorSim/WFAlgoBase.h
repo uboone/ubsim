@@ -17,6 +17,9 @@
 #include <vector>
 #include "lardataalg/DetectorInfo/ElecClock.h"
 #include "UBOpticalException.h"
+namespace detinfo {
+  class DetectorClocksData;
+}
 
 namespace opdet {
   /**
@@ -40,6 +43,7 @@ namespace opdet {
        to retrieve G4 time offset to electronics clock counting.
      */
     virtual void Process(std::vector<float> &wf,
+                         const detinfo::DetectorClocksData& clockData,
 			 const ::detinfo::ElecClock &start_time) = 0;
 
     inline void SetOpChannel(int ch) { fOpChannel = ch; }

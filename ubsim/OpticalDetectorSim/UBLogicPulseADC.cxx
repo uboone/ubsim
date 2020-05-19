@@ -32,7 +32,8 @@ namespace opdet {
   }
 
   //----------------------------------------------------------------------
-  void UBLogicPulseADC::GenWaveform(std::vector<unsigned short>& logic_wf)
+  void UBLogicPulseADC::GenWaveform(std::vector<unsigned short>& logic_wf,
+                                    detinfo::DetectorClocksData const& clockData)
   //----------------------------------------------------------------------
   {
     //
@@ -47,12 +48,12 @@ namespace opdet {
     // Configure to generate high gain SPE
     fSPE.SetPhotons(fPulseTime);
 
-    fSPE.Process(logic_tmp_wf,fTimeInfo);
+    fSPE.Process(logic_tmp_wf,clockData, fTimeInfo);
 
     //
     // Simulate pedestal
     //
-    fPED.Process(logic_tmp_wf,fTimeInfo);
+    fPED.Process(logic_tmp_wf,clockData, fTimeInfo);
 
     // Make sure algorithms did not alter the waveform size
 

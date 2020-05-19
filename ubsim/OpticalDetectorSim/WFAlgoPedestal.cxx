@@ -23,6 +23,7 @@ namespace opdet {
 
   //-------------------------------------------------------------------
   void WFAlgoPedestal::Process(std::vector<float> &wf,
+                               const detinfo::DetectorClocksData& clockData,
 			       const ::detinfo::ElecClock &start_time)
   //-------------------------------------------------------------------
   { 
@@ -40,5 +41,3 @@ namespace opdet {
 }
 
 #endif
-
-

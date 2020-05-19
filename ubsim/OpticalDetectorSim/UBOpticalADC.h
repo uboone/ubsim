@@ -46,7 +46,8 @@ namespace opdet {
     void SetPhotons(const std::vector<double>& g4time);
 
     /// Method to generate waveform for a specific channel
-    void GenWaveform(const unsigned int pmtid, optdata::ChannelData& adc_wf );
+    void GenWaveform(const detinfo::DetectorClocksData& clockData,
+                     const unsigned int pmtid, optdata::ChannelData& adc_wf );
 
     /// Method to retrieve signal G4 photon time vector
     const std::vector<double>& SignalPhotonTime() const { return fPhotonTime; }
@@ -83,4 +84,3 @@ namespace opdet {
 
 #endif
 /** @} */ // end of doxygen group 
-

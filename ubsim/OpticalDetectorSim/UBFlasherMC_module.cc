@@ -221,19 +221,19 @@ namespace opdet {
     ::art::ServiceHandle<geo::Geometry> geom;
     ::art::ServiceHandle<geo::UBOpReadoutMap> chanmap;
     ::art::ServiceHandle<opdet::UBOpticalChConfig> ch_conf;
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
     ::art::ServiceHandle<art::TFileService> tfs;
 
     // allocate the container
     ::std::unique_ptr< optdata::ChannelDataGroup > wfs(new optdata::ChannelDataGroup);
 
     // get the clock definition
-    ::detinfo::ElecClock clock = ts->OpticalClock();
-    clock.SetTime(ts->G4ToElecTime(fG4StartTime));
+    auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(evt);
+    ::detinfo::ElecClock clock = clockData.OpticalClock();
+    clock = clock.WithTime(clockData.G4ToElecTime(fG4StartTime));
     if(clock.Time()<0)
       throw UBOpticalException(Form("Cannot start readout @ %g (before Electronics Clock start time %g)",
 				    fG4StartTime,
-				    (-1)*(ts->G4ToElecTime(0))
+                                    (-1)*(clockData.G4ToElecTime(0))
 				    )
 			       );
     fOpticalGen.SetTimeInfo(clock,fDuration);
@@ -252,7 +252,7 @@ namespace opdet {
     std::unique_ptr< std::vector<sim::BeamGateInfo> > gateCollection(new std::vector<sim::BeamGateInfo>);
     sim::BeamGateInfo trigger(  fG4StartTime + fGlobalTimeOffset, fRandomTimeOffset, fBeamType );
 #ifdef _UBFlasherMC_DEBUG_
-    optdata::TimeSlice_t gateTime = ts->OpticalG4Time2TDC(trigger.Start());
+    optdata::TimeSlice_t gateTime = clockData.OpticalG4Time2TDC(trigger.Start());
     std::cout << "Start of Gate: Time slice=" << gateTime << " G4 time=" << trigger.Start() << std::endl;
 #endif
     gateCollection->push_back( trigger );
@@ -303,7 +303,7 @@ namespace opdet {
       for (unsigned int ireadout=0; ireadout<geom->NOpHardwareChannels(ipmt); ireadout++) {
 	unsigned int channel_num = geom->OpChannel( ipmt, ireadout );
 	optdata::ChannelData adc_wfm( channel_num );
-	fOpticalGen.GenWaveform(ipmt, adc_wfm );
+        fOpticalGen.GenWaveform(clockData, ipmt, adc_wfm );
 
 	// save if asked to
 	
@@ -366,7 +366,7 @@ namespace opdet {
       fLogicGen.SetPulses( pulse_times );
       
       optdata::ChannelData logic_wfm( ch );
-      fLogicGen.GenWaveform( logic_wfm );
+      fLogicGen.GenWaveform( logic_wfm, clockData );
 
 
       if ( fMakeDebugPlots  ) {

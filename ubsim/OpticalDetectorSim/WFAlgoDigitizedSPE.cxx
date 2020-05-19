@@ -6,33 +6,44 @@
 #include "larcore/CoreUtils/ServiceUtil.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
 
-namespace opdet {
-  
-  //--------------------------------------------------------
-  WFAlgoDigitizedSPE::WFAlgoDigitizedSPE() : WFAlgoSPEBase()
-  //--------------------------------------------------------
+namespace {
+  auto normal_response()
   {
-    Reset();
-    // We initialize abnormal ch here b/c we do not want to reset every time
-    // SPE is reset
-    fAbnormCh = 0;
- 
-    //fSPETime = detinfo::DetectorClocksService::GetME().OpticalClock();
-    //auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    //auto spe_time = ts->OpticalClock();
-    //spe_time.SetTime(0);
-    ::detinfo::ElecClock spe_time(0., 1600., 1000.); // 1.6ms frame period, 1GHz frequency
-
     std::vector<float> wf;
-    SetResponseNormal_BNLv1(wf);
-    SetSPE(wf,spe_time,0);
-    
-    SetResponseOpCh28_BNLv1(wf);
-    SetSPE(wf,spe_time,28); 
-    // important: opch is arbitrary in this implementation
-    // but needs to match SetSPE definition
-
+    opdet::SetResponseNormal_BNLv1(wf);
+    return wf;
   }
+    
+  auto opch28_response()
+  {
+    std::vector<float> wf;
+    opdet::SetResponseOpCh28_BNLv1(wf);
+    return wf;
+  }
+    
+  auto default_clock(const std::vector<float> &wf)
+  {
+    detinfo::ElecClock const result{0., 1600., 1000.}; // 1.6ms frame period, 1GHz frequency
+    if(result.Ticks() >= static_cast<int>(wf.size()))
+      throw opdet::UBOpticalException(Form("Invalid WF index (%d) for the WF of size %zu",
+                                           result.Ticks(),
+                                           wf.size()
+                                           )
+                                      );
+    return result;
+  }
+}
+
+
+namespace opdet {
+
+  //--------------------------------------------------------
+  WFAlgoDigitizedSPE::WFAlgoDigitizedSPE()
+    : fSPE_Normal{normal_response()}
+    , fSPE_OpCh28{opch28_response()}
+    , fSPETime_Normal{default_clock(fSPE_Normal)}
+    , fSPETime_Abnormal{default_clock(fSPE_OpCh28)}
+  {}
 
   //------------------------------
   void WFAlgoDigitizedSPE::Reset()
@@ -43,20 +54,18 @@ namespace opdet {
 
   //--------------------------------------------------------------
   void WFAlgoDigitizedSPE::Process(std::vector<float> &wf,
+                                   const detinfo::DetectorClocksData& clockData,
 				   const ::detinfo::ElecClock &start_time)
   //--------------------------------------------------------------
   {
     // Predefine variables to save time later
-    ::detinfo::ElecClock rel_spe_start = start_time;
-
-    rel_spe_start.SetTime(0);
+    ::detinfo::ElecClock rel_spe_start = start_time.WithTime(0);
 
     auto const& fSPETime = GetClock(OpChannel());
     auto const& fSPE = GetSPE(OpChannel());
 
     double unit_time = fSPETime.TickPeriod();
 
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
     for(auto const &t : fPhotonTime) {
 
       //
@@ -65,7 +74,7 @@ namespace opdet {
 
       // Time in electronics clock frame (with T0)
       //double time = ::detinfo::DetectorClocksService::GetME().G4ToElecTime(t);
-      double time = ts->G4ToElecTime(t);
+      double time = clockData.G4ToElecTime(t);
 
       if(fEnableSpread)  time +=  RandomServer::GetME().Gaus(fT0,fT0Sigma) * 1.e-3 ;
       else time += fT0 * 1.e-3;
@@ -81,7 +90,7 @@ namespace opdet {
       //
 
       // Figure out time stamp of the beginning of SPE
-      rel_spe_start.SetTime(time - fSPETime.Time() - start_time.Time());
+      rel_spe_start = rel_spe_start.WithTime(time - fSPETime.Time() - start_time.Time());
       //float maxval = 0;
       //int   argmax = 0;
       //int start = rel_spe_start.Ticks();
@@ -114,7 +123,7 @@ namespace opdet {
 	  */
 	}
 
-	rel_spe_start += unit_time;
+        rel_spe_start = rel_spe_start.AdvanceTimeBy(unit_time);
 	if( (unit_time * i) > 300 && fabs(fGain * fSPE.at(i)) < 1)
 	  break;
       }
@@ -134,54 +143,10 @@ namespace opdet {
 
   }
   
-  //----------------------------------------------------------------
-  void WFAlgoDigitizedSPE::SetSPE( const std::vector<float> &wf,
-				   const detinfo::ElecClock &time_info,
-				   const int opch)
-  //----------------------------------------------------------------
-  {
-    if(time_info.Time() < 0 || time_info.Ticks() >= (int)(wf.size()))
-      
-      throw UBOpticalException(Form("Invalid WF index (%d) for the WF of size %zu",
-				    time_info.Ticks(),
-				    wf.size()
-				    )
-			       );
-
-    auto& fSPE = GetSPEWriteable(opch);
-    auto& fSPETime = GetClockWriteable(opch);
-    fSPE.clear();
-    fSPE.reserve(wf.size());
-
-    //double area = 0;
-    for(auto const &v : wf) {
-      fSPE.push_back(v);
-      //area += v;
-    }
-
-    // Normalize area
-    //for(auto &v : fSPE) v /= area;
-
-    fSPETime = time_info;
-
-  }
-
-  //----------------------------------------------------------------------
-  std::vector<float>& WFAlgoDigitizedSPE::GetSPEWriteable(const int opch)
-  //----------------------------------------------------------------------
-  // Note: opch 28 is arbitrary in this implementation
-  { return ((opch%100) == 28 ? fSPE_Abnormal : fSPE_Normal); }
-
   //-------------------------------------------------------------------------
   const std::vector<float>& WFAlgoDigitizedSPE::GetSPE(const int opch) const
   //-------------------------------------------------------------------------
   { return ((opch%100) == fAbnormCh ? fSPE_Abnormal : fSPE_Normal); }
-
-  //-------------------------------------------------------------------------
-  ::detinfo::ElecClock& WFAlgoDigitizedSPE::GetClockWriteable(const int opch)
-  //-------------------------------------------------------------------------
-  // Note: opch 28 is arbitrary in this implementation
-  { return ((opch%100) == 28 ? fSPETime_Abnormal : fSPETime_Normal); }
 
   //----------------------------------------------------------------------------
   const ::detinfo::ElecClock& WFAlgoDigitizedSPE::GetClock(const int opch) const
