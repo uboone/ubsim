@@ -43,8 +43,15 @@ namespace opdet {
        to retrieve G4 time offset to electronics clock counting.
      */
     virtual void Process(std::vector<float> &wf,
+                         const detinfo::DetectorClocksData& clockData,
 			 const ::detinfo::ElecClock &start_time);
 
+    /// Function to get SPE vector the instance currently holds
+    const std::vector<float>& GetSPE(const int opch) const;
+
+    const ::detinfo::ElecClock& GetClock(const int opch) const;
+
+  private:
     /**
        Function to set SPE waveform. The second argument is detinfo::ElecClock which
        period should specify waveform tick size and timing specfies photon time
@@ -54,29 +61,16 @@ namespace opdet {
 		 const ::detinfo::ElecClock &time_info,
 		 const int opch);
 
-    /// Function to get SPE vector the instance currently holds
-    const std::vector<float>& GetSPE(const int opch) const;
-
-    const ::detinfo::ElecClock& GetClock(const int opch) const;
-    
-    std::vector<float>& GetSPEWriteable(const int opch);
-
-    ::detinfo::ElecClock& GetClockWriteable(const int opch);
-
-  protected:
-
     /// SPE waveform
     std::vector<float> fSPE_Normal;
     std::vector<float> fSPE_OpCh28;
 
     /// SPE waveform timing information for normal response (tick period & signal timing)
-    ::detinfo::ElecClock fSPETime_Normal;
+    detinfo::ElecClock fSPETime_Normal;
     /// SPE waveform timing information for opch 28 response (tick period & signal timing)
-    ::detinfo::ElecClock fSPETime_OpCh28;
-
+    detinfo::ElecClock fSPETime_OpCh28;
   };
 }
 
 #endif
 /** @} */ // end of doxygen group 
-

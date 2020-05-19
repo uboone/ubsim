@@ -39,6 +39,7 @@ namespace opdet {
        to retrieve G4 time offset to electronics clock counting.
      */
     virtual void Process(std::vector<float> &wf,
+                         const detinfo::DetectorClocksData& clockData,
 			 const ::detinfo::ElecClock &start_time);
 
     void SetPedestal(double mean, double sigma);
@@ -54,4 +55,3 @@ namespace opdet {
 
 #endif
 /** @} */ // end of doxygen group 
-
