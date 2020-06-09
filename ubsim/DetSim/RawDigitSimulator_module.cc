@@ -57,7 +57,7 @@ extern "C" {
 #include "lardataobj/Simulation/SimChannel.h"
 #include "lardataobj/RawData/RawDigit.h"
 #include "lardataobj/RawData/raw.h"
-#include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
+#include "lardata/DetectorInfoServices/DetectorClocksService.h"
 #include "lardata/Utilities/LArFFT.h"
 #include "ubevt/Utilities/SignalShapingServiceMicroBooNE.h"
 #include "larevt/CalibrationDBI/Interface/ElectronicsCalibService.h"
@@ -91,10 +91,8 @@ namespace detsim {
     std::vector<float> GenNoiseInTime();
 
     raw::Compress_t fCompression{raw::kNone};     ///< compression type to use
-    double                     fSampleRate;       ///< sampling rate in ns
     double                     fNoiseFact{};      ///< noise scale factor
     int                        fNTicks;           ///< number of ticks of the clock
-    unsigned int               fNSamplesReadout;  ///< number of ADC readout samples in 1 readout frame
     unsigned int               fPedestal;         ///< pedestal amplitude [ADCs]
     std::vector<double>        fSigAmp;           ///< signal amplitude [ADCs] or [# electrons]
     std::vector<double>        fSigWidth;         ///< signal wifdth [time ticks]
@@ -112,9 +110,7 @@ namespace detsim {
   //-------------------------------------------------
   RawDigitSimulator::RawDigitSimulator(fhicl::ParameterSet const& pset)
     : EDProducer{pset}
-    , fSampleRate{lar::providerFrom<detinfo::DetectorPropertiesService>()->SamplingRate()}
     , fNTicks  {pset.get< int                        >("NTicks")}
-    , fNSamplesReadout{lar::providerFrom<detinfo::DetectorPropertiesService>()->NumberTimeSamples()}
     , fPedestal{pset.get< unsigned int               >("Pedestal")}
     , fSigAmp  {pset.get< std::vector<double>        >("SigAmp")}
     , fSigWidth{pset.get< std::vector<double>        >("SigWidth")}
@@ -201,7 +197,8 @@ namespace detsim {
 
     // If the unit is # electrons, run convolution
     if(!fSigUnit) {
-      sss->Convolute(fChannel,sigvec,0.0,0.0);
+      auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(evt);
+      sss->Convolute(clockData,fChannel,sigvec,0.0,0.0);
     }
 
 

@@ -80,7 +80,8 @@ namespace opdet {
   }
 
   //-------------------------------------------------------------------
-  void UBOpticalADC::GenWaveform(const unsigned int ch, optdata::ChannelData& wf )
+  void UBOpticalADC::GenWaveform(const detinfo::DetectorClocksData& clockData,
+                                 const unsigned int ch, optdata::ChannelData& wf )
   //-------------------------------------------------------------------
   {
     //
@@ -125,7 +126,7 @@ namespace opdet {
       if(RandomServer::GetME().Uniform(1.) < qe) fPhotonTime.push_back(v);
     fSPE.SetOpChannel(ch);
     fSPE.SetPhotons(fPhotonTime);
-    fSPE.Process(wfm_tmp,fTimeInfo);
+    fSPE.Process(wfm_tmp,clockData,fTimeInfo);
     // convert from pe waveform to adc
     /*
     double gain_ratio = ch_conf->GetFloat(kSplitterGain,ch);
@@ -140,7 +141,7 @@ namespace opdet {
     //if(ch<32) std::cout<<"Pedestal: "<<ch_conf->GetFloat(kPedestalMean,ch)<<" +/- "<<ch_conf->GetFloat(kPedestalSpread,ch)<<std::endl;
     fPED.SetPedestal(ch_conf->GetFloat(kPedestalMean,ch),
 		     ch_conf->GetFloat(kPedestalSpread,ch));
-    fPED.Process(wfm_tmp,fTimeInfo);
+    fPED.Process(wfm_tmp,clockData,fTimeInfo);
     
     // Make sure algorithms did not alter the waveform size
 

@@ -9,10 +9,9 @@ namespace opdet {
 
   //--------------------
   UBADCBase::UBADCBase()
+    : fTimeInfo{art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob().OpticalClock()}
   //--------------------
   {
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    fTimeInfo = ts->OpticalClock();
     fDuration = fTimeInfo.TickPeriod();
     Reset();
   }
@@ -40,7 +39,7 @@ namespace opdet {
   //---------------------
   {
     fDuration = 0;
-    fTimeInfo.SetTime(0);
+    fTimeInfo = fTimeInfo.WithTime(0);
   }
 
   //---------------------------------------------------------------

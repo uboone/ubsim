@@ -47,7 +47,8 @@ namespace opdet {
     void SetPulses(const std::vector<double>& g4time);
 
     /// Method to generate waveform for a specific channel
-    void GenWaveform(std::vector<unsigned short> &logic_wf);
+    void GenWaveform(std::vector<unsigned short> &logic_wf,
+                     detinfo::DetectorClocksData const& clockData);
 
   protected:
 
@@ -65,4 +66,3 @@ namespace opdet {
 
 #endif
 /** @} */ // end of doxygen group 
-

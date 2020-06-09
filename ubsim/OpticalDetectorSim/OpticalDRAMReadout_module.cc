@@ -162,9 +162,9 @@ namespace opdet {
     // Get needed services
 
     // Obtain optical clock to be used for sample/frame number generation
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    ::detinfo::ElecClock clock = ts->OpticalClock();
-    //std::cout << "OpticalDRAM: Trigger time=" << ts->TriggerTime() << " Beam gate time=" << ts->BeamGateTime() << std::endl;
+    auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(event);
+    ::detinfo::ElecClock clock = clockData.OpticalClock();
+    //std::cout << "OpticalDRAM: Trigger time=" << clockData.TriggerTime() << " Beam gate time=" << clockData.BeamGateTime() << std::endl;
 
     // geometry and channel map services
     ::art::ServiceHandle<geo::Geometry> geom;
@@ -197,7 +197,7 @@ namespace opdet {
     // Figure out the range of frame numbers to be readout
     std::vector<std::pair<optdata::Frame_t,optdata::Frame_t> > readout_frames;
 
-    optdata::Frame_t trig_frame = clock.Frame(ts->TriggerTime());
+    optdata::Frame_t trig_frame = clock.Frame(clockData.TriggerTime());
     
     optdata::Frame_t start_frame = 0;
     optdata::Frame_t end_frame = trig_frame + fReadoutFrameOffset.at(1);
