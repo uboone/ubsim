@@ -15,10 +15,6 @@ art_make(
   LIBRARY_NAME ubsim_EventWeight_Calculators_Splines
   LIB_LIBRARIES
     ${XML2}
-    ${GHEP}
-    ${GINTERACTION}
-    ${GNTUPLE}
-    ${GUTILS}
     larsim_EventWeight_Base
     lardata_Utilities
     nutools_NuReweight_art   
