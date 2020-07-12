@@ -1,0 +1,39 @@
+# Fcl file that only runs GENIE "All" variations
+# Aim is to allow us to run more GENIE universes
+# The limit from grid memory allocations is ~100 universes in each round of jobs
+# To get around that, we provide 5 "extra genie all" fcl files, that will allow 
+# analyzers to run extra "genie all" universes in subsequent jobs, to make up to
+# 600 universes total (100 from run_eventweight_microboone_mar18.fcl, plus 100
+# more from each of the five run_eventweight_microboone_mar18_extragenieall_X.fcls
+
+#include "run_eventweight_microboone_mar18_numi_rhc.fcl"
+
+process_name: EventWeightMar18ExtraGENIE1
+
+outputs: {
+ out1: {
+   module_type: RootOutput
+   fileName: "%ifb_%tc_eventweight_extragenie1.root"
+   dataTier: "detector-simulated"
+   compressionLevel: 1
+ }
+}
+
+physics.producers.eventweight.weight_functions: [ All ]
+physics.producers.eventweight.All.random_seed: 1101
+
+# Overeide the PPFX seeds
+physics.producers.eventweight.ppfx_mipppi.random_seed: 3451
+physics.producers.eventweight.ppfx_mippk.random_seed: 86551
+physics.producers.eventweight.ppfx_thinmes.random_seed: 46514
+physics.producers.eventweight.ppfx_thinpi.random_seed: 90410
+physics.producers.eventweight.ppfx_other.random_seed: 12312
+physics.producers.eventweight.ppfx_thinnp.random_seed: 4268
+physics.producers.eventweight.ppfx_totabs.random_seed: 9063
+physics.producers.eventweight.ppfx_targatt.random_seed: 3623
+physics.producers.eventweight.ppfx_thinna.random_seed: 1001
+physics.producers.eventweight.ppfx_think.random_seed: 1101
+physics.producers.eventweight.ppfx_thinn.random_seed: 228
+physics.producers.eventweight.ppfx_cv.random_seed: 242
+physics.producers.eventweight.ppfx_ms.random_seed: 284
+
