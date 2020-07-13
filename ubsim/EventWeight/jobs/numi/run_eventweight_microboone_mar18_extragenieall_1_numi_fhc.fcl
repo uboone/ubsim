@@ -19,7 +19,9 @@ outputs: {
  }
 }
 
-physics.producers.eventweight.weight_functions: [ All ]
+physics.producers.eventweight.weight_functions: [ All, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi,
+    ppfx_other, ppfx_thinnpi, ppfx_totabs, ppfx_targatt, ppfx_thinna,
+    ppfx_think, ppfx_thinn, ppfx_ms ]
 physics.producers.eventweight.All.random_seed: 1101
 
 # Overeide the PPFX seeds

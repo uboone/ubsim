@@ -144,7 +144,7 @@ reweight_numi_ppfx: {
   
   ppfx_cv: {
     type: UBPPFXCV
-    random_seed:84
+    random_seed: 84
     mode: reweight
     number_of_multisims: 1
     input_labels: [ "generator" ] #  [ "generator", "flux" ]
