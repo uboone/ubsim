@@ -13,15 +13,15 @@ process_name: EventWeightMar18ExtraGENIE3
 outputs: {
  out1: {
    module_type: RootOutput
-   fileName: "%ifb_%tc_eventweight_extragenie3.root"
+   fileName: "%ifb_extragenie3.root"
    dataTier: "detector-simulated"
    compressionLevel: 1
  }
 }
 
-physics.producers.eventweight.weight_functions: [ All, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi,
+physics.producers.eventweight.weight_functions: [ All, ppfx_ms, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi,
     ppfx_other, ppfx_thinnpi, ppfx_totabs, ppfx_targatt, ppfx_thinna,
-    ppfx_think, ppfx_thinn, ppfx_ms ]
+    ppfx_think, ppfx_thinn ]
 physics.producers.eventweight.All.random_seed: 1103
 
 # Override the PPFX seeds

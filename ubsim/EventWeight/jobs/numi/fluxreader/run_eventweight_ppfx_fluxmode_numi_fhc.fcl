@@ -1,0 +1,64 @@
+#include "services_microboone.fcl"
+#include "microboone_eventweight_service.fcl"
+#include "seedservice_microboone.fcl"
+#include "eventweight_microboone_mar18_numi_fhc.fcl"
+
+process_name: EventWeightMar18
+
+services: {
+  TimeTracker: {}
+  MemoryTracker: {}
+  RandomNumberGenerator: {}
+  FileCatalogMetadata: @local::art_file_catalog_mc
+  NuRandomService: @local::microboone_seedservice
+  UBEventWeight: @local::microboone_eventweight_service
+  TFileService: { fileName: "genie_hist.root" }
+  ExptGeoHelperInterface: @local::microboone_geometry_helper
+  Geometry: @local::microboone_geo
+}
+
+source: {
+  module_type: RootInput
+}
+
+physics: {
+ producers: {
+   eventweight:  @local::microboone_eventweight_mar18
+   rns: {
+     module_type: "RandomNumberSaver"
+   }
+ }
+ 
+ simulate: [ rns, eventweight ]
+ stream1: [ out1 ]
+ trigger_paths: [ simulate ]
+ end_paths: [ stream1 ]
+}
+
+outputs: {
+ out1: {
+   module_type: RootOutput
+   fileName: "%ifb_%tc_eventweight.root"
+   dataTier: "detector-simulated"
+   compressionLevel: 1
+ }
+}
+
+
+physics.producers.eventweight.genie_module_label: "flux"
+physics.producers.eventweight.weight_functions: [ppfx_cv, ppfx_ms, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi, ppfx_other, ppfx_thinnpi, ppfx_totabs, ppfx_targatt, ppfx_thinna, ppfx_think, ppfx_thinn]
+
+physics.producers.eventweight.ppfx_cv.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_ms.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_mipppi.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_mippk.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_thinmes.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_thinpi.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_other.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_thinnpi.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_totabs.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_targatt.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_thinna.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_think.input_labels: ["flux"]
+physics.producers.eventweight.ppfx_thinn.input_labels: ["flux"]
+

@@ -1,12 +1,8 @@
-# Fcl file that only runs GENIE "All" variations
-# Aim is to allow us to run more GENIE universes
+# Fcl file that only runs the PPFX variations
+# Aim is to allow us to run more PPFX universes
 # The limit from grid memory allocations is ~100 universes in each round of jobs
-# To get around that, we provide 5 "extra genie all" fcl files, that will allow 
-# analyzers to run extra "genie all" universes in subsequent jobs, to make up to
-# 600 universes total (100 from run_eventweight_microboone_mar18.fcl, plus 100
-# more from each of the five run_eventweight_microboone_mar18_extragenieall_X.fcls
 
-#include "run_eventweight_microboone_mar18_numi_rhc.fcl"
+#include "run_eventweight_ppfx_fluxmode_numi_fhc.fcl"
 
 process_name: EventWeightMar18ExtraGENIE2
 
@@ -19,10 +15,9 @@ outputs: {
  }
 }
 
-physics.producers.eventweight.weight_functions: [ All, ppfx_ms, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi,
+physics.producers.eventweight.weight_functions: [ ppfx_ms, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi,
     ppfx_other, ppfx_thinnpi, ppfx_totabs, ppfx_targatt, ppfx_thinna,
     ppfx_think, ppfx_thinn ]
-physics.producers.eventweight.All.random_seed: 1102
 
 # Override the PPFX seeds
 physics.producers.eventweight.ppfx_mipppi.random_seed: 3651
