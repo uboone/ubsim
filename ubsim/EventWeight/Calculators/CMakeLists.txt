@@ -1,4 +1,5 @@
 include_directories ( $ENV{GEANT4_FQ_DIR}/include )
+include_directories ( $ENV{ROOT_INC} ) 
 
 art_make(
   LIBRARY_NAME ubsim_EventWeight_Calculators
@@ -27,6 +28,7 @@ art_make(
     ${FHICLCPP}
     ${CLHEP}
     ${ROOT_BASIC_LIB_LIST}
+    ${ROOT_INCLUDE}
     ${Boost_SYSTEM_LIBRARY}
     ${G4_LIB_LIST}
 )

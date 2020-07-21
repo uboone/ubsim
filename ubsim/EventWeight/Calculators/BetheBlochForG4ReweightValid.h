@@ -62,28 +62,22 @@ std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTr
 
       //Update the energy
       sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy, mass);
-      if( sliceEnergy - mass < 0.){
-        //std::cout << "Warning! Negative energy " << sliceEnergy - mass << std::endl;
-        //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
-        sliceEnergy = 0.0001;
+	      
+if( sliceEnergy - mass < 0.){
       }
       //If it's more than 1 slice, add in non-interacting slices
       for(int ic = 1; ic < abs( oldSlice - currentSlice ); ++ic){
-        //std::cout << ic << std::endl;
 
         result.push_back( std::make_pair(sliceEnergy, 0) );
 
         //Update the energy again
         sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy, mass);
         if( sliceEnergy - mass < 0.){
-          //std::cout << "Warning! Negative energy " << sliceEnergy - mass << std::endl;
-          //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
           sliceEnergy = 0.0001;
         }
       }
 
       if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) || (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {
-          // std::cout << "found! " << theProc << '\n';
           interactInSlice = 1;
       }
     }
@@ -96,12 +90,10 @@ std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTr
       sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy, mass);
       if( sliceEnergy - mass < 0.){
         //std::cout << "Warning! Negative energy " << sliceEnergy - mass << std::endl;
-        //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
         sliceEnergy = 0.0001;
       }
       //If it's more than 1 slice, add in non-interacting slices
       for(int ic = 1; ic < abs( oldSlice - currentSlice ); ++ic){
-        //std::cout << ic << std::endl;
 
         result.push_back( std::make_pair(sliceEnergy, 0) );
 
@@ -109,7 +101,6 @@ std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTr
         sliceEnergy = sliceEnergy - res*BetheBloch(sliceEnergy, mass);
         if( sliceEnergy - mass < 0.){
           //std::cout << "Warning! Negative energy " << sliceEnergy - mass << std::endl;
-          //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
           sliceEnergy = 0.0001;
         }
       }

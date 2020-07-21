@@ -65,3 +65,27 @@ outputs: {
    compressionLevel: 1
  }
 }
+
+physics.producers.eventweightreint.reinteractions_piminus.makeoutputtree: true
+physics.producers.eventweightreint.reinteractions_piplus.makeoutputtree: true
+physics.producers.eventweightreint.reinteractions_proton.makeoutputtree: true
+physics.producers.eventweightreint.reinteractions_proton.mode: "pm1sigma"
+physics.producers.eventweightreint.reinteractions_piminus.mode: "covariance"
+physics.producers.eventweightreint.reinteractions_piplus.mode: "covariance"
+
+#Do not use neutron
+#physics.producers.eventweightreint.reinteractions_neutron.mode: "pm1sigma"
+#physics.producers.eventweightreint.reinteractions_neutron.debug: true
+
+physics.producers.eventweightreint.reinteractions_piplus.debug: false
+
+physics.producers.eventweightreint.weight_functions: [ reinteractions_piplus  ]
+
+
+
+
+
+
+
+
+

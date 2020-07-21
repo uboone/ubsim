@@ -11,18 +11,21 @@
 ##########################################################
 
 microboone_eventweight_reint: {
-  weight_functions_reint: [ reinteractions_piplus, reinteractions_piminus, reinteractions_proton ]
+  weight_functions_reint: [ reinteractions_piplus, reinteractions_piminus, reinteractions_proton  ]
   reinteractions_piplus: {
     type: Geant4
     random_seed: 58
     parameters: @local::PiPlusParameters
-    mode: pm1sigma
+    mode: covariance
     number_of_multisims: 100
     fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piplus.root"
     xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piplus.root"
     makeoutputtree: true
     pdg_to_reweight: 211
     debug: false
+    CovarianceFile:   "$UBOONEDATA_DIR/systematics/reint/piplus_fit.root"
+    UseFitCentralValue: false
+
   }
   reinteractions_piminus: {
     type: Geant4
@@ -35,6 +38,9 @@ microboone_eventweight_reint: {
     makeoutputtree: true
     pdg_to_reweight: -211
     debug: false
+    CovarianceFile:   "$UBOONEDATA_DIR/systematics/reint/piminus_fit.root"
+    UseFitCentralValue: false
+
   }
   reinteractions_proton: {
     type: Geant4
@@ -48,6 +54,25 @@ microboone_eventweight_reint: {
     pdg_to_reweight: 2212
     debug: false
   }
+
+
+#Do Not Use (except for testing purposes)
+
+#  reinteractions_neutron: {
+#    type: Geant4
+#    random_seed: 60
+#    parameters: @local::NeutronParameters
+#    mode: pm1sigma
+#    number_of_multisims: 100
+#    fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_neutron.root" #"/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_proton.root"
+#    xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_neutron.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
+#    makeoutputtree: true
+#    pdg_to_reweight: 2112
+#    debug: true
+#  }
+
+
+
 }
 
 ###
