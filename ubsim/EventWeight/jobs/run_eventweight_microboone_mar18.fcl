@@ -43,3 +43,10 @@ outputs: {
    compressionLevel: 1
  }
 }
+
+physics.producers.eventweight.xsr_scc_Fa3.number_of_multisims: 1000
+physics.producers.eventweight.xsr_scc_Fv3.number_of_multisims: 1000
+physics.producers.eventweight.reinteractions_piminus.number_of_multisims: 1000
+physics.producers.eventweight.reinteractions_piplus.number_of_multisims: 1000
+physics.producers.eventweight.reinteractions_proton.number_of_multisims: 1000
+physics.producers.eventweight.eLEE_Combined_Oct2018.number_of_multisims: 1
