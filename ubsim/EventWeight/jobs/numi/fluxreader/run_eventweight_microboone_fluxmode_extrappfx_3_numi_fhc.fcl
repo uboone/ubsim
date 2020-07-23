@@ -31,5 +31,5 @@ physics.producers.eventweight.ppfx_targatt.random_seed: 4023
 physics.producers.eventweight.ppfx_thinna.random_seed: 1401
 physics.producers.eventweight.ppfx_think.random_seed: 1401
 physics.producers.eventweight.ppfx_thinn.random_seed: 628
-physics.producers.eventweight.ppfx_cv.random_seed: 642
+#physics.producers.eventweight.ppfx_cv.random_seed: 642
 physics.producers.eventweight.ppfx_ms.random_seed: 684

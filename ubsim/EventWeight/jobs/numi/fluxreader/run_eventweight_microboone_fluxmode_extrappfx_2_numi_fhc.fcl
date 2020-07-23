@@ -15,7 +15,7 @@ outputs: {
  }
 }
 
-physics.producers.eventweight.weight_functions: [ ppfx_ms, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi,
+physics.producers.eventweight.weight_functions: [ ppfx_cv, ppfx_ms, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi,
     ppfx_other, ppfx_thinnpi, ppfx_totabs, ppfx_targatt, ppfx_thinna,
     ppfx_think, ppfx_thinn ]
 
@@ -31,5 +31,5 @@ physics.producers.eventweight.ppfx_targatt.random_seed: 3823
 physics.producers.eventweight.ppfx_thinna.random_seed: 1201
 physics.producers.eventweight.ppfx_think.random_seed: 1301
 physics.producers.eventweight.ppfx_thinn.random_seed: 428
-physics.producers.eventweight.ppfx_cv.random_seed: 442
+#physics.producers.eventweight.ppfx_cv.random_seed: 442
 physics.producers.eventweight.ppfx_ms.random_seed: 484
