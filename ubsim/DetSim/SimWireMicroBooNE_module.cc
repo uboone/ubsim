@@ -144,8 +144,6 @@ namespace detsim {
     //be made a fcl parameter but not likely to ever change
     const float adcsaturation = 4095;
 
-    ::detinfo::ElecClock fClock; ///< TPC electronics clock
-
     //
     // Needed for post-filter noise (pfn) generator
     //
@@ -241,9 +239,10 @@ namespace detsim {
       */
     }
     //detector properties information
-    auto const* detprop = lar::providerFrom<detinfo::DetectorPropertiesService>();
-    fSampleRate    = detprop->SamplingRate();
-    fNTimeSamples  = detprop->NumberTimeSamples();
+    auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataForJob();
+    auto const detprop = art::ServiceHandle<detinfo::DetectorPropertiesService>()->DataForJob(clockData);
+    fSampleRate    = sampling_rate(clockData);
+    fNTimeSamples  = detprop.NumberTimeSamples();
 
     // make the histos if not already made
     // get access to the TFile service
@@ -369,9 +368,6 @@ namespace detsim {
 
     // TFileService
     art::ServiceHandle<art::TFileService> tfs;
-    //TimeService
-    art::ServiceHandle<detinfo::DetectorClocksService> tss;
-    auto const* ts = tss->provider();
 
     // Check if trigger data product exists or not. If not, throw a warning
     art::Handle< std::vector<raw::Trigger> > trig_array;
@@ -432,6 +428,7 @@ namespace detsim {
     //
     //--------------------------------------------------------------------
     std::vector<int> first_channel_in_view(N_VIEWS,-1);
+    auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(evt);
     for(unsigned int chan = 0; chan < N_CHANNELS; ++chan) {
       size_t view = (size_t)geo->View(chan);
 
@@ -450,7 +447,7 @@ namespace detsim {
       for(auto timeSlice : timeSlices) {
         auto tdc = timeSlice.first;
         if( tdc < 0 ) continue;
-        auto t = ts->TPCTDC2Tick(tdc)+1; // +1 added because nominal detsim rounds up (B. Russell)
+        auto t = clockData.TPCTDC2Tick(tdc)+1; // +1 added because nominal detsim rounds up (B. Russell)
 
         int raw_digit_index = (int)( (t + time_offset) >= 0 ? t+time_offset : (fNTicks + (t+time_offset)) );
         if(raw_digit_index <= 0 || raw_digit_index >= (int)fNTicks) continue;
@@ -561,7 +558,7 @@ namespace detsim {
 
 
       //Channel is good, so convolute response onto all charges and fill the chargeWork vector
-      sss->Convolute(chan, tempWork, responseParamsVec[chan]);
+      sss->Convolute(clockData, chan, tempWork, responseParamsVec[chan]);
       for(size_t bin = 0; bin < fNTicks; ++bin) {
         chargeWork[bin] += tempWork[bin];
       }

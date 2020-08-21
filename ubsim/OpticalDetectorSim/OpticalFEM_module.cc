@@ -94,7 +94,8 @@ namespace opdet {
     bool                 fm_hist;               // if true, generate megatons of diagnostic histograms
     std::vector<int>     fm_slots;              // FEM slot => gain index mapping
     bool                 _debug; // if true print out some words0
-    void FillBeamTimingVectors(const std::vector<sim::BeamGateInfo> &beamGates,
+    void FillBeamTimingVectors(const detinfo::DetectorClocksData& clockData,
+                               const std::vector<sim::BeamGateInfo> &beamGates,
 			       const optdata::TimeSlice_t readout_first_tdc,
 			       const optdata::TimeSlice_t readout_size);
     // Determine the "begin" and "end" bin of the beam-gate windows relative to the first channel time slice.
@@ -174,14 +175,13 @@ namespace opdet {
   }
 
   //-------------------------------------------------
-  void OpticalFEM::FillBeamTimingVectors(const std::vector<sim::BeamGateInfo> &beamGates,
+  void OpticalFEM::FillBeamTimingVectors(const detinfo::DetectorClocksData& clockData,
+                                         const std::vector<sim::BeamGateInfo> &beamGates,
 					 const optdata::TimeSlice_t readout_start_tdc,
 					 const optdata::TimeSlice_t readout_size)
   {
+    auto const& opticalClock = clockData.OpticalClock();
     
-    // Obtain optical clock to be used for sample/frame number generation
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    ::detinfo::ElecClock clock = ts->OpticalClock();
     size_t numberOfGates = beamGates.size();
 
     // Determine the "begin" and "end" bin of the beam-gate
@@ -211,17 +211,17 @@ namespace opdet {
 	// Fetch the start and width of the beam gate.
 	const sim::BeamGateInfo& beamGateInfo = beamGates.at(gateIndex);
 	
-	if(ts->G4ToElecTime(beamGateInfo.Start()) < 0)
+        if(clockData.G4ToElecTime(beamGateInfo.Start()) < 0)
 	  
 	  throw cet::exception("OpticalFEM") 
 	    << "\033[93m"
 	    << " Found BeamGateInfo @ " << beamGateInfo.Start() << " [ns] (G4 time)"
-	    << " which is " << ts->G4ToElecTime(beamGateInfo.Start()) << " [us] (Elec. time)"
+            << " which is " << clockData.G4ToElecTime(beamGateInfo.Start()) << " [us] (Elec. time)"
 	    << " ... aborting."
 	    << "\033[00m" << std::endl;
 	
-	optdata::TimeSlice_t gateTime = ts->OpticalG4Time2TDC(beamGateInfo.Start());
-	//optdata::TimeSlice_t gateWidth = clock.Ticks(beamGateInfo.Width());
+        optdata::TimeSlice_t gateTime = clockData.OpticalG4Time2TDC(beamGateInfo.Start());
+        //optdata::TimeSlice_t gateWidth = opticalClock.Ticks(beamGateInfo.Width());
 
 	if(gateTime < readout_start_tdc) {
 	  //std::cout << "FillBeamTimingVectors: gateTime < readout_start_tdc (" << gateTime << " < " << readout_start_tdc << ")" << std::endl;
@@ -269,9 +269,9 @@ namespace opdet {
 	  beamEndBin[gateIndex] = readout_size;
 	
 	// Compute the frame number of the first slice to be saved. 
-	gateFrame[gateIndex] = ( beamBeginBin[gateIndex] / clock.FrameTicks() );
+        gateFrame[gateIndex] = ( beamBeginBin[gateIndex] / opticalClock.FrameTicks() );
 	// The time of the "beginBin[gateIndex]" slice within the gateFrame.
-	gateWindowTime[gateIndex] = ( beamBeginBin[gateIndex] % clock.FrameTicks() ); 
+        gateWindowTime[gateIndex] = ( beamBeginBin[gateIndex] % opticalClock.FrameTicks() );
       
 	MF_LOG_DEBUG("OpticalFEM") 
 	//std::cout << "Beam gate #" << gateIndex
@@ -290,8 +290,8 @@ namespace opdet {
   void OpticalFEM::produce(art::Event& event)
   {
     // Obtain optical clock to be used for sample/frame number generation
-    auto const* ts = lar::providerFrom<detinfo::DetectorClocksService>();
-    ::detinfo::ElecClock clock = ts->OpticalClock();
+    auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(event);
+    auto const& opticalClock = clockData.OpticalClock();
 
     // The collection of channels we'll write in response to beam
     // gates and cosmic signals.
@@ -332,7 +332,7 @@ namespace opdet {
     diffVector.reserve( sizeFirstChannel );
     auto const firstSlice = (*channelDataHandle).TimeSlice();
     auto const firstFrame = (*channelDataHandle).Frame();
-    auto const firstTDC   = firstSlice + firstFrame * clock.FrameTicks();
+    auto const firstTDC   = firstSlice + firstFrame * opticalClock.FrameTicks();
     //
     // std::cout << " Figure out beamgate timings " << std::endl;
     //
@@ -346,7 +346,8 @@ namespace opdet {
 	throw std::exception();
       }
       numberOfGates = beamGates->size();
-      FillBeamTimingVectors(*beamGates,
+      FillBeamTimingVectors(clockData,
+                            *beamGates,
 			    firstTDC,
 			    (firstSlice + sizeFirstChannel - 1) );
     }
@@ -355,7 +356,8 @@ namespace opdet {
       event.getByLabel(fFakeBeamModule, beamGates);
       if( beamGates.isValid() ) {
 	numberOfGates = beamGates->size();
-	FillBeamTimingVectors(*beamGates,
+        FillBeamTimingVectors(clockData,
+                              *beamGates,
 			      firstTDC,
 			      (firstSlice + sizeFirstChannel -1) );
       }
@@ -727,8 +729,8 @@ namespace opdet {
 	      MF_LOG_DEBUG("OpticalFEM")
 		<< "Disc 0 fires, channel=" << channel
 		<< " at frame=" 
-		<< (*channelDataHandle).Frame() + slice / clock.FrameTicks()
-		<< " slice=" << slice % clock.FrameTicks();
+                << (*channelDataHandle).Frame() + slice / opticalClock.FrameTicks()
+                << " slice=" << slice % opticalClock.FrameTicks();
 	    }
 	  } // threshold0 satisfied
 	
@@ -772,9 +774,9 @@ namespace opdet {
 	    // Time information for this FIFO channel.
 	    
 	    optdata::Frame_t cosmicFrame 
-	      = firstFrame + (firstSlice + saveSlice) / clock.FrameTicks();
+              = firstFrame + (firstSlice + saveSlice) / opticalClock.FrameTicks();
 	    optdata::TimeSlice_t cosmicTime 
-	      = (firstSlice + saveSlice) % clock.FrameTicks();
+              = (firstSlice + saveSlice) % opticalClock.FrameTicks();
 	    
 	    MF_LOG_DEBUG("OpticalFEM")
 	      << "Disc 1 fires, Writing cosmic channel=" << channel
@@ -887,8 +889,8 @@ namespace opdet {
 	    MF_LOG_DEBUG("OpticalFEM")
 	      << "Disc 3 fires, channel=" << channel
 	      << " at frame=" 
-	      << (*channelDataHandle).Frame() + slice / clock.FrameTicks()
-	      << " slice=" << slice % clock.FrameTicks()
+              << (*channelDataHandle).Frame() + slice / opticalClock.FrameTicks()
+              << " slice=" << slice % opticalClock.FrameTicks()
 	      << " max ADC=" << maxADC;
 
 	    
@@ -1015,9 +1017,9 @@ namespace opdet {
 	     multiplicitySum1[slot][slice] > fm_cosmicMultiplicity[gain_index] ) {
 	  // Create a trigger record and save it. 
 	  optdata::Frame_t frame 
-	    = firstFrame + (firstSlice + slice) / clock.FrameTicks();
+            = firstFrame + (firstSlice + slice) / opticalClock.FrameTicks();
 	  optdata::TimeSlice_t sample 
-	    = (firstSlice + slice) % clock.FrameTicks();
+            = (firstSlice + slice) % opticalClock.FrameTicks();
 	  optdata::PMTTrigger cosmicTrigger( optdata::kCosmicPMTTrigger,
 					     sample, frame );
 	  triggerCollection->push_back( std::move(cosmicTrigger) );
@@ -1080,9 +1082,9 @@ namespace opdet {
 	     multiplicitySum3[slot][slice] > fm_beamMultiplicity[gain_index] ) {
 	  // Create a trigger record and save it. 
 	  optdata::Frame_t frame 
-	    = firstFrame + (firstSlice + slice) / clock.FrameTicks();
+            = firstFrame + (firstSlice + slice) / opticalClock.FrameTicks();
 	  optdata::TimeSlice_t sample 
-	    = (firstSlice + slice) % clock.FrameTicks();
+            = (firstSlice + slice) % opticalClock.FrameTicks();
 	  optdata::PMTTrigger beamTrigger( optdata::kBeamPMTTrigger,
 					   sample, frame );
 	  triggerCollection->push_back( std::move(beamTrigger) );
