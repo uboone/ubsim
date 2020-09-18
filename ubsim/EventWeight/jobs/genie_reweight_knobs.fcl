@@ -1,0 +1,17 @@
+# Reweightable GENIE cross section model uncertainties
+# Sept 2020
+genie_reweight_LLfit_sys: {
+
+
+  parameter_list: [
+
+      # QE
+      "MaCCQE", #....
+      # MEC
+      "NormCCMEC"
+      #....
+  ]
+
+  parameter_sigma: [0., +1., -1., +2., -2., +3., -3.]
+
+}

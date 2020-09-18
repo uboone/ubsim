@@ -89,7 +89,7 @@ namespace evwgh {
     
     bool valid_knob_name( const std::string& knob_name, genie::rew::GSyst_t& knob );
 
-    WeightManager _wgt_manager;
+    //WeightManager _wgt_manager;
     std::string fGenieModuleLabel;
 
     std::vector<std::string> knob_name;
@@ -99,7 +99,7 @@ namespace evwgh {
     size_t num_sigs;
 
     std::vector< std::vector<genie::rew::GReWeight > > reweightVector; // [#knob][0,+-1,+-2,+-3 sigmas][genie::rew::GReWeight]
-    std::vector< std::vector<double> > reweightingSigmas; // [#knob][0,+-1,+-2,+-3 sigmas]
+    std::vector<double> reweightingSigmas; // [0,+-1,+-2,+-3 sigmas] for all knobs
 
     std::vector< std::vector< std::vector<double> > > weights; // [#neutrino][#knob][0,+-1,+-2,+-3 sigmas]
   };
@@ -108,28 +108,50 @@ namespace evwgh {
     : EDProducer{p}
     , fGenieModuleLabel{p.get<std::string>("genie_module_label", "generator")}
   {
-    //?????
-    auto const n_func = _wgt_manager.Configure(p, *this);
-    if ( n_func > 0 )
-      produces<std::vector<MCEventWeight> >();
+//    //?????
+//    auto const n_func = _wgt_manager.Configure(p, *this);
+//    if ( n_func > 0 )
+    produces<std::vector<MCEventWeight> >();
  
-    const fhicl::ParameterSet& pset = p.get<fhicl::ParameterSet>( GetName() );
-    auto const pars = pset.get< std::vector<std::string> >( "parameter_list" );
-    auto const par_sigmas = pset.get< std::vector<double> >( "parameter_sigma" );
+    //const fhicl::ParameterSet& pset = p.get<fhicl::ParameterSet>( GetName() );
+    auto const pars = p.get< std::vector<std::string> >( "parameter_list" );
+    auto const par_sigmas = p.get< std::vector<double> >( "parameter_sigma" );
 
-    genie::rew::GSyst_t temp_knob;
-    for ( const auto& knob_name : pars ) {
-      if ( valid_knob_name(knob_name, temp_knob) ) knobs_to_use.push_back( temp_knob );
+    for ( const auto& this_knob_name : pars ) {
+      genie::rew::GSyst_t temp_knob = genie::rew::GSyst::FromString( this_knob_name );
+      //if ( !(temp_knob != kNullSystematic && temp_knob != kNTwkDials) ) {
+      //   knobs_to_use.push_back( temp_knob );
+      //}
+      std::cout<<"knob_name: "<< this_knob_name<<std::endl;
+      knobs_to_use.push_back( temp_knob );
+      knob_name.push_back(this_knob_name);
     }
 
+    num_knobs = knobs_to_use.size();
     num_sigs = par_sigmas.size();
+    reweightingSigmas = par_sigmas;
+    
+    for (size_t i = 0u; i < num_sigs; i++){
+      std::cout<<"reweightingSigmas["<<i<<"]: "<<reweightingSigmas[i]<<std::endl;
+    }
+
+    reweightVector.resize( num_knobs, std::vector<genie::rew::GReWeight > (num_sigs) );
+    
+    //// Set up the weight calculators for each universe
+    //for (unsigned int i_k = 0; i_k < num_knobs; i_k++){
+    //  for ( auto& rwght : reweightVector.at(i_k) ) {
+
+    //    ///////!!!!!!!!!!!!!!
+    //    this->SetupWeightCalculators( rwght);
+    //  }
+    //} 
 
 ////////////////////////////
-    if ( pars.size() != par_sigmas.size() ) {
-      throw cet::exception(__PRETTY_FUNCTION__) << GetName()
-        << "::Bad fcl configuration. parameter_list and parameter_sigma"
-        << " need to have same number of parameters.";
-    }
+//    if ( pars.size() != par_sigmas.size() ) {
+//      throw cet::exception(__PRETTY_FUNCTION__) << GetName()
+//        << "::Bad fcl configuration. parameter_list and parameter_sigma"
+//        << " need to have same number of parameters.";
+//    }
 //////////////////////////
   }
 
@@ -158,8 +180,11 @@ namespace evwgh {
 
     weights.resize( num_neutrinos );
 
+    std::cout<<"number of knobs: "<< num_knobs<<std::endl;
+    std::cout<<"number of variations: "<< num_sigs<<std::endl;
     // Loop over different number of neutrinos
     for (unsigned int i_v = 0; i_v < num_neutrinos; i_v++ ) {
+      std::cout<<"neutrino: "<<i_v<<std::endl;
 
       // Convert the MCTruth and GTruth objects from the event
       // back into the original genie::EventRecord needed to
@@ -194,16 +219,67 @@ namespace evwgh {
       weights[i_v].resize( num_knobs );
 
       for (unsigned int i_k = 0; i_k < num_knobs; i_k++ ) {
+        std::cout<<"# knob: "<< i_k<<std::endl;
         std::cout<<"name of the knob: "<<knob_name[i_k]<<std::endl;
         for(unsigned int i_sig = 0; i_sig < num_sigs; i_sig++ ){
+          std::cout<<"# sig: "<<i_sig<<std::endl;
 
-          auto& rwght = reweightVector.at( i_k ).at( i_sig );
+          std::cout<<"huh?"<<std::endl;
+          genie::rew::GReWeight& rwght = reweightVector.at( i_k ).at( i_sig );
+        rwght.Print();	  
+	std::cout<<"nani?"<<std::endl;
+          //std::cout<<"rwght type: "<< rwght.type() <<std::endl;        
+	genie::rew::GReWeightNuXSecNCEL *test = new GReWeightNuXSecNCEL;
+	std::cout << "DOUBLE NANI?!?!111" << std::endl;
+
+          rwght.AdoptWghtCalc( "xsec_ncel",       test      );
+          //rwght.AdoptWghtCalc( "xsec_ncel",       new GReWeightNuXSecNCEL      );
+          std::cout<<"1"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_ccqe",       new GReWeightNuXSecCCQE      );
+          std::cout<<"2"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_ccqe_axial", new GReWeightNuXSecCCQEaxial );
+          std::cout<<"3"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_ccqe_vec",   new GReWeightNuXSecCCQEvec   );
+          std::cout<<"4"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_ccres",      new GReWeightNuXSecCCRES     );
+          std::cout<<"5"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_ncres",      new GReWeightNuXSecNCRES     );
+          std::cout<<"6"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_nonresbkg",  new GReWeightNonResonanceBkg );
+          std::cout<<"7"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_coh",        new GReWeightNuXSecCOH       );
+          std::cout<<"8"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_dis",        new GReWeightNuXSecDIS       );
+          std::cout<<"9"<<std::endl;
+          rwght.AdoptWghtCalc( "nuclear_qe",      new GReWeightFGM             );
+          std::cout<<"10"<<std::endl;
+          rwght.AdoptWghtCalc( "hadro_res_decay", new GReWeightResonanceDecay  );
+          std::cout<<"11"<<std::endl;
+          rwght.AdoptWghtCalc( "hadro_fzone",     new GReWeightFZone           );
+          std::cout<<"12"<<std::endl;
+          rwght.AdoptWghtCalc( "hadro_intranuke", new GReWeightINuke           );
+          std::cout<<"13"<<std::endl;
+          rwght.AdoptWghtCalc( "hadro_agky",      new GReWeightAGKY            );
+          std::cout<<"14"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_nc",         new GReWeightNuXSecNC        );
+          std::cout<<"15"<<std::endl;
+          rwght.AdoptWghtCalc( "res_dk",          new GReWeightResonanceDecay  );
+          std::cout<<"16"<<std::endl;
+          rwght.AdoptWghtCalc( "xsec_empmec",     new GReWeightXSecEmpiricalMEC);
+          std::cout<<"17"<<std::endl;
+
+          std::cout<<"aaaaaaa"<<std::endl;
           genie::rew::GSystSet& syst = rwght.Systematics();
 
+          std::cout<<"bbbbbb"<<std::endl;
           genie::rew::GSyst_t knob = knobs_to_use.at( i_k );
 
-          double twk_dial_value = reweightingSigmas.at( i_k ).at( i_sig );
+          std::cout<<"cccccc"<<std::endl;
+          double twk_dial_value = reweightingSigmas.at( i_sig );
+          std::cout<<"dddddd"<<std::endl;
           syst.Set( knob, twk_dial_value );
+ 
+          rwght.Reconfigure();
 
           weights[i_v][i_k][i_sig] = rwght.CalcWeight( *genie_event );
           std::cout<<"weight: "<< weights[i_v][i_k][i_sig]<<std::endl;
@@ -263,23 +339,23 @@ namespace evwgh {
     //mf::LogInfo("") << job_summary.str();
   }
 
-  bool valid_knob_name( const std::string& knob_name, genie::rew::GSyst_t& knob ) {
-    knob = genie::rew::GSyst::FromString( knob_name );
-    if ( knob != kNullSystematic && knob != kNTwkDials ) {
-      if ( UNIMPLEMENTED_GENIE_KNOBS.count(knob) ) {
-        MF_LOG_WARNING("GENIEWeightCalc") << "Ignoring unimplemented GENIE"
-          << " knob " << knob_name;
-        return false;
-      }
-    }
-    else {
-      MF_LOG_WARNING("GENIEWeightCalc") << "Ignoring unrecognized GENIE"
-        << " knob " << knob_name;
-      return false;
-    }
-    return true;
-  }
+  //bool valid_knob_name( const std::string& knob_name, genie::rew::GSyst_t& knob ) {
+  //  knob = genie::rew::GSyst::FromString( knob_name );
+  //  if ( knob != kNullSystematic && knob != kNTwkDials ) {
+  //    //if ( UNIMPLEMENTED_GENIE_KNOBS.count(knob) ) {
+  //    MF_LOG_WARNING("GENIEWeightCalc") << "Ignoring unimplemented GENIE"
+  //      << " knob " << knob_name;
+  //    return false;
+  //    //}
+  //  }
+  //  else {
+  //    MF_LOG_WARNING("GENIEWeightCalc") << "Ignoring unrecognized GENIE"
+  //      << " knob " << knob_name;
+  //    return false;
+  //  }
+  //  return true;
+  //}
 
 } // namespace
 
-DEFINE_ART_MODULE(EventWeightSys)
+DEFINE_ART_MODULE(evwgh::EventWeightSys)
