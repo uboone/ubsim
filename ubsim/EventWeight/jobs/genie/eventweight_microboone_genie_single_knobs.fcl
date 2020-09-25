@@ -20,8 +20,8 @@ microboone_eventweight_genie_single_knobs: {
     random_seed: 1
     parameter_list: [ "MaCCQE" ]
 
-    # MaCCQE uses +/-0.12 GeV about the tuned central value
-    parameter_sigma: [ 4.16128 ]
+    # MaCCQE uses +/- 0.10 GeV about the tuned central value
+    parameter_sigma: [ 3.467735 ]
     mode: pm1sigma
     number_of_multisims: 2
   }
@@ -32,9 +32,10 @@ microboone_eventweight_genie_single_knobs: {
     parameter_list: [ "RPA_CCQE" ]
 
     # Dummy sigma value, ignored by "minmax" mode
-    parameter_sigma: [ 1 ]
-    parameter_min: [ 0.0 ]
-    parameter_max: [ 0.8 ]
+    parameter_sigma: [ 0.4 ]
+
+    parameter_min: [ -0.249 ]
+    parameter_max: [ 0.551 ]
 
     mode: minmax
     number_of_multisims: 2
@@ -59,7 +60,7 @@ microboone_eventweight_genie_single_knobs: {
     random_seed: 4
     parameter_list: [ "NormCCMEC" ]
 
-    parameter_sigma: [ 1.4 ] # +/- 70%
+    parameter_sigma: [ 1.0 ] # +/- 50%
     mode: pm1sigma
     number_of_multisims: 2
   }
@@ -516,18 +517,6 @@ microboone_eventweight_genie_single_knobs: {
     parameter_min: [ 0.0 ]
     parameter_max: [ 1.0 ]
     mode: minmax
-    number_of_multisims: 2
-  }
-
-  # 60% of the previous RPA uncertainty (see RPA_CCQE)
-  RPA_CCQE_Reduced: {
-    type: UBGenie
-    random_seed: 58
-    parameter_list: [ "RPA_CCQE" ]
-    parameter_sigma: [ 0.24 ]
-    parameter_min: [ 0.16 ]
-    parameter_max: [ 0.64 ]
-    mode: minmax 
     number_of_multisims: 2
   }
 
