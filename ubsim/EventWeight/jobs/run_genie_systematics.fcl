@@ -36,10 +36,30 @@ physics: {
      parameter_list: [
 
         # QE
-        "MaCCQE", #....
+        "MaCCQE", "CoulombCCQE", "MaNCEL", "EtaNCEL",
+        
+        # MEC
+        "NormCCMEC", "NormNCMEC", "FracPN_CCMEC", "FracDelta_CCMEC",
+        
         # RES
-        "MaCCRES"
-        #....
+        "MaCCRES", "MvCCRES", "MaNCRES", "MvNCRES",
+        
+        # Non-resonant background
+        "NonRESBGvpCC1pi", "NonRESBGvpCC2pi", "NonRESBGvpNC1pi", "NonRESBGvpNC2pi",
+        "NonRESBGvnCC1pi", "NonRESBGvnCC2pi", "NonRESBGvnNC1pi", "NonRESBGvnNC2pi",
+        "NonRESBGvbarpCC1pi", "NonRESBGvbarpCC2pi", "NonRESBGvbarpNC1pi",
+        "NonRESBGvbarpNC2pi", "NonRESBGvbarnCC1pi", "NonRESBGvbarnCC2pi", "NonRESBGvbarnNC1pi",
+        "NonRESBGvbarnNC2pi", "AhtBY", "BhtBY", "CV1uBY", "CV2uBY",
+        
+        # Hadronization
+        "AGKYxF1pi", "AGKYpT1pi",
+        
+        # FSI
+        "MFP_pi", "MFP_N", "FrCEx_pi", "FrInel_pi", "FrAbs_pi",
+        "FrCEx_N", "FrInel_N", "FrAbs_N",
+        
+        # Delta resonance decays
+        "RDecBR1gamma", "RDecBR1eta"
      ]
      
      parameter_sigma: [0., +1., -1., +2., -2., +3., -3.]

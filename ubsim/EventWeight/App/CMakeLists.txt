@@ -121,7 +121,7 @@ endif()
 # Build against extra reweighting functionality in GENIE v3.0.4 MicroBooNE patch 02
 add_definitions(-DGENIE_UB_PATCH)
 
-art_make(LIBRARY_NAME     EventWeightSys
+art_make(LIBRARY_NAME     EventWeightSysYC
          LIB_LIBRARIES    larsim_EventWeight_Base
                           larsim_EventWeight_Calculators
                           #UBEventWeight service
@@ -135,6 +135,36 @@ art_make(LIBRARY_NAME     EventWeightSys
                           ubsim_EventWeight_Calculators
                           ubsim_EventWeight_Calculators_BNBPrimaryHadron
                           ubsim_EventWeight_Calculators_Splines
+                          ReweightBaseLib
+                          larsim_EventWeight_Base
+                          lardata_Utilities
+                          nutools_EventGeneratorBase_GENIE
+                          nutools_NuReweight_art
+                          nutools_NuReweight
+                          larsim_Simulation
+                          larcorealg_Geometry
+                          larcore_Geometry_Geometry_service
+                          nutools_RandomUtils_NuRandomService_service
+                          nusimdata_SimulationBase
+                          PropBaseLib
+                          ${ART_FRAMEWORK_CORE}
+                          ${ART_FRAMEWORK_PRINCIPAL}
+                          ${ART_FRAMEWORK_SERVICES_REGISTRY}
+                          ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
+                          ${ART_FRAMEWORK_SERVICES_OPTIONAL}
+                          ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
+                          art_Persistency_Common canvas canvas
+                          art_Persistency_Provenance canvas canvas
+                          art_Utilities canvas canvas
+                          cetlib cetlib_except
+                          ${GENIE_LIB_LIST}
+                          ${FHICLCPP}
+                          ${CLHEP}
+                          ${ROOT_BASIC_LIB_LIST}
+                          ${Boost_SYSTEM_LIBRARY}
+                          ${G4_LIB_LIST}
+                          ${LOG4CPP}
+                          ${MF_MESSAGELOGGER}
          MODULE_LIBRARIES larsim_EventWeight_Base
                           larsim_EventWeight_Calculators
                           #UBEventWeight service
