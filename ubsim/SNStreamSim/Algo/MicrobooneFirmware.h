@@ -49,7 +49,7 @@ namespace compress {
     // setter function for algo specifications
 //    void SetCompressThresh(int tU, int tV, int tY) { _thresh[0] = tU; _thresh[1] = tV; _thresh[2] = tY; }
     void SetCompressThresh(std::ifstream& tPlanes, double plane, double ts, int loop, bool statBas, double pedestalBaseLine) { while(tPlanes >> plane>> pedestalBaseLine >> ts) {_thresh[loop] = ts;
-        std::cout << loop << "," << _thresh[loop] <<std::endl;
+        //std::cout << loop << "," << _thresh[loop] <<std::endl;
         if (statBas){_baseln[loop] = pedestalBaseLine;} loop++; } }
 
     void SetPolarity(int polu, int polv, int poly) {_pol[0] = polu; _pol[1] = polv; _pol[2] = poly; }

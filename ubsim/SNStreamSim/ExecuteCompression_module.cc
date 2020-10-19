@@ -197,9 +197,11 @@ void ExecuteCompression::produce(art::Event & e)
   // load rawdigits
   //art::Handle<std::vector<raw::RawDigit> > rawdigit_h;
 //  e.getByLabel("daq",rawdigit_h);
-  //art::InputTag wires_tag("driftWC","orig","OverlayDetsim");
+  
+  art::InputTag wires_tag("mixer","","DataOverlay");//for overlay
   //
-  art::InputTag wires_tag("driftWC","orig","Detsim");
+  //art::InputTag wires_tag("daq","","Swizzler");//External Unbiased files
+  //art::InputTag wires_tag("driftWC","orig","Detsim");//for signal only
   auto const &rawdigit_h = e.getValidHandle<std::vector<raw::RawDigit>>(wires_tag);
 
 
@@ -228,14 +230,14 @@ void ExecuteCompression::produce(art::Event & e)
     
     //fixing ADC values
     const std::vector<short> adc = rawdigit->ADCs();
-    std::cout << "RawDigits adc sizes " << adc.size() <<std::endl;
+    //std::cout << "RawDigits adc sizes " << adc.size() <<std::endl;
 
     lar::sparse_vector<float> wf_ROIs;
 
     //fixing previous bug
     std::vector<std::pair<short,short>> outTicks;
     outTicks.reserve(ranges.size());
-    std::cout << " Ticks received " <<  ranges.size() << std::endl;    
+    //std::cout << " Ticks received " <<  ranges.size() << std::endl;    
     //this loop is getting the starticks and endticks of all the rois
     for (unsigned int iTicks = 0; iTicks<ranges.size();iTicks++)
     {
