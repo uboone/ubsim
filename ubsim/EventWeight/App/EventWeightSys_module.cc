@@ -66,6 +66,15 @@
 #include "GENIE/RwCalculators/GReWeightNuXSecNC.h"
 #include "GENIE/RwCalculators/GReWeightXSecEmpiricalMEC.h"
 
+#ifdef GENIE_UB_PATCH
+  // New weight calculator in GENIE v3.0.4 MicroBooNE patch 01
+  #include "GENIE/RwCalculators/GReWeightXSecMEC.h"
+  // New weight calculators in GENIE v3.0.4 MicroBooNE patch 02
+  #include "GENIE/RwCalculators/GReWeightDeltaradAngle.h"
+  #include "GENIE/RwCalculators/GReWeightNuXSecCOHuB.h"
+  #include "GENIE/RwCalculators/GReWeightRESBugFix.h"
+#endif
+
 namespace evwghYC {
 
   class EventWeightSysYC : public art::EDProducer {
@@ -85,9 +94,8 @@ namespace evwghYC {
     void produce(art::Event & e) override;
 
     //Optional functions.
+    void beginJob() override;
     void endJob() override;
-    
-    bool valid_knob_name( const std::string& knob_name, genie::rew::GSyst_t& knob );
 
     //WeightManager _wgt_manager;
     std::string fGenieModuleLabel;
@@ -95,11 +103,22 @@ namespace evwghYC {
     std::vector<std::string> knob_name;
     std::vector< genie::rew::GSyst_t > knobs_to_use;
 
+    std::vector<std::string> tuned_knob_name;
+    std::vector< genie::rew::GSyst_t > tuned_knobs_to_use;
+
     size_t num_knobs;
     size_t num_sigs;
 
-    std::vector< genie::rew::GReWeight > reweightVector; // [#knob][genie::rew::GReWeight]
+    size_t tuned_num_knobs;
+    size_t tuned_num_sigs;
+
     std::vector<double> reweightingSigmas; // [0,+-1,+-2,+-3 sigmas] for all knobs
+    double cv = 0.;
+
+    std::vector<double> tuned_reweightingSigmas; // [0,+-1,+-2,+-3 sigmas] for all knobs
+    double tuned_cv = 0.;
+   
+    genie::rew::GReWeight rwght;
 
     std::vector< std::vector< std::vector<double> > > weights; // [#neutrino][#knob][0,+-1,+-2,+-3 sigmas]
   };
@@ -111,14 +130,16 @@ namespace evwghYC {
 //    //?????
 //    auto const n_func = _wgt_manager.Configure(p, *this);
 //    if ( n_func > 0 )
-    genie::Messenger* messenger = genie::Messenger::Instance();
-messenger->SetPriorityLevel( "ReW", log4cpp::Priority::DEBUG );
+   genie::Messenger* messenger = genie::Messenger::Instance();
+   messenger->SetPriorityLevel( "ReW", log4cpp::Priority::DEBUG );
       //MF_LOG_INFO("GENIEWeightCalc") << "Configuring GENIE weight"
        // << " calculator " << this->GetName();
 
+    // Tell GENIE about the event generator list and tune
+    evgb::SetEventGeneratorListAndTune( "Default", "G18_10a_02_11a" );
+ 
     produces<std::vector<evwgh::MCEventWeight> >();
  
-    //const fhicl::ParameterSet& pset = p.get<fhicl::ParameterSet>( GetName() );
     auto const pars = p.get< std::vector<std::string> >( "parameter_list" );
     auto const par_sigmas = p.get< std::vector<double> >( "parameter_sigma" );
 
@@ -131,50 +152,94 @@ messenger->SetPriorityLevel( "ReW", log4cpp::Priority::DEBUG );
     num_knobs = knobs_to_use.size();
     num_sigs = par_sigmas.size();
     reweightingSigmas = par_sigmas;
-    
-    std::vector<std::string> v_calc_name = {"xsec_ncel",  "xsec_ccqe", "xsec_ccqe_axial", "xsec_ccqe_vec", "xsec_ccres", "xsec_ncres", "xsec_nonresbkg", "xsec_coh", "xsec_dis", "nuclear_qe", "hadro_res_decay", "hadro_fzone", "hadro_intranuke", "hadro_intranuke", "hadro_agky", "xsec_nc", "res_dk", "xsec_empmec"};
+    cv = reweightingSigmas.at(0); 
 
-    reweightVector.resize( num_knobs );
-    for ( auto& rwght : reweightVector ) {   
+    auto const tuned_pars = p.get< std::vector<std::string> >( "tuned_parameter_list" );
+    auto const tuned_par_sigmas = p.get< std::vector<double> >( "tuned_parameter_sigma" );
 
-      //rwght.Print();
-
-      rwght.AdoptWghtCalc( "xsec_ncel",       new GReWeightNuXSecNCEL      );
-      rwght.AdoptWghtCalc( "xsec_ccqe",       new GReWeightNuXSecCCQE      );
-      rwght.AdoptWghtCalc( "xsec_ccqe_axial", new GReWeightNuXSecCCQEaxial );
-      rwght.AdoptWghtCalc( "xsec_ccqe_vec",   new GReWeightNuXSecCCQEvec   );
-      rwght.AdoptWghtCalc( "xsec_ccres",      new GReWeightNuXSecCCRES     );
-      rwght.AdoptWghtCalc( "xsec_ncres",      new GReWeightNuXSecNCRES     );
-      rwght.AdoptWghtCalc( "xsec_nonresbkg",  new GReWeightNonResonanceBkg );
-      rwght.AdoptWghtCalc( "xsec_coh",        new GReWeightNuXSecCOH       );
-      rwght.AdoptWghtCalc( "xsec_dis",        new GReWeightNuXSecDIS       );
-      rwght.AdoptWghtCalc( "nuclear_qe",      new GReWeightFGM             );
-      rwght.AdoptWghtCalc( "hadro_res_decay", new GReWeightResonanceDecay  );
-      rwght.AdoptWghtCalc( "hadro_fzone",     new GReWeightFZone           );
-      rwght.AdoptWghtCalc( "hadro_intranuke", new GReWeightINuke           );
-      rwght.AdoptWghtCalc( "hadro_agky",      new GReWeightAGKY            );
-      rwght.AdoptWghtCalc( "xsec_nc",         new GReWeightNuXSecNC        );
-      rwght.AdoptWghtCalc( "res_dk",          new GReWeightResonanceDecay  );
-      rwght.AdoptWghtCalc( "xsec_empmec",     new GReWeightXSecEmpiricalMEC);
-
-
-      for (auto& calc_name : v_calc_name) { 
-        genie::rew::GReWeightI* calc = rwght.WghtCalc( calc_name );
-
-        auto* calc_ccqe = dynamic_cast< genie::rew::GReWeightNuXSecCCQE* >( calc );
-        auto* calc_ccres = dynamic_cast< genie::rew::GReWeightNuXSecCCRES* >( calc );
-        auto* calc_ncres = dynamic_cast< genie::rew::GReWeightNuXSecNCRES* >( calc );
-        auto* calc_dis = dynamic_cast< genie::rew::GReWeightNuXSecDIS* >( calc );
-        if ( calc_ccqe ) {calc_ccqe->SetMode( 0 );}
-        else if ( calc_ccres ) calc_ccres->SetMode( 0 );
-        else if ( calc_ncres ) calc_ncres->SetMode( 0 );
-        else if ( calc_dis ) calc_dis->SetMode( 1 ); 
-      }
+    for ( const auto& this_knob_name : tuned_pars ) {
+      genie::rew::GSyst_t temp_knob = genie::rew::GSyst::FromString( this_knob_name );
+      tuned_knobs_to_use.push_back( temp_knob );
+      tuned_knob_name.push_back(this_knob_name);
     }
+   
+    tuned_num_knobs = tuned_knobs_to_use.size();
+    tuned_num_sigs = tuned_par_sigmas.size();
+    tuned_reweightingSigmas = tuned_par_sigmas;
+    tuned_cv = tuned_reweightingSigmas.at(0);
+
+    std::cout<<"tuned_cv: "<< tuned_cv<<std::endl;
+
+    std::cout<<"aaa"<<std::endl;
+
+    //rwght.Print();
+    genie::rew::GReWeightNuXSecCCQE* calc_ccqe = new GReWeightNuXSecCCQE;
+    genie::rew::GReWeightNuXSecCCRES* calc_ccres = new GReWeightNuXSecCCRES;
+    genie::rew::GReWeightNuXSecNCRES* calc_ncres = new GReWeightNuXSecNCRES;
+    genie::rew::GReWeightNuXSecDIS* calc_dis = new GReWeightNuXSecDIS;
+
+std::cout<<"bbb"<<std::endl;
+
+    calc_ccqe->SetMode( 0 );
+    calc_ccres->SetMode( 0 );
+    calc_ncres->SetMode( 0 );
+    calc_dis->SetMode( 0 );
+std::cout<<"ccc"<<std::endl;
+
+    rwght.AdoptWghtCalc( "xsec_ncel",       new GReWeightNuXSecNCEL      );
+    rwght.AdoptWghtCalc( "xsec_ccqe",       calc_ccqe);
+    rwght.AdoptWghtCalc( "xsec_ccqe_axial", new GReWeightNuXSecCCQEaxial );
+    rwght.AdoptWghtCalc( "xsec_ccqe_vec",   new GReWeightNuXSecCCQEvec   );
+    rwght.AdoptWghtCalc( "xsec_ccres",      new GReWeightNuXSecCCRES     );
+    rwght.AdoptWghtCalc( "xsec_ncres",      new GReWeightNuXSecNCRES     );
+    rwght.AdoptWghtCalc( "xsec_nonresbkg",  new GReWeightNonResonanceBkg );
+    rwght.AdoptWghtCalc( "xsec_coh",        new GReWeightNuXSecCOH       );
+    rwght.AdoptWghtCalc( "xsec_dis",        new GReWeightNuXSecDIS       );
+    rwght.AdoptWghtCalc( "nuclear_qe",      new GReWeightFGM             );
+    rwght.AdoptWghtCalc( "hadro_res_decay", new GReWeightResonanceDecay  );
+    rwght.AdoptWghtCalc( "hadro_fzone",     new GReWeightFZone           );
+    rwght.AdoptWghtCalc( "hadro_intranuke", new GReWeightINuke           );
+    rwght.AdoptWghtCalc( "hadro_agky",      new GReWeightAGKY            );
+    rwght.AdoptWghtCalc( "xsec_nc",         new GReWeightNuXSecNC        );
+    rwght.AdoptWghtCalc( "res_dk",          new GReWeightResonanceDecay  );
+    rwght.AdoptWghtCalc( "xsec_empmec",     new GReWeightXSecEmpiricalMEC);
+std::cout<<"ddd"<<std::endl;
+
+    #ifdef GENIE_UB_PATCH
+std::cout<<"GENIE_UB_PATCH"<<std::endl;
+      // New weight calculator in GENIE v3.0.4 MicroBooNE patch 01
+      rwght.AdoptWghtCalc( "xsec_mec",        new GReWeightXSecMEC );
+      // New weight calculators in GENIE v3.0.4 MicroBooNE patch 02
+      rwght.AdoptWghtCalc( "deltarad_angle",  new GReWeightDeltaradAngle );
+      rwght.AdoptWghtCalc( "xsec_coh_ub",  new GReWeightNuXSecCOHuB );
+      rwght.AdoptWghtCalc( "res_bug_fix",  new GReWeightRESBugFix );
+std::cout<<"--GENIE_UB_PATCH"<<std::endl;
+    #endif
+
+    // assuming MaCCQE is the only one that needs to be engineered
+    genie::rew::GSyst_t knob_maccqe = tuned_knobs_to_use.at(0);
+    rwght.Systematics().Set( knob_maccqe, tuned_cv );
+    rwght.Reconfigure();
+std::cout<<"eee"<<std::endl;
+      //for (auto& calc_name : v_calc_name) { 
+      //  genie::rew::GReWeightI* calc = rwght.WghtCalc( calc_name );
+
+      //  //auto* calc_ccqe = dynamic_cast< genie::rew::GReWeightNuXSecCCQE* >( calc );
+      //  auto* calc_ccres = dynamic_cast< genie::rew::GReWeightNuXSecCCRES* >( calc );
+      //  auto* calc_ncres = dynamic_cast< genie::rew::GReWeightNuXSecNCRES* >( calc );
+      //  auto* calc_dis = dynamic_cast< genie::rew::GReWeightNuXSecDIS* >( calc );
+      //  //if ( calc_ccqe ) {calc_ccqe->SetMode( 0 );}
+      //  else if ( calc_ccres ) calc_ccres->SetMode( 0 );
+      //  else if ( calc_ncres ) calc_ncres->SetMode( 0 );
+      //  else if ( calc_dis ) calc_dis->SetMode( 1 ); 
+      //}
+    //}
   }
 
   void EventWeightSysYC::produce(art::Event & e)
   {
+
+std::cout<<"fff"<<std::endl;
     // Implementation of required member function here.
     auto mcwghvec = std::make_unique<std::vector<evwgh::MCEventWeight>>();
 
@@ -200,6 +265,9 @@ messenger->SetPriorityLevel( "ReW", log4cpp::Priority::DEBUG );
     // Loop over different number of neutrinos
     for (unsigned int i_v = 0; i_v < num_neutrinos; i_v++ ) {
 
+      // what to produce
+      evwgh::MCEventWeight mcwgh;
+      
       // Convert the MCTruth and GTruth objects from the event
       // back into the original genie::EventRecord needed to
       // compute the weights (GHEP)
@@ -232,43 +300,87 @@ messenger->SetPriorityLevel( "ReW", log4cpp::Priority::DEBUG );
 
       // All right, the event record is fully ready. Now ask the GReWeight
       // objects to compute the weights.
-      weights[i_v].resize( num_knobs );
+      weights[i_v].resize( num_knobs + tuned_num_knobs );
 
       for (unsigned int i_k = 0; i_k < num_knobs; i_k++ ) {
-        auto& rw = reweightVector.at( i_k );
+        //auto& rw = reweightVector.at( i_k );
+
+        genie::rew::GSyst_t knob = knobs_to_use.at( i_k );
 
         for(unsigned int i_sig = 0; i_sig < num_sigs; i_sig++ ){
           weights[i_v][i_k].resize( num_sigs );
-          genie::rew::GSyst_t knob = knobs_to_use.at( i_k );
 
           double twk_dial_value = reweightingSigmas.at( i_sig );
-          rw.Systematics().Set( knob, twk_dial_value );
+          rwght.Systematics().Set( knob, twk_dial_value );
 
-          rw.Reconfigure();
+          rwght.Reconfigure();
 
-          weights[i_v][i_k][i_sig] = rw.CalcWeight( *genie_event );
-          //std::cout<<"weight: "<< weights[i_v][i_k][i_sig]<<std::endl;
-
+          weights[i_v][i_k][i_sig] = rwght.CalcWeight( *genie_event );
+          std::cout<<"--neutrino: "<< i_v <<", knob: "<<knob_name[i_k]<<", var: "<<twk_dial_value<<std::endl;
+          std::cout<<"weight: "<< weights[i_v][i_k][i_sig]<<std::endl;
 	}
+        
+        rwght.Systematics().Set( knob, cv );
+        rwght.Reconfigure();
+
+        //fill the producer
+        std::pair<std::string, std::vector<double> > p(knob_name[i_k], weights[i_v][i_k]);
+        mcwgh.fWeight.insert(p);
+
       }
 
-      // fill the producer
-      evwgh::MCEventWeight mcwgh;
-      for (unsigned int i_k = 0; i_k < num_knobs; i_k++ ){
-        if(weights.size() == 0){
-          std::vector<double> empty;
-          std::pair<std::string, std::vector <double> > p("empty",empty);
-          mcwgh.fWeight.insert(p);
-        }
-        else{
-          std::pair<std::string, std::vector<double> > p(knob_name[i_k], weights[i_v][i_k]);
-          mcwgh.fWeight.insert(p);
-        }
-      } // knobs
+      // vulnerable
+      // MaCCQE
+      for (unsigned int i_k = 0; i_k < tuned_num_knobs; i_k++ ) {
+
+        unsigned int w_i_k = i_k + num_knobs;
+
+        genie::rew::GSyst_t knob = tuned_knobs_to_use.at( i_k );
+        for(unsigned int i_sig = 0; i_sig < tuned_num_sigs; i_sig++ ){
+          weights[i_v][w_i_k].resize( tuned_num_sigs );
+
+          double twk_dial_value = tuned_reweightingSigmas.at( i_sig );
+          rwght.Systematics().Set( knob, twk_dial_value );
+
+          rwght.Reconfigure();
+
+          weights[i_v][w_i_k][i_sig] = rwght.CalcWeight( *genie_event );
+          std::cout<<"--neutrino: "<< i_v <<", knob: "<<tuned_knob_name[i_k]<<", var: "<<twk_dial_value<<std::endl;
+          std::cout<<"weight: "<< weights[i_v][w_i_k][i_sig]<<std::endl;
+          }
+
+        rwght.Systematics().Set( knob, tuned_cv );
+        rwght.Reconfigure();
+        std::pair<std::string, std::vector<double> > p(tuned_knob_name[i_k], weights[i_v][w_i_k]);
+        mcwgh.fWeight.insert(p);
+      }
+
+      //// fill the producer
+      //evwgh::MCEventWeight mcwgh;
+      //if(weights[i_v].size() == 0){ // dummy check for no dials
+      //  std::vector<double> empty;
+      //  std::pair<std::string, std::vector <double> > p("empty",empty);
+      //  mcwgh.fWeight.insert(p);
+      //}
+      //else{
+      //  for (unsigned int i_k = 0; i_k < num_knobs; i_k++ ){
+      //    std::pair<std::string, std::vector<double> > p(knob_name[i_k], weights[i_v][i_k]);
+      //    mcwgh.fWeight.insert(p);
+      //  } // knobs
+      //  for (unsigned int i_k = 0; i_k < tuned_num_knobs; i_k++ ){
+      //    std::pair<std::string, std::vector<double> > p(tuned_knob_name[i_k], weights[i_v][i_k]);
+      //    mcwgh.fWeight.insert(p);
+      //  } // tuned knobs
+      //} 
       mcwghvec->push_back(mcwgh);
     } // neutrino
 
     e.put(std::move(mcwghvec));
+  }
+
+  void EventWeightSysYC::beginJob()
+  {
+    //std::cout<<"begin?"<<std::endl;
   }
 
   void EventWeightSysYC::endJob()

@@ -35,8 +35,17 @@ physics: {
      module_type: "EventWeightSys"
      parameter_list: [
 
+        ########## TEST
+        ## QE
+        #"CoulombCCQE",      
+        ## MEC
+        #"NormCCMEC",      
+        ## RES
+        #"MaCCRES"
+        
         # QE
-        "MaCCQE", "CoulombCCQE", "MaNCEL", "EtaNCEL",
+        #"MaCCQE", "CoulombCCQE", "MaNCEL", "EtaNCEL",
+        "CoulombCCQE", "MaNCEL", "EtaNCEL",
         
         # MEC
         "NormCCMEC", "NormNCMEC", "FracPN_CCMEC", "FracDelta_CCMEC",
@@ -63,6 +72,15 @@ physics: {
      ]
      
      parameter_sigma: [0., +1., -1., +2., -2., +3., -3.]
+
+     tuned_parameter_list: [
+       # QE
+       "MaCCQE"
+     ]
+
+     #7.55 +- 4.16128
+     tuned_parameter_sigma: [7.55, 11.71128, 3.38872, 15.872560, -0.77256000, 20.033840, -4.9338400]
+
    }
  }
  

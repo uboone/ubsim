@@ -1,26 +1,42 @@
 microboone_eventweight_genie_single_knobs_spline_yifan: {
+  
+#  weight_functions_genie: [
+#    MaCCQE, RPA_CCQE, XSecShape_CCMEC, NormCCMEC, AxFFCCQEshape,
+#    VecFFCCQEshape, DecayAngMEC, MaNCEL, EtaNCEL, NormNCMEC, FracPN_CCMEC,
+#    FracDelta_CCMEC, MaCCRES, MvCCRES, MaNCRES, MvNCRES,
+#    NonRESBGvpCC1pi, NonRESBGvpCC2pi, NonRESBGvpNC1pi, NonRESBGvpNC2pi,
+#    NonRESBGvnCC1pi, NonRESBGvnCC2pi, NonRESBGvnNC1pi, NonRESBGvnNC2pi,
+#    NonRESBGvbarpCC1pi, NonRESBGvbarpCC2pi, NonRESBGvbarpNC1pi, NonRESBGvbarpNC2pi,
+#    NonRESBGvbarnCC1pi, NonRESBGvbarnCC2pi, NonRESBGvbarnNC1pi,
+#    NonRESBGvbarnNC2pi, AhtBY, BhtBY, CV1uBY, CV2uBY, AGKYxF1pi, AGKYpT1pi,
+#    MFP_pi, MFP_N, FrCEx_pi, FrInel_pi, FrAbs_pi, FrCEx_N, FrInel_N, FrAbs_N,
+#    RDecBR1gamma, RDecBR1eta, Theta_Delta2Npi, FrPiProd_pi, FrPiProd_N,
+#    CoulombCCQE, ThetaDelta2NRad, RPA_CCQE_Reduced, NormCCCOH, NormNCCOH,
+#    TunedCentralValue, RootinoFix
+#  ]
 
   weight_functions_genie: [
-    MaCCQE, RPA_CCQE, XSecShape_CCMEC, NormCCMEC, AxFFCCQEshape,
-    VecFFCCQEshape, DecayAngMEC, MaNCEL, EtaNCEL, NormNCMEC, FracPN_CCMEC,
-    FracDelta_CCMEC, MaCCRES, MvCCRES, MaNCRES, MvNCRES,
-    NonRESBGvpCC1pi, NonRESBGvpCC2pi, NonRESBGvpNC1pi, NonRESBGvpNC2pi,
-    NonRESBGvnCC1pi, NonRESBGvnCC2pi, NonRESBGvnNC1pi, NonRESBGvnNC2pi,
-    NonRESBGvbarpCC1pi, NonRESBGvbarpCC2pi, NonRESBGvbarpNC1pi, NonRESBGvbarpNC2pi,
-    NonRESBGvbarnCC1pi, NonRESBGvbarnCC2pi, NonRESBGvbarnNC1pi,
-    NonRESBGvbarnNC2pi, AhtBY, BhtBY, CV1uBY, CV2uBY, AGKYxF1pi, AGKYpT1pi,
-    MFP_pi, MFP_N, FrCEx_pi, FrInel_pi, FrAbs_pi, FrCEx_N, FrInel_N, FrAbs_N,
-    RDecBR1gamma, RDecBR1eta, Theta_Delta2Npi, FrPiProd_pi, FrPiProd_N,
-    CoulombCCQE, ThetaDelta2NRad, RPA_CCQE_Reduced, NormCCCOH, NormNCCOH,
-    TunedCentralValue, RootinoFix
+    MaCCQE_1sig, MaCCRES_1sig
   ]
 
+  MaCCQE_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaCCQE" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 7.55] #7.55 - 4.16128 ]
+    parameter_max: [ 7.55] #7.55 + 4.16128 ]
+    
+    mode: minmax
+    number_of_multisims: 2
+  }
+    
   MaCCQE_1sig: {
     type: UBGenie
     random_seed: 2
     parameter_list: [ "MaCCQE" ]
 
-    # Dummy sigma value, ignored by "minmax" mode
     parameter_sigma: [ 1 ]
     parameter_min: [ 3.38872] #7.55 - 4.16128 ]
     parameter_max: [ 11.71128] #7.55 + 4.16128 ]
@@ -29,19 +45,2289 @@ microboone_eventweight_genie_single_knobs_spline_yifan: {
     number_of_multisims: 2
   }
 
-  MaCCRES_1sig: {
+  MaCCQE_2sig: {
     type: UBGenie
     random_seed: 2
     parameter_list: [ "MaCCQE" ]
 
-    # Dummy sigma value, ignored by "minmax" mode
     parameter_sigma: [ 1 ]
-    parameter_min: [ -1. ]
-    parameter_max: [ 1. ]
+    parameter_min: [ -0.77256 ] #7.55 - 2 * 4.16128 ]
+    parameter_max: [ 15.87256] #7.55 + 2 * 4.16128 ]
 
     mode: minmax
     number_of_multisims: 2
   }
+
+  MaCCQE_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaCCQE" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -4.93384 ] #7.55 - 3 * 4.16128 ]
+    parameter_max: [ 20.033840] #7.55 + 3 * 4.16128 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  # CoulombCCQE
+  CoulombCCQE_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CoulombCCQE" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ] 
+    parameter_max: [ 0 ] 
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  CoulombCCQE_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CoulombCCQE" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ] 
+    parameter_max: [ 1 ] 
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  CoulombCCQE_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CoulombCCQE" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  CoulombCCQE_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CoulombCCQE" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  
+  #"MaNCEL"
+  MaNCEL_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaNCEL" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MaNCEL_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaNCEL" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MaNCEL_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaNCEL" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MaNCEL_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaNCEL" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"EtaNCEL"
+  EtaNCEL_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "EtaNCEL" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  EtaNCEL_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "EtaNCEL" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  EtaNCEL_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "EtaNCEL" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  EtaNCEL_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "EtaNCEL" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #
+  #"NormCCMEC"
+  NormCCMEC_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NormCCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NormCCMEC_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NormCCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NormCCMEC_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NormCCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NormCCMEC_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NormCCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NormNCMEC" 
+  NormNCMEC_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NormNCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NormNCMEC_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NormNCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NormNCMEC_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NormNCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NormNCMEC_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NormNCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"FracPN_CCMEC" 
+  FracPN_CCMEC_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FracPN_CCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FracPN_CCMEC_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FracPN_CCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FracPN_CCMEC_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FracPN_CCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FracPN_CCMEC_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FracPN_CCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"FracDelta_CCMEC"
+  FracDelta_CCMEC_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FracDelta_CCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FracDelta_CCMEC_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FracDelta_CCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FracDelta_CCMEC_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FracDelta_CCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FracDelta_CCMEC_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FracDelta_CCMEC" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #
+  #"MaCCRES", 
+  MaCCRES_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaCCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MaCCRES_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaCCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MaCCRES_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaCCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MaCCRES_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaCCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"MvCCRES", 
+  MvCCRES_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MvCCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MvCCRES_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MvCCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MvCCRES_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MvCCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MvCCRES_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MvCCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"MaNCRES", 
+  MaNCRES_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaNCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MaNCRES_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaNCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MaNCRES_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaNCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MaNCRES_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MaNCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"MvNCRES",
+  MvNCRES_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MvNCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MvNCRES_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MvNCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MvNCRES_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MvNCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MvNCRES_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MvNCRES" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #
+  #"NonRESBGvpCC1pi",
+  NonRESBGvpCC1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpCC1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpCC1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpCC1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  } 
+  #"NonRESBGvpCC2pi", 
+  NonRESBGvpCC2pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpCC2pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpCC2pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpCC2pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvpNC1pi", 
+    NonRESBGvpNC1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpNC1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpNC1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpNC1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvpNC2pi",
+  NonRESBGvpNC2pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpNC2pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpNC2pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvpNC2pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvpNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvnCC1pi", 
+  NonRESBGvnCC1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnCC1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnCC1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnCC1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvnCC2pi", 
+  NonRESBGvnCC2pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnCC2pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnCC2pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnCC2pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvnNC1pi", 
+    NonRESBGvnNC1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnNC1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnNC1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnNC1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvnNC2pi",
+  NonRESBGvnNC2pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnNC2pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnNC2pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvnNC2pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvnNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvbarpCC1pi", 
+  NonRESBGvbarpCC1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpCC1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpCC1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpCC1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvbarpCC2pi", 
+  NonRESBGvbarpCC2pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpCC2pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpCC2pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpCC2pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvbarpNC1pi",
+  NonRESBGvbarpNC1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpNC1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpNC1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpNC1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvbarpNC2pi", 
+  NonRESBGvbarpNC2pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpNC2pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpNC2pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarpNC2pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarpNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvbarnCC1pi", 
+  NonRESBGvbarnCC1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnCC1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnCC1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnCC1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnCC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvbarnCC2pi", 
+  NonRESBGvbarnCC2pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnCC2pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnCC2pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnCC2pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnCC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvbarnNC1pi",
+  NonRESBGvbarnNC1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnNC1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnNC1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnNC1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnNC1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"NonRESBGvbarnNC2pi", 
+  NonRESBGvbarnNC2pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnNC2pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnNC2pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  NonRESBGvbarnNC2pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "NonRESBGvbarnNC2pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  } 
+  #"AhtBY", 
+  AhtBY_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AhtBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  AhtBY_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AhtBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  AhtBY_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AhtBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  AhtBY_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AhtBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"BhtBY", 
+  BhtBY_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "BhtBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  BhtBY_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "BhtBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  BhtBY_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "BhtBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  BhtBY_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "BhtBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"CV1uBY", 
+  CV1uBY_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CV1uBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  CV1uBY_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CV1uBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  CV1uBY_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CV1uBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  CV1uBY_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CV1uBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"CV2uBY"
+  CV2uBY_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CV2uBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  CV2uBY_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CV2uBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  CV2uBY_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CV2uBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  CV2uBY_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "CV2uBY" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #
+  #"AGKYxF1pi", 
+  AGKYxF1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AGKYxF1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  AGKYxF1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AGKYxF1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  AGKYxF1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AGKYxF1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  AGKYxF1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AGKYxF1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"AGKYpT1pi"
+  AGKYpT1pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AGKYpT1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  AGKYpT1pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AGKYpT1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  AGKYpT1pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AGKYpT1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  AGKYpT1pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "AGKYpT1pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #
+  #"MFP_pi", 
+  MFP_pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MFP_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MFP_pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MFP_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MFP_pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MFP_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MFP_pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MFP_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"MFP_N",
+  MFP_N_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MFP_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MFP_N_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MFP_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MFP_N_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MFP_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  MFP_N_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "MFP_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  } 
+  #"FrCEx_pi", 
+  FrCEx_pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrCEx_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrCEx_pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrCEx_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrCEx_pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrCEx_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrCEx_pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrCEx_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"FrInel_pi", 
+  FrInel_pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrInel_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrInel_pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrInel_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrInel_pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrInel_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrInel_pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrInel_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"FrAbs_pi",
+  FrAbs_pi_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrAbs_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrAbs_pi_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrAbs_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrAbs_pi_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrAbs_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrAbs_pi_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrAbs_pi" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"FrCEx_N", 
+  FrCEx_N_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrCEx_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrCEx_N_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrCEx_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrCEx_N_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrCEx_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrCEx_N_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrCEx_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"FrInel_N", 
+  FrInel_N_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrInel_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrInel_N_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrInel_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrInel_N_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrInel_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrInel_N_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrInel_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"FrAbs_N",
+  FrAbs_N_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrAbs_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrAbs_N_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrAbs_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrAbs_N_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrAbs_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  FrAbs_N_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "FrAbs_N" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #
+  #"RDecBR1gamma", 
+  RDecBR1gamma_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "RDecBR1gamma" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  RDecBR1gamma_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "RDecBR1gamma" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  RDecBR1gamma_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "RDecBR1gamma" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  RDecBR1gamma_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "RDecBR1gamma" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+  #"RDecBR1eta"
+  RDecBR1eta_0sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "RDecBR1eta" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ 0 ]
+    parameter_max: [ 0 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  RDecBR1eta_1sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "RDecBR1eta" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -1 ]
+    parameter_max: [ 1 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  RDecBR1eta_2sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "RDecBR1eta" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -2 ]
+    parameter_max: [ 2 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+
+  RDecBR1eta_3sig: {
+    type: UBGenie
+    random_seed: 2
+    parameter_list: [ "RDecBR1eta" ]
+
+    parameter_sigma: [ 1 ]
+    parameter_min: [ -3 ]
+    parameter_max: [ 3 ]
+
+    mode: minmax
+    number_of_multisims: 2
+  }
+###############################
+#  MaCCRES_1sig: {
+#    type: UBGenie
+#    random_seed: 2
+#    parameter_list: [ "MaCCQE" ]
+#
+#    # Dummy sigma value, ignored by "minmax" mode
+#    parameter_sigma: [ 1 ]
+#    parameter_min: [ -1. ]
+#    parameter_max: [ 1. ]
+#
+#    mode: minmax
+#    number_of_multisims: 2
+#  }
 
 #  MaCCQE_: {
 #    type: UBGenie

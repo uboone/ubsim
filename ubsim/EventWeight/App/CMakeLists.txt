@@ -124,7 +124,7 @@ add_definitions(-DGENIE_UB_PATCH)
 art_make(LIBRARY_NAME     EventWeightSysYC
          LIB_LIBRARIES    larsim_EventWeight_Base
                           larsim_EventWeight_Calculators
-                          #UBEventWeight service
+                          UBEventWeight service
                           larsim_EventWeight_Base
                           larsim_EventWeight_Calculators
                           ubsim_EventWeight_Calculators
