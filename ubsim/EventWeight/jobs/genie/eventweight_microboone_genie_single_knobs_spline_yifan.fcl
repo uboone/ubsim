@@ -16,7 +16,58 @@ microboone_eventweight_genie_single_knobs_spline_yifan: {
 #  ]
 
   weight_functions_genie: [
-    MaCCQE_1sig, MaCCRES_1sig
+
+    MaCCQE_0sig, MaCCQE_1sig, MaCCQE_2sig, MaCCQE_3sig,
+    CoulombCCQE_0sig, CoulombCCQE_1sig, CoulombCCQE_2sig, CoulombCCQE_3sig,
+    MaNCEL_0sig, MaNCEL_1sig, MaNCEL_2sig, MaNCEL_3sig,
+    EtaNCEL_0sig, EtaNCEL_1sig, EtaNCEL_2sig, EtaNCEL_3sig,
+
+    NormCCMEC_0sig, NormCCMEC_1sig, NormCCMEC_2sig, NormCCMEC_3sig,
+    NormNCMEC_0sig, NormNCMEC_1sig, NormNCMEC_2sig, NormNCMEC_3sig,
+    FracPN_CCMEC_0sig, FracPN_CCMEC_1sig, FracPN_CCMEC_2sig, FracPN_CCMEC_3sig,
+    FracDelta_CCMEC_0sig, FracDelta_CCMEC_1sig, FracDelta_CCMEC_2sig, FracDelta_CCMEC_3sig,
+
+    MaCCRES_0sig, MaCCRES_1sig, MaCCRES_2sig, MaCCRES_3sig,
+    MvCCRES_0sig, MvCCRES_1sig, MvCCRES_2sig, MvCCRES_3sig,
+    MaNCRES_0sig, MaNCRES_1sig, MaNCRES_2sig, MaNCRES_3sig,
+    MvNCRES_0sig, MvNCRES_1sig, MvNCRES_2sig, MvNCRES_3sig,
+
+    NonRESBGvpCC1pi_0sig, NonRESBGvpCC1pi_1sig, NonRESBGvpCC1pi_2sig, NonRESBGvpCC1pi_3sig,
+    NonRESBGvpCC2pi_0sig, NonRESBGvpCC2pi_1sig, NonRESBGvpCC2pi_2sig, NonRESBGvpCC2pi_3sig,
+    NonRESBGvpNC1pi_0sig, NonRESBGvpNC1pi_1sig, NonRESBGvpNC1pi_2sig, NonRESBGvpNC1pi_3sig,
+    NonRESBGvpNC2pi_0sig, NonRESBGvpNC2pi_1sig, NonRESBGvpNC2pi_2sig, NonRESBGvpNC2pi_3sig,
+    NonRESBGvnCC1pi_0sig, NonRESBGvnCC1pi_1sig, NonRESBGvnCC1pi_2sig, NonRESBGvnCC1pi_3sig,
+    NonRESBGvnCC2pi_0sig, NonRESBGvnCC2pi_1sig, NonRESBGvnCC2pi_2sig, NonRESBGvnCC2pi_3sig,
+    NonRESBGvnNC1pi_0sig, NonRESBGvnNC1pi_1sig, NonRESBGvnNC1pi_2sig, NonRESBGvnNC1pi_3sig,
+    NonRESBGvnNC2pi_0sig, NonRESBGvnNC2pi_1sig, NonRESBGvnNC2pi_2sig, NonRESBGvnNC2pi_3sig,
+    NonRESBGvbarpCC1pi_0sig, NonRESBGvbarpCC1pi_1sig, NonRESBGvbarpCC1pi_2sig, NonRESBGvbarpCC1pi_3sig,
+    NonRESBGvbarpCC2pi_0sig, NonRESBGvbarpCC2pi_1sig, NonRESBGvbarpCC2pi_2sig, NonRESBGvbarpCC2pi_3sig,
+    NonRESBGvbarpNC1pi_0sig, NonRESBGvbarpNC1pi_1sig, NonRESBGvbarpNC1pi_2sig, NonRESBGvbarpNC1pi_3sig,
+    NonRESBGvbarpNC2pi_0sig, NonRESBGvbarpNC2pi_1sig, NonRESBGvbarpNC2pi_2sig, NonRESBGvbarpNC2pi_3sig,
+    NonRESBGvbarnCC1pi_0sig, NonRESBGvbarnCC1pi_1sig, NonRESBGvbarnCC1pi_2sig, NonRESBGvbarnCC1pi_3sig,
+    NonRESBGvbarnCC2pi_0sig, NonRESBGvbarnCC2pi_1sig, NonRESBGvbarnCC2pi_2sig, NonRESBGvbarnCC2pi_3sig,
+    NonRESBGvbarnNC1pi_0sig, NonRESBGvbarnNC1pi_1sig, NonRESBGvbarnNC1pi_2sig, NonRESBGvbarnNC1pi_3sig,
+    NonRESBGvbarnNC2pi_0sig, NonRESBGvbarnNC2pi_1sig, NonRESBGvbarnNC2pi_2sig, NonRESBGvbarnNC2pi_3sig,
+    AhtBY_0sig, AhtBY_1sig, AhtBY_2sig, AhtBY_3sig,
+    BhtBY_0sig, BhtBY_1sig, BhtBY_2sig, BhtBY_3sig,
+    CV1uBY_0sig, CV1uBY_1sig, CV1uBY_2sig, CV1uBY_3sig,
+    CV2uBY_0sig, CV2uBY_1sig, CV2uBY_2sig, CV2uBY_3sig,
+
+    AGKYxF1pi_0sig, AGKYxF1pi_1sig, AGKYxF1pi_2sig, AGKYxF1pi_3sig,
+    AGKYpT1pi_0sig, AGKYpT1pi_1sig, AGKYpT1pi_2sig, AGKYpT1pi_3sig,
+
+    MFP_pi_0sig, MFP_pi_1sig, MFP_pi_2sig, MFP_pi_3sig,
+    MFP_N_0sig, MFP_N_1sig, MFP_N_2sig, MFP_N_3sig,
+    FrCEx_pi_0sig, FrCEx_pi_1sig, FrCEx_pi_2sig, FrCEx_pi_3sig,
+    FrInel_pi_0sig, FrInel_pi_1sig, FrInel_pi_2sig, FrInel_pi_3sig,
+    FrAbs_pi_0sig, FrAbs_pi_1sig, FrAbs_pi_2sig, FrAbs_pi_3sig,
+    FrCEx_N_0sig, FrCEx_N_1sig, FrCEx_N_2sig, FrCEx_N_3sig,
+    FrInel_N_0sig, FrInel_N_1sig, FrInel_N_2sig, FrInel_N_3sig,
+    FrAbs_N_0sig, FrAbs_N_1sig, FrAbs_N_2sig, FrAbs_N_3sig,
+
+    RDecBR1gamma_0sig, RDecBR1gamma_1sig, RDecBR1gamma_2sig, RDecBR1gamma_3sig,
+    RDecBR1eta_0sig, RDecBR1eta_1sig, RDecBR1eta_2sig, RDecBR1eta_3sig,
+
   ]
 
   MaCCQE_0sig: {
