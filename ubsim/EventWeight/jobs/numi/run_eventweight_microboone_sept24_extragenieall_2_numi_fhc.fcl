@@ -3,12 +3,12 @@
 # The limit from grid memory allocations is ~100 universes in each round of jobs
 # To get around that, we provide 5 "extra genie all" fcl files, that will allow 
 # analyzers to run extra "genie all" universes in subsequent jobs, to make up to
-# 600 universes total (100 from run_eventweight_microboone_mar18.fcl, plus 100
-# more from each of the five run_eventweight_microboone_mar18_extragenieall_X.fcls
+# 600 universes total (100 from run_eventweight_microboone_sept24.fcl, plus 100
+# more from each of the five run_eventweight_microboone_sept24_extragenieall_X.fcls
 
-#include "run_eventweight_microboone_mar18_numi_fhc.fcl"
+#include "run_eventweight_microboone_sept24_numi_fhc.fcl"
 
-process_name: EventWeightMar18ExtraGENIE2
+process_name: EventWeightSept24ExtraGENIE2
 
 outputs: {
  out1: {

@@ -4,7 +4,7 @@
 
 #include "run_eventweight_ppfx_fluxmode_numi_rhc.fcl"
 
-process_name: EventWeightMar18ExtraGENIE2
+process_name: EventWeightSept24ExtraGENIE2
 
 outputs: {
  out1: {
