@@ -23,13 +23,13 @@ source: {
 
 physics: {
  producers: {
-   eventweightSep24:  @local::microboone_eventweight_sep24
+   eventweight:  @local::microboone_eventweight_sep24
    rns: {
      module_type: "RandomNumberSaver"
    }
  }
  
- simulate: [ rns, eventweightSep24 ]
+ simulate: [ rns, eventweight ]
  stream1: [ out1 ]
  trigger_paths: [ simulate ]
  end_paths: [ stream1 ]
@@ -43,6 +43,8 @@ outputs: {
    compressionLevel: 1
  }
 }
+
+source.inputCommands: [ "keep *_*_*_*", "drop *_*_*_OverlayDetsim", "drop *_*_*_DataOverlay", "drop *_*_*_OverlayStage1a", "drop *_*_*_Overlay*Reco*" ]
 
 physics.producers.eventweight.xsr_scc_Fa3.number_of_multisims: 1000
 physics.producers.eventweight.xsr_scc_Fv3.number_of_multisims: 1000

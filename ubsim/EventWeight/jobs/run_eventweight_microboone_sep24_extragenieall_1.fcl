@@ -13,11 +13,11 @@ process_name: EventWeightSep24ExtraGENIE1
 outputs: {
  out1: {
    module_type: RootOutput
-   fileName: "%ifb_%tc_eventweight_extragenie1.root"
+   fileName: "%ifb_eg1.root"
    dataTier: "detector-simulated"
    compressionLevel: 1
  }
 }
 
-physics.producers.eventweightSep24.weight_functions: [ All ]
-physics.producers.eventweightSep24.All.random_seed: 1101
+physics.producers.eventweight.weight_functions: [ All ]
+physics.producers.eventweight.All.random_seed: 1101
