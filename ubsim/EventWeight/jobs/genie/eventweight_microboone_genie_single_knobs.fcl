@@ -11,7 +11,7 @@ microboone_eventweight_genie_single_knobs: {
     NonRESBGvbarnNC2pi, AhtBY, BhtBY, CV1uBY, CV2uBY, AGKYxF1pi, AGKYpT1pi,
     MFP_pi, MFP_N, FrCEx_pi, FrInel_pi, FrAbs_pi, FrCEx_N, FrInel_N, FrAbs_N,
     RDecBR1gamma, RDecBR1eta, Theta_Delta2Npi, FrPiProd_pi, FrPiProd_N,
-    CoulombCCQE, ThetaDelta2NRad, RPA_CCQE_Reduced, NormCCCOH, NormNCCOH,
+    CoulombCCQE, ThetaDelta2NRad, NormCCCOH, NormNCCOH,
     TunedCentralValue, RootinoFix
   ]
 
