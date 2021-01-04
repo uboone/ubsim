@@ -66,7 +66,7 @@ microboone_eventweight_genie_single_knobs_spline_yifan: {
     FrAbs_N_0sig, FrAbs_N_1sig, FrAbs_N_2sig, FrAbs_N_3sig,
 
     RDecBR1gamma_0sig, RDecBR1gamma_1sig, RDecBR1gamma_2sig, RDecBR1gamma_3sig,
-    RDecBR1eta_0sig, RDecBR1eta_1sig, RDecBR1eta_2sig, RDecBR1eta_3sig,
+    RDecBR1eta_0sig, RDecBR1eta_1sig, RDecBR1eta_2sig, RDecBR1eta_3sig
 
   ]
 
