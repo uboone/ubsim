@@ -99,7 +99,8 @@ bool lar::HighEnergyNuMINuMuCCFilter::filter(art::Event& e)
 
   }
 
-  if ( parent_fvz > 15600. ) return false;
+  if ( parent_fvz > 15600. ) 
+    return false;
 
   art::Handle<std::vector<simb::MCTruth> > neutrino_h;
   e.getByLabel("generator", neutrino_h);
