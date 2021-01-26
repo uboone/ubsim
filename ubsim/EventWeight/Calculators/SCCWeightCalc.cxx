@@ -373,6 +373,12 @@ namespace evwgh {
           if (_fnuPDGtruth ==12){
             weight[inu][ind_multisim]=1-reweightingSigmas_e[Nbin_enu][Nbin_q2]*fWeightArray[ind_multisim];
           }
+          if (_fnuPDGtruth ==-14){
+            weight[inu][ind_multisim]=1-reweightingSigmas[Nbin_enu][Nbin_q2]*fWeightArray[ind_multisim];
+          }
+          if (_fnuPDGtruth ==-12){
+            weight[inu][ind_multisim]=1-reweightingSigmas_e[Nbin_enu][Nbin_q2]*fWeightArray[ind_multisim];
+          }
         }
         else {
           std::cout << "Not QE, mode is " << mctruth->GetNeutrino().Mode() << std::endl;
