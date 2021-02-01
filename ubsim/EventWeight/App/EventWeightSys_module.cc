@@ -170,7 +170,6 @@ namespace evwghYC {
 
     std::cout<<"tuned_cv: "<< tuned_cv<<std::endl;
 
-    std::cout<<"aaa"<<std::endl;
 
     //rwght.Print();
     genie::rew::GReWeightNuXSecCCQE* calc_ccqe = new GReWeightNuXSecCCQE;
@@ -178,13 +177,11 @@ namespace evwghYC {
     genie::rew::GReWeightNuXSecNCRES* calc_ncres = new GReWeightNuXSecNCRES;
     genie::rew::GReWeightNuXSecDIS* calc_dis = new GReWeightNuXSecDIS;
 
-std::cout<<"bbb"<<std::endl;
 
     calc_ccqe->SetMode( 0 );
     calc_ccres->SetMode( 0 );
     calc_ncres->SetMode( 0 );
     calc_dis->SetMode( 0 );
-std::cout<<"ccc"<<std::endl;
 
     rwght.AdoptWghtCalc( "xsec_ncel",       new GReWeightNuXSecNCEL      );
     rwght.AdoptWghtCalc( "xsec_ccqe",       calc_ccqe);
@@ -203,24 +200,20 @@ std::cout<<"ccc"<<std::endl;
     rwght.AdoptWghtCalc( "xsec_nc",         new GReWeightNuXSecNC        );
     rwght.AdoptWghtCalc( "res_dk",          new GReWeightResonanceDecay  );
     rwght.AdoptWghtCalc( "xsec_empmec",     new GReWeightXSecEmpiricalMEC);
-std::cout<<"ddd"<<std::endl;
 
     #ifdef GENIE_UB_PATCH
-std::cout<<"GENIE_UB_PATCH"<<std::endl;
       // New weight calculator in GENIE v3.0.4 MicroBooNE patch 01
       rwght.AdoptWghtCalc( "xsec_mec",        new GReWeightXSecMEC );
       // New weight calculators in GENIE v3.0.4 MicroBooNE patch 02
       rwght.AdoptWghtCalc( "deltarad_angle",  new GReWeightDeltaradAngle );
       rwght.AdoptWghtCalc( "xsec_coh_ub",  new GReWeightNuXSecCOHuB );
       rwght.AdoptWghtCalc( "res_bug_fix",  new GReWeightRESBugFix );
-std::cout<<"--GENIE_UB_PATCH"<<std::endl;
     #endif
 
     // assuming MaCCQE is the only one that needs to be engineered
     genie::rew::GSyst_t knob_maccqe = tuned_knobs_to_use.at(0);
     rwght.Systematics().Set( knob_maccqe, tuned_cv );
     rwght.Reconfigure();
-std::cout<<"eee"<<std::endl;
       //for (auto& calc_name : v_calc_name) { 
       //  genie::rew::GReWeightI* calc = rwght.WghtCalc( calc_name );
 
@@ -239,7 +232,6 @@ std::cout<<"eee"<<std::endl;
   void EventWeightSysYC::produce(art::Event & e)
   {
 
-std::cout<<"fff"<<std::endl;
     // Implementation of required member function here.
     auto mcwghvec = std::make_unique<std::vector<evwgh::MCEventWeight>>();
 
@@ -274,7 +266,6 @@ std::cout<<"fff"<<std::endl;
       //std::unique_ptr< genie::EventRecord >
       genie::EventRecord *genie_event = (genie::EventRecord*)( evgb::RetrieveGHEP(*mclist[i_v], *glist[i_v]) );
 
-      //std::cout<<*genie_event<<std::endl;
 
       // Set the final lepton kinetic energy and scattering cosine
       // in the owned GENIE kinematics object. This is done during
@@ -380,7 +371,6 @@ std::cout<<"fff"<<std::endl;
 
   void EventWeightSysYC::beginJob()
   {
-    //std::cout<<"begin?"<<std::endl;
   }
 
   void EventWeightSysYC::endJob()
