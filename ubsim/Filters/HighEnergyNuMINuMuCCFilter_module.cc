@@ -68,6 +68,20 @@ private:
   double nu_vtx_x_truth;
   double nu_vtx_y_truth;
   double nu_vtx_z_truth;
+
+  // Truth Muon Track Containment Requirement.
+  bool is_truth_muon_contained;
+
+  // Number of Points on Muon MCTrack.
+  int num_mctrack_points;
+
+  // Truth Muon Endpoint Coordinates.
+  double truth_muon_starting_x_coordinate;
+  double truth_muon_starting_y_coordinate;
+  double truth_muon_starting_z_coordinate;
+  double truth_muon_ending_x_coordinate;
+  double truth_muon_ending_y_coordinate;
+  double truth_muon_ending_z_coordinate;
   
 };
 
@@ -148,6 +162,64 @@ bool lar::HighEnergyNuMINuMuCCFilter::filter(art::Event& e)
 
   if ( neutrino_energy < 1000. )
     return false;
+
+  // Load in the MCTrack information.                                                                                                                                                                      
+  art::Handle<std::vector<sim::MCTrack> > mctrack_h;
+  e.getByLabel("mcreco", mctrack_h);
+
+  // make sure MCTrack info looks good                                                                                                                                                                     
+  if(!mctrack_h.isValid()) {
+    std::cerr<<"\033[93m[ERROR]\033[00m ... could not locate MCTrack!"<<std::endl;
+    throw std::exception();
+  }
+
+  is_truth_muon_contained = false;
+
+  for ( size_t mctrack_iter = 0; mctrack_iter < mctrack_h->size(); mctrack_iter++ ) {
+
+    num_mctrack_points = mctrack_h->at( mctrack_iter ).size();
+
+    // At the top of the loop, find out which type of track this is.                                                                                    
+    if ( mctrack_h->at( mctrack_iter ).PdgCode() == 13 || mctrack_h->at( mctrack_iter ).PdgCode() == -13 ) {
+
+      if ( num_mctrack_points > 0 ) {
+
+        if ( fabs( nu_vtx_x_truth - mctrack_h->at( mctrack_iter ).at( 0 ).X() ) < 0.001 && fabs( nu_vtx_y_truth - mctrack_h->at( mctrack_iter ).at( 0 ).Y() ) < 0.001 && fabs( nu_vtx_z_truth - mctrack_h->at( mctrack_iter ).at( 0 ).Z() ) < 0.001 ) {
+
+	  truth_muon_starting_x_coordinate = mctrack_h->at( mctrack_iter ).at( 0 ).X();
+          truth_muon_starting_y_coordinate = mctrack_h->at( mctrack_iter ).at( 0 ).Y();
+          truth_muon_starting_z_coordinate = mctrack_h->at( mctrack_iter ).at( 0 ).Z();
+          truth_muon_ending_x_coordinate   = mctrack_h->at( mctrack_iter ).at( mctrack_h->at( mctrack_iter ).size() - 1 ).X();
+          truth_muon_ending_y_coordinate   = mctrack_h->at( mctrack_iter ).at( mctrack_h->at( mctrack_iter ).size() - 1 ).Y();
+          truth_muon_ending_z_coordinate   = mctrack_h->at( mctrack_iter ).at( mctrack_h->at( mctrack_iter ).size() - 1 ).Z();
+
+          if ( truth_muon_starting_x_coordinate > 3.0 && truth_muon_starting_x_coordinate < 253.35 && truth_muon_starting_y_coordinate > -113.5 && truth_muon_starting_y_coordinate < 113.5 && truth_muon_starting_z_coordinate > 3.0 && truth_muon_starting_z_coordinate < 1033.8 && truth_muon_ending_x_coordinate > 3.0 && truth_muon_ending_x_coordinate < 253.35 && truth_muon_ending_y_coordinate > -113.5 && truth_muon_ending_y_coordinate < 113.5 && truth_muon_ending_z_coordinate > 3.0 && truth_muon_ending_z_coordinate < 1033.8 ) {
+	   
+	    is_truth_muon_contained = true;
+	    break;
+	  
+	  }
+
+	}
+
+      }  
+
+    }
+
+  }
+
+  // If the track is not contained, return false.
+  if ( is_truth_muon_contained == false )
+    return false;
+
+  std::cout << "An event passed the filter!" << std::endl;
+  std::cout << "NC Channel = " << neutrino_interaction_channel << "." << std::endl;
+  std::cout << "Neutrino PDG = " << neutrino_PDG << "." << std::endl;
+  std::cout << "Parent Creation Point = " << parent_fvz << " cm." << std::endl;
+  std::cout << "Truth neutrino energy = " << neutrino_energy << " MeV." << std::endl;
+  std::cout << "Truth Vertex Coordinates: x = " << nu_vtx_x_truth << " cm y = " << nu_vtx_y_truth << " cm z = " << nu_vtx_z_truth << " cm." << std::endl;
+  std::cout << "Truth Muon Starting Coordinates: x = " << truth_muon_starting_x_coordinate << " cm y = " << truth_muon_starting_y_coordinate << " cm z = " << truth_muon_starting_z_coordinate << " cm." << std::endl;
+  std::cout << "Truth Muon Ending Coordinates: x = " << truth_muon_ending_x_coordinate << " cm y = " << truth_muon_ending_y_coordinate <<" cm z = " << truth_muon_ending_z_coordinate << " cm." <<  std::endl;
 
   return true;
 
