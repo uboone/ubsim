@@ -1,0 +1,10 @@
+BEGIN_PROLOG
+
+microboone_StoMuFilter:
+{ 
+ module_type: "StopMuFilter"
+ MCPproducer: "largeant"
+}
+
+END_PROLOG
+
