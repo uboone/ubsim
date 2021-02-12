@@ -173,6 +173,9 @@ bool lar::HighEnergyNuMINuMuCCFilter::filter(art::Event& e)
     throw std::exception();
   }
 
+  std::cout << "An event passed my filter!" << std::endl;
+  std::cout << "Number of mctracks = " << mctrack_h->size() << "." << std::endl;
+
   is_truth_muon_contained = false;
 
   for ( size_t mctrack_iter = 0; mctrack_iter < mctrack_h->size(); mctrack_iter++ ) {
@@ -211,15 +214,6 @@ bool lar::HighEnergyNuMINuMuCCFilter::filter(art::Event& e)
   // If the track is not contained, return false.
   if ( is_truth_muon_contained == false )
     return false;
-
-  std::cout << "An event passed the filter!" << std::endl;
-  std::cout << "NC Channel = " << neutrino_interaction_channel << "." << std::endl;
-  std::cout << "Neutrino PDG = " << neutrino_PDG << "." << std::endl;
-  std::cout << "Parent Creation Point = " << parent_fvz << " cm." << std::endl;
-  std::cout << "Truth neutrino energy = " << neutrino_energy << " MeV." << std::endl;
-  std::cout << "Truth Vertex Coordinates: x = " << nu_vtx_x_truth << " cm y = " << nu_vtx_y_truth << " cm z = " << nu_vtx_z_truth << " cm." << std::endl;
-  std::cout << "Truth Muon Starting Coordinates: x = " << truth_muon_starting_x_coordinate << " cm y = " << truth_muon_starting_y_coordinate << " cm z = " << truth_muon_starting_z_coordinate << " cm." << std::endl;
-  std::cout << "Truth Muon Ending Coordinates: x = " << truth_muon_ending_x_coordinate << " cm y = " << truth_muon_ending_y_coordinate <<" cm z = " << truth_muon_ending_z_coordinate << " cm." <<  std::endl;
 
   return true;
 
