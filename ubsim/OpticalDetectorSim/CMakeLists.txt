@@ -24,6 +24,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
           MODULE_LIBRARIES larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
 			lardataobj_OpticalDetectorData
 			larcoreobj_SummaryData
+	       		ubevt_Database
 			UBOpticalChConfig_service
 			UBOpReadoutMap_service
 			uboonecode_uboone_OpticalDetectorSim
@@ -47,6 +48,8 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
                         cetlib
                         cetlib_except
                         ${ROOT_BASIC_LIB_LIST}
+        		nutools_RandomUtils_NuRandomService_service
+        		${CLHEP}
          )
 
 simple_plugin(UBOpticalChConfig "service"

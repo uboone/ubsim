@@ -1,0 +1,5 @@
+etafilter:
+{
+    module_type: "EtaFilter"
+    MCTproducer: "generator"
+}

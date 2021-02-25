@@ -15,6 +15,7 @@
 #define WFALGODIGITIZEDSPE_H
 
 #include "WFAlgoSPEBase.h"
+#include "fhiclcpp/ParameterSet.h"
 
 namespace opdet {
 
@@ -26,7 +27,7 @@ namespace opdet {
   class WFAlgoDigitizedSPE : public WFAlgoSPEBase{
     
   public:
-    
+
     /// Default constructor
     WFAlgoDigitizedSPE();
     
@@ -64,15 +65,15 @@ namespace opdet {
     ::detinfo::ElecClock& GetClockWriteable(const int opch);
 
   protected:
-
+    
     /// SPE waveform
     std::vector<float> fSPE_Normal;
-    std::vector<float> fSPE_OpCh28;
+    std::vector<float> fSPE_Abnormal;
 
     /// SPE waveform timing information for normal response (tick period & signal timing)
     ::detinfo::ElecClock fSPETime_Normal;
     /// SPE waveform timing information for opch 28 response (tick period & signal timing)
-    ::detinfo::ElecClock fSPETime_OpCh28;
+    ::detinfo::ElecClock fSPETime_Abnormal;
 
   };
 }

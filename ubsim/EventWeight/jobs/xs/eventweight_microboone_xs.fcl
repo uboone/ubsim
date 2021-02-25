@@ -56,39 +56,44 @@ microboone_eventweight_xs: {
   ##
   ##########################################################
 
-  weight_functions_model: [ model_q0q3_ccmec, model_q0q3_ccqe ]
+  ## Deprecated in favor of new MCC9 MEC reweighting
+  ## -- S. Gardiner
 
-  model_q0q3_ccmec: {
-    type: HistogramWeight
-    random_seed: 54
-    mode: multisim
-    number_of_multisims: 1000
-    rw_hist_file: "systematics/q0q3_rw/q0q3_rw_valencia.root"
-    rw_hist_object: "q0q3_ccmec_valencia_default"
-    sigma: 1
-    norm_scale: 0.6
-    event_filter: "ccmec"
-  }
+  #weight_functions_model: [ model_q0q3_ccmec, model_q0q3_ccqe ]
 
-  model_q0q3_ccqe: {
-    type: HistogramWeight
-    random_seed: 54
-    mode: multisim
-    number_of_multisims: 1000
-    rw_hist_file: "systematics/q0q3_rw/q0q3_rw_valencia.root"
-    rw_hist_object: "q0q3_ccqe_valencia_default"
-    sigma: 1
-    norm_scale: 1.1
-    event_filter: "ccqe"
-  }
+  #model_q0q3_ccmec: {
+  #  type: HistogramWeight
+  #  random_seed: 54
+  #  mode: multisim
+  #  number_of_multisims: 1000
+  #  rw_hist_file: "systematics/q0q3_rw/q0q3_rw_valencia.root"
+  #  rw_hist_object: "q0q3_ccmec_valencia_default"
+  #  sigma: 1
+  #  norm_scale: 0.6
+  #  event_filter: "ccmec"
+  #}
+
+  #model_q0q3_ccqe: {
+  #  type: HistogramWeight
+  #  random_seed: 54
+  #  mode: multisim
+  #  number_of_multisims: 1000
+  #  rw_hist_file: "systematics/q0q3_rw/q0q3_rw_valencia.root"
+  #  rw_hist_object: "q0q3_ccqe_valencia_default"
+  #  sigma: 1
+  #  norm_scale: 1.1
+  #  event_filter: "ccqe"
+  #}
 
   ##########################################################
   # All additional cross section reweighters
   ##########################################################
 
   weight_functions_xs: [
-    xsr_scc_Fv3, xsr_scc_Fa3,
-    model_q0q3_ccmec, model_q0q3_ccqe
+    xsr_scc_Fv3, xsr_scc_Fa3
+    # Deprecated in favor of new MCC9 MEC reweighting
+    # -- S. Gardiner
+    #model_q0q3_ccmec, model_q0q3_ccqe
   ]
 }
 
