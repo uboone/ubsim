@@ -10,6 +10,7 @@ art_make( BASENAME_ONLY
 			lardata_Utilities_LArFFT_service
                         lardata_Utilities
                         larevt_Filters
+                        lardataalg_DetectorInfo
                         lardataobj_RawData
                         SignalShapingServiceMicroBooNE_service
 			larevt_CalibrationDBI_Providers
@@ -42,6 +43,7 @@ simple_plugin(SimWireMicroBooNE "module"
 	      lardata_Utilities_LArFFT_service
               lardata_Utilities
               larevt_Filters
+              lardataalg_DetectorInfo
               lardataobj_RawData
               lardata_DetectorInfoServices_DetectorClocksServiceStandard_service # BUG note that we link to a specific service implementation
               SignalShapingServiceMicroBooNE_service
