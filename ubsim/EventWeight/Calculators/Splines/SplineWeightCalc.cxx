@@ -31,15 +31,15 @@
 // Framework includes
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
-#include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art_root_io/TFileDirectory.h"
 #include "art/Persistency/Provenance/ModuleContext.h"
 #include "canvas/Persistency/Common/FindOneP.h"
 #include "canvas/Utilities/Exception.h"
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "nutools/EventGeneratorBase/GENIE/GENIE2ART.h"
-#include "nutools/RandomUtils/NuRandomService.h"
+#include "nugen/EventGeneratorBase/GENIE/GENIE2ART.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/GTruth.h"
 

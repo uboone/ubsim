@@ -111,10 +111,11 @@ add_definitions(-DGENIE_UB_PATCH)
 
 art_make(
   LIBRARY_NAME ubsim_EventWeight_Calculators
+  EXCLUDE UBGenieWeightCalc.cxx Geant4WeightCalc.cxx
   LIB_LIBRARIES
     larsim_EventWeight_Base
     lardata_Utilities
-    nutools_EventGeneratorBase_GENIE
+    nugen_EventGeneratorBase_GENIE
     nugen_NuReweight_art   
     nugen_NuReweight       
     larsim_Simulation

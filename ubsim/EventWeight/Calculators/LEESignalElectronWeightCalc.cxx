@@ -16,6 +16,7 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Principal/Handle.h"
 #include "art/Persistency/Provenance/ModuleContext.h"
+#include "art/Framework/Principal/Event.h"
 #include "canvas/Persistency/Common/FindManyP.h"
 #include "canvas/Persistency/Common/Ptr.h"
 #include "nusimdata/SimulationBase/MCParticle.h"

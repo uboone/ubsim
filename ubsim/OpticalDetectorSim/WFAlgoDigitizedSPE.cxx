@@ -40,9 +40,9 @@ namespace opdet {
   //--------------------------------------------------------
   WFAlgoDigitizedSPE::WFAlgoDigitizedSPE()
     : fSPE_Normal{normal_response()}
-    , fSPE_OpCh28{opch28_response()}
+    , fSPE_Abnormal{opch28_response()}
     , fSPETime_Normal{default_clock(fSPE_Normal)}
-    , fSPETime_Abnormal{default_clock(fSPE_OpCh28)}
+    , fSPETime_Abnormal{default_clock(fSPE_Abnormal)}
   {}
 
   //------------------------------

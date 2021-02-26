@@ -21,7 +21,7 @@
 #include <memory>
 
 // art extensions
-#include "nutools/RandomUtils/NuRandomService.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 
 // larsoft includes
 #include "nusimdata/SimulationBase/MCTruth.h"

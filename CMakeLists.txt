@@ -57,6 +57,8 @@ find_ups_product( larwirecell v1_00_00 )
 find_ups_product( jsoncpp )
 find_ups_product( jsonnet )
 find_ups_product( wirecell )
+find_ups_product( eigen )
+find_ups_product( spdlog )
 
 cet_find_library( WIRECELL_SIGPROC_LIB NAMES WireCellSigProc PATHS ENV WIRECELL_LIB NO_DEFAULT_PATH )
 cet_find_library( WIRECELL_GEN_LIB NAMES WireCellGen PATHS ENV WIRECELL_LIB NO_DEFAULT_PATH )

@@ -25,7 +25,7 @@
 
 #include "CLHEP/Random/RandGaussQ.h"
 
-#include "nutools/EventGeneratorBase/GENIE/GENIE2ART.h"
+#include "nugen/EventGeneratorBase/GENIE/GENIE2ART.h"
 
 #include "nusimdata/SimulationBase/MCFlux.h"
 #include "nusimdata/SimulationBase/MCTruth.h"

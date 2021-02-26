@@ -15,7 +15,7 @@ art_make( BASENAME_ONLY
 			lardataobj_AnalysisBase
                         larevt_Filters
 			larcoreobj_SummaryData
-			larsim_Simulation nutools_ParticleNavigation lardataobj_Simulation
+			larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
                         lardataobj_RawData
                         nurandom_RandomUtils_NuRandomService_service
 			nusimdata_SimulationBase

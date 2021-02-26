@@ -17,11 +17,11 @@ art_make(
     ${XML2}
     larsim_EventWeight_Base
     lardata_Utilities
-    nutools_NuReweight_art   
-    nutools_NuReweight       
+    nugen_NuReweight_art   
+    nugen_NuReweight       
     larsim_Simulation
-    nutools_RandomUtils_NuRandomService_service
-    nutools_EventGeneratorBase_GENIE
+    nurandom_RandomUtils_NuRandomService_service
+    nugen_EventGeneratorBase_GENIE
     nusimdata_SimulationBase
     ${ART_FRAMEWORK_CORE}
     ${ART_FRAMEWORK_PRINCIPAL}

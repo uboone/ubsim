@@ -17,7 +17,7 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "art/Framework/Services/Optional/RandomNumberGenerator.h"
-#include "nutools/RandomUtils/NuRandomService.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 
 #include <memory>
 #include <iostream>
@@ -60,7 +60,6 @@ public:
   void produce(art::Event & e) override;
 
   // Selected optional functions.
-  void reconfigure(fhicl::ParameterSet const & p);
   void beginJob() override;
 
 private:
@@ -73,20 +72,25 @@ private:
 
   larg4::ISCalcSeparate fISAlg;
 
+  CLHEP::HepRandomEngine& fPhotonEngine;
+  CLHEP::HepRandomEngine& fScintEngine;
+
   double GetScintYield(sim::SimEnergyDeposit const&, detinfo::LArProperties const&);
 
   double GetScintTime(double scint_time, double rise_time, double, double);
 };
 
 
-phot::UBPhotonLibraryPropagation::UBPhotonLibraryPropagation(fhicl::ParameterSet const & p) : art::EDProducer(p)
+phot::UBPhotonLibraryPropagation::UBPhotonLibraryPropagation(fhicl::ParameterSet const & p) :
+  art::EDProducer(p),
+  fRiseTimeFast(p.get<double>("RiseTimeFast",-1.0)),
+  fRiseTimeSlow(p.get<double>("RiseTimeSlow",-1.0)),
+  fDoSlowComponent(p.get<bool>("DoSlowComponent")),
+  fEDepTags(p.get< std::vector<art::InputTag> >("EDepModuleLabels")),
+  fPhotonEngine(art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "photon",    p, "SeedPhoton")),
+  fScintEngine(art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "scinttime", p, "SeedScintTime"))
 {
   produces< std::vector<sim::SimPhotons> >();
-  (void)art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "photon",    p, "SeedPhoton");
-  (void)art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "scinttime", p, "SeedScintTime");
-  //art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "photon",    p, "SeedPhoton");
-  //art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "scinttime", p, "SeedScintTime");  
-  this->reconfigure(p);
 }
 
 double phot::UBPhotonLibraryPropagation::GetScintYield(sim::SimEnergyDeposit const& edep,
@@ -133,14 +137,10 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
   
   art::ServiceHandle<art::RandomNumberGenerator> rng;  
 
-  auto const& module_label = moduleDescription().moduleLabel();
+  //auto const& module_label = moduleDescription().moduleLabel();
 
-  //CLHEP::HepRandomEngine &engine_photon = rng->getEngine("photon");
-  auto& engine_photon = rng->getEngine(art::ScheduleID::first(), module_label, "photon");
-  CLHEP::RandPoissonQ randpoisphot(engine_photon);
-  //CLHEP::HepRandomEngine &engine_scinttime = rng->getEngine("scinttime");
-  auto& engine_scinttime = rng->getEngine(art::ScheduleID::first(), module_label, "scinttime");
-  CLHEP::RandFlat randflatscinttime(engine_scinttime);
+  CLHEP::RandPoissonQ randpoisphot{fPhotonEngine};
+  CLHEP::RandFlat randflatscinttime{fScintEngine};
   
   const size_t NOpChannels = pvs->NOpChannels();
   double yieldRatio;
@@ -254,15 +254,6 @@ double phot::UBPhotonLibraryPropagation::GetScintTime(double scint_time, double 
   
   return 1;
   
-}
-
-void phot::UBPhotonLibraryPropagation::reconfigure(fhicl::ParameterSet const & p)
-{
-  fRiseTimeFast = p.get<double>("RiseTimeFast",-1.0);
-  fRiseTimeSlow = p.get<double>("RiseTimeSlow",-1.0);
-  fDoSlowComponent = p.get<bool>("DoSlowComponent");
-
-  fEDepTags = p.get< std::vector<art::InputTag> >("EDepModuleLabels");
 }
 
 void phot::UBPhotonLibraryPropagation::beginJob()

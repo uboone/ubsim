@@ -19,7 +19,7 @@
 
 #include "lardataobj/Simulation/SimPhotons.h"
 
-#include "nutools/RandomUtils/NuRandomService.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 #include "CLHEP/Random/RandFlat.h"
 
 #include "larcore/Geometry/Geometry.h"
