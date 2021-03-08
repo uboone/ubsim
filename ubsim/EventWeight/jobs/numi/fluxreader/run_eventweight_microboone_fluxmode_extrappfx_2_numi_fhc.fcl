@@ -15,7 +15,7 @@ outputs: {
  }
 }
 
-physics.producers.eventweight.weight_functions: [ ppfx_cv, ppfx_ms, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi,
+physics.producers.eventweight.weight_functions: [ ppfx_ms, ppfx_cv, ppfx_mipppi, ppfx_mippk, ppfx_thinmes, ppfx_thinpi,
     ppfx_other, ppfx_thinnpi, ppfx_totabs, ppfx_targatt, ppfx_thinna,
     ppfx_think, ppfx_thinn ]
 
