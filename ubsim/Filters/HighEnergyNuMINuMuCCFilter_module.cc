@@ -173,9 +173,6 @@ bool lar::HighEnergyNuMINuMuCCFilter::filter(art::Event& e)
     throw std::exception();
   }
 
-  std::cout << "An event passed my filter!" << std::endl;
-  std::cout << "Number of mctracks = " << mctrack_h->size() << "." << std::endl;
-
   is_truth_muon_contained = false;
 
   for ( size_t mctrack_iter = 0; mctrack_iter < mctrack_h->size(); mctrack_iter++ ) {
