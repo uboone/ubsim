@@ -83,11 +83,15 @@ private:
   int p_nElasticScatters; //!< Variables for by-particle output tree
   std::vector<double> p_inel_weight; //!< Variables for by-particle output tree
   std::vector<double> p_elastic_weight; //!< Variables for by-particle output
+  std::vector<double> p_mom; //!< Variables for by-particle output
   std::vector<std::vector<double> > e_inel_weight; //!< Variables for by-event output tree
   std::vector<std::vector<double> > e_elastic_weight; //!< Variables for by-event output tree
-
+  std::vector<std::vector<double> > e_total_weight; //!< Variables for by-event output tree
+  std::vector<std::vector<double> > e_max_weight; //!< Variables for by-event output tree
+  std::vector<std::vector<double> > e_100MeV_weight; //!< Variables for by-event output tree
+  std::vector<std::vector<double> > e_200MeV_weight; //!< Variables for by-event output tree
   bool fDebug; //!< print debug statements
-
+  bool fMax;// for neutron only,  pick the max-mom neutron or not
   DECLARE_WEIGHTCALC(Geant4WeightCalc)
 };
 
@@ -110,6 +114,7 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
   fNsims = pset.get<int> ("number_of_multisims", 0);
   fPdg = pset.get<int> ("pdg_to_reweight");
   fDebug = pset.get<bool> ("debug",false);
+  fMax = pset.get<bool> ("max_n",false);
 
   // Prepare random generator
   fGaussRandom = new CLHEP::RandGaussQ(engine);
@@ -120,8 +125,10 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
 
   // Configure G4Reweighter
   bool totalonly = false;
+  bool isneutron=false;
+  if(fPdg==2112) isneutron=true;
   if (fPdg==2212) totalonly = true;
-  ParMaker = new G4ReweightParameterMaker( FitParSets, totalonly );
+  ParMaker = new G4ReweightParameterMaker( FitParSets, totalonly, isneutron );
   theReweighter = RWFactory.BuildReweighter(fPdg, &XSecFile, &FracsFile, ParMaker->GetFSHists(), ParMaker->GetElasticHist() );
 
   // Make output trees to save things for quick and easy validation
@@ -136,6 +143,7 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
     fOutTree_Particle->Branch("pdg_to_reweight",&fPdg);
     fOutTree_Particle->Branch("inelastic_weight",&p_inel_weight);
     fOutTree_Particle->Branch("elastic_weight",&p_elastic_weight);
+    fOutTree_Particle->Branch("mcp_mom",&p_mom);
     fOutTree_Particle->Branch("track_length",&p_track_length);
     fOutTree_Particle->Branch("PDG",&p_PDG);
     fOutTree_Particle->Branch("final_proc",&p_final_proc);
@@ -155,7 +163,10 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
     fOutTree_MCTruth->Branch("pdg_to_reweight",&fPdg);
     fOutTree_MCTruth->Branch("inelastic_weight",&e_inel_weight);
     fOutTree_MCTruth->Branch("elastic_weight",&e_elastic_weight);
-
+    fOutTree_MCTruth->Branch("total_weight",&e_total_weight);
+    fOutTree_MCTruth->Branch("max_weight",&e_max_weight);
+    fOutTree_MCTruth->Branch("total_100_weight",&e_100MeV_weight);
+    fOutTree_MCTruth->Branch("total_200_weight",&e_200MeV_weight);
   }
 
 
@@ -198,7 +209,18 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
       UniverseVals.push_back(tmp_vals_p1sigma);
       UniverseVals.push_back(tmp_vals_m1sigma);
     } // end loop over parsets (i)
-  } // pm1sigma
+  }  // pm1sigma
+  else if (mode=="pm123sigma"){
+    // modify pm1sigma into pm123sigma
+    // Get the [-3,-2,-1,0,1,2,3]sigma variations
+    for (int i_sig = -3; i_sig < 4; i_sig++){
+      std::map<std::string, double> tmp_vals_sigmaVar(theNominals);
+      for (size_t i_parset=0; i_parset<n_parsets; ++i_parset){
+        tmp_vals_sigmaVar[FitParNames.at(i_parset)] = FitParNominals.at(i_parset) + i_sig * FitParSigmas.at(i_parset);
+      } 
+      UniverseVals.push_back(tmp_vals_sigmaVar);
+    } // end loop over parsets (i)
+  } // pm123sigma
   else if (mode=="multisim"){
     // multisim mode: parameter values sample within the given uncertainty for all parameters simultaneously
     // Loop over universes j
@@ -208,6 +230,7 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
       for (size_t i_parset=0; i_parset<n_parsets; ++i_parset){
         double r = fGaussRandom->fire(0.0,1.0);
         tmp_vals[FitParNames.at(i_parset)] = FitParNominals.at(i_parset)+(FitParSigmas.at(i_parset)*r);
+// std::cout << "Lu debug "<<i_parset<<" "<<FitParNominals.at(i_parset)<<" "<<tmp_vals[FitParNames.at(i_parset)] << std::endl;
       } // loop over parameters (i_parset)
       // Now save this universe
       UniverseVals.push_back(tmp_vals);
@@ -218,7 +241,18 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
     UniverseVals.push_back(theNominals);
   } // any other mode
 
+  //if (mode == "pm1sigma"){
+  //  fNsims = 2;
+  //}
+  //else if (mode == "pm123sigma"){
+  //  fNsims = 7;
+  //}
+  //else if (mode == "multisim"){
+  //  fNsims = UniverseVals.size();
+  //}
+
   fNsims = UniverseVals.size();
+
   if (fDebug) std::cout << "Running mode: " << mode <<". Nsims = " << fNsims << std::endl;
 }
 
@@ -244,30 +278,50 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
   e_inel_weight.resize(truthHandle->size());
   e_elastic_weight.clear();
   e_elastic_weight.resize(truthHandle->size());
+  e_total_weight.clear();
+  e_total_weight.resize(truthHandle->size());
+  e_max_weight.clear();
+  e_max_weight.resize(truthHandle->size());
+  e_100MeV_weight.clear();
+  e_100MeV_weight.resize(truthHandle->size());
+  e_200MeV_weight.clear();
+  e_200MeV_weight.resize(truthHandle->size());
 
   // Loop over sets of MCTruth-associated particles
   for (size_t itruth=0; itruth<truthParticles.size(); itruth++) {
-
-    if (fDebug) std::cout << "New truthParticle---" << std::endl;
-
+    
+    if (fDebug) std::cout << "New truthParticle--- "<<truthParticles.size()<< std::endl;
+    
     // Initialize weight vector for this MCTruth
     weight[itruth].clear();
     weight[itruth].resize(fNsims, 1.0);
 
     // Reset things to be saved in the output tree for fast validation
-      e_inel_weight[itruth].clear();
-      e_inel_weight[itruth].resize(fNsims,1.0);
-      e_elastic_weight[itruth].clear();
-      e_elastic_weight[itruth].resize(fNsims,1.0);
-
+    e_inel_weight[itruth].clear();
+    e_inel_weight[itruth].resize(fNsims,1.0);
+    e_elastic_weight[itruth].clear();
+    e_elastic_weight[itruth].resize(fNsims,1.0);
+    e_total_weight[itruth].clear();
+    e_total_weight[itruth].resize(fNsims,1.0);
+    e_max_weight[itruth].clear();
+    e_max_weight[itruth].resize(fNsims,1.0);
+    e_100MeV_weight[itruth].clear();
+    e_100MeV_weight[itruth].resize(fNsims,1.0);
+    e_200MeV_weight[itruth].clear();
+    e_200MeV_weight[itruth].resize(fNsims,1.0);
+ 
     // Loop over MCParticles in the event
     auto const& mcparticles = truthParticles.at(itruth);
-
+    if (fDebug){
+      std::cout << "about to loop over " <<mcparticles.size()<< " mcparticles" <<" at itruth "<<itruth<<std::endl;
+    }
+    double maxmom=-1;
     for (size_t i=0; i<mcparticles.size(); i++) {
-
       // Reset things to be saved in the output tree for fast validation
       p_inel_weight.clear();
       p_inel_weight.resize(fNsims,1.0);
+      p_mom.clear();
+      p_mom.resize(fNsims,1.0);
       p_elastic_weight.clear();
       p_elastic_weight.resize(fNsims,1.0);
       p_track_length=-9999;
@@ -290,7 +344,10 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
       double mass = 0.;
       if( TMath::Abs(p_PDG) == 211 ) mass = 139.57;
       else if( p_PDG == 2212 ) mass = 938.28;
-
+      else if( p_PDG == 2112 ) mass = 939.57;
+	if (fDebug){
+	  std::cout << "---PDG "<<p_PDG<< std::endl;
+	      }
       // We only want to record weights for one type of particle (defined by fPDG from the fcl file), so skip other particles
       if (p_PDG == fPdg){
         // Get GEANT trajectory points: weighting will depend on position and momentum at each trajectory point so calculate those
@@ -308,35 +365,46 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
         for( auto it = processes.begin(); it != processes.end(); ++it ){
           process_map[ it->first ] = p.Trajectory().KeyToProcess( it->second );
         }
-
-        for( size_t i = 0; i < p.NumberTrajectoryPoints(); ++i ){
-          double X = p.Position(i).X();
-          double Y = p.Position(i).Y();
-          double Z = p.Position(i).Z();
+	
+        for( size_t i_traj = 0; i_traj < p.NumberTrajectoryPoints(); ++i_traj ){
+	  if(i_traj>0&&(abs(p.Position(i_traj).X()-p.Position(i_traj-1).X())>100||abs(p.Position(i_traj).Y()-p.Position(i_traj-1).Y())>100||abs(p.Position(i_traj).Z()-p.Position(i_traj-1).Z())>100)) break;
+	  if(p.Position(i_traj).X()<0||p.Position(i_traj).X()>256.35||p.Position(i_traj).Y()<-116.35||p.Position(i_traj).Y()>116.35||p.Position(i_traj).Z()<0||p.Position(i_traj).Z()>1036.8) break;
+          double X = p.Position(i_traj).X();
+          double Y = p.Position(i_traj).Y();
+          double Z = p.Position(i_traj).Z();
+	 
           geo::Point_t testpoint1 { X, Y, Z };
           const TGeoMaterial* testmaterial1 = fGeometryService->Material( testpoint1 );
+	  if (fDebug) {std::cout << "LAr? " << testmaterial1->GetName()<< std::endl;
+	    std::cout << "LAr? traj "<<i_traj<<" X,Y,Z: "<<X<<", "<<Y<<", "<<Z<< std::endl;}
           //For now, just going to reweight the points within the LAr of the TPC
           // TODO check if this is right
           if ( !strcmp( testmaterial1->GetName(), "LAr" ) ){
             trajpoint_X.push_back( X );
             trajpoint_Y.push_back( Y );
             trajpoint_Z.push_back( Z );
-
-            trajpoint_PX.push_back( p.Px(i) );
-            trajpoint_PY.push_back( p.Py(i) );
-            trajpoint_PZ.push_back( p.Pz(i) );
-
-            auto itProc = process_map.find(i);
+	    
+            trajpoint_PX.push_back( p.Px(i_traj) );
+            trajpoint_PY.push_back( p.Py(i_traj) );
+            trajpoint_PZ.push_back( p.Pz(i_traj) );
+	    
+            auto itProc = process_map.find(i_traj);
             if( itProc != process_map.end() && itProc->second == "hadElastic" ){
               //Push back the index relative to the start of the reweightable steps
               elastic_indices.push_back( trajpoint_X.size() - 1 );
-              // if (fDebug) std::cout << "Elastic index: " << trajpoint_X.size() - 1 << std::endl;
+	      if (fDebug) std::cout << "Elastic index: " << trajpoint_X.size() - 1 << std::endl;
             }
-
-          }
-
+	    if (fDebug){
+	      std::cout << "traj "<<i_traj<<" X,Y,Z: "<<X<<", "<<Y<<", "<<Z<< std::endl;
+	      std::cout << "traj "<<i_traj<<" P_X,Y,Z: "<<p.Px(i_traj)<<", "<<p.Py(i_traj)<<", "<<p.Pz(i_traj)<< std::endl;
+	    }
+	    
+	  }
+	  
         } // end loop over trajectory points
-
+	if (fDebug){
+	  std::cout << "about to find the daughters..."<<p.NumberDaughters()<<" of mcparticle "<<i<< std::endl;
+	      }
         // Now find daughters of the MCP
         std::vector<int> daughter_PDGs;
         std::vector<int> daughter_IDs;
@@ -354,6 +422,9 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
 
         // --- Now that we have all the information about the track we need, here comes the reweighting part! --- //
 
+	if (fDebug){
+	  std::cout << "about to enter reweighting" << std::endl;
+	      }
         //Make a G4ReweightTraj -- This is the reweightable object
         G4ReweightTraj theTraj(mcpID, p_PDG, 0, event_num, std::make_pair(0,0));
 
@@ -423,7 +494,7 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
             std::pow( theTraj.GetStep( theTraj.GetNSteps() - 1 )->GetPreStepPy(), 2 ) +
             std::pow( theTraj.GetStep( theTraj.GetNSteps() - 1 )->GetPreStepPz(), 2 )
         );
-
+       
         std::vector< std::pair< double, int > > thin_slice_inelastic = ThinSliceBetheBloch( &theTraj, .5, mass , false);
         std::vector< std::pair< double, int > > thin_slice_elastic = ThinSliceBetheBloch( &theTraj, .5, mass , true);
 
@@ -440,7 +511,9 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           p_energies_el.push_back( thin_slice_elastic[islice].first );
           p_sliceInts_el.push_back( thin_slice_elastic[islice].second );
         }
-
+	if (fDebug){
+	  std::cout << "about to loop over universes" << std::endl;
+	      }
         // Loop through universes (j)
         for (size_t j=0; j<weight[0].size(); j++) {
           float w, el_w;
@@ -450,32 +523,57 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           theReweighter->SetNewHists(ParMaker->GetFSHists());
           theReweighter->SetNewElasticHists(ParMaker->GetElasticHist());
 
+          //// Print out the type
+          //std::cout<<"type: "<< G4Reweighter::GetInteractionSubtype( &theTraj ) << std::endl;
+
           //Get the weight from the G4ReweightTraj
           w = theReweighter->GetWeight( &theTraj );
           // Total weight is the product of track weights in the event
           weight[itruth][j] *= std::max((float)0.0, w);
+	  if(p_init_momentum>100) e_100MeV_weight[itruth][j] *= std::max((float)0.0,w);
+	  if(p_init_momentum>200) e_200MeV_weight[itruth][j] *= std::max((float)0.0,w);
 
           // Do the same for elastic weight (should be 1 unless set to non-nominal )
           el_w = theReweighter->GetElasticWeight( &theTraj );
+	 
+	      
           weight[itruth][j] *= std::max((float)0.0,el_w);
-
-          // just for the output tree
+	  if(p_init_momentum>100) e_100MeV_weight[itruth][j] *= std::max((float)0.0,el_w);
+	  if(p_init_momentum>200) e_200MeV_weight[itruth][j] *= std::max((float)0.0,el_w);
+	  if(p_init_momentum>=maxmom) 
+	    {
+	      if(j==0)
+		{
+		  e_max_weight[itruth][j]=1;
+		  maxmom=p_init_momentum;
+		}
+	      e_max_weight[itruth][j] *= std::max((float)0.0,w); 
+	      e_max_weight[itruth][j] *= std::max((float)0.0,el_w); 
+	     
+	    
+	    }
+	  if(fDebug&&p_PDG==2112)  std::cout <<"[Lu Debug Neutron] mcparticle "<<i<<" is neutron, before! initial mom "<<p_init_momentum <<"  before  max mom = " << maxmom <<" universe "<<j<< ", max weight = " << e_max_weight[itruth][j]<<", elastic "<<el_w<<" inelastic "<<w << std::endl;
+		  
+	    // just for the output tree
           p_inel_weight[j] = w;
           p_elastic_weight[j] = el_w;
           e_inel_weight[itruth][j] *= std::max((float)0.0,w);
           e_elastic_weight[itruth][j] *= std::max((float)0.0,el_w);
-
+          e_total_weight[itruth][j]=weight[itruth][j];
+	  
           if (fDebug){
-            std::cout << "  Universe " << j << ": ";
+            std::cout <<"itruth: "<<itruth<<"  Universe " << j << ": ";
             // std::cout << UniverseVals.at(j) << std::endl;
-            std::cout << "    w = " << w << ", el_w = " << el_w << std::endl;
-          }
+            std::cout << "    inel_w = " << w << ", el_w = " << el_w << std::endl;
+	    std::cout << "   overall inel_w = " << e_inel_weight[itruth][j] << ", el_w = " << e_elastic_weight[itruth][j]<<" total = "<<weight[itruth][j]<< std::endl;
+          } 
 
 
         } // loop through universes (j)
 
         if (fDebug){
           std::cout << "PDG = " << p_PDG << std::endl;
+	  std::cout <<"el! initial mom "<<p_init_momentum <<"  before  max mom = " << maxmom << std::endl;
           std::cout << "inel weights by particle: ";
           for (unsigned int j=0; j<weight[0].size(); j++){
             std::cout << p_inel_weight[j] << ", ";
@@ -500,19 +598,22 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           for (unsigned int j=0; j<weight[itruth].size(); j++){
             std::cout << weight[itruth][j] << ", ";
           }
-          std::cout << std::endl;
+          std::cout << "The end" <<std::endl;
         }
 
       } // if ( ( TMath::Abs(p_PDG) == 211 || p_PDG == 2212 ) )
-      if (fMakeOutputTrees) fOutTree_Particle->Fill();
+       
+       if (fMakeOutputTrees) fOutTree_Particle->Fill();
     } // loop over mcparticles (i)
-    if (fMakeOutputTrees) fOutTree_MCTruth->Fill();
+  
+      if (fMakeOutputTrees) fOutTree_MCTruth->Fill();
   } // loop over sets of MCtruth-associated particles (itruth)
-
-return weight;
-
+  
+  if(fMax) return e_max_weight;
+  else return weight;
+  
 }
-
+  
 REGISTER_WEIGHTCALC(Geant4WeightCalc)
 
 }  // namespace evwgh

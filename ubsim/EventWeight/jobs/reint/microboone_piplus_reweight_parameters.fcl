@@ -1,21 +1,25 @@
 BEGIN_PROLOG
-
-PiPlusParameters: [
+PiPlusReacLow: [
   {
     Name:       "fPiPlusReacLow"
     Cut:        "reac"
     Range:      [10., 200.]
     Nominal:    1
     Sigma:      0.2
-  } ,
+  }
+]
+
+PiPlusReacHigh: [
   {
     Name:       "fPiPlusReacHigh"
     Cut:        "reac"
     Range:      [700., 2005.]
     Nominal:    1.0
     Sigma:      0.2
-  } ,
+  }
+]
 
+PiPlusAbs: [
   {
     Name:       "fPiPlusAbs"
     Cut:        "abs"
@@ -23,8 +27,10 @@ PiPlusParameters: [
     Range:      [10.0, 2005.00]
     Nominal:    1.0
     Sigma:      0.2
-  },
+  }
+]
 
+PiPlusCex: [
   {
     Name:       "fPiPlusCex"
     Cut:        "cex"
@@ -32,8 +38,10 @@ PiPlusParameters: [
     Range:      [10.0, 2005.00]
     Nominal:    1.0
     Sigma:      0.2
-  },
+  }
+]
 
+PiPlusDCex: [
   {
     Name:       "fPiPlusDCex"
     Cut:        "dcex"
@@ -41,8 +49,10 @@ PiPlusParameters: [
     Range:      [10.0, 2005.00]
     Nominal:    1.0
     Sigma:      0.2
-  },
+  }
+]
 
+PiPlusPiProd: [
   {
     Name:       "fPiPlusPiProd"
     Cut:        "prod"
@@ -50,8 +60,10 @@ PiPlusParameters: [
     Range:      [10.0, 2005.00]
     Nominal:    1.0
     Sigma:      0.2
-  },
+  }
+]
 
+PiPlusElast: [
   {
     Name:       "fPiPlusElast"
     Cut:        "elast"
@@ -60,5 +72,67 @@ PiPlusParameters: [
     Sigma:      0.2
   }
 ]
+
+##############
+#PiPlusParameters: [
+#  {
+#    Name:       "fPiPlusReacLow"
+#    Cut:        "reac"
+#    Range:      [10., 200.]
+#    Nominal:    1
+#    Sigma:      0.2
+#  } ,
+#  {
+#    Name:       "fPiPlusReacHigh"
+#    Cut:        "reac"
+#    Range:      [700., 2005.]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  } ,
+#
+#  {
+#    Name:       "fPiPlusAbs"
+#    Cut:        "abs"
+#    # Range:      [200.0, 700.00]
+#    Range:      [10.0, 2005.00]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  },
+#
+#  {
+#    Name:       "fPiPlusCex"
+#    Cut:        "cex"
+#    # Range:      [200.0, 700.00]
+#    Range:      [10.0, 2005.00]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  },
+#
+#  {
+#    Name:       "fPiPlusDCex"
+#    Cut:        "dcex"
+#    # Range:      [200.0, 700.00]
+#    Range:      [10.0, 2005.00]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  },
+#
+#  {
+#    Name:       "fPiPlusPiProd"
+#    Cut:        "prod"
+#    # Range:      [200.0, 700.00]
+#    Range:      [10.0, 2005.00]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  },
+#
+#  {
+#    Name:       "fPiPlusElast"
+#    Cut:        "elast"
+#    Range:      [10.0, 2005.00]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  }
+#]
 
 END_PROLOG

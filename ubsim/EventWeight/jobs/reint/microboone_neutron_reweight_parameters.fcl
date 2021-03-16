@@ -1,0 +1,92 @@
+BEGIN_PROLOG
+NeutronAbs: [
+  {
+    Name:       "fNeutronAbs"
+    Cut:        "abs"
+    Range:      [20., 2000.]
+    Nominal:    1
+    Sigma:      0.2
+  }
+]
+
+NeutronElast: [
+  {
+    Name:       "fNeutronElast"
+    Cut:        "elast"
+    Range:      [100.0, 2000.00]
+    Nominal:    1.0
+    Sigma:      0.2
+  }
+]
+
+NeutronInela: [
+  {
+    Name:       "fNeutronInela"
+    Cut:        "inel"
+    Range:      [20.0, 2000.00]
+    Nominal:    1.0
+    Sigma:      0.2
+  }
+]
+
+NeutronPiprod: [
+  {
+    Name:       "fNeutronPiprod"
+    Cut:        "piprod"
+    Range:      [20.0, 2000.00]
+    Nominal:    1.0
+    Sigma:      0.2
+  }
+]
+
+NeutronPprod: [
+  {
+    Name:       "fNeutronPprod"
+    Cut:        "pprod"
+    Range:      [20.0, 2000.00]
+    Nominal:    1.0
+    Sigma:      0.2
+  }
+]
+#######################
+#
+#NeutronParameters: [
+#  {
+#    Name:       "fNeutronAbs"
+#    Cut:        "abs"
+#    Range:      [20., 2000.]
+#    Nominal:    1
+#    Sigma:      0.2
+#  },
+#
+#  {
+#    Name:       "fNeutronElast"
+#    Cut:        "elast"
+#    Range:      [100.0, 2000.00]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  },
+#  { 
+#    Name:       "fNeutronInela"
+#    Cut:        "inel"
+#    Range:      [20.0, 2000.00]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  },
+#  { 
+#    Name:       "fNeutronPiprod"
+#    Cut:        "piprod"
+#    Range:      [20.0, 2000.00]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  },
+#  { 
+#    Name:       "fNeutronPprod"
+#    Cut:        "pprod"
+#    Range:      [20.0, 2000.00]
+#    Nominal:    1.0
+#    Sigma:      0.2
+#  }
+#]
+#
+END_PROLOG 

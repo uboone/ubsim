@@ -1,7 +1,8 @@
 #include "microboone_piplus_reweight_parameters.fcl"
 #include "microboone_piminus_reweight_parameters.fcl"
 #include "microboone_proton_reweight_parameters.fcl"
-#include "eventweight_microboone_g4rwt_reint.fcl"
+#include "microboone_neutron_reweight_parameters.fcl"
+#include "eventweight_microboone_g4rwt_reint_yifan.fcl"
 
 BEGIN_PROLOG
 
@@ -75,16 +76,43 @@ microboone_eventweight_justSplines: {
 #just the spline weight function
 microboone_eventweight_justSplines.weight_functions: [ splines_general ]
 
+##event weighting for reinteraction
+#microboone_eventweight_justreint: {
+#  module_type: "EventWeight"
+#
+#  min_weight: 0.0
+#  max_weight: 100
+#  @table::microboone_eventweight_reint
+#}
+#
+##just the reinteraction weight function
+#microboone_eventweight_justreint.weight_functions: [ reinteractions_piplus, reinteractions_piminus, reinteractions_proton ]
+
 #event weighting for reinteraction
 microboone_eventweight_justreint: {
   module_type: "EventWeight"
 
-  min_weight: 0.0
-  max_weight: 100
-  @table::microboone_eventweight_reint
+    min_weight: 0.0
+    max_weight: 1000
+    @table::microboone_eventweight_reint
 }
 
 #just the reinteraction weight function
-microboone_eventweight_justreint.weight_functions: [ reinteractions_piplus, reinteractions_piminus, reinteractions_proton ]
+#microboone_eventweight_justreint.weight_functions: [reinteractions_piplus, reinteractions_piminus, reinteractions_proton, reinteractions_neutron_max,reinteractions_neutron_100, reinteractions_neutron_200 ]
+
+microboone_eventweight_justreint.weight_functions: [ 
+#piplus
+reinteractions_piplusReacLow, reinteractions_piplusReacHigh, reinteractions_piplusAbs, reinteractions_piplusCex, reinteractions_piplusDCex, reinteractions_piplusPiProd, reinteractions_piplusElast, 
+#piminus
+reinteractions_piminusReacLow, reinteractions_piminusReacHigh, reinteractions_piminusAbs, reinteractions_piminusCex, reinteractions_piminusDCex, reinteractions_piminusPiProd, reinteractions_piminusElast, 
+#proton
+reinteractions_protonReac, reinteractions_protonElast, 
+#neutron_max
+reinteractions_neutronAbs_max, reinteractions_neutronElast_max, reinteractions_neutronInela_max, reinteractions_neutronPiprod_max, reinteractions_neutronPprod_max, 
+#neutron_100
+reinteractions_neutronAbs_100, reinteractions_neutronElast_100, reinteractions_neutronInela_100, reinteractions_neutronPiprod_100, reinteractions_neutronPprod_100, 
+#neutron_200
+reinteractions_neutronAbs_200, reinteractions_neutronElast_200, reinteractions_neutronInela_200, reinteractions_neutronPiprod_200, reinteractions_neutronPprod_200
+]
 
 END_PROLOG
