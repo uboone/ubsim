@@ -75,6 +75,7 @@ private:
 
 int fPrimMode;
 std::string fAllHitsInstanceName;
+std::string fWireModuleLabel;
 void reconfigure(fhicl::ParameterSet const& p) ;
 
 /*
@@ -117,15 +118,12 @@ TriggerPrimitiveHitMaker::TriggerPrimitiveHitMaker(fhicl::ParameterSet const & p
 	return;
 }
 
-
 void TriggerPrimitiveHitMaker::reconfigure(fhicl::ParameterSet const& p){
 	fPrimMode = p.get<int>("PrimMode");
-	fAllHitsInstanceName = "";
-
+	fAllHitsInstanceName = p.get<std::string>("AllHitsInstanceName","");
+	fWireModuleLabel = p.get<std::string>("WireModuleLabel","compress");
 	return;
-
 }
-
 
 
 void TriggerPrimitiveHitMaker::beginJob()
@@ -156,21 +154,27 @@ art::ServiceHandle<art::TFileService const> tfs;
  fMaxTothist_v          = tfs->make<TH2D>("MaxTotV", "Tot vs. Max V Plane;Tot;Max", 100, 0, 100, 100, 0, 200);
  fMaxTothist_y          = tfs->make<TH2D>("MaxTotY", "Tot vs. Max Y Plane;Tot;Max", 100, 0, 100, 100, 0, 200);
  */
-
- }
+}
 
 
 void TriggerPrimitiveHitMaker::produce(art::Event & e)
 {
- // Implementation of required member function here.
+    // Implementation of required member function here.
     recob::HitCollectionCreator allHitCol(*this, e, fAllHitsInstanceName);
     //recob::HitCollectionCreator* filteredHitCol = 0;  
     int numHits = 0;
 
-    art::Handle<std::vector<recob::Wire>> wiredata;
-    e.getByLabel("snnodeco",wiredata);
+
+    std::cout<<"Starting: "<<std::endl;
+    art::ValidHandle<std::vector<recob::Wire>> & wiredata = e.getValidHandle<std::vector<recob::Wire>>(fWireModuleLabel);
+    //bool worked = e.getByLabel("compress",wiredata);
+    //if(!worked)std::cout<<"Error didnt work"<<std::endl;
+    
+    std::cout<<"Iterating over WireData: "<<wiredata->size()<<std::endl;
 
     for(size_t rdIter = 0; rdIter < wiredata->size(); ++rdIter){
+    std::cout<<rdIter<<" / "<<wiredata->size()<<std::endl;
+
 	// get the reference to the current non-deconvolved recob::Wire                                                                                               
 	art::Ptr<recob::Wire> wireVec(wiredata, rdIter);
 	//art::Ptr<raw::RawDigit> rawdigits = RawDigits.at(rdIter);
@@ -180,8 +184,9 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 	std::vector<geo::WireID> wids = geom->ChannelToWire(channel);
 	geo::WireID wid  = wids[0];
 	//geo::PlaneID::PlaneID_t plane = wid.Plane;
-
+    
 	std::vector<recob::Hit>  filteredHitVec;
+
 
 	for (auto iROI = zsROIs.begin_range(); iROI != zsROIs.end_range(); ++iROI) {
 	    auto ROI = *iROI;
@@ -260,6 +265,11 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 	    }
 
 	    if (pass == 1){
+        std::cout<<"Create a hit "<<(float)widthtot<<" "<<(float)peaktime<<" "<<(float)primitive<<" "<<(size_t)firstTick<<" "<<std::endl;
+        std::cout<<wid<<std::endl;
+        std::cout<<wireVec->NSignal()<<" "<<wireVec->Signal().size()<<std::endl;
+        for(auto &s: wireVec->Signal()) if(s!=0)std::cout<<s<<" ";
+        std::cout<<std::endl;
 		recob::HitCreator hitcreator(
 					(recob::Wire)*wireVec,
 					(geo::WireID)wid,
@@ -277,12 +287,15 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 					(int)1,
 					(size_t)firstTick
 					);
+        std::cout<<"Created a hit"<<std::endl;
 		filteredHitVec.push_back(hitcreator.copy());
 	    
 		art::Ptr<raw::RawDigit> dummyRawDigits;
 
 		const recob::Hit hit(hitcreator.move()); 
+        std::cout<<"empback 1"<<std::endl;
 		allHitCol.emplace_back(std::move(hit), wireVec, dummyRawDigits);
+        std::cout<<"empback 2"<<std::endl;
 
 		numHits++;
 
@@ -338,7 +351,7 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
          fIntMaxhist_y->Fit("pol1");
          fMaxTothist_y->Fit("pol1");
 */
-
+    std::cout<<"Save things?"<<std::endl;
     allHitCol.put_into(e);
 }
 
