@@ -7,6 +7,7 @@
 // from cetlib version v3_03_01.
 ////////////////////////////////////////////////////////////////////////
 
+//#include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "art/Framework/Core/EDProducer.h"
 #include "art/Framework/Core/ModuleMacros.h"
 #include "art/Framework/Principal/Event.h"
@@ -112,7 +113,7 @@ TriggerPrimitiveHitMaker::TriggerPrimitiveHitMaker(fhicl::ParameterSet const & p
 {
   // Call appropriate produces<>() functions here.
 	this->reconfigure(pset);
-	recob::HitCollectionCreator::declare_products(*this,fAllHitsInstanceName);
+	//recob::HitCollectionCreator::declare_products(*this,fAllHitsInstanceName);
 
 	return;
 }
@@ -163,12 +164,14 @@ art::ServiceHandle<art::TFileService const> tfs;
 void TriggerPrimitiveHitMaker::produce(art::Event & e)
 {
  // Implementation of required member function here.
-    recob::HitCollectionCreator allHitCol(*this, e, fAllHitsInstanceName);
+    //recob::HitCollectionCreator allHitCol(*this, e, fAllHitsInstanceName);
     //recob::HitCollectionCreator* filteredHitCol = 0;  
-    int numHits = 0;
+    //int numHits = 0;
 
     art::Handle<std::vector<recob::Wire>> wiredata;
-    e.getByLabel("snnodeco",wiredata);
+   // art::ValidHandle<std::vector<recob::Wire>> const & wiredata = e.getValidHandle<std::vector<recob::Wire>>("compress"); 
+    //e.getByLabel("compress",wiredata);
+    e.getByLabel("snnodeco",wiredata);// ORIGINAL
 
     for(size_t rdIter = 0; rdIter < wiredata->size(); ++rdIter){
 	// get the reference to the current non-deconvolved recob::Wire                                                                                               
@@ -178,15 +181,15 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 	auto zsROIs = wireVec->SignalROI();
 	art::ServiceHandle<geo::Geometry const> geom;
 	std::vector<geo::WireID> wids = geom->ChannelToWire(channel);
-	geo::WireID wid  = wids[0];
+	//geo::WireID wid  = wids[0];
 	//geo::PlaneID::PlaneID_t plane = wid.Plane;
 
 	std::vector<recob::Hit>  filteredHitVec;
 
 	for (auto iROI = zsROIs.begin_range(); iROI != zsROIs.end_range(); ++iROI) {
 	    auto ROI = *iROI;
-	    const size_t firstTick = ROI.begin_index();
-	    const size_t endTick = ROI.end_index();
+	    //const size_t firstTick = ROI.begin_index();
+	    //const size_t endTick = ROI.end_index();
 
 	    //std::string titlestring = "roi_original"+ std::to_string(channel);
 	    //TH1D horig(titlestring.c_str(), "roi_original;Tick;ADC", endTick + 1 - firstTick, firstTick, endTick + 1);
@@ -194,7 +197,7 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 
 	    float integralsum = 0; 
 	    float maxpeak = 0;
-	    float  tot = 0;
+	    //float  tot = 0;
 	    float peaktime = 0;
  
 
@@ -209,10 +212,14 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 		//c.Modified();
 		//c.Update();
 		//c.Print(".png");}//This Line
+		std::cout<<"iTick = "<<iTick<<std::endl;
+		std::cout<<"ROI[iTick] = "<<ROI[iTick]<<std::endl;
 		integralsum +=  std::abs(ROI[iTick]);
 		if (std::abs(ROI[iTick]) > maxpeak){
 		    maxpeak = std::abs(ROI[iTick]);
 		    peaktime = iTick;
+		    std::cout<<"maxpeak"<<maxpeak<<std::endl;
+		    std::cout<<"peaktime"<<peaktime<<std::endl;
 		}
 	    }
 
@@ -225,70 +232,70 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 
 
 
-	    tot = endTick - firstTick;
-	    float widthtot = tot/2;
+//	    tot = endTick - firstTick;
+//	    float widthtot = tot/2;
+//
+//	    float ucut = -1;
+//	    float vcut = -1;
+//	    float ycut = -1;
+//	    float primitive = -1;
+//
+//	    if (fPrimMode == 0){
+//		primitive = integralsum;
+//		ucut = 200;
+//		vcut = 120;
+//		ycut = 200;
+//	    } else if (fPrimMode == 1 ) {
+//		primitive = maxpeak;
+//		ucut = 20;
+//		vcut = 13;
+//		ycut = 25;
+//	    } else if (fPrimMode == 2 ){
+//		primitive = tot;
+//		ucut = 21;
+//		vcut = 20;
+//		ycut = 24;
+//	    }
+//
+//	    int pass  = 0;   //If the waveform passes the cut, pass = 1, if not pass = 0
+//	    if (channel <= 2399 && primitive >= ucut){
+//		pass = 1;
+//	    } else if (channel > 2399 && channel <= 4799 && primitive >= vcut){
+//		pass = 1; 
+//	    } else if (channel >= 4800 && primitive >= ycut){
+//		pass = 1;
+//	    }
 
-	    float ucut = -1;
-	    float vcut = -1;
-	    float ycut = -1;
-	    float primitive = -1;
-
-	    if (fPrimMode == 0){
-		primitive = integralsum;
-		ucut = 200;
-		vcut = 120;
-		ycut = 200;
-	    } else if (fPrimMode == 1 ) {
-		primitive = maxpeak;
-		ucut = 20;
-		vcut = 13;
-		ycut = 25;
-	    } else if (fPrimMode == 2 ){
-		primitive = tot;
-		ucut = 21;
-		vcut = 20;
-		ycut = 24;
-	    }
-
-	    int pass  = 0;   //If the waveform passes the cut, pass = 1, if not pass = 0
-	    if (channel <= 2399 && primitive >= ucut){
-		pass = 1;
-	    } else if (channel > 2399 && channel <= 4799 && primitive >= vcut){
-		pass = 1; 
-	    } else if (channel >= 4800 && primitive >= ycut){
-		pass = 1;
-	    }
-
-	    if (pass == 1){
-		recob::HitCreator hitcreator(
-					(recob::Wire)*wireVec,
-					(geo::WireID)wid,
-					(float)widthtot,
-					(float)peaktime, 
-					(float)1,
-					(float)primitive,
-					(float)1,
-					(float)primitive,
-					(float)1.0,
-					(float)primitive,
-					(short int)1,
-					(short int)0,
-					(float)1.0,
-					(int)1,
-					(size_t)firstTick
-					);
-		filteredHitVec.push_back(hitcreator.copy());
-	    
-		art::Ptr<raw::RawDigit> dummyRawDigits;
-
-		const recob::Hit hit(hitcreator.move()); 
-		allHitCol.emplace_back(std::move(hit), wireVec, dummyRawDigits);
-
-		numHits++;
-
-		//for(const auto& filteredHit : filteredHitVec)
-		//    filteredHitCol->emplace_back(filteredHit, wireVec, dummyRawDigits);
-	    }
+//	    if (pass == 1){
+//		recob::HitCreator hitcreator(
+//					(recob::Wire)*wireVec,
+//					(geo::WireID)wid,
+//					(float)widthtot,
+//					(float)peaktime, 
+//					(float)1,
+//					(float)primitive,
+//					(float)1,
+//					(float)primitive,
+//					(float)1.0,
+//					(float)primitive,
+//					(short int)1,
+//					(short int)0,
+//					(float)1.0,
+//					(int)1,
+//					(size_t)firstTick
+//					);
+//		filteredHitVec.push_back(hitcreator.copy());
+//	    
+//		art::Ptr<raw::RawDigit> dummyRawDigits;
+//
+//		const recob::Hit hit(hitcreator.move()); 
+//		allHitCol.emplace_back(std::move(hit), wireVec, dummyRawDigits);
+//
+//		numHits++;
+//
+//		//for(const auto& filteredHit : filteredHitVec)
+//		//    filteredHitCol->emplace_back(filteredHit, wireVec, dummyRawDigits);
+//	    }
             
 
 	    /* 
@@ -339,7 +346,7 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
          fMaxTothist_y->Fit("pol1");
 */
 
-    allHitCol.put_into(e);
+    //allHitCol.put_into(e);
 }
 
 
