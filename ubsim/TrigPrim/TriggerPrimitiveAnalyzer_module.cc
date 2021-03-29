@@ -180,7 +180,7 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
                     std::cout<<"peaktime"<<peaktime<<std::endl;
                 }
             
-                if(iTick<=12) integralN += std::abs(ROI[iTick]);
+                if(iTick-firstTick<=12) integralN += std::abs(ROI[iTick]);
             }
 
 
