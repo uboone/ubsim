@@ -50,9 +50,9 @@
 
 class TriggerPrimitiveAnalyzer : public art::EDAnalyzer {
     public:
-        
+
         explicit TriggerPrimitiveAnalyzer(fhicl::ParameterSet const & pset);
-        
+
         // The compiler-generated destructor is fine for non-base
         // classes without bare pointers or other resource use.
 
@@ -82,13 +82,22 @@ class TriggerPrimitiveAnalyzer : public art::EDAnalyzer {
         std::string fWireModuleLabel;
         void reconfigure(fhicl::ParameterSet const& p) ;
 
+        std::vector<int> m_channel;
+        std::vector<int> m_view;
+        std::vector<float> m_max_ADC;
+        std::vector<float> m_max_ADC_tick;
+        std::vector<float> m_integral_sum;
+        std::vector<float> m_tot;
+        std::vector<float> m_first_tick; 
+        std::vector<float> m_integral_over_n;
+
 
 };
 
 
 TriggerPrimitiveAnalyzer::TriggerPrimitiveAnalyzer(fhicl::ParameterSet const & pset): EDAnalyzer(pset)
-    // :
-    // Initialize member data here.
+                                                                                      // :
+                                                                                      // Initialize member data here.
 {
     this->reconfigure(pset);
 
@@ -109,13 +118,21 @@ void TriggerPrimitiveAnalyzer::beginJob()
     art::ServiceHandle<art::TFileService const> tfs;
 
     event_tree = tfs->make<TTree>("event_tree","event_tree");
-    //event_tree->Branch("",);
+    event_tree->Branch("channel",&m_channel);
+    event_tree->Branch("view",&m_view);
+    event_tree->Branch("max_ADC",&m_max_ADC);
+    event_tree->Branch("max_ADC_tick",&m_max_ADC_tick);
+    event_tree->Branch("integral_sum",&m_integral_sum);
+    event_tree->Branch("tot",&m_tot);;
+    event_tree->Branch("first_tick",&m_first_tick);
+    event_tree->Branch("integral_over_n",&m_integral_over_n);
+
 
 }
 
 
 void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
-    
+
     std::cout<<"Starting: "<<std::endl;
     art::ValidHandle<std::vector<recob::Wire>> const & wiredata = e.getValidHandle<std::vector<recob::Wire>>(fWireModuleLabel);
 
@@ -130,8 +147,8 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
         auto channel = wireVec->Channel();
         auto zsROIs = wireVec->SignalROI();
         art::ServiceHandle<geo::Geometry const> geom;
-        std::vector<geo::WireID> wids = geom->ChannelToWire(channel);
-        geo::WireID wid  = wids[0];
+        //std::vector<geo::WireID> wids = geom->ChannelToWire(channel);
+        //geo::WireID wid  = wids[0];
         //geo::PlaneID::PlaneID_t plane = wid.Plane;
 
         std::vector<recob::Hit>  filteredHitVec;
@@ -139,8 +156,8 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
 
         for (auto iROI = zsROIs.begin_range(); iROI != zsROIs.end_range(); ++iROI) {
             auto ROI = *iROI;
-            //const size_t firstTick = ROI.begin_index();
-            //const size_t endTick = ROI.end_index();
+            const size_t firstTick = ROI.begin_index();
+            const size_t endTick = ROI.end_index();
 
             //std::string titlestring = "roi_original"+ std::to_string(channel);
             //TH1D horig(titlestring.c_str(), "roi_original;Tick;ADC", endTick + 1 - firstTick, firstTick, endTick + 1);
@@ -150,7 +167,7 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
             float maxpeak = 0;
             //float  tot = 0;
             float peaktime = 0;
-
+            float integralN=0;
 
             for (size_t iTick = ROI.begin_index(); iTick < ROI.end_index(); iTick++ ){
                 std::cout<<"iTick = "<<iTick<<std::endl;
@@ -162,18 +179,34 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
                     std::cout<<"maxpeak"<<maxpeak<<std::endl;
                     std::cout<<"peaktime"<<peaktime<<std::endl;
                 }
+            
+                if(iTick<=12) integralN += std::abs(ROI[iTick]);
             }
 
-            std::cout<<integralsum<<" "<<maxpeak<<" "<<peaktime<<std::endl;
 
+            /*
             std::cout<<wid<<std::endl;
             std::cout<<wireVec->NSignal()<<" "<<wireVec->Signal().size()<<std::endl;
             for(auto &s: wireVec->Signal()) if(s!=0)std::cout<<s<<" ";
             std::cout<<std::endl;
+            */
+
+             m_channel.push_back((int)channel);
+             m_view.push_back((int)wireVec->View());
+             m_max_ADC.push_back((float)maxpeak);
+             m_max_ADC_tick.push_back((float)peaktime);
+
+             m_integral_sum.push_back((float)integralsum);
+             m_tot.push_back((float)(endTick-firstTick));
+             m_first_tick.push_back((float)firstTick); 
+             m_integral_over_n.push_back((float)integralN);
+
 
         } // end of roi loop
 
     } // end of channel loop
+
+    event_tree->Fill();
 }
 
 
