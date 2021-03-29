@@ -164,9 +164,8 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
     //recob::HitCollectionCreator* filteredHitCol = 0;  
     int numHits = 0;
 
-
     std::cout<<"Starting: "<<std::endl;
-    art::ValidHandle<std::vector<recob::Wire>> & wiredata = e.getValidHandle<std::vector<recob::Wire>>(fWireModuleLabel);
+    art::ValidHandle<std::vector<recob::Wire>> const & wiredata = e.getValidHandle<std::vector<recob::Wire>>(fWireModuleLabel);
     //bool worked = e.getByLabel("compress",wiredata);
     //if(!worked)std::cout<<"Error didnt work"<<std::endl;
     
@@ -201,7 +200,7 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 	    float maxpeak = 0;
 	    float  tot = 0;
 	    float peaktime = 0;
- 
+
 
 	    for (size_t iTick = ROI.begin_index(); iTick < ROI.end_index(); iTick++ ){
 		//if (channel > 5500 && channel < 5505){
@@ -221,14 +220,13 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 		}
 	    }
 
+        std::cout<<integralsum<<" "<<maxpeak<<" "<<peaktime<<std::endl;
 
 	    //TCanvas c ("c", "c");
 	    //horig.Draw("hist ][");
 	    //c.Modified();
 	    //c.Update();
 	    //c.Print(".png");
-
-
 
 	    tot = endTick - firstTick;
 	    float widthtot = tot/2;
@@ -270,7 +268,10 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
         std::cout<<wireVec->NSignal()<<" "<<wireVec->Signal().size()<<std::endl;
         for(auto &s: wireVec->Signal()) if(s!=0)std::cout<<s<<" ";
         std::cout<<std::endl;
-		recob::HitCreator hitcreator(
+       
+        //const recob::Wire Tmp;
+
+        recob::HitCreator hitcreator(
 					(recob::Wire)*wireVec,
 					(geo::WireID)wid,
 					(float)widthtot,
@@ -287,14 +288,22 @@ void TriggerPrimitiveHitMaker::produce(art::Event & e)
 					(int)1,
 					(size_t)firstTick
 					);
+
         std::cout<<"Created a hit"<<std::endl;
-		filteredHitVec.push_back(hitcreator.copy());
+		//filteredHitVec.push_back(hitcreator.copy());
 	    
 		art::Ptr<raw::RawDigit> dummyRawDigits;
-
-		const recob::Hit hit(hitcreator.move()); 
+		
+//      const recob::Hit hit(hitcreator.move()); 
+       
         std::cout<<"empback 1"<<std::endl;
-		allHitCol.emplace_back(std::move(hit), wireVec, dummyRawDigits);
+		
+        allHitCol.emplace_back(hitcreator.move(), wireVec, dummyRawDigits);
+		
+        //allHitCol.emplace_back(hitcreator.move()std::move(hit), wireVec, dummyRawDigits);
+        
+
+
         std::cout<<"empback 2"<<std::endl;
 
 		numHits++;
