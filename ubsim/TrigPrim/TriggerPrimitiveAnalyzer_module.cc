@@ -133,13 +133,13 @@ void TriggerPrimitiveAnalyzer::beginJob()
 
 void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
 
-    std::cout<<"Starting: "<<std::endl;
+    //std::cout<<"Starting: "<<std::endl;
     art::ValidHandle<std::vector<recob::Wire>> const & wiredata = e.getValidHandle<std::vector<recob::Wire>>(fWireModuleLabel);
 
-    std::cout<<"Iterating over WireData: "<<wiredata->size()<<std::endl;
+    //std::cout<<"Iterating over WireData: "<<wiredata->size()<<std::endl;
 
     for(size_t rdIter = 0; rdIter < wiredata->size(); ++rdIter){
-        std::cout<<rdIter<<" / "<<wiredata->size()<<std::endl;
+        //std::cout<<rdIter<<" / "<<wiredata->size()<<std::endl;
 
         // get the reference to the current non-deconvolved recob::Wire                                                                                               
         art::Ptr<recob::Wire> wireVec(wiredata, rdIter);
@@ -170,14 +170,14 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
             float integralN=0;
 
             for (size_t iTick = ROI.begin_index(); iTick < ROI.end_index(); iTick++ ){
-                std::cout<<"iTick = "<<iTick<<std::endl;
-                std::cout<<"ROI[iTick] = "<<ROI[iTick]<<std::endl;
+                //std::cout<<"iTick = "<<iTick<<std::endl;
+                //std::cout<<"ROI[iTick] = "<<ROI[iTick]<<std::endl;
                 integralsum +=  std::abs(ROI[iTick]);
                 if (std::abs(ROI[iTick]) > maxpeak){
                     maxpeak = std::abs(ROI[iTick]);
                     peaktime = iTick;
-                    std::cout<<"maxpeak"<<maxpeak<<std::endl;
-                    std::cout<<"peaktime"<<peaktime<<std::endl;
+                    //std::cout<<"maxpeak"<<maxpeak<<std::endl;
+                    //std::cout<<"peaktime"<<peaktime<<std::endl;
                 }
             
                 if(iTick-firstTick<=12) integralN += std::abs(ROI[iTick]);
