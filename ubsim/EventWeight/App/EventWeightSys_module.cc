@@ -257,6 +257,10 @@ namespace evwghYC {
     // Loop over different number of neutrinos
     for (unsigned int i_v = 0; i_v < num_neutrinos; i_v++ ) {
 
+      std::cout<<"-------------------------------------"<<std::endl;
+      std::cout<<"neutrino pdg: "<< mclist[i_v]->GetNeutrino().Nu().PdgCode() << " | CCNC: "<< mclist[i_v]->GetNeutrino().CCNC()<< " | interaction mode: "<< mclist[i_v]->GetNeutrino().Mode();
+      std::cout<<"-------------------------------------"<<std::endl;
+
       // what to produce
       evwgh::MCEventWeight mcwgh;
       
