@@ -72,7 +72,7 @@ outputs:
  out1:
  {
    module_type: RootOutput
-   fileName:    "sncompression.root"
+   fileName:    "%ifb_%tc_sncompression.root"
    dataTier:    "reco"
    compressionLevel: 1
    }
@@ -92,7 +92,7 @@ services.message.destinations :
   {
      type:      "cout"      #tells the message service to output this destination to cout
      threshold: "WARNING"   #tells the message service that this destination applies to WARNING and higher level messages
-     append:     true       #says to append all messages to the output
+     #append:     true       #says to append all messages to the output
      categories:
      {
        ChannelFilter:
