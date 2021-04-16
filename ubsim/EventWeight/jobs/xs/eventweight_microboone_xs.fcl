@@ -24,8 +24,10 @@ microboone_eventweight_xs: {
     random_seed: 54
     parameter_list: ["Fv3"]
     parameter_sigma: [ 1 ]
-    mode: multisim
-    number_of_multisims: 10
+    #mode: multisim
+    mode : pm1sigma # KM Switching to a unisim
+    #number_of_multisims: 10
+    number_of_multisims: 2 # KM Switching to a unisim
   }
 
   xsr_scc_Fa3: {
@@ -34,8 +36,10 @@ microboone_eventweight_xs: {
     random_seed: 55
     parameter_list: ["Fa3"]
     parameter_sigma: [ 1 ]
-    mode: multisim
-    number_of_multisims: 10
+    #mode: multisim
+    mode: pm1sigma # KM Switching to a unisim
+    #number_of_multisims: 10
+    number_of_multisims: 2 # KM Switching to a unisim
   }
 
   # Single function to reweight all cross section ratio parameters at once

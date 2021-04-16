@@ -543,8 +543,17 @@ namespace evwgh {
       // All right, the event record is fully ready. Now ask the GReWeight
       // objects to compute the weights.
       weights[v].resize( num_knobs );
+      const bool is_ccqe_strange = genie_event->Summary()->ProcInfo().IsQuasiElastic() && genie_event->Summary()->ExclTag().IsStrangeEvent();
       for (size_t k = 0u; k < num_knobs; ++k ) {
-        weights[v][k] = reweightVector.at( k ).CalcWeight( *genie_event );
+      
+      // Add in Pawels fix to CCQE Strange events
+      if (is_ccqe_strange) {
+          std::cout << "Alert! Got a CCQE strange event, genie doesnt know how to handle these yet, so setting to 1..." << std::endl;
+          weights[v][k] = 1.;
+          continue;
+      }
+      
+       weights[v][k] = reweightVector.at( k ).CalcWeight( *genie_event );
       }
     }
     return weights;
