@@ -17,5 +17,5 @@ MicrobooneFirmware : {
     VarianceThreshold   : 3                     # agreement variance threshold [ADC^2]
     Debug               : false                 # algorithm debug flag
     StaticBaseline      : true                  # sets static baselines per plane
- 
+    inputProduct        : "mixer" 
 }
