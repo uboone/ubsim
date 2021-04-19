@@ -8,7 +8,7 @@ MicrobooneFirmware : {
     PDFfileName         : "SNFlipBitsPDFs.root"
     FlipBit             : false                 # set injections of flipbits
     CompressionAlgoName : "MicrobooneFirmware"
-    CompressThresholds  : [-25,15,30]           # ADC thresholds per plane
+    CompressThresholds  : [25,15,30]           # ADC thresholds per plane
     Polarity            : [1,1,1]               # plane polarity. 0 -> unipolar. 1 -> bipolar
     MaxADC              : 4095                  # maximum dynamic range [ADC]
     PlaneBuffers        : [7,8,7,8,7,8]         # pre/post samples per plane [TDC]

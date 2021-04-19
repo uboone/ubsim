@@ -285,6 +285,7 @@ void ExecuteCompression::produce(art::Event & e)
                 if(_flipBit)
                 {
                   InjectFlipBit(chan,signal);
+		  std::cout<<"FLIPPING FLIPPING FLIPPING FLIPPING"<<std::endl;
                   if (_debug)
                   {
                     //this will allow you to keep track of the flipping bits that were injected if needed
