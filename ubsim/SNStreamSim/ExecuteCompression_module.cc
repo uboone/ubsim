@@ -96,6 +96,7 @@ private:
   std::string _uFlipBitPDFName;
   std::string _vFlipBitPDFName;
   std::string _yFlipBitPDFName;
+  std::string _inputProd;
   bool _flipBit;
  //functions to set flipping bit PDFs and Injecting Flipping Bits
   void SetPDFs(TFile *file, std::string ukey, std::string vkey, std::string ykey);
@@ -165,6 +166,8 @@ ExecuteCompression::ExecuteCompression(fhicl::ParameterSet const & p)
   _yFlipBitPDFName   = p.get<std::string>   ("Plane2RootKey");
   FlipBitPDFfileName    = p.get<std::string>   ("PDFfileName");
 
+  _inputProd = p.get<std::string> ("inputProduct");
+
   if (_debug) { std::cout << "setting up default compression algo" << std::endl; }
   _compress_algo =  compress::AlgorithmFactory().MakeCompressionAlgo(p);
 
@@ -201,10 +204,11 @@ void ExecuteCompression::produce(art::Event & e)
   //art::InputTag wires_tag("daq","","Swizzler");//for overlay, DIDNT WORK
   //art::InputTag wires_tag("nsfpl1","","OverlayStage1a");//for overlay, DIDNT WORK
   //art::InputTag wires_tag("driftWC","orig","Detsim");//for signal only detsim file, WORKS
-  //
   //art::InputTag wires_tag("daq","","Swizzler");//External Unbiased files
   //art::InputTag wires_tag("driftWC","orig","Detsim");//for signal only
-  auto const &rawdigit_h = e.getValidHandle<std::vector<raw::RawDigit>>(wires_tag);
+  
+  //Cheat quickly
+  auto const &rawdigit_h = e.getValidHandle<std::vector<raw::RawDigit>>(_inputProd);
 
 
   // make sure rawdigits look good
