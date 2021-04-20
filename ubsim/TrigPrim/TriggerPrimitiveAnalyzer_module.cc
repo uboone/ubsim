@@ -127,7 +127,6 @@ void TriggerPrimitiveAnalyzer::beginJob()
     event_tree->Branch("first_tick",&m_first_tick);
     event_tree->Branch("integral_over_n",&m_integral_over_n);
 
-
 }
 
 
@@ -179,27 +178,27 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
                     //std::cout<<"maxpeak"<<maxpeak<<std::endl;
                     //std::cout<<"peaktime"<<peaktime<<std::endl;
                 }
-            
+
                 if(iTick-firstTick<=12) integralN += std::abs(ROI[iTick]);
             }
 
 
             /*
-            std::cout<<wid<<std::endl;
-            std::cout<<wireVec->NSignal()<<" "<<wireVec->Signal().size()<<std::endl;
-            for(auto &s: wireVec->Signal()) if(s!=0)std::cout<<s<<" ";
-            std::cout<<std::endl;
-            */
+               std::cout<<wid<<std::endl;
+               std::cout<<wireVec->NSignal()<<" "<<wireVec->Signal().size()<<std::endl;
+               for(auto &s: wireVec->Signal()) if(s!=0)std::cout<<s<<" ";
+               std::cout<<std::endl;
+               */
 
-             m_channel.push_back((int)channel);
-             m_view.push_back((int)wireVec->View());
-             m_max_ADC.push_back((float)maxpeak);
-             m_max_ADC_tick.push_back((float)peaktime);
+            m_channel.push_back((int)channel);
+            m_view.push_back((int)wireVec->View());
+            m_max_ADC.push_back((float)maxpeak);
+            m_max_ADC_tick.push_back((float)peaktime);
 
-             m_integral_sum.push_back((float)integralsum);
-             m_tot.push_back((float)(endTick-firstTick));
-             m_first_tick.push_back((float)firstTick); 
-             m_integral_over_n.push_back((float)integralN);
+            m_integral_sum.push_back((float)integralsum);
+            m_tot.push_back((float)(endTick-firstTick));
+            m_first_tick.push_back((float)firstTick); 
+            m_integral_over_n.push_back((float)integralN);
 
 
         } // end of roi loop
@@ -207,6 +206,17 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
     } // end of channel loop
 
     event_tree->Fill();
+
+    m_channel.clear();
+    m_view.clear();
+    m_max_ADC.clear();
+    m_max_ADC_tick.clear();
+    m_integral_sum.clear();
+    m_tot.clear();
+    m_first_tick.clear(); 
+    m_integral_over_n.clear();
+
+
 }
 
 
