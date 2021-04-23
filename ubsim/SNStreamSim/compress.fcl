@@ -17,5 +17,7 @@ MicrobooneFirmware : {
     VarianceThreshold   : 3                     # agreement variance threshold [ADC^2]
     Debug               : false                 # algorithm debug flag
     StaticBaseline      : true                  # sets static baselines per plane
-    inputProduct        : "mixer" 
+    inputProduct        : "mixer" # combined "Mixed" overlay (cosmic data) + MC
+    #inputProduct        : "orig" # MC  only
+    #inputProduct        : "daq" # cosmic data only
 }
