@@ -1,4 +1,0 @@
-#include run_compression.fcl
-physics.producers.compress.inputProd: "orig"
-
-
