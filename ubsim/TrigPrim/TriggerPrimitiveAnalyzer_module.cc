@@ -153,6 +153,11 @@ void TriggerPrimitiveAnalyzer::beginJob()
 
 void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
 
+    int   m_run_number = e.run();
+    int   m_subrun_number = e.subRun();
+    int   m_event_number = e.id().event();
+
+
     //std::cout<<"Starting: "<<std::endl;
     art::ValidHandle<std::vector<recob::Wire>> const & wiredata = e.getValidHandle<std::vector<recob::Wire>>(fWireModuleLabel);
 
