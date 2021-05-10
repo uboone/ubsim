@@ -114,9 +114,7 @@ void TriggerPrimitiveAnalyzer::reconfigure(fhicl::ParameterSet const& p){
 
 void TriggerPrimitiveAnalyzer::beginJob()
 {
-
     art::ServiceHandle<art::TFileService const> tfs;
-
     event_tree = tfs->make<TTree>("event_tree","event_tree");
     event_tree->Branch("channel",&m_channel);
     event_tree->Branch("view",&m_view);
@@ -126,9 +124,7 @@ void TriggerPrimitiveAnalyzer::beginJob()
     event_tree->Branch("tot",&m_tot);;
     event_tree->Branch("first_tick",&m_first_tick);
     event_tree->Branch("integral_over_n",&m_integral_over_n);
-
 }
-
 
 void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
 
