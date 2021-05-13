@@ -97,6 +97,7 @@ private:
   std::string _vFlipBitPDFName;
   std::string _yFlipBitPDFName;
   std::string _inputProd;
+  std::string _inputInstance;
   bool _flipBit;
  //functions to set flipping bit PDFs and Injecting Flipping Bits
   void SetPDFs(TFile *file, std::string ukey, std::string vkey, std::string ykey);
@@ -166,7 +167,8 @@ ExecuteCompression::ExecuteCompression(fhicl::ParameterSet const & p)
   _yFlipBitPDFName   = p.get<std::string>   ("Plane2RootKey");
   FlipBitPDFfileName    = p.get<std::string>   ("PDFfileName");
 
-  _inputProd = p.get<std::string> ("inputProduct");
+  _inputProd = p.get<std::string> ("inputModuleLabel");
+  _inputInstance = p.get<std::string> ("inputProductInstance","");
 
   if (_debug) { std::cout << "setting up default compression algo" << std::endl; }
   _compress_algo =  compress::AlgorithmFactory().MakeCompressionAlgo(p);
@@ -200,15 +202,18 @@ void ExecuteCompression::produce(art::Event & e)
   //e.getByLabel("daq",rawdigit_h);
   
   //art::InputTag wires_tag("mixer","","DataOverlay");//for overlay, DIDNTWORK
-  art::InputTag wires_tag("zeroedoutchannels","","OverlayDetsim");//for overlay WORKS
+  //art::InputTag wires_tag("zeroedoutchannels","","OverlayDetsim");//for overlay WORKS
   //art::InputTag wires_tag("daq","","Swizzler");//for overlay, DIDNT WORK
   //art::InputTag wires_tag("nsfpl1","","OverlayStage1a");//for overlay, DIDNT WORK
   //art::InputTag wires_tag("driftWC","orig","Detsim");//for signal only detsim file, WORKS
   //art::InputTag wires_tag("daq","","Swizzler");//External Unbiased files
-  //art::InputTag wires_tag("driftWC","orig","Detsim");//for signal only
+  //art::InputTag wires_tag("driftWC","orig");//for signal only
+  //art::InputTag wires_tag("driftWC","orig");//for signal only
+  art::InputTag wires_tag(_inputProd,_inputInstance);//for signal only
   
   //Cheat quickly
-  auto const &rawdigit_h = e.getValidHandle<std::vector<raw::RawDigit>>(_inputProd);
+  //auto const &rawdigit_h = e.getValidHandle<std::vector<raw::RawDigit>>(_inputProd);
+  auto const &rawdigit_h = e.getValidHandle<std::vector<raw::RawDigit>>(wires_tag);
 
 
   // make sure rawdigits look good

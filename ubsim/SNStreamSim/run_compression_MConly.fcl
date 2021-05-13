@@ -1,0 +1,3 @@
+#include "run_compression.fcl"
+physics.producers.compress.inputModuleLabel: "driftWC"
+physics.producers.compress.inputProductInstance: "orig"

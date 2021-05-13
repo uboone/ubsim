@@ -1,2 +1,2 @@
 #include "run_compression.fcl"
-physics.producers.compress.inputProduct: "orig"
+physics.producers.compress.inputModuleLabel: "zeroedoutchannels"
