@@ -49,6 +49,23 @@
 #include "TMath.h"
 #include "TStopwatch.h"
 
+#include "lardata/DetectorInfoServices/DetectorPropertiesService.h" 
+#include "lardata/DetectorInfoServices/LArPropertiesService.h" 
+#include "lardata/DetectorInfoServices/DetectorClocksService.h" 
+
+double calcWire(double Y, double Z, int plane, int fTPC, int fCryostat, geo::GeometryCore const& geo ){
+    double wire = geo.WireCoordinate(Y, Z, plane, fTPC, fCryostat);
+    return wire;
+}
+
+
+double calcTime(double X,int plane,int fTPC,int fCryostat, detinfo::DetectorProperties const& detprop){
+    double time = detprop.ConvertXToTicks(X, plane, fTPC,fCryostat);
+    return time;
+}
+
+
+
 class TriggerPrimitiveAnalyzer : public art::EDAnalyzer {
     public:
 
@@ -102,6 +119,28 @@ class TriggerPrimitiveAnalyzer : public art::EDAnalyzer {
         std::vector<float> m_run;
         std::vector<float> m_subrun;
 
+        std::vector<std::string> m_mctruth_end_process;
+        std::vector<int> m_mctruth_pdg;
+        std::vector<int> m_mctruth_num_daughters;
+
+
+        std::vector<float> m_mctruth_end_x;
+        std::vector<float> m_mctruth_end_y;
+        std::vector<float> m_mctruth_end_z;
+        std::vector<float> m_mctruth_end_t;
+
+        std::vector<float> m_mctruth_end_proj_tick_0;
+        std::vector<float> m_mctruth_end_proj_tick_1;
+        std::vector<float> m_mctruth_end_proj_tick_2;
+
+        std::vector<int> m_mctruth_end_proj_wire_0;
+        std::vector<int> m_mctruth_end_proj_wire_1;
+        std::vector<int> m_mctruth_end_proj_wire_2;
+
+        detinfo::DetectorProperties const * theDetector ;// = lar::providerFrom<detinfo::DetectorPropertiesService>();
+        detinfo::DetectorClocks    const *  detClocks   ;//= lar::providerFrom<detinfo::DetectorClocksService>();
+        geo::GeometryCore const * geom;
+
 
 };
 
@@ -120,6 +159,11 @@ void TriggerPrimitiveAnalyzer::reconfigure(fhicl::ParameterSet const& p){
     fAllHitsInstanceName = p.get<std::string>("AllHitsInstanceName","");
     m_geantModuleLabel = p.get<std::string>("MCParticleModuleLabel","largeant");
     fWireModuleLabel = p.get<std::string>("WireModuleLabel","compress");
+
+    theDetector = lar::providerFrom<detinfo::DetectorPropertiesService>();
+    detClocks   = lar::providerFrom<detinfo::DetectorClocksService>();
+    geom = lar::providerFrom<geo::Geometry>();
+
     return;
 }
 
@@ -136,7 +180,7 @@ void TriggerPrimitiveAnalyzer::beginJob()
     event_tree->Branch("tot",&m_tot);;
     event_tree->Branch("first_tick",&m_first_tick);
     event_tree->Branch("integral_over_n",&m_integral_over_n);
-    
+
     event_tree->Branch("muon_init_px",&m_MCmuon_init_px);
     event_tree->Branch("muon_init_py",&m_MCmuon_init_py);
     event_tree->Branch("muon_init_pz",&m_MCmuon_init_pz);
@@ -147,13 +191,37 @@ void TriggerPrimitiveAnalyzer::beginJob()
     event_tree->Branch("run",&m_run);
     event_tree->Branch("subrun",&m_subrun);
 
+    event_tree->Branch("muon_mctruth_pdg",&m_mctruth_pdg);
+    event_tree->Branch("muon_mctruth_end_process",&m_mctruth_end_process);
+    event_tree->Branch("muon_mctruth_end_x",&m_mctruth_end_x);
+    event_tree->Branch("muon_mctruth_end_y",&m_mctruth_end_y);
+    event_tree->Branch("muon_mctruth_end_z",&m_mctruth_end_z);
+    event_tree->Branch("muon_mctruth_end_t",&m_mctruth_end_t);
+    event_tree->Branch("muon_mctruth_num_daughters",&m_mctruth_num_daughters);
+
+    event_tree->Branch("muon_mctruth_end_proj_wire_0",&m_mctruth_end_proj_wire_0);
+    event_tree->Branch("muon_mctruth_end_proj_wire_1",&m_mctruth_end_proj_wire_1);
+    event_tree->Branch("muon_mctruth_end_proj_wire_2",&m_mctruth_end_proj_wire_2);
+
+    event_tree->Branch("muon_mctruth_end_proj_tick_0",&m_mctruth_end_proj_tick_0);
+    event_tree->Branch("muon_mctruth_end_proj_tick_1",&m_mctruth_end_proj_tick_1);
+    event_tree->Branch("muon_mctruth_end_proj_tick_2",&m_mctruth_end_proj_tick_2);
+
+
 }
 
 void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
 
-    int   m_run_number = e.run();
-    int   m_subrun_number = e.subRun();
-    int   m_event_number = e.id().event();
+    //    int   m_run_number = e.run();
+    //   int   m_subrun_number = e.subRun();
+    //    int   m_event_number = e.id().event();
+
+
+
+    auto const TPC = (*geom).begin_TPC();
+    auto ID = TPC.ID();
+    int fCryostat = ID.Cryostat;
+    int fTPC = ID.TPC;
 
 
     //std::cout<<"Starting: "<<std::endl;
@@ -173,23 +241,52 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
     m_subrun.push_back((int)e.subRun());
     for(size_t j=0;j< mcParticleVector.size();j++){ 
         const art::Ptr<simb::MCParticle> mcp = mcParticleVector[j]; 
- 	if (mcp->PdgCode()==13 or mcp->PdgCode()==-13){
-		m_MCmuon_init_E.push_back((float)mcp->E()); 
-    		m_MCmuon_init_px.push_back((float)mcp->Px()); 
-    		m_MCmuon_init_py.push_back((float)mcp->Py()); 
-    		m_MCmuon_init_pz.push_back((float)mcp->Pz()); 
-    		m_MCmuon_init_x.push_back((float)mcp->Position()[0]); 
-    		m_MCmuon_init_y.push_back((float)mcp->Position()[1]); 
-    		m_MCmuon_init_z.push_back((float)mcp->Position()[2]); 
-    		//std::cout<<"PARG: "<<j<<" PDG "<<mcp->PdgCode()<<" EndProcess: "<<mcp->EndProcess()<<std::endl; 
-    		//std::cout<<"Energy"<<mcp->E()<<std::endl; 
-		//std::cout<<"X"<<mcp->Position()[0]<<std::endl;
-		//std::cout<<"Y"<<mcp->Position()[1]<<std::endl;
-		//std::cout<<"Z"<<mcp->Position()[2]<<std::endl;
-		//std::cout<<"Px"<<mcp->Px()<<std::endl;
-		//std::cout<<"Py"<<mcp->Py()<<std::endl;
-		//std::cout<<"Pz"<<mcp->Pz()<<std::endl;
-    	}
+        if (mcp->PdgCode()==13 or mcp->PdgCode()==-13){
+
+
+            m_mctruth_pdg.push_back((int)mcp->PdgCode());
+            m_mctruth_end_process.push_back(mcp->EndProcess());
+            m_mctruth_end_x.push_back((float)mcp->EndX());
+            m_mctruth_end_y.push_back((float)mcp->EndY());
+            m_mctruth_end_z.push_back((float)mcp->EndZ());
+            m_mctruth_end_t.push_back((float)mcp->EndT());
+            m_mctruth_num_daughters.push_back((int)mcp->NumberDaughters());
+
+            m_MCmuon_init_E.push_back((float)mcp->E()); 
+            m_MCmuon_init_px.push_back((float)mcp->Px()); 
+            m_MCmuon_init_py.push_back((float)mcp->Py()); 
+            m_MCmuon_init_pz.push_back((float)mcp->Pz()); 
+            m_MCmuon_init_x.push_back((float)mcp->Position()[0]); 
+            m_MCmuon_init_y.push_back((float)mcp->Position()[1]); 
+            m_MCmuon_init_z.push_back((float)mcp->Position()[2]); 
+
+            int wire_proj_0 = (int)calcWire(mcp->EndY(), mcp->EndZ(), 0, fTPC, fCryostat, *geom);
+            float time_proj_0 = calcTime(mcp->EndX(), 0, fTPC,fCryostat, *theDetector);
+
+            int wire_proj_1 = (int)calcWire(mcp->EndY(), mcp->EndZ(), 1, fTPC, fCryostat, *geom);
+            float time_proj_1 = calcTime(mcp->EndX(), 1, fTPC,fCryostat, *theDetector);
+
+            int wire_proj_2 = (int)calcWire(mcp->EndY(), mcp->EndZ(), 2, fTPC, fCryostat, *geom);
+            float time_proj_2 = calcTime(mcp->EndX(), 2, fTPC,fCryostat, *theDetector);
+
+            m_mctruth_end_proj_wire_0.push_back(wire_proj_0);
+            m_mctruth_end_proj_wire_1.push_back(wire_proj_1);
+            m_mctruth_end_proj_wire_2.push_back(wire_proj_2);
+
+            m_mctruth_end_proj_tick_0.push_back(time_proj_0);
+            m_mctruth_end_proj_tick_1.push_back(time_proj_1);
+            m_mctruth_end_proj_tick_2.push_back(time_proj_2);
+
+
+            //std::cout<<"PARG: "<<j<<" PDG "<<mcp->PdgCode()<<" EndProcess: "<<mcp->EndProcess()<<std::endl; 
+            //std::cout<<"Energy"<<mcp->E()<<std::endl; 
+            //std::cout<<"X"<<mcp->Position()[0]<<std::endl;
+            //std::cout<<"Y"<<mcp->Position()[1]<<std::endl;
+            //std::cout<<"Z"<<mcp->Position()[2]<<std::endl;
+            //std::cout<<"Px"<<mcp->Px()<<std::endl;
+            //std::cout<<"Py"<<mcp->Py()<<std::endl;
+            //std::cout<<"Pz"<<mcp->Pz()<<std::endl;
+        }
     }
     //std::cout<<"Iterating over WireData: "<<wiredata->size()<<std::endl;
 
@@ -201,7 +298,6 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
         //art::Ptr<raw::RawDigit> rawdigits = RawDigits.at(rdIter);
         auto channel = wireVec->Channel();
         auto zsROIs = wireVec->SignalROI();
-        art::ServiceHandle<geo::Geometry const> geom;
         //std::vector<geo::WireID> wids = geom->ChannelToWire(channel);
         //geo::WireID wid  = wids[0];
         //geo::PlaneID::PlaneID_t plane = wid.Plane;
