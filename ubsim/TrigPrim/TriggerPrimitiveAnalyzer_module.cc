@@ -120,8 +120,12 @@ class TriggerPrimitiveAnalyzer : public art::EDAnalyzer {
         std::vector<float> m_subrun;
 
         std::vector<std::string> m_mctruth_end_process;
+        std::vector<std::string> m_mctruth_dau_process;
+        std::vector<std::string> m_mctruth_process;
         std::vector<int> m_mctruth_pdg;
+        std::vector<int> m_mctruth_capture_or_decay;
         std::vector<int> m_mctruth_num_daughters;
+        std::vector<int> m_mctruth_statuscode;
 
 
         std::vector<float> m_mctruth_end_x;
@@ -193,11 +197,15 @@ void TriggerPrimitiveAnalyzer::beginJob()
 
     event_tree->Branch("muon_mctruth_pdg",&m_mctruth_pdg);
     event_tree->Branch("muon_mctruth_end_process",&m_mctruth_end_process);
+    event_tree->Branch("muon_mctruth_process",&m_mctruth_process);
+    event_tree->Branch("muon_mctruth_dau_process",&m_mctruth_dau_process);
+    event_tree->Branch("muon_mctruth_capture_or_decay",&m_mctruth_capture_or_decay);
     event_tree->Branch("muon_mctruth_end_x",&m_mctruth_end_x);
     event_tree->Branch("muon_mctruth_end_y",&m_mctruth_end_y);
     event_tree->Branch("muon_mctruth_end_z",&m_mctruth_end_z);
     event_tree->Branch("muon_mctruth_end_t",&m_mctruth_end_t);
     event_tree->Branch("muon_mctruth_num_daughters",&m_mctruth_num_daughters);
+    event_tree->Branch("muon_mctruth_statuscode",&m_mctruth_statuscode);
 
     event_tree->Branch("muon_mctruth_end_proj_wire_0",&m_mctruth_end_proj_wire_0);
     event_tree->Branch("muon_mctruth_end_proj_wire_1",&m_mctruth_end_proj_wire_1);
@@ -216,8 +224,6 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
     //   int   m_subrun_number = e.subRun();
     //    int   m_event_number = e.id().event();
 
-
-
     auto const TPC = (*geom).begin_TPC();
     auto ID = TPC.ID();
     int fCryostat = ID.Cryostat;
@@ -231,7 +237,7 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
     art::ValidHandle<std::vector<simb::MCParticle>> const & mcParticleHandle= e.getValidHandle<std::vector<simb::MCParticle>>(m_geantModuleLabel);
     art::fill_ptr_vector(mcParticleVector,mcParticleHandle);
 
-    //auto run = e.getRun();
+    ///auto run = e.getRun();
     //auto subrun = e.getSubRun();
     //std::cout<<"run = "<<run<<std:endl;
     //std::cout<<"subrun = "<<subrun<<std:endl;
@@ -245,13 +251,69 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
 
 
             m_mctruth_pdg.push_back((int)mcp->PdgCode());
+            m_mctruth_process.push_back(mcp->Process());
             m_mctruth_end_process.push_back(mcp->EndProcess());
             m_mctruth_end_x.push_back((float)mcp->EndX());
             m_mctruth_end_y.push_back((float)mcp->EndY());
             m_mctruth_end_z.push_back((float)mcp->EndZ());
             m_mctruth_end_t.push_back((float)mcp->EndT());
             m_mctruth_num_daughters.push_back((int)mcp->NumberDaughters());
+            m_mctruth_statuscode.push_back((int)mcp->StatusCode());
 
+            std::cout<<mcp->FirstDaughter()<<" "<<mcp->LastDaughter()<<std::endl;
+            int ioni=0;
+            std::map<int,bool> dau_decay;
+            bool is_dif = false;
+            bool is_other = false;
+            bool is_cap = false;
+
+            for(int d=0; d < (int)mcParticleVector.size(); d++){
+                    const art::Ptr<simb::MCParticle> dau = mcParticleVector[d]; 
+                    if(dau->Process()=="muIoni"){
+                        ioni++;
+                        continue;
+                    }
+                    if(dau->Mother()==mcp->TrackId()){
+                            std::cout<<e.id().event()<<" "<<d<<" "<<j<<" "<<mcp->TrackId()<<" "<<dau->Process()<<" "<<dau->PdgCode()<<" "<<dau->StatusCode()<<" Energy: "<<dau->E()<<std::endl;
+                            
+                            if(dau->Process()=="muMinusCaptureAtRest"){
+                                if(dau_decay.count(dau->PdgCode())==0){
+                                            dau_decay[dau->PdgCode()] = true;
+                                }
+                                is_cap = true;
+                            }else if(dau->Process()=="Decay"){
+                                is_dif = true;
+                                break;
+                            }else{
+                                is_other = true;
+                                break;
+                            }
+                    }
+            }
+    
+            if(is_dif){
+                m_mctruth_dau_process.push_back("Decay");
+                m_mctruth_capture_or_decay.push_back(2);
+            }else if(is_other){
+                m_mctruth_dau_process.push_back("Other");
+                m_mctruth_capture_or_decay.push_back(3);
+            }else if(is_cap){
+
+                if( dau_decay.count(11)>0 && dau_decay.count(-12)>0 && dau_decay.count(14)>0){
+                    m_mctruth_dau_process.push_back("muMinusDecayAtRest");
+                    m_mctruth_capture_or_decay.push_back(1);
+                }else{
+                    m_mctruth_dau_process.push_back("muMinusCaptureAtRest");
+                    m_mctruth_capture_or_decay.push_back(0);
+                }
+            }else{
+                    m_mctruth_dau_process.push_back("Error");
+                    m_mctruth_capture_or_decay.push_back(-1);
+            }
+
+            std::cout<<"Skipped "<<ioni<<"Ionizations"<<std::endl;
+            std::cout<<"Event is assigned as "<<m_mctruth_dau_process.back()<<" "<<m_mctruth_capture_or_decay.back()<<std::endl;    
+    
             m_MCmuon_init_E.push_back((float)mcp->E()); 
             m_MCmuon_init_px.push_back((float)mcp->Px()); 
             m_MCmuon_init_py.push_back((float)mcp->Py()); 
@@ -378,6 +440,28 @@ void TriggerPrimitiveAnalyzer::analyze(art::Event const & e){
     m_MCmuon_init_z.clear(); 
     m_run.clear();
     m_subrun.clear();
+
+    m_mctruth_pdg.clear();
+    m_mctruth_capture_or_decay.clear();
+    m_mctruth_end_process.clear();
+    m_mctruth_dau_process.clear();
+    m_mctruth_process.clear();
+    m_mctruth_end_x.clear();
+    m_mctruth_end_y.clear();
+    m_mctruth_end_z.clear();
+    m_mctruth_end_t.clear();
+    m_mctruth_num_daughters.clear();
+    m_mctruth_statuscode.clear();
+
+    m_mctruth_end_proj_wire_0.clear();
+    m_mctruth_end_proj_wire_1.clear();
+    m_mctruth_end_proj_wire_2.clear();
+
+    m_mctruth_end_proj_tick_0.clear();
+    m_mctruth_end_proj_tick_1.clear();
+    m_mctruth_end_proj_tick_2.clear();
+
+
 
 }
 
