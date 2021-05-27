@@ -30,7 +30,7 @@ table_fragment_end
 
 product                 version
 ubevt                   v09_23_00
-larsim                  v09_13_02
+larsim                  v09_13_02_01
 cetbuildtools	        v7_17_01	-	only_for_build
 end_product_list
 
