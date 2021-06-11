@@ -1,0 +1,18 @@
+BEGIN_PROLOG
+
+microboone_CorsikaCosmicGen:
+{ 
+ module_type:              "CorsikaCosmicGen"
+ TopLayerDims:                [-30,480,200,500,-40,1100] # top box edges [cm]
+ BottomLayerDims:             [-25,475,130,130,-50,1075] # bottom box edges [cm]
+ EnergyThresholdLow: 0.1
+ EnergyThresholdHigh: 100.0
+ TimeLow: 3.57e-6 # in seconds
+ TimeHigh: 5.25e-6 # in seconds
+ #subboxLength should be full width of top box (in m)
+ CRYConfigStr: "date 1-1-2016 returnGammas 0 returnElectrons 0 returnMuons 1 returnPions 0 returnNeutrons 0 returnProtons 0 latitude 41.8 subboxLength 40.8 altitude 0"
+ ParticlesPerEvent: 1
+}
+
+END_PROLOG
+
