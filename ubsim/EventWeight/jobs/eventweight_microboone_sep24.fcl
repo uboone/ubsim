@@ -9,6 +9,7 @@ BEGIN_PROLOG
 #include "eventweight_microboone_genie.fcl"
 #include "eventweight_microboone_spline.fcl"
 #include "eventweight_microboone_xs.fcl"
+#include "eventweight_microboone_lee.fcl"
 
 microboone_eventweight_sep24: {
   module_type: "EventWeight"
@@ -34,6 +35,7 @@ microboone_eventweight_sep24: {
   @table::microboone_eventweight_spline
   @table::microboone_eventweight_xs
   @table::microboone_eventweight_reint
+  @table::microboone_eventweight_eLEE
 }
 
 # All available weight functions
@@ -42,7 +44,8 @@ microboone_eventweight_sep24.weight_functions: [
   @sequence::microboone_eventweight_sep24.weight_functions_genie,
   @sequence::microboone_eventweight_sep24.weight_functions_spline,
   @sequence::microboone_eventweight_sep24.weight_functions_xs,
-  @sequence::microboone_eventweight_sep24.weight_functions_reint
+  @sequence::microboone_eventweight_sep24.weight_functions_reint,
+  eLEE_Combined_Oct2018
 ]
 
 END_PROLOG
