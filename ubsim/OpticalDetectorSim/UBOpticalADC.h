@@ -58,6 +58,9 @@ namespace opdet {
     /// Function to generate dark noise photon timings (called in GenWaveform)
     void GenDarkNoise(const unsigned int pmtid, const double g4start);
 
+    /// Function to set abnormal SPE response opch
+    void SetAbnormalCh(int opch) { fSPE.SetAbnormalCh(opch); }
+
   protected:
 
     /// G4 photon times for signal in G4 clock. Hits in an Optical detector

@@ -1,0 +1,23 @@
+# Fcl file that only runs GENIE "All" variations
+# Aim is to allow us to run more GENIE universes
+# The limit from grid memory allocations is ~100 universes in each round of jobs
+# To get around that, we provide 5 "extra genie all" fcl files, that will allow 
+# analyzers to run extra "genie all" universes in subsequent jobs, to make up to
+# 600 universes total (100 from run_eventweight_microboone_sep24.fcl, plus 100
+# more from each of the five run_eventweight_microboone_sep24_extragenieall_X.fcls
+
+#include "run_eventweight_microboone_sep24.fcl"
+
+process_name: EventWeightSep24ExtraGENIE1
+
+outputs: {
+ out1: {
+   module_type: RootOutput
+   fileName: "%ifb_%tc_eventweight_extragenie1.root"
+   dataTier: "detector-simulated"
+   compressionLevel: 1
+ }
+}
+
+physics.producers.eventweightSep24.weight_functions: [ All ]
+physics.producers.eventweightSep24.All.random_seed: 1101

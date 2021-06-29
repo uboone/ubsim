@@ -17,7 +17,7 @@ namespace {
   auto opch28_response()
   {
     std::vector<float> wf;
-    opdet::SetResponseNormal_BNLv1(wf);
+    opdet::SetResponseOpCh28_BNLv1(wf);
     return wf;
   }
     
@@ -32,16 +32,17 @@ namespace {
                                       );
     return result;
   }
-  }
+}
+
 
 namespace opdet {
 
   //--------------------------------------------------------
   WFAlgoDigitizedSPE::WFAlgoDigitizedSPE()
     : fSPE_Normal{normal_response()}
-    , fSPE_OpCh28{opch28_response()}
+    , fSPE_Abnormal{opch28_response()}
     , fSPETime_Normal{default_clock(fSPE_Normal)}
-    , fSPETime_OpCh28{default_clock(fSPE_OpCh28)}
+    , fSPETime_Abnormal{default_clock(fSPE_Abnormal)}
   {}
 
   //------------------------------
@@ -145,12 +146,12 @@ namespace opdet {
   //-------------------------------------------------------------------------
   const std::vector<float>& WFAlgoDigitizedSPE::GetSPE(const int opch) const
   //-------------------------------------------------------------------------
-  { return ((opch%100) == 28 ? fSPE_OpCh28 : fSPE_Normal); }
+  { return ((opch%100) == fAbnormCh ? fSPE_Abnormal : fSPE_Normal); }
 
   //----------------------------------------------------------------------------
   const ::detinfo::ElecClock& WFAlgoDigitizedSPE::GetClock(const int opch) const
   //----------------------------------------------------------------------------
-  { return ((opch%100) == 28 ? fSPETime_OpCh28 : fSPETime_Normal); }
+  { return ((opch%100) == fAbnormCh ? fSPETime_Abnormal : fSPETime_Normal); }
 
 }
 

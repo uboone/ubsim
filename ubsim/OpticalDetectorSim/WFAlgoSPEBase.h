@@ -45,6 +45,10 @@ namespace opdet {
     void SetT0(double t0, double t0_spread)
     { fT0 = t0; fT0Sigma = t0_spread; }
 
+    /// Function to set opch w/ abnormal response
+    void SetAbnormalCh(int opch)
+    { fAbnormCh = opch; }
+
     /// Function to add G4 photon @ specific G4 time
     void AddPhoton(double g4time) { fPhotonTime.push_back(g4time); }
 
@@ -75,7 +79,10 @@ namespace opdet {
 
     /// G4 photon times at which SPE will be generated/added
     std::vector<double> fPhotonTime;
-    
+
+    /// Abnormal opch: has different SPE response
+    int fAbnormCh;
+
   };
 }
 

@@ -91,6 +91,8 @@ namespace opdet {
     /// User-defined beamgate pulse (NuMI)
     std::vector<double> fUserNuMITime_v;
 
+    /// OpCh with abnormal SPE response
+    int fAbnormCh;
   };
 
 } 
@@ -128,6 +130,9 @@ namespace opdet {
     fUserBNBTime_v = pset.get<std::vector<double> >("UserBNBTime");
 
     fUserNuMITime_v = pset.get<std::vector<double> >("UserNuMITime");
+
+    fAbnormCh = pset.get<int>("AbnormalOpCh",28);
+    fOpticalGen.SetAbnormalCh(fAbnormCh);
 
     produces< optdata::ChannelDataGroup >();
 
