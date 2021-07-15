@@ -2,7 +2,7 @@
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version must be of the form vxx_yy_zz (e.g. v01_02_03)
-parent ubsim v09_25_00
+parent ubsim v09_26_00
 
 defaultqual e20
 
@@ -29,17 +29,17 @@ table_fragment_end
 # Add the dependent product and version
 
 product                 version
-ubevt                   v09_24_02
-larsim                  v09_14_00
+ubevt                   v09_26_00
+larsim                  v09_14_01
 geant4reweight		v01_06_07
 cetbuildtools	        v7_17_01	-	only_for_build
 end_product_list
 
 qualifier      ubevt          larsim	      geant4reweight        
-c7:debug       c7:debug       c7:debug        c7:debug:s106
-c7:prof        c7:prof        c7:prof         c7:prof:s106
-e20:debug      e20:debug      e20:debug       e20:debug:s106
-e20:prof       e20:prof       e20:prof        e20:prof:s106
+c7:debug       c7:debug       c7:debug        c7:debug:s110
+c7:prof        c7:prof        c7:prof         c7:prof:s110
+e20:debug      e20:debug      e20:debug       e20:debug:s110
+e20:prof       e20:prof       e20:prof        e20:prof:s110
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
