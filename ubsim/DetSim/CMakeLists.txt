@@ -3,7 +3,7 @@ cet_add_compiler_flags(CXX -Wno-return-type-c-linkage )
 endif()
 
 art_make( BASENAME_ONLY
-          EXCLUDE SimWireMicroBooNE_module.cc 
+          EXCLUDE SimWireMicroBooNE_module.cc
           MODULE_LIBRARIES larcorealg_Geometry
                         larcore_Geometry_Geometry_service
                         larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
@@ -25,14 +25,14 @@ art_make( BASENAME_ONLY
                         art_Persistency_Provenance canvas
                         art_Utilities canvas
                         ${MF_MESSAGELOGGER}
-                        
+
                         ${FHICLCPP}
                         cetlib cetlib_except
                         ${CLHEP}
                         ${ROOT_GEOM}
                         ${ROOT_XMLIO}
                         ${ROOT_GDML}
-                        ${ROOT_BASIC_LIB_LIST}
+
         )
 
 simple_plugin(SimWireMicroBooNE "module"
@@ -59,14 +59,14 @@ simple_plugin(SimWireMicroBooNE "module"
               art_Persistency_Provenance canvas
               art_Utilities canvas
               ${MF_MESSAGELOGGER}
-              
+
               ${FHICLCPP}
               cetlib cetlib_except
               ${CLHEP}
               ${ROOT_GEOM}
               ${ROOT_XMLIO}
               ${ROOT_GDML}
-              ${ROOT_BASIC_LIB_LIST}
+
         )
 
 # install_headers()

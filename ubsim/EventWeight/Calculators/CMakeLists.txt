@@ -5,8 +5,8 @@ art_make(
   LIB_LIBRARIES
     larsim_EventWeight_Base
     lardata_Utilities
-    nugen_NuReweight_art   
-    nugen_NuReweight       
+    nugen_NuReweight_art
+    nugen_NuReweight
     larsim_Simulation
     nurandom_RandomUtils_NuRandomService_service
     nusimdata_SimulationBase
@@ -20,10 +20,9 @@ art_make(
     cetlib cetlib_except
     ${FHICLCPP}
     ${CLHEP}
-    ${ROOT_BASIC_LIB_LIST}
-    ${Boost_SYSTEM_LIBRARY}
+
     ${G4_LIB_LIST}
-) 
+)
 
 install_headers()
 install_fhicl()

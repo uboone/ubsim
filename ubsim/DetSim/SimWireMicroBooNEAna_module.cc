@@ -16,6 +16,7 @@
 #include "canvas/Utilities/InputTag.h"
 #include "lardataobj/RawData/RawDigit.h"
 #include "lardataobj/RawData/raw.h"
+#include "messagefacility/MessageLogger/MessageLogger.h"
 #include "fhiclcpp/ParameterSet.h"
 #include <iostream>
 
@@ -59,7 +60,7 @@ void detsim::SimWireMicroBooNEAna::analyze(art::Event const & evt) {
    if(!digitVecHandle.isValid()) throw cet::exception("") << "NO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
 
    if (!digitVecHandle->size())  std::cout << "BLAH\n";
-   
+
    mf::LogInfo("CalWireMicroBooNE") << "CalWireMicroBooNE:: digitVecHandle size is " << digitVecHandle->size();
 
    std::cout << "CalWireMicroBooNE:: digitVecHandle size is " << digitVecHandle->size() << std::endl;
@@ -92,9 +93,9 @@ void detsim::SimWireMicroBooNEAna::analyze(art::Event const & evt) {
      for(size_t bin = 0; bin < mySize; ++bin) {
        //if(rawadc[bin]>0) std::cout << "Bin: " << bin << "\trawadc[" << bin << "]: " << rawadc[bin] << std::endl;
        adcinfo += rawadc[bin];
-       if(bin+1<mySize) 
+       if(bin+1<mySize)
 	 adcinfo += ",";
-     } 
+     }
      channel += pdstl;
      //std::cout << printf("Channel: %d\tPedestal: %f\tADCs:\n%s\n",channel,pdstl,adcinfo.c_str());
    }

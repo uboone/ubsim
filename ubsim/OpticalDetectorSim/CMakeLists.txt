@@ -11,7 +11,6 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
                         ${ART_FRAMEWORK_CORE}
 			${ART_FRAMEWORK_PRINCIPAL}
 			${ART_FRAMEWORK_SERVICES_REGISTRY}
-			${ART_FRAMEWORK_SERVICES_BASIC}
 			${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
 			${ART_ROOT_IO_TFILESERVICE_SERVICE}
                         ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
@@ -20,7 +19,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			${MF_MESSAGELOGGER}
 	                ${FHICLCPP}
 			cetlib cetlib_except
-                        ${ROOT_BASIC_LIB_LIST}
+
           MODULE_LIBRARIES larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
 			lardataobj_OpticalDetectorData
 			larcoreobj_SummaryData
@@ -34,7 +33,6 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
                         ${ART_FRAMEWORK_CORE}
 			${ART_FRAMEWORK_PRINCIPAL}
 			${ART_FRAMEWORK_SERVICES_REGISTRY}
-			${ART_FRAMEWORK_SERVICES_BASIC}
 			${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
 			${ART_ROOT_IO_TFILESERVICE_SERVICE}
                         ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
@@ -46,12 +44,12 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 	                ${FHICLCPP}
                         cetlib
                         cetlib_except
-                        ${ROOT_BASIC_LIB_LIST}
+
          )
 
 simple_plugin(UBOpticalChConfig "service"
 	      ubcore_Geometry
-	      UBOpReadoutMap_service	
+	      UBOpReadoutMap_service
 	      larcore_Geometry_Geometry_service
 	      larcorealg_Geometry
               art_Utilities
@@ -60,7 +58,7 @@ simple_plugin(UBOpticalChConfig "service"
 	      ${FHICLCPP}
               cetlib
               cetlib_except
-	      ${ROOT_BASIC_LIB_LIST}
+
               BASENAME_ONLY
 )
 
@@ -78,7 +76,6 @@ simple_plugin(OpticalDRAMReadout "module"
                   ${ART_FRAMEWORK_CORE}
                   ${ART_FRAMEWORK_PRINCIPAL}
                   ${ART_FRAMEWORK_SERVICES_REGISTRY}
-                  ${ART_FRAMEWORK_SERVICES_BASIC}
                   ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
                   ${ART_ROOT_IO_TFILESERVICE_SERVICE}
                   ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
@@ -90,7 +87,7 @@ simple_plugin(OpticalDRAMReadout "module"
                   ${FHICLCPP}
                   cetlib
                   cetlib_except
-                  ${ROOT_BASIC_LIB_LIST}
+
               BASENAME_ONLY
 )
 
