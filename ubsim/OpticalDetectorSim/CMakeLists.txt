@@ -24,10 +24,10 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			lardataobj_OpticalDetectorData
 			larcoreobj_SummaryData
 			UBOpticalChConfig_service
-			UBOpReadoutMap_service
+			ubcore::UBOpReadoutMap_service
 			uboonecode_uboone_OpticalDetectorSim
 			lardata_Utilities
-			UBooNEGeometryHelper_service
+			ubcore::UBooNEGeometryHelper_service
 			ubcore_Geometry
                         nusimdata_SimulationBase
                         ${ART_FRAMEWORK_CORE}
@@ -49,7 +49,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 
 simple_plugin(UBOpticalChConfig "service"
 	      ubcore_Geometry
-	      UBOpReadoutMap_service
+	      ubcore::UBOpReadoutMap_service
 	      larcore_Geometry_Geometry_service
 	      larcorealg_Geometry
               art_Utilities
@@ -67,10 +67,10 @@ simple_plugin(OpticalDRAMReadout "module"
                   lardata_DetectorInfoServices_DetectorClocksServiceStandard_service # BUG note that we link to a specific service implementation
                   lardataobj_OpticalDetectorData
                   UBOpticalChConfig_service
-                  UBOpReadoutMap_service
+                  ubcore::UBOpReadoutMap_service
                   uboonecode_uboone_OpticalDetectorSim
                   lardata_Utilities
-                  UBooNEGeometryHelper_service
+                  ubcore::UBooNEGeometryHelper_service
                   ubcore_Geometry
                   nusimdata_SimulationBase
                   ${ART_FRAMEWORK_CORE}
