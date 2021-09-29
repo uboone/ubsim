@@ -4,7 +4,6 @@ simple_plugin(
   larsim_EventWeight_Calculators
   ubsim_EventWeight_Calculators
   ubsim_EventWeight_Calculators_BNBPrimaryHadron
-  ${Boost_SYSTEM_LIBRARY}
   larsim_EventWeight_Base
   larsim_EventWeight_Calculators
   ubsim_EventWeight_Calculators
