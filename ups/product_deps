@@ -30,15 +30,13 @@ table_fragment_end
 
 product                 version
 ubevt                   v09_30_00
-larsim                  v09_14_09
-cetbuildtools	        v7_17_01	-	only_for_build
+larsim                  v09_15_00
+cetbuildtools	        v8_17_03	-	only_for_build
 end_product_list
 
 qualifier      ubevt          larsim         
 c7:debug       c7:debug       c7:debug       
 c7:prof        c7:prof        c7:prof        
-e19:debug      e19:debug      e19:debug
-e19:prof       e19:prof       e19:prof
 e20:debug      e20:debug      e20:debug
 e20:prof       e20:prof       e20:prof
 end_qualifier_list

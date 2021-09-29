@@ -11,10 +11,9 @@ art_make(LIBRARY_NAME  ubsim_EventWeight_Calculators_BNBPrimaryHadron
                        ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
                        ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
                        ${CLHEP}
-                       ${ROOT_BASIC_LIB_LIST}
-                       ${Boost_SYSTEM_LIBRARY}
-                       nugen_NuReweight_art   
-                       nugen_NuReweight       
+
+                       nugen_NuReweight_art
+                       nugen_NuReweight
                        larsim_Simulation
                        nurandom_RandomUtils_NuRandomService_service
                        nusimdata_SimulationBase
