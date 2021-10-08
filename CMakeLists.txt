@@ -55,7 +55,7 @@ find_ups_product( nurandom )
 # WireCell required
 find_ups_product( larwirecell v1_00_00 )
 find_ups_product( jsoncpp )
-find_ups_product( jsonnet )
+find_ups_product( gojsonnet )
 find_ups_product( wirecell )
 find_ups_product( eigen )
 find_ups_product( spdlog )
