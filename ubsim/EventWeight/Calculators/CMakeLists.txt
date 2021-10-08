@@ -138,8 +138,7 @@ art_make(
     ${GENIE_LIB_LIST}
     ${FHICLCPP}
     ${CLHEP}
-    ${ROOT_BASIC_LIB_LIST}
-    ${Boost_SYSTEM_LIBRARY}
+
     ${G4_LIB_LIST}
     ${LOG4CPP}
     ${MF_MESSAGELOGGER}

@@ -5,8 +5,7 @@ art_make(
 			#${MF_MESSAGELOGGER}
 			#
 			#cetlib cetlib_except
-                        #${Boost_SYSTEM_LIBRARY}
-			${ROOT_BASIC_LIB_LIST}
+
 		        cetlib cetlib_except
         )
 

@@ -12,9 +12,9 @@
 #  make package (builds distribution tarfile)
 # ======================================================================
 
-cmake_minimum_required (VERSION 3.12...3.18 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 
-project(ubsim LANGUAGES CXX)
+project(ubsim VERSION 09.32.00 LANGUAGES CXX)
 
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
@@ -37,14 +37,14 @@ find_ups_product( larcorealg )
 find_ups_product( larcoreobj )
 find_ups_product( lardataobj )
 find_ups_product( lardataalg )
-find_ups_boost( v1_53_0 )
+find_ups_boost( )
 find_ups_product( canvas )
-find_ups_product( ubevt v1_00_00 )
-find_ups_product( ubcore v1_00_00 )
-find_ups_product( larsim v1_00_00 )
-find_ups_product( larevt v1_00_00 )
-find_ups_product( lardata v1_00_00 )
-find_ups_product( art v1_00_00 )
+find_ups_product( ubevt )
+find_ups_product( ubcore )
+find_ups_product( larsim )
+find_ups_product( larevt )
+find_ups_product( lardata )
+find_ups_product( art )
 find_ups_product(art_root_io)
 find_ups_product( larcore )
 find_ups_product( nutools )
