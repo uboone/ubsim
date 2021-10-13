@@ -1,5 +1,9 @@
 # Build the libWireCellubsim WCT plugin library.
 
+include_directories($ENV{EIGEN_INC})
+
+link_directories( $ENV{WIRECELL_LIB})
+
 file(GLOB wcls_components_sources "*.cxx")
 
 # This is what's needed for building the WireCellubsim WCT component
@@ -14,7 +18,7 @@ art_make_library(
         canvas cetlib cetlib_except
         ${Boost_SYSTEM_LIBRARY}
         ${ROOT_BASIC_LIB_LIST}
-        ${JSONCPP}
+	jsoncpp
 	lardata_Utilities
 	lardataobj_RawData
 	lardataobj_RecoBase
@@ -22,7 +26,13 @@ art_make_library(
         larcorealg_Geometry
 	larevt_CalibrationDBI_IOVData
 	larevt_CalibrationDBI_Providers
-        ${WIRECELL_LIBS}
+        #${WIRECELL_LIBS}
+	WireCellApps
+	WireCellSigProc
+	WireCellIface
+	WireCellUtil
+	WireCellGen
+	WireCellAux
         ${FHICLCPP}
         cetlib cetlib_except
 )

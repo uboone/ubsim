@@ -47,7 +47,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
                         cetlib_except
                         ${ROOT_BASIC_LIB_LIST}
         		nurandom_RandomUtils_NuRandomService_service
-        		${CLHEP}
+        		CLHEP::CLHEP
          )
 
 simple_plugin(UBOpticalChConfig "service"

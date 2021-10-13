@@ -2,7 +2,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 cet_add_compiler_flags(CXX -Wno-return-type-c-linkage )
 endif()
 
-cet_find_library( CRY NAMES CRY PATHS ENV CRY_LIB NO_DEFAULT_PATH )
+#cet_find_library( CRY NAMES CRY PATHS ENV CRY_LIB NO_DEFAULT_PATH )
 include_directories ( $ENV{CRYHOME}/src )
 
 art_make( BASENAME_ONLY
@@ -33,7 +33,7 @@ art_make( BASENAME_ONLY
                         ${MF_MESSAGELOGGER}                        
                         ${FHICLCPP}
                         cetlib cetlib_except
-                        ${CLHEP}
+                        CLHEP::CLHEP
 			${ROOT_PHYSICS}
                         ${ROOT_GEOM}
                         ${ROOT_XMLIO}
@@ -41,7 +41,7 @@ art_make( BASENAME_ONLY
                         ${ROOT_BASIC_LIB_LIST}
 			${ROOT_CORE}
 			${ROOT_EG}
-			${CRY}
+			CRY
         )
 
 install_headers()

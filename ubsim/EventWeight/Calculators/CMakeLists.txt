@@ -12,55 +12,55 @@ include_directories ( $ENV{LOG4CPP_INC} )
 # The top-level nutools CMakeLists.txt does this as well, but I don't think
 # that we can access the result of that version check in the ubsim build.
 # GENIE v3 library list
-set (GENIE_LIB_LIST ${GFWMSG}
-                    ${GFWREG}
-                    ${GFWALG}
-                    ${GFWINT}
-                    ${GFWGHEP}
-                    ${GFWNUM}
-                    ${GSL}  # FWNUM relies on GSL
-                    ${GFWUTL}
-                    ${GFWPARDAT}
-                    ${GFWEG}
-                    ${GFWNTP}
-                    ${GPHXSIG}
-                    ${GPHPDF}
-                    ${GPHNUCLST}
-                    ${GPHCMN}
-                    ${GPHDCY}
-                    ${GPHHADTRANSP}
-                    ${GPHHADNZ}
-                    ${GPHDEEX}
-                    ${GPHAMNGXS}
-                    ${GPHAMNGEG}
-                    ${GPHCHMXS}
-                    ${GPHCOHXS}
-                    ${GPHCOHEG}
-                    ${GPHDISXS}
-                    ${GPHDISEG}
-                    ${GPHDFRCXS}
-                    ${GPHDFRCEG}
-                    ${GPHGLWRESXS}
-                    ${GPHGLWRESEG}
-                    ${GPHIBDXS}
-                    ${GPHIBDEG}
-                    ${GPHMNUCXS}
-                    ${GPHMNUCEG}
-                    ${GPHMEL}
-                    ${GPHNUELXS}
-                    ${GPHNUELEG}
-                    ${GPHQELXS}
-                    ${GPHQELEG}
-                    ${GPHRESXS}
-                    ${GPHRESEG}
-                    ${GPHSTRXS}
-                    ${GPHSTREG}
-                    ${GPHNDCY}
-                    ${GTLGEO}
-                    ${GTLFLX}
-                    ${GRWFWK}
-                    ${GRWIO}
-                    ${GRWCLC})
+set (GENIE_LIB_LIST GFwMsg
+                    GFwReg
+                    GFwAlg
+                    GFwInt
+                    GFwGHEP
+                    GFwNum
+                    gsl       # FWNUM relies on GSL
+                    GFwUtl
+                    GFwParDat
+                    GFwEG
+                    GFwNtp
+                    GPhXSIg
+                    GPhPDF
+                    GPhNuclSt
+                    GPhCmn
+                    GPhDcy
+                    GPhHadTransp
+                    GPhHadnz
+                    GPhDeEx
+                    GPhAMNGXS
+                    GPhAMNGEG
+                    GPhChmXS
+                    GPhCohXS
+                    GPhCohEG
+                    GPhDISXS
+                    GPhDISEG
+                    GPhDfrcXS
+                    GPhDFRCEG
+                    GPhGlwResXS
+                    GPhGlwResEG
+                    GPhIBDXS
+                    GPhIBDEG
+                    GPhMNucXS
+                    GPhMNucEG
+                    GPhMEL
+                    GPhNuElXS
+                    GPhNuElEG
+                    GPhQELXS
+                    GPhQELEG
+                    GPhResXS
+                    GPhResEG
+                    GPhStrXS
+                    GPhStrEG
+                    GPhNDcy
+                    GTlGeo
+                    GTlFlx
+                    GRwFwk
+                    GRwIO
+                    GRwClc)
 
 # Build against extra reweighting functionality in GENIE v3.0.4 MicroBooNE patch 02
 add_definitions(-DGENIE_UB_PATCH)
@@ -79,8 +79,8 @@ art_make(
     larcore_Geometry_Geometry_service
     nurandom_RandomUtils_NuRandomService_service
     nusimdata_SimulationBase
-    ReweightBaseLib
-    PropBaseLib
+    #ReweightBaseLib
+    #PropBaseLib
     ${ART_FRAMEWORK_CORE}
     ${ART_FRAMEWORK_PRINCIPAL}
     ${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -93,10 +93,10 @@ art_make(
     cetlib cetlib_except
     ${GENIE_LIB_LIST}
     ${FHICLCPP}
-    ${CLHEP}
+    CLHEP::CLHEP
 
     ${G4_LIB_LIST}
-    ${LOG4CPP}
+    log4cpp
     ${MF_MESSAGELOGGER}
 )
 

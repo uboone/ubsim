@@ -10,7 +10,7 @@ art_make(LIBRARY_NAME  ubsim_EventWeight_Calculators_BNBPrimaryHadron
                        ${ART_FRAMEWORK_SERVICES_REGISTRY}
                        ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
                        ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-                       ${CLHEP}
+                       CLHEP::CLHEP
 
                        nugen_NuReweight_art
                        nugen_NuReweight

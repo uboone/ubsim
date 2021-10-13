@@ -22,7 +22,7 @@ art_make(
         ${MF_MESSAGELOGGER}
         ${FHICLCPP}
         cetlib cetlib_except
-        ${CLHEP}
+        CLHEP::CLHEP
         ${ROOT_BASIC_LIB_LIST}
 )
 
