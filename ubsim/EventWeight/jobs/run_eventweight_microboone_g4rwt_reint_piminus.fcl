@@ -12,7 +12,7 @@ services: {
   FileCatalogMetadata: @local::art_file_catalog_mc
   NuRandomService: @local::microboone_seedservice
   UBEventWeight: @local::microboone_eventweight_service
-  TFileService: { fileName: "microboone_reint_hist.root" }
+  TFileService: { fileName: "microboone_reint_hist_piminus.root" }
   ExptGeoHelperInterface: @local::microboone_geometry_helper
   Geometry: @local::microboone_geo
 }
@@ -44,5 +44,5 @@ outputs: {
  }
 }
 
-
-
+physics.producers.eventweightreint.weight_functions_reint: [ reinteractions_piminus ]
+physics.producers.eventweightreint.weight_functions: [ reinteractions_piminus ]

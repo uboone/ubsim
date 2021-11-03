@@ -13,47 +13,123 @@
 #include "microboone_piplus_reweight_parameters.fcl"
 #include "microboone_piminus_reweight_parameters.fcl"
 #include "microboone_proton_reweight_parameters.fcl"
+#include "microboone_neutron_reweight_parameters.fcl"
 
 BEGIN_PROLOG
 
 microboone_eventweight_reint: {
-  weight_functions_reint: [ reinteractions_piplus, reinteractions_piminus, reinteractions_proton ]
+  weight_functions_reint: [ reinteractions_piplus, reinteractions_piminus, reinteractions_proton, reinteractions_neutron ]
+
   reinteractions_piplus: {
     type: Geant4
     random_seed: 58
     parameters: @local::PiPlusParameters
-    mode: multisim
+    mode: pm1sigma
     number_of_multisims: 1000
-    fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piplus.root"
-    xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piplus.root"
-    makeoutputtree: false
+    #fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_piplus.root"  
+    #xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piplus.root"
+    fracsfile: "$GEANT4RW_DATA_DIR/g4_fracs_piplus.root"  
+    xsecfile: "$GEANT4RW_DATA_DIR/g4_cross_section_piplus.root"
+    makeoutputtree: true
     pdg_to_reweight: 211
     debug: false
+    UseAlternateWeight: false
+
+    g4rw_materials: [ {
+         Name: "liquidArgon"
+         Density: 1.390
+         Components :
+               [ {
+                  Z:    18
+                  Mass: 39.95
+               } ]
+    } ]
+
   }
+
   reinteractions_piminus: {
     type: Geant4
     random_seed: 59
     parameters: @local::PiMinusParameters
-    mode: multisim
+    mode: pm1sigma
     number_of_multisims: 1000
-    fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piminus.root"
-    xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piminus.root"
-    makeoutputtree: false
+    #fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piminus.root"
+    #xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piminus.root"
+    fracsfile: "$GEANT4RW_DATA_DIR/g4_fracs_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piminus.root"
+    xsecfile: "$GEANT4RW_DATA_DIR/g4_cross_section_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piminus.root"
+    makeoutputtree: true
     pdg_to_reweight: -211
     debug: false
+    UseAlternateWeight: false
+
+    g4rw_materials: [ {
+         Name: "liquidArgon"
+         Density: 1.390
+         Components :
+               [ {
+                  Z:    18
+                  Mass: 39.95
+               } ]
+    } ]
+
+
   }
+
   reinteractions_proton: {
     type: Geant4
     random_seed: 60
     parameters: @local::ProtonParameters
-    mode: multisim
+    mode: pm1sigma
     number_of_multisims: 1000
-    fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_proton.root" #"/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_proton.root"
-    xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_proton.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
-    makeoutputtree: false
+    #fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_proton.root"  
+    #xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_proton.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
+    fracsfile: "$GEANT4RW_DATA_DIR/g4_fracs_proton.root"  
+    xsecfile: "$GEANT4RW_DATA_DIR/g4_cross_section_proton.root" 
+    makeoutputtree: true
     pdg_to_reweight: 2212
     debug: false
+    UseAlternateWeight: false
+
+
+    g4rw_materials: [ {
+         Name: "liquidArgon"
+         Density: 1.390
+         Components :
+               [ {
+                  Z:    18
+                  Mass: 39.95
+               } ]
+    } ]
+
   }
+
+  reinteractions_neutron: {
+    type: Geant4
+    random_seed: 61
+    parameters: @local::NeutronParameters
+    mode: pm1sigma
+    number_of_multisims: 1000
+    #fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_neutron.root"  
+    #xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_neutron.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
+    fracsfile: "$GEANT4RW_DATA_DIR/g4_fracs_neutron.root"  
+    xsecfile: "$GEANT4RW_DATA_DIR/g4_cross_section_neutron.root"
+    makeoutputtree: true
+    pdg_to_reweight: 2112
+    debug: false
+    UseAlternateWeight: false
+
+    g4rw_materials: [ {
+         Name: "liquidArgon"
+         Density: 1.390
+         Components :
+               [ {
+                  Z:    18
+                  Mass: 39.95
+               } ]
+    } ]
+
+  }
+
 }
 
 ###

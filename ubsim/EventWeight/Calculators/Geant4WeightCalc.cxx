@@ -38,7 +38,9 @@
 #include "geant4reweight/src/PropBase/G4ReweightParameterMaker.hh"
 
 // local include
-#include "BetheBlochForG4ReweightValid.h"
+#include "Headers/BetheBlochForG4ReweightValid.h"
+#include "Headers/NeutronEnergyDepForG4Reweight2.h"
+#include "Headers/ReweightVolume.h"
 
 namespace evwgh {
 
@@ -57,10 +59,12 @@ private:
   // std::map<int, ParticleDef> fParticles;  //!< Particles to reweight
   unsigned fNsims;  //!< Number of multisims
   int fPdg; //!< PDG value for particles that a given weight calculator should apply to. Note that for now this module can only handle weights for one particle species at a time.
+  bool fUseAlternateWeight;
   // float fXSUncertainty;  //!< Flat cross section uncertainty
   G4ReweighterFactory RWFactory; //!< Base class to handle all Geant4Reweighters (right now "all" means pi+, pi-, p)
-  G4Reweighter *theReweighter; //!< Geant4Reweighter -- this is what provides the weights
+  G4Reweighter *theReweighter = nullptr; //!< Geant4Reweighter -- this is what provides the weights
   G4ReweightParameterMaker *ParMaker;
+  G4ReweightManager *theReweightManager;
   std::vector<std::map<std::string, double>> UniverseVals; //!< Vector of maps relating parameter name to value (defines parameter values that will be evaluated in universes). Each map should have one entry per parameter we are considering
 
   art::ServiceHandle < geo::Geometry > fGeometryService;
@@ -110,19 +114,40 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
   fNsims = pset.get<int> ("number_of_multisims", 0);
   fPdg = pset.get<int> ("pdg_to_reweight");
   fDebug = pset.get<bool> ("debug",false);
+  fUseAlternateWeight = pset.get<bool>("UseAlternateWeight",false); 
+
+  std::vector<fhicl::ParameterSet> g4rw_material_pars = pset.get<std::vector<fhicl::ParameterSet>>("g4rw_materials");
 
   // Prepare random generator
   fGaussRandom = new CLHEP::RandGaussQ(engine);
+
+  if(fDebug) std::cout << "Setting up G4ReweightManager" << std::endl;
+  theReweightManager = new G4ReweightManager(g4rw_material_pars);
 
   // Get input files
   TFile FracsFile( FracsFileName.c_str(), "OPEN" );
   TFile XSecFile( XSecFileName.c_str(), "OPEN" );
 
   // Configure G4Reweighter
-  bool totalonly = false;
-  if (fPdg==2212) totalonly = true;
-  ParMaker = new G4ReweightParameterMaker( FitParSets, totalonly );
-  theReweighter = RWFactory.BuildReweighter(fPdg, &XSecFile, &FracsFile, ParMaker->GetFSHists(), ParMaker->GetElasticHist() );
+  //bool totalonly = false;
+  //if (fPdg==2212) totalonly = true;
+  //ParMaker = new G4ReweightParameterMaker( FitParSets, totalonly );
+  if(fDebug) std::cout << "Setting up G4ReweightParameterMaker" << std::endl;
+  ParMaker = new G4ReweightParameterMaker(FitParSets,true,fPdg);
+
+  //theReweighter = RWFactory.BuildReweighter(fPdg, &XSecFile, &FracsFile, ParMaker->GetFSHists(), ParMaker->GetElasticHist() );
+
+  // Only want to use LAr for reweighting
+  for(size_t i_mat=0;i_mat<g4rw_material_pars.size();i_mat++){
+     fhicl::ParameterSet this_mat_pars = g4rw_material_pars.at(i_mat);
+     if(this_mat_pars.get<std::string>("Name") == "liquidArgon" || this_mat_pars.get<std::string>("Name") == "LAr"){
+        theReweighter = RWFactory.BuildReweighter(fPdg, &FracsFile, ParMaker->GetFSHists(),g4rw_material_pars.at(i_mat),theReweightManager, ParMaker->GetElasticHist(),false );
+     }
+  }
+
+  // Throw an exception if LAr not found 
+  if(theReweighter == nullptr)
+     throw cet::exception("Geant4WeightCalc") << "LAr not found in materials list" << std::endl;
 
   // Make output trees to save things for quick and easy validation
   art::ServiceHandle<art::TFileService> tfs;
@@ -226,6 +251,8 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
 std::vector<std::vector<double> >
 Geant4WeightCalc::GetWeight(art::Event& e) {
 
+  if(fDebug) std::cout << "New Event---" << std::endl;
+
   // Get event/run/subrun numbers for output
   run_num = e.run();
   subrun_num = e.subRun();
@@ -287,12 +314,15 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
       int mcpID = p.TrackId();
       std::string EndProcess  = p.EndProcess();
 
+
       double mass = 0.;
       if( TMath::Abs(p_PDG) == 211 ) mass = 139.57;
       else if( p_PDG == 2212 ) mass = 938.28;
+      else if( p_PDG == 2112 ) mass = 939.57;
 
       // We only want to record weights for one type of particle (defined by fPDG from the fcl file), so skip other particles
       if (p_PDG == fPdg){
+
         // Get GEANT trajectory points: weighting will depend on position and momentum at each trajectory point so calculate those
         std::vector<double> trajpoint_X;
         std::vector<double> trajpoint_Y;
@@ -309,12 +339,35 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           process_map[ it->first ] = p.Trajectory().KeyToProcess( it->second );
         }
 
+        geo::Point_t testpoint1;
+        geo::Point_t testpoint_old;
+
         for( size_t i = 0; i < p.NumberTrajectoryPoints(); ++i ){
-          double X = p.Position(i).X();
-          double Y = p.Position(i).Y();
-          double Z = p.Position(i).Z();
-          geo::Point_t testpoint1 { X, Y, Z };
-          const TGeoMaterial* testmaterial1 = fGeometryService->Material( testpoint1 );
+           double X = p.Position(i).X();
+           double Y = p.Position(i).Y();
+           double Z = p.Position(i).Z();
+
+           testpoint1 =  { X, Y, Z };
+           //geo::Point_t testpoint1 { X, Y, Z };
+
+           // C Thorpe: Only reweight points inside the cryostat
+           if(!inReweightVolume(TVector3(testpoint1.X(),testpoint1.Y(),testpoint1.Z()))) break;
+
+        /*
+           if(i > 0){  
+              double delta_X = testpoint1.X() - testpoint_old.X();
+              double delta_Y = testpoint1.Y() - testpoint_old.Y();
+              double delta_Z = testpoint1.Z() - testpoint_old.Z();
+              double delta = sqrt(delta_X*delta_X + delta_Y*delta_Y + delta_Z*delta_Z);
+
+              if(delta > 5000){ 
+                 std::cout << "LARGE STEP DETECTED   " <<  delta << " cm " <<  std::endl; 
+                 break;
+              }
+           }
+        */
+
+           const TGeoMaterial* testmaterial1 = fGeometryService->Material( testpoint1 );
           //For now, just going to reweight the points within the LAr of the TPC
           // TODO check if this is right
           if ( !strcmp( testmaterial1->GetName(), "LAr" ) ){
@@ -335,6 +388,9 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
 
           }
 
+
+          testpoint_old = testpoint1;
+
         } // end loop over trajectory points
 
         // Now find daughters of the MCP
@@ -352,6 +408,7 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           }
         } // end loop over daughters
 
+     
         // --- Now that we have all the information about the track we need, here comes the reweighting part! --- //
 
         //Make a G4ReweightTraj -- This is the reweightable object
@@ -416,7 +473,6 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           }
         } // end loop over nSteps (istep)
         p_track_length = theTraj.GetTotalLength();
-
         p_init_momentum = sqrt( theTraj.GetEnergy()*theTraj.GetEnergy() - mass*mass );
         p_final_momentum = sqrt(
             std::pow( theTraj.GetStep( theTraj.GetNSteps() - 1 )->GetPreStepPx(), 2 ) +
@@ -424,11 +480,22 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
             std::pow( theTraj.GetStep( theTraj.GetNSteps() - 1 )->GetPreStepPz(), 2 )
         );
 
-        std::vector< std::pair< double, int > > thin_slice_inelastic = ThinSliceBetheBloch( &theTraj, .5, mass , false);
-        std::vector< std::pair< double, int > > thin_slice_elastic = ThinSliceBetheBloch( &theTraj, .5, mass , true);
+
+        std::vector< std::pair< double, int > > thin_slice_inelastic;
+        std::vector< std::pair< double, int > > thin_slice_elastic;
+
+        if(p_PDG != 2112){
+           thin_slice_inelastic = ThinSliceBetheBloch( &theTraj, .5, mass , false);
+           thin_slice_elastic = ThinSliceBetheBloch( &theTraj, .5, mass , true);
+        }
+        else {
+           thin_slice_inelastic = NeutronEnergyDepForG4Reweight2( &theTraj, .5, mass , false);
+           thin_slice_elastic = NeutronEnergyDepForG4Reweight2( &theTraj, .5, mass , true);
+        }
 
         p_energies_inel.clear();
         p_sliceInts_inel.clear();
+
         for( size_t islice = 0; islice < thin_slice_inelastic.size(); ++islice ){
           p_energies_inel.push_back( thin_slice_inelastic[islice].first );
           p_sliceInts_inel.push_back( thin_slice_inelastic[islice].second );
@@ -451,12 +518,20 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           theReweighter->SetNewElasticHists(ParMaker->GetElasticHist());
 
           //Get the weight from the G4ReweightTraj
-          w = theReweighter->GetWeight( &theTraj );
+          if(fUseAlternateWeight) w = theReweighter->GetAlternateWeight( &theTraj );
+          else w = theReweighter->GetWeight( &theTraj );
+
+           double _EPSILON_ = 0.0001;
+        
+          if(abs(theReweighter->GetWeight( &theTraj ) - theReweighter->GetAlternateWeight( &theTraj )) > _EPSILON_) 
+            std::cout << "Weight = " << theReweighter->GetWeight( &theTraj ) <<  "  Alternate Weight = " << theReweighter->GetAlternateWeight( &theTraj ) << std::endl;
+
           // Total weight is the product of track weights in the event
           weight[itruth][j] *= std::max((float)0.0, w);
 
           // Do the same for elastic weight (should be 1 unless set to non-nominal )
-          el_w = theReweighter->GetElasticWeight( &theTraj );
+          //el_w = theReweighter->GetElasticWeight( &theTraj );
+          el_w = 1.0;
           weight[itruth][j] *= std::max((float)0.0,el_w);
 
           // just for the output tree
@@ -467,7 +542,6 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
 
           if (fDebug){
             std::cout << "  Universe " << j << ": ";
-            // std::cout << UniverseVals.at(j) << std::endl;
             std::cout << "    w = " << w << ", el_w = " << el_w << std::endl;
           }
 
@@ -496,16 +570,20 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
             std::cout << e_elastic_weight[itruth][j] << ", ";
           }
           std::cout << std::endl;
-          std::cout << "overall weight saved by event: ";
-          for (unsigned int j=0; j<weight[itruth].size(); j++){
-            std::cout << weight[itruth][j] << ", ";
-          }
-          std::cout << std::endl;
         }
 
       } // if ( ( TMath::Abs(p_PDG) == 211 || p_PDG == 2212 ) )
       if (fMakeOutputTrees) fOutTree_Particle->Fill();
     } // loop over mcparticles (i)
+
+    if(fDebug){
+       std::cout << "overall weight saved by event: ";
+       for (unsigned int j=0; j<weight[itruth].size(); j++){
+          std::cout << weight[itruth][j] << ", ";
+       }
+       std::cout << std::endl;
+    }
+
     if (fMakeOutputTrees) fOutTree_MCTruth->Fill();
   } // loop over sets of MCtruth-associated particles (itruth)
 
