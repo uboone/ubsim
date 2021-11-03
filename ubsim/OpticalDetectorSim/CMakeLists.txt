@@ -7,7 +7,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			lardataobj_RawData
 			lardata_Utilities
 			larcorealg_Geometry
-                        nusimdata_SimulationBase
+                        nusimdata::SimulationBase
                         ${ART_FRAMEWORK_CORE}
 			${ART_FRAMEWORK_PRINCIPAL}
 			${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -29,7 +29,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			lardata_Utilities
 			ubcore::UBooNEGeometryHelper_service
 			ubcore_Geometry
-                        nusimdata_SimulationBase
+                        nusimdata::SimulationBase
                         ${ART_FRAMEWORK_CORE}
 			${ART_FRAMEWORK_PRINCIPAL}
 			${ART_FRAMEWORK_SERVICES_REGISTRY}
@@ -44,7 +44,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 	                ${FHICLCPP}
                         cetlib
                         cetlib_except
-
+                        ROOT::Tree
          )
 
 simple_plugin(UBOpticalChConfig "service"
@@ -72,7 +72,7 @@ simple_plugin(OpticalDRAMReadout "module"
                   lardata_Utilities
                   ubcore::UBooNEGeometryHelper_service
                   ubcore_Geometry
-                  nusimdata_SimulationBase
+                  nusimdata::SimulationBase
                   ${ART_FRAMEWORK_CORE}
                   ${ART_FRAMEWORK_PRINCIPAL}
                   ${ART_FRAMEWORK_SERVICES_REGISTRY}

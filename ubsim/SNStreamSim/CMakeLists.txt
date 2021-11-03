@@ -21,7 +21,7 @@ art_make(
 			lardata_RecoObjects
 			lardata_Utilities
 			larevt_Filters
-			nusimdata_SimulationBase
+			nusimdata::SimulationBase
 			${LARDATA_LIB}
                         ${ART_FRAMEWORK_CORE}
 			${ART_FRAMEWORK_PRINCIPAL}
@@ -34,14 +34,13 @@ art_make(
 			art_Utilities
                         canvas
 			${MF_MESSAGELOGGER}
-
 	                ${FHICLCPP}
 			cetlib cetlib_except
 			${CLHEP}
                         ${ROOT_GEOM}
                         ${ROOT_XMLIO}
                         ${ROOT_GDML}
-
+                        ROOT::Tree
         )
 
 add_subdirectory(Fmwk)
