@@ -19,7 +19,7 @@ project(ubsim VERSION 09.35.00 LANGUAGES CXX)
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
 
-list(APPEND CMAKE_MODULE_PATH $ENV{CANVAS_ROOT_IO_DIR}/Modules $ENV{ART_DIR}/Modules)
+list(APPEND CMAKE_MODULE_PATH $ENV{CANVAS_ROOT_IO_DIR}/Modules $ENV{ART_DIR}/Modules $ENV{SPDLOG_LIB}/cmake/spdlog)
 
 include(CetCMakeEnv)
 cet_cmake_env()
