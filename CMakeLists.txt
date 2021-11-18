@@ -19,7 +19,7 @@ project(ubsim VERSION 09.35.00 LANGUAGES CXX)
 # cetbuildtools contains our cmake modules
 find_package(cetbuildtools REQUIRED)
 
-list(APPEND CMAKE_MODULE_PATH $ENV{CANVAS_ROOT_IO_DIR}/Modules $ENV{ART_DIR}/Modules $ENV{SPDLOG_LIB}/cmake/spdlog)
+list(APPEND CMAKE_MODULE_PATH $ENV{CANVAS_ROOT_IO_DIR}/Modules $ENV{ART_DIR}/Modules)
 
 include(CetCMakeEnv)
 cet_cmake_env()
@@ -54,12 +54,12 @@ find_ups_product( nugen )
 find_ups_product( nurandom )
 
 # WireCell required
-find_ups_product( larwirecell )
 find_ups_product( jsoncpp )
 find_ups_product( gojsonnet )
+find_ups_product( spdlog )
 find_ups_product( wirecell )
 find_ups_product( eigen )
-find_ups_product( spdlog )
+find_ups_product( larwirecell )
 
 cet_find_library( WIRECELL_SIGPROC_LIB NAMES WireCellSigProc PATHS ENV WIRECELL_LIB NO_DEFAULT_PATH )
 cet_find_library( WIRECELL_GEN_LIB NAMES WireCellGen PATHS ENV WIRECELL_LIB NO_DEFAULT_PATH )
