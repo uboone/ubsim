@@ -1,214 +1,37 @@
+#ifndef _NeutronEDep_h_
+#define _NeutronEDep_h_
 
-//don't need this right now
-/*
-   double BetheBloch(double energy, double mass){
-
-//Need to make this configurable? Or delete...
-double K = .307075;
-double rho = 1.390;
-double Z = 18;
-double A = 40;
-double I = 188E-6;
-double me = .511;
-//Need to make sure this is total energy, not KE
-double gamma = energy/mass;
-double beta = sqrt( 1. - (1. / (gamma*gamma)) );
-double Tmax = 2 * me * beta*beta * gamma*gamma;
-
-double first = K * (Z/A) * rho / (beta*beta);
-double second = .5 * log(Tmax*Tmax/(I*I)) - beta*beta;
-
-double dEdX = first*second;
-return dEdX;
-}
-*/
-
-double Momentum(double E,double mass){
-   return sqrt(E*E - mass*mass);
-}
-
-std::vector< std::pair<double, int> > NeutronEnergyDep(G4ReweightTraj * theTraj, double res, double mass, bool isElastic ){
+std::vector< std::pair<double, int> > NeutronEnergyDepForG4Reweight(G4ReweightTraj * theTraj, double res, double mass, bool isElastic){
 
    std::vector< std::pair<double, int> > result;
-
-   int interactInSlice = 0;
-
-   double disp = 0.;
-
-   int currentSlice = 0;
-   int oldSlice = 0;
-
-   //get initial energy
-   double sliceEnergy = theTraj->GetEnergy();
-   double stepEnergyLoss=0;
-
-   double stepBeginEnergy;
-   double stepEndEnergy;
-
-   int slicesInStep=0;
-   int calcSlicesInStep=0;
-   double sliceEnergyLoss=0; 
-
    size_t nSteps = theTraj->GetNSteps();
-   for(size_t is = 0; is < nSteps; ++is){
 
+   for(size_t is = 0; is < nSteps; ++is){
+      
       auto theStep = theTraj->GetStep(is);
 
-      disp += theStep->GetStepLength();
+      double Px = theTraj->GetStep(is)->GetPreStepPx();
+      double Py = theTraj->GetStep(is)->GetPreStepPy();
+      double Pz = theTraj->GetStep(is)->GetPreStepPz();
 
-      //calculate energy loss over entrie step
-      if(is < nSteps-1){	    
-
-         stepBeginEnergy = sqrt( theTraj->GetStep(is)->GetPreStepPx()*theTraj->GetStep(is)->GetPreStepPx()+theTraj->GetStep(is)->GetPreStepPy()*theTraj->GetStep(is)->GetPreStepPy()+theTraj->GetStep(is)->GetPreStepPz()*theTraj->GetStep(is)->GetPreStepPz()+mass*mass);
-
-         stepEndEnergy = sqrt( theTraj->GetStep(is+1)->GetPreStepPx()*theTraj->GetStep(is+1)->GetPreStepPx()+theTraj->GetStep(is+1)->GetPreStepPy()*theTraj->GetStep(is+1)->GetPreStepPy()+theTraj->GetStep(is+1)->GetPreStepPz()*theTraj->GetStep(is+1)->GetPreStepPz()+mass*mass);
-
-         stepEnergyLoss = stepBeginEnergy - stepEndEnergy;
-         std::cout << "Slice momentum at begin step: "  << Momentum(sliceEnergy,mass) << std::endl;
-         std::cout << "Start of step:  " <<  Momentum(stepBeginEnergy,mass) << std::endl;
-         std::cout << "End of step:  " << Momentum(stepEndEnergy,mass) << std::endl;
-         std::cout << "Momentum loss:  " << Momentum(stepBeginEnergy,mass)-Momentum(stepEndEnergy,mass) << std::endl;
-      }
-      else
-         stepEnergyLoss=0;
-
-
-      //Count num of slices in the step
-
-      currentSlice = floor(disp/res);
+      // Energy at start of step
+      double stepBeginEnergy = sqrt(Px*Px + Py*Py + Pz*Pz + mass*mass);
 
       std::string theProc = theStep->GetStepChosenProc();
+               
+        // Assume interaction occurs in last slice
+        int slices = round(theStep->GetStepLength()/res);
 
-      calcSlicesInStep= abs( oldSlice - currentSlice );
+        for(int i_slice=0;i_slice<slices-1;i_slice++) result.push_back(std::make_pair(stepBeginEnergy,0));
 
-      // assume energy loss in each slice is equal to total energy loss / num of slices
-      if(calcSlicesInStep >0) sliceEnergyLoss =  stepEnergyLoss / calcSlicesInStep;
-      else sliceEnergyLoss=0;
-
-      //Check to see if in a new slice and it's not the end
-      if( oldSlice != currentSlice && is < nSteps - 1){
-
-         //Save Interaction info of the prev slice
-         //and reset
-         result.push_back( std::make_pair(sliceEnergy, interactInSlice) );
-
-         interactInSlice = 0;
-
-         //find new way to compute energy loss for slice
-         
-         sliceEnergy = sliceEnergy - sliceEnergyLoss;
-         slicesInStep++;	      
-         if( sliceEnergy - mass < 0.){
-            std::cout << "Warning! Negative energy!  " << sliceEnergy - mass << std::endl;
-         }
-
-
-         //If it's more than 1 slice, add in non-interacting slices
-         for(int ic = 1; ic < abs( oldSlice - currentSlice ); ++ic){
-
-            result.push_back( std::make_pair(sliceEnergy, 0) );
-
-            slicesInStep++;
-            //Update the energy again
-            sliceEnergy = sliceEnergy - sliceEnergyLoss;
-
-            if( sliceEnergy - mass < 0.){
-               std::cout << "Warning! Negative energy2  " << sliceEnergy - mass << std::endl;
-               //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
-               sliceEnergy = 0.0001;
-            }
-         }//for(int ic=1;ic<abs(oldSlice-currentSlice); ++ic)
-
-         if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) || (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {
-            // std::cout << "found! " << theProc << '\n';
-            //     interactInSlice = 1;
-         }
-      }// if(oldSlice != currentSile && is < nSteps-1)
-
-
-      //It's crossed a slice and it's the last step. Save both info
-      else if( oldSlice != currentSlice && is == nSteps - 1 ){
-         result.push_back( std::make_pair(sliceEnergy, interactInSlice) );
-         interactInSlice = 0;
-         //		std::cout << "Slice Energy: " << sliceEnergy << std::endl;
-
-         slicesInStep++;
-         //Update the energy
-         sliceEnergy = sliceEnergy - sliceEnergyLoss;
-         if( sliceEnergy - mass < 0.){
-            std::cout << "Warning! Negative energy3  " << sliceEnergy - mass << std::endl;
-            //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
-            sliceEnergy = 0.0001;
-         }
-         //If it's more than 1 slice, add in non-interacting slices
-         for(int ic = 1; ic < abs( oldSlice - currentSlice ); ++ic){
-            //std::cout << ic << std::endl;
-
-            result.push_back( std::make_pair(sliceEnergy, 0) );
-            //			std::cout << "Slice Energy: " << sliceEnergy << std::endl;
-
-            slicesInStep++;
-            //Update the energy again
-            sliceEnergy = sliceEnergy - sliceEnergyLoss;
-            if( sliceEnergy - mass < 0.){
-               std::cout << "Warning! Negative energy4  " << sliceEnergy - mass << std::endl;
-               //std::cout << "Crossed " << oldSlice - currentSlice << std::endl;
-               sliceEnergy = 0.0001;
-            }
-         }
-
-         //Save the last slice
-         if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) || (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {
-            // std::cout << "found! " << theProc << '\n';
-            interactInSlice = 1;
-         }
-         result.push_back( std::make_pair(sliceEnergy, interactInSlice) );
-         //			std::cout << "Slice Energy: " << sliceEnergy << std::endl;
-
-      }//if(oldSlice != currentSlice && is == nSteps-1)
-
-
-
-
-
-      //It's the end, so just save this last info
-      else if( oldSlice == currentSlice && is == nSteps - 1 ){
-         if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) || (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {
-            // std::cout << "found! " << theProc << '\n';
-            interactInSlice = 1;
-         }
-         result.push_back( std::make_pair(sliceEnergy, interactInSlice) );
-         //		std::cout << "Slice Energy: " << sliceEnergy << std::endl;
-
-      }//else if(oldSlice == currentSlice && is==nSteps-1)
-
-
-
-      //Same slice, not the end. Check for interactions
-      else{
-         if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) || (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {
-            // std::cout << "found! " << theProc << '\n';
-            interactInSlice = 1;
-         }
-      }//else
-
-      //Update oldslice
-      oldSlice = currentSlice;
-
-      if(calcSlicesInStep != slicesInStep){
-
-         std::cout << "Est slices in this step: " << calcSlicesInStep << std::endl;
-         std::cout <<"Slices in this step: " <<  slicesInStep << std::endl;
-
-
-      }
-
-      slicesInStep=0;
-
-
-
-
-   }//loop over nSteps
+        if ((!isElastic && theProc.find(std::string("Inelastic")) != std::string::npos) ||
+            (isElastic && theProc.find(std::string("hadElastic")) != std::string::npos)) {       
+                result.push_back(std::make_pair(stepBeginEnergy,1));
+        }
+        else result.push_back(std::make_pair(stepBeginEnergy,0)); 
+   }
 
    return result;
 }
+
+#endif

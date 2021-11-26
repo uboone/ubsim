@@ -8,7 +8,6 @@ NeutronParameters: [
     Nominal:    1.0
     Sigma:      0.2
  },
-
   {
     Name:       "fNeutronElast"
     Cut:        "elast"

@@ -1,4 +1,5 @@
-
+#ifndef _BetheBloch_h_
+#define _BetheBloch_h_
 
 double BetheBloch(double energy, double mass){
 
@@ -143,3 +144,5 @@ std::vector< std::pair<double, int> > ThinSliceBetheBloch(G4ReweightTraj * theTr
 
   return result;
 }
+
+#endif

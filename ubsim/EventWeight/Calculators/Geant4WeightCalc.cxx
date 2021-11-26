@@ -39,8 +39,7 @@
 
 // local include
 #include "Headers/BetheBlochForG4ReweightValid.h"
-#include "Headers/NeutronEnergyDepForG4Reweight2.h"
-#include "Headers/ReweightVolume.h"
+#include "Headers/NeutronEnergyDepForG4Reweight.h"
 
 namespace evwgh {
 
@@ -68,6 +67,7 @@ private:
   std::vector<std::map<std::string, double>> UniverseVals; //!< Vector of maps relating parameter name to value (defines parameter values that will be evaluated in universes). Each map should have one entry per parameter we are considering
 
   art::ServiceHandle < geo::Geometry > fGeometryService;
+
 
   bool fMakeOutputTrees; ///!< Fcl parameter to decide whether to save output tree (useful for validations but not necessary when running in production)
   TTree *fOutTree_MCTruth; //!< Output tree for quick validations: on entry per MCTruth object
@@ -264,6 +264,8 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
   const art::FindManyP<simb::MCParticle> truthParticles(truthHandle, e, fMCParticleProducer);
   assert(truthParticles.isValid());
 
+  //Slicer S(e,fMCTruthProducer,fMCParticleProducer,fPdg);
+
   // Initialize the vector of event weights
   std::vector<std::vector<double> > weight(truthHandle->size());
   // These two are just for saving to the output tree for fast validation
@@ -308,9 +310,10 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
       p_sliceInts_inel.clear();
       p_nElasticScatters=-9999;
 
-
       const simb::MCParticle& p = *mcparticles.at(i);
+
       p_PDG = p.PdgCode();
+
       int mcpID = p.TrackId();
       std::string EndProcess  = p.EndProcess();
 
@@ -319,6 +322,8 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
       if( TMath::Abs(p_PDG) == 211 ) mass = 139.57;
       else if( p_PDG == 2212 ) mass = 938.28;
       else if( p_PDG == 2112 ) mass = 939.57;
+      else if( p_PDG == 3122 ) mass = 1115.68;
+      
 
       // We only want to record weights for one type of particle (defined by fPDG from the fcl file), so skip other particles
       if (p_PDG == fPdg){
@@ -331,6 +336,8 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
         std::vector<double> trajpoint_PY;
         std::vector<double> trajpoint_PZ;
         std::vector<int> elastic_indices;
+        //std::vector<int> inelastic_indices;
+        //std::vector<std::string> inelastic_procs;
 
         //Get the list of processes from the true trajectory
         const std::vector< std::pair< size_t, unsigned char > > & processes = p.Trajectory().TrajectoryProcesses();
@@ -338,39 +345,29 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
         for( auto it = processes.begin(); it != processes.end(); ++it ){
           process_map[ it->first ] = p.Trajectory().KeyToProcess( it->second );
         }
-
-        geo::Point_t testpoint1;
-        geo::Point_t testpoint_old;
+      
+        geo::Point_t testpoint1,testpoint1_old;
 
         for( size_t i = 0; i < p.NumberTrajectoryPoints(); ++i ){
+
            double X = p.Position(i).X();
            double Y = p.Position(i).Y();
            double Z = p.Position(i).Z();
 
            testpoint1 =  { X, Y, Z };
-           //geo::Point_t testpoint1 { X, Y, Z };
 
-           // C Thorpe: Only reweight points inside the cryostat
-           if(!inReweightVolume(TVector3(testpoint1.X(),testpoint1.Y(),testpoint1.Z()))) break;
+          //const TGeoMaterial* testmaterial1 = fGeometryService->Material( testpoint1 );
+           const TGeoMaterial* testmaterial1 = nullptr;
+           testmaterial1 = fGeometryService->Material( testpoint1 );
+           if(testmaterial1 ==  nullptr){
+              //std::cout << "testmaterial1 malformed" << std::endl;
+              break;
+           }           
+ 
+           //For now, just going to reweight the points within the LAr of the TPC
+           // TODO check if this is right
+           if ( strcmp( testmaterial1->GetName(), "LAr" ) ) break;
 
-        /*
-           if(i > 0){  
-              double delta_X = testpoint1.X() - testpoint_old.X();
-              double delta_Y = testpoint1.Y() - testpoint_old.Y();
-              double delta_Z = testpoint1.Z() - testpoint_old.Z();
-              double delta = sqrt(delta_X*delta_X + delta_Y*delta_Y + delta_Z*delta_Z);
-
-              if(delta > 5000){ 
-                 std::cout << "LARGE STEP DETECTED   " <<  delta << " cm " <<  std::endl; 
-                 break;
-              }
-           }
-        */
-
-           const TGeoMaterial* testmaterial1 = fGeometryService->Material( testpoint1 );
-          //For now, just going to reweight the points within the LAr of the TPC
-          // TODO check if this is right
-          if ( !strcmp( testmaterial1->GetName(), "LAr" ) ){
             trajpoint_X.push_back( X );
             trajpoint_Y.push_back( Y );
             trajpoint_Z.push_back( Z );
@@ -380,18 +377,21 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
             trajpoint_PZ.push_back( p.Pz(i) );
 
             auto itProc = process_map.find(i);
+
             if( itProc != process_map.end() && itProc->second == "hadElastic" ){
-              //Push back the index relative to the start of the reweightable steps
-              elastic_indices.push_back( trajpoint_X.size() - 1 );
-              // if (fDebug) std::cout << "Elastic index: " << trajpoint_X.size() - 1 << std::endl;
+               //Push back the index relative to the start of the reweightable steps
+               elastic_indices.push_back( trajpoint_X.size() - 1 );
             }
-
-          }
-
-
-          testpoint_old = testpoint1;
+            /*
+            else if(itProc != process_map.end()){
+               inelastic_indices.push_back( trajpoint_X.size() - 1 );
+               inelastic_procs.push_back( itProc->second );
+            }
+            */
+        testpoint1_old = testpoint1;
 
         } // end loop over trajectory points
+
 
         // Now find daughters of the MCP
         std::vector<int> daughter_PDGs;
@@ -399,6 +399,7 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
         for( int i_mcp = 0; i_mcp < p.NumberDaughters(); i_mcp++ ){
           int daughterID = p.Daughter(i_mcp);
           for (auto test_mcp : mcparticles){
+         
             if (test_mcp->TrackId() == daughterID){
               int pid = test_mcp->PdgCode();
               daughter_PDGs.push_back(pid);
@@ -419,21 +420,20 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
 
         size_t nSteps = trajpoint_PX.size();
 
-        if( nSteps < 2 ) continue;
+        if( nSteps < 2 )  continue;
 
         p_nElasticScatters = elastic_indices.size();
         for( size_t istep = 1; istep < nSteps; ++istep ){
-
-          // if( istep == trajpoint_PX.size() - 1 && std::find( elastic_indices.begin(), elastic_indices.end(), j ) != elastic_indices.end() )
-          //   std::cout << "Warning: last step an elastic process" << std::endl;
+           
 
           std::string proc = "default";
-          if( istep == trajpoint_PX.size() - 1 )
-            proc = EndProcess;
-          else if( std::find( elastic_indices.begin(), elastic_indices.end(), istep ) != elastic_indices.end() ){
-            proc = "hadElastic";
-          }
 
+        // Correct handling of inelastic processes
+         if(istep == p.NumberTrajectoryPoints()-1) proc = EndProcess; 
+
+          if( std::find( elastic_indices.begin(), elastic_indices.end(), istep ) != elastic_indices.end() ){
+            proc = "hadElastic";
+         }
 
           double deltaX = ( trajpoint_X.at(istep) - trajpoint_X.at(istep-1) );
           double deltaY = ( trajpoint_Y.at(istep) - trajpoint_Y.at(istep-1) );
@@ -444,6 +444,7 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
             std::pow( deltaY, 2 )  +
             std::pow( deltaZ, 2 )
           );
+
 
           double preStepP[3] = {
             trajpoint_PX.at(istep-1)*1.e3,
@@ -471,6 +472,7 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           for( size_t k = 0; k < daughter_PDGs.size(); ++k ){
             theTraj.AddChild( new G4ReweightTraj(daughter_IDs[k], daughter_PDGs[k], mcpID, event_num, std::make_pair(0,0) ) );
           }
+
         } // end loop over nSteps (istep)
         p_track_length = theTraj.GetTotalLength();
         p_init_momentum = sqrt( theTraj.GetEnergy()*theTraj.GetEnergy() - mass*mass );
@@ -484,13 +486,14 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
         std::vector< std::pair< double, int > > thin_slice_inelastic;
         std::vector< std::pair< double, int > > thin_slice_elastic;
 
-        if(p_PDG != 2112){
+        
+        if(p_PDG != 2112 && p_PDG != 3122){
            thin_slice_inelastic = ThinSliceBetheBloch( &theTraj, .5, mass , false);
-           thin_slice_elastic = ThinSliceBetheBloch( &theTraj, .5, mass , true);
+           thin_slice_elastic = ThinSliceBetheBloch( &theTraj, .5, mass , true);        
         }
         else {
-           thin_slice_inelastic = NeutronEnergyDepForG4Reweight2( &theTraj, .5, mass , false);
-           thin_slice_elastic = NeutronEnergyDepForG4Reweight2( &theTraj, .5, mass , true);
+           thin_slice_inelastic = NeutronEnergyDepForG4Reweight( &theTraj, .5, mass , false);
+           thin_slice_elastic = NeutronEnergyDepForG4Reweight( &theTraj, .5, mass , true);
         }
 
         p_energies_inel.clear();
@@ -501,13 +504,15 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           p_sliceInts_inel.push_back( thin_slice_inelastic[islice].second );
         }
 
+       
         p_energies_el.clear();
         p_sliceInts_el.clear();
         for( size_t islice = 0; islice < thin_slice_elastic.size(); ++islice ){
           p_energies_el.push_back( thin_slice_elastic[islice].first );
           p_sliceInts_el.push_back( thin_slice_elastic[islice].second );
         }
-
+       
+            
         // Loop through universes (j)
         for (size_t j=0; j<weight[0].size(); j++) {
           float w, el_w;
