@@ -8,19 +8,20 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			lardata_Utilities
 			larcorealg_Geometry
                         nusimdata::SimulationBase
-                        ${ART_FRAMEWORK_CORE}
-			${ART_FRAMEWORK_PRINCIPAL}
-			${ART_FRAMEWORK_SERVICES_REGISTRY}
-			${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-			${ART_ROOT_IO_TFILESERVICE_SERVICE}
-                        ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-                        art_Persistency_Common
-			art_Utilities canvas
-			${MF_MESSAGELOGGER}
-	                ${FHICLCPP}
-			cetlib cetlib_except
+                        art::Framework_Core
+			art::Framework_Principal
+			art::Framework_Services_Registry
+			art_root_io::tfile_support ROOT::Core
+			art_root_io::TFileService_service
+                        art::Framework_Services_Optional_RandomNumberGenerator_service
+                        art::Persistency_Common
+			art::Utilities canvas::canvas
+			messagefacility::MF_MessageLogger
+	                fhiclcpp::fhiclcpp
+			cetlib::cetlib
+                        cetlib_except::cetlib_except
 
-          MODULE_LIBRARIES larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+          MODULE_LIBRARIES larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
 			lardataobj_OpticalDetectorData
 			larcoreobj_SummaryData
 			UBOpticalChConfig_service
@@ -30,20 +31,20 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			ubcore::UBooNEGeometryHelper_service
 			ubcore_Geometry
                         nusimdata::SimulationBase
-                        ${ART_FRAMEWORK_CORE}
-			${ART_FRAMEWORK_PRINCIPAL}
-			${ART_FRAMEWORK_SERVICES_REGISTRY}
-			${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-			${ART_ROOT_IO_TFILESERVICE_SERVICE}
-                        ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-                        art_Persistency_Common
-                        art_Persistency_Provenance
-                        canvas
-                        art_Utilities
-			${MF_MESSAGELOGGER}
-	                ${FHICLCPP}
-                        cetlib
-                        cetlib_except
+                        art::Framework_Core
+			art::Framework_Principal
+			art::Framework_Services_Registry
+			art_root_io::tfile_support ROOT::Core
+			art_root_io::TFileService_service
+                        art::Framework_Services_Optional_RandomNumberGenerator_service
+                        art::Persistency_Common
+                        art::Persistency_Provenance
+                        canvas::canvas
+                        art::Utilities
+			messagefacility::MF_MessageLogger
+	                fhiclcpp::fhiclcpp
+                        cetlib::cetlib
+                        cetlib_except::cetlib_except
                         ROOT::Tree
          )
 
@@ -52,18 +53,18 @@ simple_plugin(UBOpticalChConfig "service"
 	      ubcore::UBOpReadoutMap_service
 	      larcore_Geometry_Geometry_service
 	      larcorealg_Geometry
-              art_Utilities
-              canvas
-	      ${MF_MESSAGELOGGER}
-	      ${FHICLCPP}
-              cetlib
-              cetlib_except
+              art::Utilities
+              canvas::canvas
+	      messagefacility::MF_MessageLogger
+	      fhiclcpp::fhiclcpp
+              cetlib::cetlib
+              cetlib_except::cetlib_except
 
               BASENAME_ONLY
 )
 
 simple_plugin(OpticalDRAMReadout "module"
-                  larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+                  larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
                   lardata_DetectorInfoServices_DetectorClocksServiceStandard_service # BUG note that we link to a specific service implementation
                   lardataobj_OpticalDetectorData
                   UBOpticalChConfig_service
@@ -73,20 +74,20 @@ simple_plugin(OpticalDRAMReadout "module"
                   ubcore::UBooNEGeometryHelper_service
                   ubcore_Geometry
                   nusimdata::SimulationBase
-                  ${ART_FRAMEWORK_CORE}
-                  ${ART_FRAMEWORK_PRINCIPAL}
-                  ${ART_FRAMEWORK_SERVICES_REGISTRY}
-                  ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-                  ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-                  ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-                  art_Persistency_Common
-                  art_Persistency_Provenance
-                  art_Utilities
-                  canvas
-                  ${MF_MESSAGELOGGER}
-                  ${FHICLCPP}
-                  cetlib
-                  cetlib_except
+                  art::Framework_Core
+                  art::Framework_Principal
+                  art::Framework_Services_Registry
+                  art_root_io::tfile_support ROOT::Core
+                  art_root_io::TFileService_service
+                  art::Framework_Services_Optional_RandomNumberGenerator_service
+                  art::Persistency_Common
+                  art::Persistency_Provenance
+                  art::Utilities
+                  canvas::canvas
+                  messagefacility::MF_MessageLogger
+                  fhiclcpp::fhiclcpp
+                  cetlib::cetlib
+                  cetlib_except::cetlib_except
 
               BASENAME_ONLY
 )

@@ -2,11 +2,11 @@
 art_make(
 	  LIB_LIBRARIES
 	                ubsim_SNStreamSim_Fmwk
-			#${MF_MESSAGELOGGER}
+			#messagefacility::MF_MessageLogger
 			#
-			#cetlib cetlib_except
+			#cetlib::cetlib cetlib_except
 
-		        cetlib cetlib_except
+		        cetlib::cetlib cetlib_except
         )
 
 

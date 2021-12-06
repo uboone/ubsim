@@ -8,7 +8,7 @@ simple_plugin(
   larsim_EventWeight_Calculators
   ubsim_EventWeight_Calculators
   ubsim_EventWeight_Calculators_BNBPrimaryHadron
-  ${MF_MESSAGELOGGER}
+  messagefacility::MF_MessageLogger
 )
 
 install_headers()

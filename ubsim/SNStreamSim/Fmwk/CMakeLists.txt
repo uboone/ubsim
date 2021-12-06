@@ -1,12 +1,12 @@
 
 art_make(
 	  LIB_LIBRARIES
-			#${MF_MESSAGELOGGER}
+			#messagefacility::MF_MessageLogger
 			#
-			#cetlib cetlib_except
+			#cetlib::cetlib cetlib_except
 
-		        ${ART_FRAMEWORK_CORE}
-		        ${FHICLCPP}
+		        art::Framework_Core
+		        fhiclcpp::fhiclcpp
         )
 
 
