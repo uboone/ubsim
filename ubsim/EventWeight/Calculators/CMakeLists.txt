@@ -5,21 +5,21 @@ art_make(
   LIB_LIBRARIES
     larsim_EventWeight_Base
     lardata_Utilities
-    nugen_NuReweight_art
-    nugen_NuReweight
+    nugen::NuReweight_art
+    nugen::NuReweight
     larsim_Simulation
-    nurandom_RandomUtils_NuRandomService_service
-    nusimdata_SimulationBase
-    ${ART_FRAMEWORK_CORE}
-    ${ART_FRAMEWORK_PRINCIPAL}
-    ${ART_FRAMEWORK_SERVICES_REGISTRY}
-    ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-    art_Persistency_Common canvas canvas
-    art_Persistency_Provenance canvas canvas
-    art_Utilities canvas canvas
-    cetlib cetlib_except
-    ${FHICLCPP}
-    ${CLHEP}
+    nurandom::RandomUtils_NuRandomService_service
+    nusimdata::SimulationBase
+    art::Framework_Core
+    art::Framework_Principal
+    art::Framework_Services_Registry
+    art::Framework_Services_Optional_RandomNumberGenerator_service
+    art::Persistency_Common canvas::canvas canvas::canvas
+    art::Persistency_Provenance canvas::canvas canvas::canvas
+    art::Utilities canvas::canvas canvas::canvas
+    cetlib::cetlib cetlib_except
+    fhiclcpp::fhiclcpp
+    CLHEP::CLHEP
 
     ${G4_LIB_LIST}
 )
