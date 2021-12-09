@@ -147,6 +147,8 @@ art_make(
     ${G4_LIB_LIST}
     ${LOG4CPP}
     ${MF_MESSAGELOGGER}
+    ubsim_EventWeight_Calculators_MultiVariateRNG
+
 )
 
 install_headers()
@@ -155,3 +157,4 @@ install_source()
 
 add_subdirectory(BNBPrimaryHadron)
 add_subdirectory(Splines)
+add_subdirectory(Alg)

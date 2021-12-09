@@ -5,7 +5,11 @@
 # Author: C Thorpe
 
 # Find the installation of larsim in the tarball
+echo "Finding larsim installation"
+echo LD_LIBRARY_PATH
+echo $LD_LIBRARY_PATH | tr : \\n
 LARSIM_DIR=$(echo $LD_LIBRARY_PATH | tr : \\n | grep larsim)
+echo $LARSIM_DIR
 echo $LARSIM_DIR > LARSIM_DIR.txt
 
 # Remove everything after the word larsim from the address and replace with g4rw dir
@@ -20,5 +24,5 @@ GEANT4RW_PATH=$TARBALL_PATH/geant4reweight/v01_08_01/slf7.x86_64.e17.prof/bin
 export PATH=$GEANT4RW_PATH:$PATH
 
 echo "Setting GEANT4RW_DATA_DIR"
-export GEANT4RW_DATA_DIR=$TARBALL_PATH/uboonedata/v08_00_00_13h/systematics/reint
+export GEANT4RW_DATA_DIR=$TARBALL_PATH/uboonedata/v08_00_00_49/systematics/reint
 echo $GEANT4RW_DATA_DIR

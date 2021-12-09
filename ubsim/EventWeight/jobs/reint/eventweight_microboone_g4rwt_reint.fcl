@@ -25,13 +25,14 @@ microboone_eventweight_reint: {
     type: Geant4
     random_seed: 58
     parameters: @local::PiPlusParameters
-    mode: pm1sigma
+    mode: cov
     number_of_multisims: 1000
     #fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_piplus.root"  
     #xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_piplus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piplus.root"
     fracsfile: "$GEANT4RW_DATA_DIR/g4_fracs_piplus.root"  
     xsecfile: "$GEANT4RW_DATA_DIR/g4_cross_section_piplus.root"
-    makeoutputtree: true
+    covmatrixfile: "$GEANT4RW_DATA_DIR/piP_fit.root" 
+    makeoutputtree: false
     pdg_to_reweight: 211
     debug: false
     UseAlternateWeight: false
@@ -52,13 +53,13 @@ microboone_eventweight_reint: {
     type: Geant4
     random_seed: 59
     parameters: @local::PiMinusParameters
-    mode: pm1sigma
+    mode: multisim
     number_of_multisims: 1000
     #fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piminus.root"
     #xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piminus.root"
     fracsfile: "$GEANT4RW_DATA_DIR/g4_fracs_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_piminus.root"
     xsecfile: "$GEANT4RW_DATA_DIR/g4_cross_section_piminus.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_piminus.root"
-    makeoutputtree: true
+    makeoutputtree: false
     pdg_to_reweight: -211
     debug: false
     UseAlternateWeight: false
@@ -80,13 +81,13 @@ microboone_eventweight_reint: {
     type: Geant4
     random_seed: 60
     parameters: @local::ProtonParameters
-    mode: pm1sigma
+    mode: multisim
     number_of_multisims: 1000
     #fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_proton.root"  
     #xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_proton.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
     fracsfile: "$GEANT4RW_DATA_DIR/g4_fracs_proton.root"  
     xsecfile: "$GEANT4RW_DATA_DIR/g4_cross_section_proton.root" 
-    makeoutputtree: true
+    makeoutputtree: false
     pdg_to_reweight: 2212
     debug: false
     UseAlternateWeight: false
@@ -114,7 +115,7 @@ microboone_eventweight_reint: {
     #xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_neutron.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
     fracsfile: "$GEANT4RW_DATA_DIR/g4_fracs_neutron.root"  
     xsecfile: "$GEANT4RW_DATA_DIR/g4_cross_section_neutron.root"
-    makeoutputtree: true
+    makeoutputtree: false
     pdg_to_reweight: 2112
     debug: false
     UseAlternateWeight: false
@@ -136,13 +137,13 @@ microboone_eventweight_reint: {
     type: Geant4
     random_seed: 62
     parameters: @local::LambdaParameters
-    mode: pm1sigma
+    mode: multisim
     number_of_multisims: 1000
     #fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_Lambda.root"  
     #xsecfile: "$UBOONEDATA_DIR/systematics/reint/g4_cross_section_Lambda.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_proton.root"
     fracsfile: "$GEANT4RW_DATA_DIR/g4_fracs_Lambda.root"  
     xsecfile: "$GEANT4RW_DATA_DIR/g4_cross_section_Lambda.root"
-    makeoutputtree: true
+    makeoutputtree: false
     pdg_to_reweight: 3122
     debug: false
     UseAlternateWeight: false

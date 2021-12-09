@@ -1,0 +1,82 @@
+#include "services_microboone.fcl"
+#include "microboone_eventweight_service.fcl"
+#include "seedservice_microboone.fcl"
+#include "eventweight_microboone_sep24.fcl"
+
+process_name: EventWeightSep24
+
+services: {
+  TimeTracker: {}
+  MemoryTracker: {}
+  RandomNumberGenerator: {}
+  FileCatalogMetadata: @local::art_file_catalog_mc
+  NuRandomService: @local::microboone_seedservice
+  UBEventWeight: @local::microboone_eventweight_service
+  TFileService: { fileName: "microboone_reint_hist.root" }
+  ExptGeoHelperInterface: @local::microboone_geometry_helper
+  Geometry: @local::microboone_geo
+}
+
+source: {
+  module_type: RootInput
+}
+
+physics: {
+ producers: {
+   eventweightSep24:  @local::microboone_eventweight_sep24
+   rns: {
+     module_type: "RandomNumberSaver"
+   }
+ }
+ 
+ simulate: [ rns, eventweightSep24 ]
+ stream1: [ out1 ]
+ trigger_paths: [ simulate ]
+ end_paths: [ stream1 ]
+}
+
+outputs: {
+ out1: {
+   module_type: RootOutput
+   fileName: "%ifb_%tc_eventweight.root"
+   dataTier: "detector-simulated"
+   compressionLevel: 1
+ }
+}
+
+# Only run 1 geant4 weight calculator at a time
+physics.producers.eventweightSep24.weight_functions: [
+            "horncurrent",
+            "expskin",
+            "piplus",
+            "piminus",
+            "kplus",
+            "kzero",
+            "kminus",
+            "pioninexsec",
+            "pionqexsec",
+            "piontotxsec",
+            "nucleontotxsec",
+            "nucleonqexsec",
+            "nucleoninexsec",
+            "RPA_CCQE",
+            "XSecShape_CCMEC",
+            "AxFFCCQEshape",
+            "VecFFCCQEshape",
+            "DecayAngMEC",
+            "Theta_Delta2Npi",
+            "ThetaDelta2NRad",
+            "NormCCCOH",
+            "NormNCCOH",
+            "TunedCentralValue",
+            "All",
+            "RootinoFix",
+            "splines_general",
+            "xsr_scc_Fv3",
+            "xsr_scc_Fa3",
+            "reinteractions_piplus"
+#            "reinteractions_piminus",
+#            "reinteractions_proton",
+#            "reinteractions_neutron",
+#            "reinteractions_Lambda"
+         ]

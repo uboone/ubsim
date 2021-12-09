@@ -11,6 +11,8 @@
 #include "TDirectory.h"
 #include "TFile.h"
 #include "TH1D.h"
+#include "TH2D.h"
+#include "TMatrixDSym.h"
 #include "Geant4/G4LossTableManager.hh"
 #include "Geant4/G4ParticleTable.hh"
 #include "Geant4/G4ParticleDefinition.hh"
@@ -40,6 +42,7 @@
 // local include
 #include "Headers/BetheBlochForG4ReweightValid.h"
 #include "Headers/NeutronEnergyDepForG4Reweight.h"
+#include "Alg/MultiVariateRNG.h"
 
 namespace evwgh {
 
@@ -92,6 +95,10 @@ private:
 
   bool fDebug; //!< print debug statements
 
+  unsigned int fSeed;
+
+  TH2D* h_Cov;
+
   DECLARE_WEIGHTCALC(Geant4WeightCalc)
 };
 
@@ -114,6 +121,8 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
   fNsims = pset.get<int> ("number_of_multisims", 0);
   fPdg = pset.get<int> ("pdg_to_reweight");
   fDebug = pset.get<bool> ("debug",false);
+  fSeed = pset.get<int>("random_seed"); 
+  
   fUseAlternateWeight = pset.get<bool>("UseAlternateWeight",false); 
 
   std::vector<fhicl::ParameterSet> g4rw_material_pars = pset.get<std::vector<fhicl::ParameterSet>>("g4rw_materials");
@@ -148,6 +157,17 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
   // Throw an exception if LAr not found 
   if(theReweighter == nullptr)
      throw cet::exception("Geant4WeightCalc") << "LAr not found in materials list" << std::endl;
+
+  // Get covariance matrix if requested
+  if(mode == "cov"){
+  std::string CovFileName = pset.get<std::string>("covmatrixfile");
+  TFile CovFile( CovFileName.c_str() , "OPEN" ); 
+  CovFile.GetObject("FitCovHist",h_Cov);
+  h_Cov->SetDirectory(0); 
+  CovFile.Close();
+  }
+
+  
 
   // Make output trees to save things for quick and easy validation
   art::ServiceHandle<art::TFileService> tfs;
@@ -238,6 +258,58 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
       UniverseVals.push_back(tmp_vals);
     } // loop over Nsims (j)
   } // multisim
+  else if(mode=="cov"){
+
+     std::cout << "Making covariance matrix with " << FitParNames.size() << " parameters" << std::endl;
+
+     TMatrixDSym Cov(FitParNames.size());
+
+     for(size_t i_p=0;i_p<FitParNames.size();i_p++){
+        for(size_t j_p=0;j_p<FitParNames.size();j_p++){
+
+           std::cout << "Preparing parameters " << i_p << " " << j_p << std::endl;
+
+           bool found=false;
+
+           // see if parameter exists in the matrix
+           for(int i_b=0;i_b<h_Cov->GetNbinsX()+1;i_b++){
+              for(int j_b=0;j_b<h_Cov->GetNbinsY()+1;j_b++){
+                 if(FitParNames.at(i_p) ==  h_Cov->GetXaxis()->GetBinLabel(i_b) && FitParNames.at(j_p) ==  h_Cov->GetYaxis()->GetBinLabel(j_b)){
+                    std::cout << "Found parameters " << FitParNames.at(i_p) << " " << FitParNames.at(j_p) << " in covariance matrix, value = " << h_Cov->GetBinContent(i_b,j_b) << std::endl;
+                    Cov[i_p][j_p] = h_Cov->GetBinContent(i_b,j_b);                
+                    found=true;
+                 }        
+              }
+           }  
+
+           if(!found){
+              std::cout << "Parameter combination " << FitParNames.at(i_p) << " and " << FitParNames.at(j_p) << " not in covariance matrix, using fcl sigma instead" << std::endl;
+              if(i_p == j_p) Cov[i_p][j_p] = FitParSigmas.at(i_p)*FitParSigmas.at(i_p);
+              else Cov[i_p][j_p] = 0.;
+           }
+
+        }
+     }
+
+
+     // Create multivariate gaussian RNG
+     MultiVariateRNG R(fSeed,Cov);
+
+     for (unsigned j=0; j<fNsims; j++){
+
+        std::map<std::string, double> tmp_vals;
+        std::vector<double> thisuniverse = R.GetParameterSet();
+
+        for(size_t i_p=0;i_p<FitParNames.size();i_p++) 
+           tmp_vals[FitParNames.at(i_p)] = thisuniverse.at(i_p);
+
+        UniverseVals.push_back(tmp_vals);
+        std::cout << "Got " << UniverseVals.size() << " universes" << std::endl;
+     } 
+
+
+  }
+
   else{
     // Anything else mode: Set parameters to user-defined nominal value
     UniverseVals.push_back(theNominals);
@@ -366,7 +438,9 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
  
            //For now, just going to reweight the points within the LAr of the TPC
            // TODO check if this is right
-           if ( strcmp( testmaterial1->GetName(), "LAr" ) ) break;
+           if ( strcmp( testmaterial1->GetName(), "LAr" ) || fGeometryService->VolumeName( testpoint1 ) != "volTPCActive_0") break;
+
+        //   std::cout << fGeometryService->VolumeName( testpoint1 ) << std::endl;; 
 
             trajpoint_X.push_back( X );
             trajpoint_Y.push_back( Y );
