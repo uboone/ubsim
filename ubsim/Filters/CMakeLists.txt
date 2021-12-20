@@ -9,7 +9,7 @@ art_make( BASENAME_ONLY
 
           MODULE_LIBRARIES larcorealg_Geometry
                         larcore_Geometry_Geometry_service
-                        larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+                        larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
                         lardata_Utilities
 			lardataobj_RecoBase
 			lardataobj_AnalysisBase
@@ -17,31 +17,25 @@ art_make( BASENAME_ONLY
 			larcoreobj_SummaryData
 			larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
                         lardataobj_RawData
-                        nurandom_RandomUtils_NuRandomService_service
-			nusimdata_SimulationBase
-                        ${ART_FRAMEWORK_CORE}
-                        ${ART_FRAMEWORK_PRINCIPAL}
-                        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-                        ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-                        ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-                        ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-                        art_Persistency_Common canvas
-                        art_Persistency_Provenance canvas
-                        art_Utilities canvas
-			${LARRECO_LIB}
-			${LARDATA_LIB}
-                        ${MF_MESSAGELOGGER}                        
-                        ${FHICLCPP}
-                        cetlib cetlib_except
+                        nurandom::RandomUtils_NuRandomService_service
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support ROOT::Core
+                        art::Framework_Services_Optional_RandomNumberGenerator_service
+                        art_root_io::TFileService_service
+                        art::Persistency_Common canvas::canvas
+                        art::Persistency_Provenance canvas::canvas
+                        art::Utilities canvas::canvas
+                        messagefacility::MF_MessageLogger
+                        fhiclcpp::fhiclcpp
+                        cetlib::cetlib
+                        cetlib_except::cetlib_except
                         CLHEP::CLHEP
-			${ROOT_PHYSICS}
-                        ${ROOT_GEOM}
-                        ${ROOT_XMLIO}
-                        ${ROOT_GDML}
-                        ${ROOT_BASIC_LIB_LIST}
-			${ROOT_CORE}
-			${ROOT_EG}
-			CRY
+                        ROOT::Geom
+                        ROOT::XMLIO
+                        ROOT::Gdml
+
         )
 
 install_headers()

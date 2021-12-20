@@ -6,7 +6,7 @@ art_make( BASENAME_ONLY
           EXCLUDE SimWireMicroBooNE_module.cc
           MODULE_LIBRARIES larcorealg_Geometry
                         larcore_Geometry_Geometry_service
-                        larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+                        larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
 			lardata_Utilities_LArFFT_service
                         lardata_Utilities
                         larevt_Filters
@@ -14,32 +14,31 @@ art_make( BASENAME_ONLY
                         lardataobj_RawData
                         ubevt::SignalShapingServiceMicroBooNE_service
 			larevt_CalibrationDBI_Providers
-                        nurandom_RandomUtils_NuRandomService_service
-                        ${ART_FRAMEWORK_CORE}
-                        ${ART_FRAMEWORK_PRINCIPAL}
-                        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-                        ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-                        ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-                        ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-                        art_Persistency_Common canvas
-                        art_Persistency_Provenance canvas
-                        art_Utilities canvas
-                        ${MF_MESSAGELOGGER}
-
-                        ${FHICLCPP}
-                        cetlib cetlib_except
+                        nurandom::RandomUtils_NuRandomService_service
+                        art::Framework_Core
+                        art::Framework_Principal
+                        art::Framework_Services_Registry
+                        art_root_io::tfile_support ROOT::Core
+                        art::Framework_Services_Optional_RandomNumberGenerator_service
+                        art_root_io::TFileService_service
+                        art::Persistency_Common canvas::canvas
+                        art::Persistency_Provenance canvas::canvas
+                        art::Utilities canvas::canvas
+                        messagefacility::MF_MessageLogger
+                        fhiclcpp::fhiclcpp
+                        cetlib::cetlib
+                        cetlib_except::cetlib_except
                         CLHEP::CLHEP
-                        ${ROOT_GEOM}
-                        ${ROOT_XMLIO}
-                        ${ROOT_GDML}
-
+                        ROOT::Geom
+                        ROOT::XMLIO
+                        ROOT::Gdml
         )
 
 simple_plugin(SimWireMicroBooNE "module"
           BASENAME_ONLY
               larcorealg_Geometry
               larcore_Geometry_Geometry_service
-              larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+              larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
 	      lardata_Utilities_LArFFT_service
               lardata_Utilities
               larevt_Filters
@@ -48,25 +47,24 @@ simple_plugin(SimWireMicroBooNE "module"
               lardata_DetectorInfoServices_DetectorClocksServiceStandard_service # BUG note that we link to a specific service implementation
               ubevt::SignalShapingServiceMicroBooNE_service
               larevt_CalibrationDBI_Providers
-              nurandom_RandomUtils_NuRandomService_service
-              ${ART_FRAMEWORK_CORE}
-              ${ART_FRAMEWORK_PRINCIPAL}
-              ${ART_FRAMEWORK_SERVICES_REGISTRY}
-              ${ART_ROOT_IO_TFILE_SUPPORT} ${ROOT_CORE}
-              ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-              ${ART_ROOT_IO_TFILESERVICE_SERVICE}
-              art_Persistency_Common canvas
-              art_Persistency_Provenance canvas
-              art_Utilities canvas
-              ${MF_MESSAGELOGGER}
-
-              ${FHICLCPP}
-              cetlib cetlib_except
+              nurandom::RandomUtils_NuRandomService_service
+              art::Framework_Core
+              art::Framework_Principal
+              art::Framework_Services_Registry
+              art_root_io::tfile_support ROOT::Core
+              art::Framework_Services_Optional_RandomNumberGenerator_service
+              art_root_io::TFileService_service
+              art::Persistency_Common canvas::canvas
+              art::Persistency_Provenance canvas::canvas
+              art::Utilities canvas::canvas
+              messagefacility::MF_MessageLogger
+              fhiclcpp::fhiclcpp
+              cetlib::cetlib
+              cetlib_except::cetlib_except
               CLHEP::CLHEP
-              ${ROOT_GEOM}
-              ${ROOT_XMLIO}
-              ${ROOT_GDML}
-
+              ROOT::Geom
+              ROOT::XMLIO
+              ROOT::Gdml
         )
 
 # install_headers()
