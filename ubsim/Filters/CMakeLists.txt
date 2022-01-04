@@ -35,6 +35,8 @@ art_make( BASENAME_ONLY
                         ROOT::Geom
                         ROOT::XMLIO
                         ROOT::Gdml
+                        ROOT::EG
+                        CRY::CRY
 
         )
 

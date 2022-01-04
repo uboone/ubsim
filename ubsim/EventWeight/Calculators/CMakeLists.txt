@@ -88,7 +88,7 @@ art_make(
     CLHEP::CLHEP
 
     ${G4_LIB_LIST}
-    log4cpp
+    log4cpp::log4cpp
     ${MF_MESSAGELOGGER}
 )
 

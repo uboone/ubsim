@@ -37,11 +37,11 @@ art_make(
     ${Boost_SYSTEM_LIBRARY}
     ${G4_LIB_LIST}
     ${MF_MESSAGELOGGER}
-    GFwGHEP
-    GFwInt
-    GFwNtp
-    GFwNum
-    GFwUtl
+    GENIE::GFwGHEP
+    GENIE::GFwInt
+    GENIE::GFwNtp
+    GENIE::GFwNum
+    GENIE::GFwUtl
 ) 
 
 install_headers()

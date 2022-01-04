@@ -7,6 +7,7 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			lardataobj_RawData
 			lardata_Utilities
 			larcorealg_Geometry
+                        nurandom::RandomUtils_NuRandomService_service
                         nusimdata::SimulationBase
                         art::Framework_Core
 			art::Framework_Principal
