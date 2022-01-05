@@ -19,7 +19,6 @@ art_make_library(
         art::Utilities
         canvas::canvas cetlib cetlib_except
         
-        ${ROOT_BASIC_LIB_LIST}
 	jsoncpp
 	lardata_Utilities
 	lardataobj_RawData

@@ -33,7 +33,6 @@ art_make(
     cetlib::cetlib cetlib_except
     fhiclcpp::fhiclcpp
     CLHEP::CLHEP
-    ${ROOT_BASIC_LIB_LIST}
     
     ${G4_LIB_LIST}
     messagefacility::MF_MessageLogger

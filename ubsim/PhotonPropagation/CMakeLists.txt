@@ -22,7 +22,6 @@ art_make(
         fhiclcpp::fhiclcpp
         cetlib::cetlib cetlib_except
         CLHEP::CLHEP
-        ${ROOT_BASIC_LIB_LIST}
 )
 
 install_fhicl()
