@@ -12,11 +12,13 @@ art_make_library(
   LIBRARY_NAME WireCellubsim
   SOURCE ${wcls_components_sources}
   LIBRARIES
-        art_Framework_Core art_Framework_Principal art_Framework_Services_Registry
-        art_Persistency_Common art_Persistency_Provenance
-        art_Utilities
-        canvas cetlib cetlib_except
-        ${Boost_SYSTEM_LIBRARY}
+        art::Framework_Core
+        art::Framework_Principal
+        art::Framework_Services_Registry
+        art::Persistency_Common art_Persistency_Provenance
+        art::Utilities
+        canvas::canvas cetlib cetlib_except
+        
         ${ROOT_BASIC_LIB_LIST}
 	jsoncpp
 	lardata_Utilities
@@ -33,6 +35,6 @@ art_make_library(
 	WireCellUtil
 	WireCellGen
 	WireCellAux
-        ${FHICLCPP}
-        cetlib cetlib_except
+        fhiclcpp::fhiclcpp
+        cetlib::cetlib cetlib_except
 )

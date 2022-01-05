@@ -15,7 +15,7 @@ art_make( BASENAME_ONLY
 			lardataobj_AnalysisBase
                         larevt_Filters
 			larcoreobj_SummaryData
-			larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
                         lardataobj_RawData
                         nurandom::RandomUtils_NuRandomService_service
                         art::Framework_Core

@@ -5,23 +5,22 @@ art_make(
         larsim_PhotonPropagation_PhotonVisibilityService_service
         larsim_IonizationScintillation
         lardataobj_Simulation
-        larsim_Simulation nug4_ParticleNavigation lardataobj_Simulation
+        larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
         larcorealg_Geometry
         larcore_Geometry_Geometry_service
-        ${ART_FRAMEWORK_CORE}
-        ${ART_FRAMEWORK_PRINCIPAL}
-        ${ART_FRAMEWORK_SERVICES_REGISTRY}
-        ${ART_FRAMEWORK_SERVICES_OPTIONAL}
-        ${ART_FRAMEWORK_SERVICES_OPTIONAL_TFILESERVICE_SERVICE}
-        ${ART_FRAMEWORK_SERVICES_OPTIONAL_RANDOMNUMBERGENERATOR_SERVICE}
-        nurandom_RandomUtils_NuRandomService_service
-        art_Persistency_Common
-        art_Persistency_Provenance
-        art_Utilities
-        canvas
-        ${MF_MESSAGELOGGER}
-        ${FHICLCPP}
-        cetlib cetlib_except
+        art::Framework_Core
+        art::Framework_Principal
+        art::Framework_Services_Registry
+        
+        art::Framework_Services_Optional_RandomNumberGenerator_service
+        nurandom::RandomUtils_NuRandomService_service
+        art::Persistency_Common
+        art::Persistency_Provenance
+        art::Utilities
+        canvas::canvas
+        messagefacility::MF_MessageLogger
+        fhiclcpp::fhiclcpp
+        cetlib::cetlib cetlib_except
         CLHEP::CLHEP
         ${ROOT_BASIC_LIB_LIST}
 )
