@@ -16,7 +16,8 @@ art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
 			art_root_io::TFileService_service
                         art::Framework_Services_Optional_RandomNumberGenerator_service
                         art::Persistency_Common
-			art::Utilities canvas::canvas
+			art::Utilities
+                        canvas::canvas
 			messagefacility::MF_MessageLogger
 	                fhiclcpp::fhiclcpp
 			cetlib::cetlib

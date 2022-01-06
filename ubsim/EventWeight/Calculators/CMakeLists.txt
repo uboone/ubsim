@@ -20,9 +20,10 @@ art_make(
     art::Framework_Principal
     art::Framework_Services_Registry
     art::Framework_Services_Optional_RandomNumberGenerator_service
-    art::Persistency_Common canvas::canvas canvas::canvas
-    art::Persistency_Provenance canvas::canvas canvas::canvas
-    art::Utilities canvas::canvas canvas::canvas
+    art::Persistency_Common
+    art::Persistency_Provenance
+    art::Utilities
+    canvas::canvas
     cetlib::cetlib
     cetlib_except::cetlib_except
     fhiclcpp::fhiclcpp

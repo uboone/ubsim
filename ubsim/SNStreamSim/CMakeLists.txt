@@ -3,7 +3,8 @@ art_make(
 	  LIB_LIBRARIES
 
 			art::Framework_Core
-			art::Utilities canvas::canvas
+			art::Utilities
+                        canvas::canvas
 			messagefacility::MF_MessageLogger
 			cetlib::cetlib
                         cetlib_except::cetlib_except

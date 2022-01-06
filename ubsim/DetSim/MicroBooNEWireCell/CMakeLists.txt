@@ -17,7 +17,8 @@ art_make_library(
         art::Framework_Services_Registry
         art::Persistency_Common art_Persistency_Provenance
         art::Utilities
-        canvas::canvas cetlib
+        canvas::canvas
+        cetlib::cetlib
         cetlib_except::cetlib_except
         
 	jsoncpp

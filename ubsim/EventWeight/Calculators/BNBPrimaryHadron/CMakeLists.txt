@@ -18,9 +18,10 @@ art_make(LIBRARY_NAME  ubsim_EventWeight_Calculators_BNBPrimaryHadron
                        larsim_Simulation
                        nurandom::RandomUtils_NuRandomService_service
                        nusimdata::SimulationBase
-                       art::Persistency_Common canvas::canvas canvas::canvas
-                       art::Persistency_Provenance canvas::canvas canvas::canvas
-                       art::Utilities canvas::canvas canvas::canvas
+                       art::Persistency_Common
+                       art::Persistency_Provenance
+                       art::Utilities
+                       canvas::canvas
                        fhiclcpp::fhiclcpp
         )
 
