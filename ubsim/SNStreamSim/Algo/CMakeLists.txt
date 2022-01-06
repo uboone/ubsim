@@ -4,9 +4,11 @@ art_make(
 	                ubsim_SNStreamSim_Fmwk
 			#messagefacility::MF_MessageLogger
 			#
-			#cetlib::cetlib cetlib_except
+			#cetlib::cetlib
+                        #cetlib_except::cetlib_except
 
-		        cetlib::cetlib cetlib_except
+		        cetlib::cetlib
+                        cetlib_except::cetlib_except
         )
 
 

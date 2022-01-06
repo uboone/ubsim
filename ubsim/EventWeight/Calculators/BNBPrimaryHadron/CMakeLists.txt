@@ -4,7 +4,8 @@ art_make(LIBRARY_NAME  ubsim_EventWeight_Calculators_BNBPrimaryHadron
          LIB_LIBRARIES
                        larsim_EventWeight_Base
                        lardata_Utilities
-                       cetlib::cetlib cetlib_except
+                       cetlib::cetlib
+                       cetlib_except::cetlib_except
                        art::Framework_Core
                        art::Framework_Principal
                        art::Framework_Services_Registry

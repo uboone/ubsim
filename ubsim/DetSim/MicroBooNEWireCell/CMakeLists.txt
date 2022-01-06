@@ -17,7 +17,8 @@ art_make_library(
         art::Framework_Services_Registry
         art::Persistency_Common art_Persistency_Provenance
         art::Utilities
-        canvas::canvas cetlib cetlib_except
+        canvas::canvas cetlib
+        cetlib_except::cetlib_except
         
 	jsoncpp
 	lardata_Utilities
@@ -35,5 +36,6 @@ art_make_library(
 	WireCellGen
 	WireCellAux
         fhiclcpp::fhiclcpp
-        cetlib::cetlib cetlib_except
+        cetlib::cetlib
+        cetlib_except::cetlib_except
 )

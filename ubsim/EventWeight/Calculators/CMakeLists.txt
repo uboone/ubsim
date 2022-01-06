@@ -23,7 +23,8 @@ art_make(
     art::Persistency_Common canvas::canvas canvas::canvas
     art::Persistency_Provenance canvas::canvas canvas::canvas
     art::Utilities canvas::canvas canvas::canvas
-    cetlib::cetlib cetlib_except
+    cetlib::cetlib
+    cetlib_except::cetlib_except
     fhiclcpp::fhiclcpp
     CLHEP::CLHEP
 

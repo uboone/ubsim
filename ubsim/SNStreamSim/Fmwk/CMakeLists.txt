@@ -3,7 +3,8 @@ art_make(
 	  LIB_LIBRARIES
 			#messagefacility::MF_MessageLogger
 			#
-			#cetlib::cetlib cetlib_except
+			#cetlib::cetlib
+                        #cetlib_except::cetlib_except
 
 		        art::Framework_Core
 		        fhiclcpp::fhiclcpp
