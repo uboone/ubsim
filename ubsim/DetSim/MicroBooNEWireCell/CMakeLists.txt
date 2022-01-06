@@ -15,7 +15,8 @@ art_make_library(
         art::Framework_Core
         art::Framework_Principal
         art::Framework_Services_Registry
-        art::Persistency_Common art_Persistency_Provenance
+        art::Persistency_Common
+        art::Persistency_Provenance
         art::Utilities
         canvas::canvas
         cetlib::cetlib
