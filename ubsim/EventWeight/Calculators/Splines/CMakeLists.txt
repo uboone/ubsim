@@ -34,7 +34,6 @@ art_make(
     fhiclcpp::fhiclcpp
     CLHEP::CLHEP
     
-    ${G4_LIB_LIST}
     messagefacility::MF_MessageLogger
     GENIE::GFwGHEP
     GENIE::GFwInt
