@@ -1,5 +1,16 @@
 #! /bin/bash
 
+# Skip for debug build.
+
+if [[ x$MRB_QUALS =~ x.*debug.* ]]; then
+  echo "Skipping for debug build."
+  exit 0
+fi
+if [[ x`which lar` =~ x.*debug.* ]]; then
+  echo "Skipping for debug build."
+  exit 0
+fi
+
 # Loop over all installed fcl files.
 
 find $MRB_BUILDDIR/ubsim/job -name \*.fcl -print | while read fcl
