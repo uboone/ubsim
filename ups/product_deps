@@ -32,7 +32,7 @@ product                 version
 ubevt                   v09_42_00
 larsim                  v09_22_00
 larwirecell		v09_06_00
-geant4reweight		v01_12_00
+geant4reweight		v01_13_00
 cetbuildtools	        v8_18_09	-	only_for_build
 end_product_list
 
