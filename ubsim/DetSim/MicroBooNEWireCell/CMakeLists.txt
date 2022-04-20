@@ -40,4 +40,5 @@ art_make_library(
         fhiclcpp::fhiclcpp
         cetlib::cetlib
         cetlib_except::cetlib_except
+        ${CMAKE_DL_LIBS}
 )
