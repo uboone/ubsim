@@ -2,6 +2,7 @@
 #define UBOPTICALCHCONFIG_CXX
 
 #include "UBOpticalChConfig.h"
+#include "larcore/CoreUtils/ServiceUtil.h" // lar::providerFrom<>()
 #include "lardata/DetectorInfoServices/LArPropertiesService.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "ubcore/Geometry/UBOpReadoutMap.h" // uboonecode

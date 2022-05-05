@@ -33,6 +33,7 @@
 #include "lardataobj/Simulation/SimEnergyDeposit.h"
 #include "larsim/IonizationScintillation/ISCalcSeparate.h"
 
+#include "larcore/CoreUtils/ServiceUtil.h" // lar::providerFrom<>()
 #include "lardata/DetectorInfoServices/LArPropertiesService.h"
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 #include "larsim/Simulation/LArG4Parameters.h"
