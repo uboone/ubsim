@@ -29,9 +29,9 @@ table_fragment_end
 # Add the dependent product and version
 
 product                 version
-ubevt                   v09_50_00
-larsim                  v09_23_00
-larwirecell		v09_08_02
+ubevt                   v09_52_00
+larsim                  v09_23_01
+larwirecell		v09_08_03
 geant4reweight		v01_14_00
 cetbuildtools	        v8_18_09	-	only_for_build
 end_product_list
