@@ -1,8 +1,27 @@
 #include "photpropservices.fcl"
+#include "opticalsimparameterisations_microboone.fcl"
 
 BEGIN_PROLOG
 
-microboone_photonvisibilityservice: @local::standard_photonvisibilityservice
-microboone_photonvisibilityservice.LibraryFile: "PhotonPropagation/LibraryData/uboone_photon_library_v6_70kV.root"
+microboone_photonvisibilityservice:  
+{
+   # Start from the standard microboone visibility service
+   @table::standard_photonvisibilityservice
+
+   LibraryFile: "PhotonPropagation/LibraryData/uboone_photon_library_v6_70kV.root"
+   # uboone_photon_library_v6_70kV uboone_photon_library_v5
+}
+
+
+microboone_Nhits_vuv_prop_photonvisibilityservice:
+{
+   @table::standard_photonvisibilityservice
+   # Flags to enable parameterizations, disable library
+   UseNhitsModel: true
+   DoNotLoadLibrary: true
+   # MicroBooNE-specific VUV semi-analytic Nhits parameters
+   @table::microboone_vuv_RS60cm_hits_parameterization
+   
+}
 
 END_PROLOG
