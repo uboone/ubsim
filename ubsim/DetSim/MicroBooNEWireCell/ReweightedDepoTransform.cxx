@@ -15,7 +15,7 @@
 #include "WireCellUtil/NamedFactory.h"
 #include "WireCellUtil/Units.h"
 #include "WireCellUtil/Persist.h"
-#include "WireCellIface/SimpleDepo.h"
+#include "WireCellAux/SimpleDepo.h"
 
 #include <memory>
 #include <math.h>
@@ -209,7 +209,7 @@ IDepo::pointer wcls::ReweightedDepoTransform::modify_depo(WirePlaneId wpid, IDep
 
 
 
-
+    using WireCell::Aux::SimpleDepo;
     auto newdepo = std::make_shared<SimpleDepo>(depo->time(), pos, depo->charge()*scale, 
             depo, depo->extent_long(), depo->extent_tran());
     return newdepo;
