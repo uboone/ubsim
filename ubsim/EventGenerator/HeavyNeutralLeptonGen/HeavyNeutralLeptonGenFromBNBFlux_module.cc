@@ -1,11 +1,10 @@
 ////////////////////////////////////////////////////////////////////////
-// Class:       HeavyNeutralLeptonGenFromNuMIFlux
+// Class:       HeavyNeutralLeptonGenFromBNBFlux
 // Plugin Type: producer (art v3_01_02)
-// File:        HeavyNeutralLeptonGenFromNuMIFlux_module.cc
+// File:        HeavyNeutralLeptonGenFromBNBFlux_module.cc
 //
-// Generated at Fri Mar 20 11:25:54 2020 by Pawel Guzowski using cetskelgen
+// Generated at Fri Mar 20 11:25:20 2020 by Pawel Guzowski using cetskelgen
 // from cetlib version v3_05_01.
-// adapted to HNL by Owen Goodwin
 ////////////////////////////////////////////////////////////////////////
 
 #include "art/Framework/Core/EDProducer.h"
@@ -18,44 +17,40 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/TFileService.h"
+#include "art_root_io/TFileService.h"
 #include "larcore/Geometry/Geometry.h"
 #include "nusimdata/SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/MCFlux.h"
 #include "larcoreobj/SummaryData/RunData.h"
 #include "larcoreobj/SummaryData/POTSummary.h"
-#include "dk2nu/tree/dk2nu.h"
-#include "nutools/RandomUtils/NuRandomService.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 #include "CLHEP/Random/RandFlat.h"
 #include "lardata/Utilities/AssociationUtil.h"
 
-#include <vector>
-#include <string>
+#include <memory>
 
 #include "TTree.h"
 
 #include "GenKinematics.h"
-#include "FluxReaderNuMI.h"
-
-#include <memory>
+#include "FluxReaderBNB.h"
 
 namespace hpsgen {
-  class HeavyNeutralLeptonGenFromNuMIFlux;
+  class HeavyNeutralLeptonGenFromBNBFlux;
 }
 
 
-class hpsgen::HeavyNeutralLeptonGenFromNuMIFlux : public art::EDProducer {
+class hpsgen::HeavyNeutralLeptonGenFromBNBFlux : public art::EDProducer {
 public:
-  explicit HeavyNeutralLeptonGenFromNuMIFlux(fhicl::ParameterSet const& p);
-  ~HeavyNeutralLeptonGenFromNuMIFlux();
+  explicit HeavyNeutralLeptonGenFromBNBFlux(fhicl::ParameterSet const& p);
+  ~HeavyNeutralLeptonGenFromBNBFlux();
   // The compiler-generated destructor is fine for non-base
   // classes without bare pointers or other resource use.
 
   // Plugins should not be copied or assigned.
-  HeavyNeutralLeptonGenFromNuMIFlux(HeavyNeutralLeptonGenFromNuMIFlux const&) = delete;
-  HeavyNeutralLeptonGenFromNuMIFlux(HeavyNeutralLeptonGenFromNuMIFlux&&) = delete;
-  HeavyNeutralLeptonGenFromNuMIFlux& operator=(HeavyNeutralLeptonGenFromNuMIFlux const&) = delete;
-  HeavyNeutralLeptonGenFromNuMIFlux& operator=(HeavyNeutralLeptonGenFromNuMIFlux&&) = delete;
+  HeavyNeutralLeptonGenFromBNBFlux(HeavyNeutralLeptonGenFromBNBFlux const&) = delete;
+  HeavyNeutralLeptonGenFromBNBFlux(HeavyNeutralLeptonGenFromBNBFlux&&) = delete;
+  HeavyNeutralLeptonGenFromBNBFlux& operator=(HeavyNeutralLeptonGenFromBNBFlux const&) = delete;
+  HeavyNeutralLeptonGenFromBNBFlux& operator=(HeavyNeutralLeptonGenFromBNBFlux&&) = delete;
 
   // Required functions.
   void produce(art::Event& e) override;
@@ -71,17 +66,16 @@ private:
   // Declare member data here.
   CLHEP::HepRandomEngine& fRNG;
   GenKinematics *fKinHelper;
-  FluxReaderNuMI *fFluxHelper;
+  FluxReaderBNB *fFluxHelper;
 
   const std::string fScalarParams;
   const std::vector<double> fScalarMass;
   const double fModelTheta;
   const double fMaxWeight;
 
+  const int fProdLepType;
+  const int fDecayLepType;
 
-
-  int fProdLepType;
-  int fDecayLepType;
 
   double fPrevTotPOT;
   double fPrevTotGoodPOT;
@@ -89,13 +83,12 @@ private:
   const std::vector<int> fSelectKaonPDGs;
   const std::string fSelectKaons;
   const double fCutKaonMom;
-  const int    fCutKaonPos;
-  const double fCutKaonZPos;
 
   const double fGlobalTimeOffset;
   const double fBeamWindowDuration;
-  const std::vector<int> fFinalStateCut;
 
+  const std::vector<double> fBeamWindowCut;
+  const std::vector<int> fFinalStateCut;
 
   const bool fMajoranaDecay;
 
@@ -128,11 +121,11 @@ private:
   double fEventTree_daughter2_energy;
   int    fEventTree_daughter1_pdg;
   int    fEventTree_daughter2_pdg;
+//testcomment
   double fEventTree_weight;
   double fEventTree_flux_weight;
   double fEventTree_decay_weight;
   double fEventTree_branching_ratio_weight;
-  int    fEventTree_daughter_pdg;
   int    fEventTree_kaon_pdg;
   bool   fEventTree_selected;
 
@@ -145,10 +138,10 @@ private:
 };
 
 
-hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::HeavyNeutralLeptonGenFromNuMIFlux(fhicl::ParameterSet const& p)
-  : EDProducer{p} ,
+hpsgen::HeavyNeutralLeptonGenFromBNBFlux::HeavyNeutralLeptonGenFromBNBFlux(fhicl::ParameterSet const& p)
+  : EDProducer{p},
   fRNG(art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "hpsgen", p, "RNGSeed")),
-  fKinHelper(new GenKinematics(p)), fFluxHelper(new FluxReaderNuMI(p, fRNG)),
+  fKinHelper(new GenKinematics(p)), fFluxHelper(new FluxReaderBNB(p, fRNG)),
   fScalarParams(p.get<std::string>("scalar_params","fixed")),
   fScalarMass(
       [&p](){
@@ -167,11 +160,11 @@ hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::HeavyNeutralLeptonGenFromNuMIFlux(fhi
   fSelectKaonPDGs(p.get<std::vector<int>>("select_kaon_pdgs",{})),
   fSelectKaons(p.get<std::string>("select_kaon_decay_type","")),
   fCutKaonMom(p.get<double>("cut_kaon_mom",0.)),
-  fCutKaonPos(p.get<int>("cut_kaon_pos",0)),
-  fCutKaonZPos(p.get<double>("cut_kaon_z_pos",0.)),
-  // note these are not interaction times or trigger times, but neutrino times, in line with e.g GENIE:
-  fGlobalTimeOffset(p.get<double>("global_time_offset",5627.5)), // time of numi window start
-  fBeamWindowDuration(p.get<double>("beam_window_duration",9600)), // numi window duration
+  // note these are not interaction times or trigger time, but neutrino times, in line with e.g GENIE:
+  fGlobalTimeOffset(p.get<double>("global_time_offset",3125.)), // time of bnb window start
+  fBeamWindowDuration(p.get<double>("beam_window_duration",1600)), // bnb window duration
+  // this is the interaction time:
+  fBeamWindowCut(p.get<std::vector<double>>("beam_window_cut",{})), // cut on final interaction time, eg for HNL window [4800,5400]
   fFinalStateCut(p.get<std::vector<int>>("final_state_cut",{})), // cut on final state, 
   fMajoranaDecay(p.get<bool>("majorana_decay",true)), //both sign decays or only right signed
   fTreeOnlyMode(p.get<bool>("tree_only_mode",false)) // produce only the TFile tree, not the artroot output to process faster
@@ -182,11 +175,9 @@ hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::HeavyNeutralLeptonGenFromNuMIFlux(fhi
   if(!fTreeOnlyMode) {
     produces< std::vector<simb::MCTruth> >();
     produces< std::vector<simb::MCFlux>  >();
-    produces< std::vector<bsim::Dk2Nu> >();
     produces< art::Assns<simb::MCTruth, simb::MCFlux> >();
-    produces< art::Assns<simb::MCTruth, bsim::Dk2Nu> >();
   }
-
+  
   if(fScalarMass.empty()) {
     throw cet::exception("Configuration") << "Need to supply a model scalar mass";
   }
@@ -198,6 +189,9 @@ hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::HeavyNeutralLeptonGenFromNuMIFlux(fhi
   }
   if(!fSelectKaons.empty() && fSelectKaons != "kdar" && fSelectKaons != "kdif") {
     throw cet::exception("Configuration") << "select_kaon_decay_type should be 'kdar' or 'kdif', or not defined";
+  }
+  if(!fBeamWindowCut.empty() && fBeamWindowCut.size() != 2) {
+     throw cet::exception("Configuration") << "beam_window_cut should be [ t1, t2 ]";
   }
   if(!fFinalStateCut.empty()) {
     const int first = fFinalStateCut.front();
@@ -241,17 +235,17 @@ hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::HeavyNeutralLeptonGenFromNuMIFlux(fhi
   fEventTree->Branch("daughter2_mom_y",&fEventTree_daughter2_mom_y);
   fEventTree->Branch("daughter2_mom_z",&fEventTree_daughter2_mom_z);
   fEventTree->Branch("daughter2_energy",&fEventTree_daughter2_energy);
-  fEventTree->Branch("daughter1_pdg",&fEventTree_daughter1_pdg);
-  fEventTree->Branch("daughter2_pdg",&fEventTree_daughter2_pdg);
   fEventTree->Branch("weight",&fEventTree_weight);
   fEventTree->Branch("flux_weight",&fEventTree_flux_weight);
   fEventTree->Branch("decay_weight",&fEventTree_decay_weight);
   fEventTree->Branch("branching_ratio_weight",&fEventTree_branching_ratio_weight);
   fEventTree->Branch("selected",&fEventTree_selected);
+  
   fEventTree->Branch("kaon_pdg",&fEventTree_kaon_pdg);
+  fEventTree->Branch("daughter1_pdg",&fEventTree_daughter1_pdg);
+  fEventTree->Branch("daughter2_pdg",&fEventTree_daughter2_pdg);
 
-
-  fSubRunTree = tfs->make<TTree>("subrun_tree","pot counting tree");
+  fSubRunTree = tfs->make<TTree>("subrun_tree","");
   fSubRunTree->Branch("tot_pot",&fSubRunTree_totpot);
   fSubRunTree->Branch("n_kaons_read",&fSubRunTree_n_kaons_read);
   fSubRunTree->Branch("n_scalars_gen",&fSubRunTree_n_scalars_gen);
@@ -259,35 +253,32 @@ hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::HeavyNeutralLeptonGenFromNuMIFlux(fhi
   fSubRunTree_n_kaons_read = 0;
   fSubRunTree_n_scalars_gen = 0;
   fSubRunTree_n_scalar_decays_in_detector = 0;
-
-  //std::cerr << "constructor mass: "<<fScalarMass.front()<<" theta: "<<fModelTheta<<" max_weight "<<fMaxWeight<<std::endl;
 }
 
-hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::~HeavyNeutralLeptonGenFromNuMIFlux() {
+hpsgen::HeavyNeutralLeptonGenFromBNBFlux::~HeavyNeutralLeptonGenFromBNBFlux()
+{
   delete fKinHelper;
   delete fFluxHelper;
 }
 
-void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
+void hpsgen::HeavyNeutralLeptonGenFromBNBFlux::produce(art::Event& e)
 {
   double HNL_mass = 0.;
-
   if(fScalarParams == "fixed") {
     HNL_mass = fScalarMass.front();
-  
-  }
+    }
   else if(fScalarParams == "random") {
     HNL_mass = CLHEP::RandFlat::shoot(&fRNG,fScalarMass.front(),fScalarMass.back());
-    
+    std::cout << "Choosing scalar mass "<<HNL_mass<< " from range ["<<fScalarMass.front()<<","<<fScalarMass.back() <<"] "<<std::endl;
   }
   TLorentzVector kaon_4mom, kaon_pos;
   int pion_type;
   int kaon_pdg;
-
-
   while(true) {
     const double flux_weight = fFluxHelper->get_kaon(kaon_4mom,kaon_pos,kaon_pdg,pion_type);
+
     fSubRunTree_n_kaons_read++;
+
     if(!fSelectKaonPDGs.empty()) {
       if(std::find(fSelectKaonPDGs.begin(), fSelectKaonPDGs.end(), kaon_pdg) == fSelectKaonPDGs.end()) {
         continue;
@@ -298,19 +289,18 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
     }
     if(fSelectKaons == "kdar") {
       if(kaon_4mom.Vect().Mag() > fCutKaonMom) continue;
-      if(fCutKaonPos > 0 && kaon_pos.Z() < fCutKaonZPos) continue;
-      if(fCutKaonPos < 0 && kaon_pos.Z() > fCutKaonZPos) continue;
     }
     std::multimap<int,TLorentzVector> res;
     fSubRunTree_n_scalars_gen++;
     const bool passes = (fScalarParams == "random") ?
-      fKinHelper->generate_uniform(kaon_pos, kaon_4mom, kaon_pdg,HNL_mass, fRNG, res) :
-      fKinHelper->generate(kaon_pos, kaon_4mom, kaon_pdg ,HNL_mass,fProdLepType, fDecayLepType,flux_weight, fMaxWeight, fRNG, res);
+      fKinHelper->generate_uniform(kaon_pos,kaon_4mom,kaon_pdg, HNL_mass,  fRNG, res) :
+      fKinHelper->generate(kaon_pos,kaon_4mom, kaon_pdg, HNL_mass, fProdLepType, fDecayLepType,flux_weight, fMaxWeight, fRNG, res);
     if(passes) {
+      
       const TLorentzVector& dk_pos = res.find(0)->second;
       const TLorentzVector& scalar_mom = res.find(54)->second;
       auto d1ptr = [&res]() {
-        for(auto i = res.begin(); i != res.end(); ++i) {
+      for(auto i = res.begin(); i != res.end(); ++i) {
           auto const& v = *i;
           if((abs(v.first) == 13) | (abs(v.first) == 11)) return i; //want the first entry to be lepton. if i do it old way get the first neg pdg
           // if(v.first != 54 && v.first != 99 && v.first != 0) return i;
@@ -321,13 +311,14 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
       auto const& d2ptr = [&res,&d1ptr]() {
         for(auto i = res.begin(); i != res.end(); ++i) {
           auto const& v = *i;
-          if(v.first != 54 && v.first != 99 && v.first != 0  && i != d1ptr) return i;
+          if(v.first != 54 && v.first != 99 && v.first != 0 && i != d1ptr) return i;
         };
         return res.end();
       }();
       auto const& d2 = *d2ptr;
 
       bool selected = true;
+
       if(!fFinalStateCut.empty()) {
         if(fFinalStateCut.front() > 0) {
           if(std::find(fFinalStateCut.begin(), fFinalStateCut.end(), std::abs(d1.first)) == fFinalStateCut.end()) {
@@ -340,15 +331,19 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
           }
         }
       }
+      
+      TLorentzVector shift_to_detector_time(0.,0.,0.,fGlobalTimeOffset+CLHEP::RandFlat::shoot(&fRNG,fBeamWindowDuration));
+      const double dk_t = (dk_pos+shift_to_detector_time).T();
+      if(!fBeamWindowCut.empty() && ( dk_t < fBeamWindowCut.front() || dk_t > fBeamWindowCut.back() )) {
+        selected=false;
+      }
 
-
-      if(!fMajoranaDecay) {
-        if(d1.first/kaon_pdg < 0) { //if daughter and kaon pdg codes are oppesite signs it is a non allowed decay
+        if(!fMajoranaDecay) {
+          if(d1.first/kaon_pdg < 0) { //if daughter and kaon pdg codes are oppesite signs it is a non allowed decay
             selected = false;
           }
         }
 
-      
       if(fMaxWeight < 0.) {
         auto const& r99 = res.find(99);
         if(r99 == res.end()) {
@@ -360,8 +355,8 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
         fEventTree_flux_weight = r99->second.Z();
         //const double qq = (fScalarParams == "random" ? model_theta : 0.);
       }
-      TLorentzVector shift_to_detector_time(0.,0.,0.,fGlobalTimeOffset+CLHEP::RandFlat::shoot(&fRNG,fBeamWindowDuration));
 
+      
       fEventTree_kaon_mom_x = kaon_4mom.X();
       fEventTree_kaon_mom_y = kaon_4mom.Y();
       fEventTree_kaon_mom_z = kaon_4mom.Z();
@@ -393,19 +388,19 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
       fEventTree->Fill();
 
       fSubRunTree_n_scalar_decays_in_detector++;
-      
+
       if(!selected) continue;
 
       if(!fTreeOnlyMode) {
+
         std::unique_ptr< std::vector<simb::MCTruth> > truthcol(new std::vector<simb::MCTruth>(1));
         simb::MCTruth& truth = truthcol->back();
-
 
         simb::MCParticle kaon(1,kaon_pdg,"beamline",-1,kaon_4mom.M(),0);
         kaon.AddTrajectoryPoint(kaon_pos+shift_to_detector_time,kaon_4mom);
 
         simb::MCParticle scalar(2,54,"decay",1,HNL_mass,2);
-        scalar.AddTrajectoryPoint(kaon_pos+shift_to_detector_time,scalar_mom);
+        scalar.AddTrajectoryPoint(kaon_pos,scalar_mom);
         scalar.AddTrajectoryPoint(dk_pos+shift_to_detector_time,scalar_mom);
 
         simb::MCParticle dgt1(3,d1.first,"decay",2,d1.second.M(),1);
@@ -427,20 +422,12 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
         std::unique_ptr< std::vector<simb::MCFlux> > mcfluxcol(new std::vector<simb::MCFlux>(1));
         fFluxHelper->get_MCFlux(mcfluxcol->back());
 
-        std::unique_ptr< std::vector<bsim::Dk2Nu> > dk2nucol(new std::vector<bsim::Dk2Nu>);
-        dk2nucol->push_back(*fFluxHelper->get_dk2nu());
-
         std::unique_ptr< art::Assns<simb::MCTruth, simb::MCFlux> > tfassn(new art::Assns<simb::MCTruth, simb::MCFlux>);
         util::CreateAssn(*this, e, *truthcol, *mcfluxcol, *tfassn, mcfluxcol->size()-1, mcfluxcol->size());
 
-        std::unique_ptr< art::Assns<simb::MCTruth, bsim::Dk2Nu> > tdkassn(new art::Assns<simb::MCTruth, bsim::Dk2Nu>);
-        util::CreateAssn(*this, e, *truthcol, *dk2nucol, *tdkassn, dk2nucol->size()-1, dk2nucol->size());
-
         e.put(std::move(truthcol));
         e.put(std::move(mcfluxcol));
-        e.put(std::move(dk2nucol));
         e.put(std::move(tfassn));
-        e.put(std::move(tdkassn));
       }
 
       return;
@@ -448,13 +435,13 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::produce(art::Event& e)
   }
 }
 
-void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::beginJob()
+void hpsgen::HeavyNeutralLeptonGenFromBNBFlux::beginJob()
 {
   fPrevTotPOT = 0.;
   fPrevTotGoodPOT = 0.;
 }
 
-void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::beginRun(art::Run& r)
+void hpsgen::HeavyNeutralLeptonGenFromBNBFlux::beginRun(art::Run& r)
 {
   art::ServiceHandle<geo::Geometry const> geo;
   r.put(std::make_unique<sumdata::RunData>(geo->DetectorName()));
@@ -478,13 +465,13 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::beginRun(art::Run& r)
   r.put(std::move(mc_config),"generatorConfig");
 }
 
-void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::beginSubRun(art::SubRun& sr)
+void hpsgen::HeavyNeutralLeptonGenFromBNBFlux::beginSubRun(art::SubRun& sr)
 {
   fPrevTotPOT = fFluxHelper->POTSeen(fMaxWeight);
   fPrevTotGoodPOT = fFluxHelper->POTSeen(fMaxWeight);
 }
 
-void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::endSubRun(art::SubRun& sr)
+void hpsgen::HeavyNeutralLeptonGenFromBNBFlux::endSubRun(art::SubRun& sr)
 {
   auto p = std::make_unique<sumdata::POTSummary>();
   p->totpot = fFluxHelper->POTSeen(fMaxWeight) - fPrevTotPOT;
@@ -494,4 +481,4 @@ void hpsgen::HeavyNeutralLeptonGenFromNuMIFlux::endSubRun(art::SubRun& sr)
   sr.put(std::move(p));
 }
 
-DEFINE_ART_MODULE(hpsgen::HeavyNeutralLeptonGenFromNuMIFlux)
+DEFINE_ART_MODULE(hpsgen::HeavyNeutralLeptonGenFromBNBFlux)
