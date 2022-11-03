@@ -30,17 +30,17 @@ table_fragment_end
 
 product                 version
 ubevt                   v09_60_00
-larsim                  v09_26_01
-larwirecell		v09_09_03
-geant4reweight		v01_14_00
+larsim                  v09_28_00
+larwirecell		v09_10_01
+geant4reweight		v01_14_02
 cetbuildtools	        v8_18_09	-	only_for_build
 end_product_list
 
 qualifier      ubevt          larsim	      larwirecell     geant4reweight
-c7:debug       c7:debug       c7:debug        c7:debug        c7:debug:s112
-c7:prof        c7:prof        c7:prof         c7:prof         c7:prof:s112
-e20:debug      e20:debug      e20:debug       e20:debug       e20:debug:s112
-e20:prof       e20:prof       e20:prof        e20:prof        e20:prof:s112
+c7:debug       c7:debug       c7:debug        c7:debug        c7:debug:s117
+c7:prof        c7:prof        c7:prof         c7:prof         c7:prof:s117
+e20:debug      e20:debug      e20:debug       e20:debug       e20:debug:s117
+e20:prof       e20:prof       e20:prof        e20:prof        e20:prof:s117
 end_qualifier_list
 
 # Preserve tabs and formatting in emacs and vi / vim:
