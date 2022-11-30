@@ -290,8 +290,8 @@ namespace detsim {
         throw cet::exception(__FUNCTION__)<<"Invalid test wire channel: "<<fTestWire;
 
       std::vector<unsigned int> channels;
-      for(auto const& plane_id : geo->IteratePlaneIDs())
-        channels.push_back(geo->PlaneWireToChannel(plane_id.Plane,fTestWire));
+      for(auto const& plane_id : geo->Iterate<geo::PlaneID>())
+        channels.push_back(geo->PlaneWireToChannel(geo::WireID(plane_id,fTestWire)));
 
       double xyz[3] = { std::numeric_limits<double>::max() };
       for(auto const& ch : channels) {
