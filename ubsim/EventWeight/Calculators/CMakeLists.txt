@@ -4,6 +4,8 @@ include_directories ( $ENV{GEANT4_FQ_DIR}/include )
 include_directories ( $ENV{GENIE_INC} )
 include_directories ( $ENV{GENIE_INC}/GENIE )
 include_directories ( $ENV{LOG4CPP_INC} )
+include_directories ( $ENV{PPFX_DIR}/include )
+include_directories ( $ENV{DK2NU_INC} )
 
 # Determine the major version number of GENIE based on the GENIE_VERSION
 # variable set by the genie ups product. Define the GENIE_PRE_R3 preprocessor
@@ -124,6 +126,9 @@ art_make(
     nusimdata_SimulationBase
     ReweightBaseLib
     PropBaseLib
+    ppfx
+    ${DK2NU_TREE}
+    ${DK2NU_GENIE}
     ${ART_FRAMEWORK_CORE}
     ${ART_FRAMEWORK_PRINCIPAL}
     ${ART_FRAMEWORK_SERVICES_REGISTRY}
