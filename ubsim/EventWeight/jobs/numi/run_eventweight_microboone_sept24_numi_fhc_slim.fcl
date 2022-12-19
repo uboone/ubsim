@@ -3,7 +3,7 @@
 #include "seedservice_microboone.fcl"
 #include "eventweight_microboone_sept24_numi_fhc_slim.fcl"
 
-process_name: EventWeightSept24
+process_name: EventWeightSep24
 
 services: {
   TimeTracker: {}
@@ -23,13 +23,13 @@ source: {
 
 physics: {
  producers: {
-   eventweight:  @local::microboone_eventweight_sept24
+   eventweightSep24:  @local::microboone_eventweight_sept24
    rns: {
      module_type: "RandomNumberSaver"
    }
  }
  
- simulate: [ rns, eventweight ]
+ simulate: [ rns, eventweightSep24 ]
  stream1: [ out1 ]
  trigger_paths: [ simulate ]
  end_paths: [ stream1 ]

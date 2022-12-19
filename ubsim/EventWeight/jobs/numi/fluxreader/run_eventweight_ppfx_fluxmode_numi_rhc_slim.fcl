@@ -5,7 +5,7 @@
 
 # This runs the cv only. This is for ppfx correcting the beamline variation CV.
 
-process_name: EventWeightSept24
+process_name: EventWeightSep24
 
 services: {
   TimeTracker: {}
@@ -25,13 +25,13 @@ source: {
 
 physics: {
  producers: {
-   eventweight:  @local::microboone_eventweight_sept24
+   eventweightSep24:  @local::microboone_eventweight_sept24
    rns: {
      module_type: "RandomNumberSaver"
    }
  }
  
- simulate: [ rns, eventweight ]
+ simulate: [ rns, eventweightSep24 ]
  stream1: [ out1 ]
  trigger_paths: [ simulate ]
  end_paths: [ stream1 ]
@@ -47,7 +47,7 @@ outputs: {
 }
 
 
-physics.producers.eventweight.genie_module_label: "flux"
-physics.producers.eventweight.weight_functions: [ppfx_cv]
+physics.producers.eventweightSep24.genie_module_label: "flux"
+physics.producers.eventweightSep24.weight_functions: [ppfx_cv]
 
-physics.producers.eventweight.ppfx_cv.input_labels: ["flux"]
+physics.producers.eventweightSep24.ppfx_cv.input_labels: ["flux"]
