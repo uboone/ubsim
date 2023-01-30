@@ -29,7 +29,7 @@ table_fragment_end
 # Add the dependent product and version
 
 product                 version
-ubevt                   v09_62_00
+ubevt                   v09_65_03
 larsim                  v09_31_02
 larwirecell		v09_11_00
 geant4reweight		v01_14_04
