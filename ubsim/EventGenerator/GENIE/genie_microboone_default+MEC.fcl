@@ -5,7 +5,8 @@ BEGIN_PROLOG
 microboone_genie:                    @local::standard_genie
 microboone_genie.BeamName:           "booster"
 microboone_genie.GlobalTimeOffset:   1.6e6                  #microboone reads out 1.6ms before the spill
-microboone_genie.EventGeneratorList:      "Default+CCMEC+NCMEC"
+#microboone_genie.EventGeneratorList:      "Default+CCMEC+NCMEC"
+microboone_genie.EventGeneratorList:      "Default"
 # Other EventGeneratorLists can be found here:
 #     $GENIE/config/EventGeneratorListAssembler.xml
 microboone_genie_hist:               @local::microboone_genie
