@@ -1,0 +1,69 @@
+# Contains information required for:
+# Corrections for semi-analytic number of hits models for VUV light
+
+# *************************************************************************************************
+#          PARAMETERS SETS FOR SEMI-ANALYTIC SIMULATION ARE DEFINED HERE             
+# *************************************************************************************************     
+
+BEGIN_PROLOG
+
+# VUV/DIRECT LIGHT: NUMBER OF HITS CORRECTIONS
+
+# microboone Gaisser-Hillas for RS 60 cm.   
+# Includes Wires							
+GH_PARS_RS60cm_flat_microboone: [ [1.24311, 1.19373, 1.16035, 1.0906, 0.992181, 0.873219, 0.698876, 0.579054, 0.632623], 
+								  [76.4885, 78.063, 91.8608, 92.7925, 95.6894, 86.5367, 95.1473, 89.6631, -24.4389], 
+								  [33.6082, 35.2574, 31.4765, 31.4699, 32.275, 38.3301, 42.2509, 42.7058, 62.0652], 
+								  [-600, -600, -600, -600, -600, -600, -600, -600, -600] ]
+GH_border_RS60cm_angulo_flat_microboone: [5, 15, 25, 35, 45, 55, 65, 75, 85]
+GH_border_RS60cm_flat_microboone: [ [-4.68479e-05, 9.39781e-06, -8.32644e-05, -9.90597e-05, -8.69056e-05, -0.000142664, -2.56835e-05, -2.14246e-05, 6.41523e-05],
+							   		[-0.0180535, -0.015915, -0.0455532, -0.0232563, -0.0342591, 0.00768945, -0.0307165, -0.0464754, -0.0768394],
+							   		[-0.00608564, -0.0184841, 0.00476958, 0.00265766, 0.0111053, 0.00265417, 0.0103227, 0.016604, 0.0221199] ]
+
+
+
+# microboone Gaisser-Hillas for RS 100 cm.   
+# Includes Wires
+GH_PARS_RS100cm_flat_microboone: [ [1.17018, 1.12717, 1.08726, 1.01897, 0.921227, 0.79019, 0.635791, 0.50406, 0.44997], 
+								   [86.3807, 86.4639, 101.655, 100.19, 109.325, 105.568, 120.987, 122.089, 34.6461], 
+								   [48.752, 51.912, 46.164, 46.067, 44.3282, 52.9195, 55.6563, 57.5083, 77.4917], 
+								   [-600, -600, -600, -600, -600, -600, -600, -600, -600] ]
+GH_border_RS100cm_angulo_flat_microboone: [5, 15, 25, 35, 45, 55, 65, 75, 85]
+GH_border_RS100cm_flat_microboone: [ [-3.2512e-05, -6.74456e-07, -4.96112e-05, -8.08526e-05, -7.29981e-05, -8.71574e-05, -3.24908e-06, -2.44532e-05, -2.66568e-05],
+							   		 [-0.0229092, -0.0212868, -0.0440007, -0.0149089, -0.0284958, 0.0272497, -0.0305519, -0.0314931, -0.00688459],
+							   		 [-0.00555113, -0.0207465, 0.00641588, 0.00323537, 0.0142513, -0.00701227, 0.011138, 0.019068, 0.0106612] ]
+
+
+microboone_vuv_RS60cm_hits_parameterization:
+{
+ FlatPDCorr: true
+ GH_PARS_flat: @local::GH_PARS_RS60cm_flat_microboone
+ GH_border_angulo_flat: @local::GH_border_RS60cm_angulo_flat_microboone
+ GH_border_flat: @local::GH_border_RS60cm_flat_microboone
+ 
+ delta_angulo_vuv: 10
+ PMT_radius: 15.24
+
+}
+
+microboone_vuv_RS100cm_hits_parameterization:
+{
+ FlatPDCorr: true
+ GH_PARS_flat: @local::GH_PARS_RS100cm_flat_microboone
+ GH_border_angulo_flat: @local::GH_border_RS100cm_angulo_flat_microboone
+ GH_border_flat: @local::GH_border_RS100cm_flat_microboone
+ 
+ delta_angulo_vuv: 10
+ PMT_radius: 15.24
+
+}
+
+END_PROLOG
+
+
+
+
+
+
+
+
