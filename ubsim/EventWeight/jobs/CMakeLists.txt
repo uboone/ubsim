@@ -8,4 +8,4 @@ add_subdirectory(xs)
 add_subdirectory(reint)
 add_subdirectory(lee_weights)
 add_subdirectory(splines)
-
+add_subdirectory(numi)
