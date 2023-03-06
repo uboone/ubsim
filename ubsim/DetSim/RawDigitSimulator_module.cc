@@ -49,7 +49,7 @@ extern "C" {
 #include "nurandom/RandomUtils/NuRandomService.h"
 
 // LArSoft includes
-#include "larcore/Geometry/Geometry.h"
+#include "larcore/Geometry/WireReadout.h"
 #include "larcorealg/Geometry/CryostatGeo.h"
 #include "larcorealg/Geometry/TPCGeo.h"
 #include "larcorealg/Geometry/PlaneGeo.h"
@@ -65,10 +65,7 @@ extern "C" {
 
 namespace art {
   class Event;
-  class ParameterSet;
 }
-
-namespace geo { class Geometry; }
 
 ///Detector simulation of raw signals on wires
 namespace detsim {
@@ -156,7 +153,7 @@ namespace detsim {
     //std::cout << "in SimWire::produce " << std::endl;
 
     // get the geometry to be able to figure out signal types and chan -> plane mappings
-    art::ServiceHandle<geo::Geometry> geo;
+    auto const& channelMapAlg = art::ServiceHandle<geo::WireReadout const>()->Get();
     unsigned int signalSize = fNTicks;
     std::cout << "Signal size is " << signalSize << std::endl;
 
@@ -216,7 +213,7 @@ namespace detsim {
     //If not, through exception
 
     if ( fShapingTimeOrder.find( fShapingTime ) != fShapingTimeOrder.end() ){
-      geo::View_t view = geo->View(fChannel);
+      geo::View_t view = channelMapAlg.View(fChannel);
       auto noiseFactVec = sss->GetNoiseFactVec();
 
       fNoiseFact = noiseFactVec[(int)view].at( fShapingTimeOrder.find( fShapingTime )->second );

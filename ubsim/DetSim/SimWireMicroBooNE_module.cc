@@ -51,7 +51,7 @@
 #include "lardataobj/RawData/raw.h"
 #include "lardataobj/RawData/TriggerData.h"
 #include "lardataobj/Simulation/SimChannel.h"
-#include "larcore/Geometry/Geometry.h"
+#include "larcore/Geometry/WireReadout.h"
 #include "larcore/CoreUtils/ServiceUtil.h" // lar::providerFrom<>()
 #include "larcorealg/Geometry/GeometryCore.h"
 #include "lardata/Utilities/LArFFT.h"
@@ -285,13 +285,13 @@ namespace detsim {
     }
 
     if(fTest){
-      art::ServiceHandle<geo::Geometry> geo;
-      if(geo->Nchannels()<=fTestWire)
+      auto const& channelMapAlg = art::ServiceHandle<geo::WireReadout const>()->Get();
+      if(channelMapAlg.Nchannels()<=fTestWire)
         throw cet::exception(__FUNCTION__)<<"Invalid test wire channel: "<<fTestWire;
 
       std::vector<unsigned int> channels;
-      for(auto const& plane_id : geo->Iterate<geo::PlaneID>())
-        channels.push_back(geo->PlaneWireToChannel(geo::WireID(plane_id,fTestWire)));
+      for(auto const& plane_id : channelMapAlg.Iterate<geo::PlaneID>())
+        channels.push_back(channelMapAlg.PlaneWireToChannel(geo::WireID(plane_id,fTestWire)));
 
       double xyz[3] = { std::numeric_limits<double>::max() };
       for(auto const& ch : channels) {
@@ -384,9 +384,9 @@ namespace detsim {
       << std::endl;
 
     // get the geometry to be able to figure out signal types and chan -> plane mappings
-    art::ServiceHandle<geo::Geometry> geo;
-    const size_t N_CHANNELS = geo->Nchannels();
-    const size_t N_VIEWS = geo->Nplanes();
+    auto const& channelMapAlg = art::ServiceHandle<geo::WireReadout const>()->Get();
+    const size_t N_CHANNELS = channelMapAlg.Nchannels();
+    const size_t N_VIEWS = channelMapAlg.Nplanes({0, 0});
 
     art::ServiceHandle<util::SignalShapingServiceMicroBooNE> sss;
 
@@ -431,7 +431,7 @@ namespace detsim {
     std::vector<int> first_channel_in_view(N_VIEWS,-1);
     auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(evt);
     for(unsigned int chan = 0; chan < N_CHANNELS; ++chan) {
-      size_t view = (size_t)geo->View(chan);
+      size_t view = (size_t)channelMapAlg.View(chan);
 
       if (first_channel_in_view[view] == -1) {
         first_channel_in_view[view] = chan;
@@ -507,7 +507,7 @@ namespace detsim {
         throw std::range_error("SimWireMicroBooNE: chargeWork vector too small");
 
       //use channel number to set some useful numbers
-      size_t view = (size_t)geo->View(chan);
+      size_t view = (size_t)channelMapAlg.View(chan);
 
       //Get pedestal with random gaussian variation
       CLHEP::RandGaussQ rGaussPed(pedestalEngine_, 0.0, pedestalRetrievalAlg.PedRms(chan));
@@ -841,9 +841,9 @@ namespace detsim {
     fb = TH1::TransformHisto(_pfn_ifft,fb,"Re");
 
     // Get wire length
-    geo::GeometryCore const* geom = lar::providerFrom<geo::Geometry>();
-    std::vector<geo::WireID> wireIDs = geom->ChannelToWire(chan);
-    geo::WireGeo const& wire = geom->Wire(wireIDs.front());
+    auto const& channelMap = art::ServiceHandle<geo::WireReadout const>()->Get();
+    std::vector<geo::WireID> wireIDs = channelMap.ChannelToWire(chan);
+    geo::WireGeo const& wire = channelMap.Wire(wireIDs.front());
     double wirelength = wire.HalfL() * 2;
 
     // Calculate RMS -----------------------------------------------------
