@@ -98,7 +98,7 @@ MultiPartVertex::MultiPartVertex(fhicl::ParameterSet const & p)
   : EDProducer{p}
   // create a default random engine; obtain the random seed from NuRandomService,
   // unless overridden in configuration with key "Seed"
-  , _flatRandom(art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, p, "Seed"))
+  , _flatRandom(art::ServiceHandle<rndm::NuRandomService>()->registerAndSeedEngine(createEngine(0), p, "Seed"))
 {
   produces< std::vector<simb::MCTruth>   >();
   produces< sumdata::RunData, art::InRun >();
@@ -231,7 +231,7 @@ void MultiPartVertex::beginRun(art::Run& run)
 
   std::unique_ptr<sumdata::RunData> runData(new sumdata::RunData(geo->DetectorName()));
 
-  run.put(std::move(runData));
+  run.put(std::move(runData), art::fullRun());
 }
 
 std::vector<size_t> MultiPartVertex::GenParticles() {

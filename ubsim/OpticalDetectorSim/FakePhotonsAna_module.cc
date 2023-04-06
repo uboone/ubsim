@@ -91,9 +91,7 @@ void FakePhotonsAna::analyze(art::Event const & evt) {
   _ch_v.reserve(wf_h->size());
 
   std::vector<int> out_wf;
-  for(size_t i=0; i<wf_h->size(); ++i) {
-    art::Ptr<::raw::OpDetWaveform> wf_ptr(wf_h,i);
-    auto const& wf = (*wf_ptr);
+  for(raw::OpDetWaveform const& wf : *wf_h) {
     int max = 0;
     int tpeak = 0;
     for(int j=0; j<(int)(wf.size()); ++j) {
@@ -108,9 +106,9 @@ void FakePhotonsAna::analyze(art::Event const & evt) {
       _wf_v.push_back(out_wf);
     }
     _max_v.push_back(max);
-    _ch_v.push_back(wf_ptr->ChannelNumber());
+    _ch_v.push_back(wf.ChannelNumber());
     _tp_v.push_back(tpeak);
-    _ts_v.push_back(wf_ptr->TimeStamp());
+    _ts_v.push_back(wf.TimeStamp());
   }
   _tree->Fill();
   

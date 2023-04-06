@@ -318,16 +318,11 @@ namespace evwgh {
 
     //get the MC generator information out of the event       
     //these are all handles to mc information.
-    art::Handle< std::vector<simb::MCTruth> > mcTruthHandle;  
-    art::Handle< std::vector<simb::MCFlux> > mcFluxHandle;
-    //art::Handle< std::vector<simb::GTruth> > gTruthHandle;
-
-    //actually go and get the stuff
-    e.getByLabel(fGenieModuleLabel,mcTruthHandle);
-    e.getByLabel(fGenieModuleLabel,mcFluxHandle);
-
-    std::vector<art::Ptr<simb::MCTruth> > mclist;
-    art::fill_ptr_vector(mclist, mcTruthHandle);
+    auto mcTruthHandle = e.getHandle< std::vector<simb::MCTruth> >(fGenieModuleLabel);
+    if (!mcTruthHandle) {
+      return {};
+    }
+    std::vector<simb::MCTruth> const& mclist = *mcTruthHandle;
 
     //libo start
     //calculate weight(s) here 
@@ -336,7 +331,6 @@ namespace evwgh {
     weight.resize(mclist.size());
     //get the Q2 of GENIE truth and Enu of GENIE truth
         
-    art::Ptr<simb::MCTruth> mctruth;
     double _fnuPDGtruth;
     double _fq2truth;
     double _fEnutruth;
@@ -344,13 +338,13 @@ namespace evwgh {
     //get the incoming neutrino's PDG Code
     
     for ( unsigned int inu=0; inu<mclist.size();inu++) {
+      simb::MCTruth const& mctruth = mclist[inu];
     
-      mctruth=mclist[inu];
       weight[inu].resize(fNmultisims);
 
-      _fnuPDGtruth=mctruth->GetNeutrino().Nu().PdgCode();
-      _fq2truth=mctruth->GetNeutrino().QSqr();
-      _fEnutruth=mctruth->GetNeutrino().Nu().E();
+      _fnuPDGtruth=mctruth.GetNeutrino().Nu().PdgCode();
+      _fq2truth=mctruth.GetNeutrino().QSqr();
+      _fEnutruth=mctruth.GetNeutrino().Nu().E();
 
       std::cout<<"Q2= "<<_fq2truth<<std::endl; 
       std::cout<<"Enu= "<<_fEnutruth<<std::endl;
@@ -366,7 +360,7 @@ namespace evwgh {
 
         std::cout<<"Nbin_q2= "<<Nbin_q2<<std::endl;
         std::cout<<"Nbin_enu= "<<Nbin_enu<<std::endl; 
-        if (mctruth->GetNeutrino().Mode() == simb::kQE) {
+        if (mctruth.GetNeutrino().Mode() == simb::kQE) {
           if (_fnuPDGtruth ==14){
             weight[inu][ind_multisim]=1-reweightingSigmas[Nbin_enu][Nbin_q2]*fWeightArray[ind_multisim];
           }
@@ -375,7 +369,7 @@ namespace evwgh {
           }
         }
         else {
-          std::cout << "Not QE, mode is " << mctruth->GetNeutrino().Mode() << std::endl;
+          std::cout << "Not QE, mode is " << mctruth.GetNeutrino().Mode() << std::endl;
           weight[inu][ind_multisim]=1;
         }
 

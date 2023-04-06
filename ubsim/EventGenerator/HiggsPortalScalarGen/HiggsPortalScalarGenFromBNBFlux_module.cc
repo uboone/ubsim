@@ -132,7 +132,7 @@ private:
 
 hpsgen::HiggsPortalScalarGenFromBNBFlux::HiggsPortalScalarGenFromBNBFlux(fhicl::ParameterSet const& p)
   : EDProducer{p},
-  fRNG(art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "hpsgen", p, "RNGSeed")),
+  fRNG(art::ServiceHandle<rndm::NuRandomService>{}->registerAndSeedEngine(createEngine(0, "HepJamesRandom", "hpsgen"), "HepJamesRandom", "hpsgen", p, "RNGSeed")),
   fKinHelper(new GenKinematics(p)), fFluxHelper(new FluxReaderBNB(p, fRNG)),
   fScalarParams(p.get<std::string>("scalar_params","fixed")),
   fScalarMass(
@@ -425,7 +425,7 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::beginJob()
 void hpsgen::HiggsPortalScalarGenFromBNBFlux::beginRun(art::Run& r)
 {
   art::ServiceHandle<geo::Geometry const> geo;
-  r.put(std::make_unique<sumdata::RunData>(geo->DetectorName()));
+  r.put(std::make_unique<sumdata::RunData>(geo->DetectorName()), art::fullRun());
   fKinHelper->update_geometry(geo);
   std::unique_ptr<std::map< std::string, double >> mc_config(new std::map< std::string, double >);
   (*mc_config)["mass_elec"] = fKinHelper->get_constants().mass_elec();
@@ -443,7 +443,7 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::beginRun(art::Run& r)
   if(fScalarParams == "fixed") {
     (*mc_config)["model_theta"] = fModelTheta;
   }
-  r.put(std::move(mc_config),"generatorConfig");
+  r.put(std::move(mc_config),"generatorConfig", art::fullRun());
 }
 
 void hpsgen::HiggsPortalScalarGenFromBNBFlux::beginSubRun(art::SubRun& sr)
@@ -459,7 +459,7 @@ void hpsgen::HiggsPortalScalarGenFromBNBFlux::endSubRun(art::SubRun& sr)
   p->totgoodpot = fFluxHelper->POTSeen(fMaxWeight) - fPrevTotGoodPOT;
   fSubRunTree_totpot = p->totpot;
   fSubRunTree->Fill();
-  sr.put(std::move(p));
+  sr.put(std::move(p), art::subRunFragment());
 }
 
 DEFINE_ART_MODULE(hpsgen::HiggsPortalScalarGenFromBNBFlux)

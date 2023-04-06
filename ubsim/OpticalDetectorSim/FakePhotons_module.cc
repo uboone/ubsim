@@ -121,7 +121,7 @@ namespace opdet {
     
     std::unique_ptr<sumdata::RunData> runData(new sumdata::RunData(geo->DetectorName()));
     
-    run.put(std::move(runData));
+    run.put(std::move(runData), art::fullRun());
     
     return;
   }

@@ -132,15 +132,11 @@ HistogramWeightWeightCalc::GetWeight(art::Event& e) {
   std::vector<std::vector<double> > weight;
 
   // MC truth information
-  art::Handle<std::vector<simb::MCTruth> > mctruthListHandle;
-  std::vector<art::Ptr<simb::MCTruth> > mclist;
-
-  if (e.getByLabel(fGenieModuleLabel, mctruthListHandle)) {
-    art::fill_ptr_vector(mclist, mctruthListHandle);
-  }
-  else {
+  auto mctruthListHandle = e.getHandle<std::vector<simb::MCTruth> >(fGenieModuleLabel);
+  if (!mctruthListHandle) {
     return weight;
   }
+  std::vector<simb::MCTruth> const& mclist = *mctruthListHandle;
 
   weight.resize(mclist.size());
 
@@ -149,7 +145,7 @@ HistogramWeightWeightCalc::GetWeight(art::Event& e) {
     weight[inu].resize(fNmultisims, 1.0);
 
     // Truth-level event filtering and kinematics
-    simb::MCNeutrino nu = mclist[inu]->GetNeutrino();
+    simb::MCNeutrino nu = mclist[inu].GetNeutrino();
     simb::MCParticle lep = nu.Lepton();
 
     int mode = nu.Mode();
