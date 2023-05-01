@@ -87,19 +87,19 @@ namespace evwgh {
     std::vector<std::vector<double> > weight;
 
     // * MC flux information
-    art::Handle< std::vector<simb::MCFlux> > mcfluxListHandle;
-    std::vector<art::Ptr<simb::MCFlux> > fluxlist;
-    if (e.getByLabel(fGenieModuleLabel,mcfluxListHandle))
-      art::fill_ptr_vector(fluxlist, mcfluxListHandle);
-    else{ return weight;}
+    auto mcfluxListHandle = e.getHandle< std::vector<simb::MCFlux> >(fGenieModuleLabel);
+    if (!mcfluxListHandle) {
+      return weight;
+    }
 
     // * MC truth information
-    art::Handle< std::vector<simb::MCTruth> > mctruthListHandle;
-    std::vector<art::Ptr<simb::MCTruth> > mclist;
-    if (e.getByLabel(fGenieModuleLabel,mctruthListHandle))
-      art::fill_ptr_vector(mclist, mctruthListHandle);
-    else{return weight;}
+    auto mctruthListHandle = e.getHandle< std::vector<simb::MCTruth> >(fGenieModuleLabel);
+    if (!mctruthListHandle) {
+      return weight;
+    }
 
+    std::vector<simb::MCFlux> const& fluxlist = *mcfluxListHandle;
+    std::vector<simb::MCTruth> const& mclist = *mctruthListHandle;
 
     weight.resize(mclist.size());
     for (unsigned int inu=0;inu<mclist.size();inu++) {
@@ -109,23 +109,23 @@ namespace evwgh {
       int ntype=-9999;
       int bin=-9999;
       
-      if ( fluxlist[inu]->fptype==211 || fluxlist[inu]->fptype==-211 ) ptype = 0;
-      else if ( fluxlist[inu]->fptype==321 || fluxlist[inu]->fptype==-321 ) ptype = 1;
-      else if ( fluxlist[inu]->fptype==130 ) ptype = 2;
-      else if ( fluxlist[inu]->fptype==13 || fluxlist[inu]->fptype==-13 ) ptype = 3;
+      if ( fluxlist[inu].fptype==211 || fluxlist[inu].fptype==-211 ) ptype = 0;
+      else if ( fluxlist[inu].fptype==321 || fluxlist[inu].fptype==-321 ) ptype = 1;
+      else if ( fluxlist[inu].fptype==130 ) ptype = 2;
+      else if ( fluxlist[inu].fptype==13 || fluxlist[inu].fptype==-13 ) ptype = 3;
       else {
-	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0]->fptype<< std::endl;
+        throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0].fptype<< std::endl;
       }
       
-      if ( fluxlist[inu]->fntype==14 ) ntype=0;
-      else if ( fluxlist[inu]->fntype==-14 ) ntype=1;
-      else if ( fluxlist[inu]->fntype==12 ) ntype=2;
-      else if ( fluxlist[inu]->fntype==-12 ) ntype=3;
+      if ( fluxlist[inu].fntype==14 ) ntype=0;
+      else if ( fluxlist[inu].fntype==-14 ) ntype=1;
+      else if ( fluxlist[inu].fntype==12 ) ntype=2;
+      else if ( fluxlist[inu].fntype==-12 ) ntype=3;
       else {
-	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0]->fptype<< std::endl;
+        throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0].fptype<< std::endl;
       }
       
-      double enu=mclist[inu]->GetNeutrino().Nu().E();
+      double enu=mclist[inu].GetNeutrino().Nu().E();
       bin=enu/0.05;     
       for (int i=0;i<fNmultisims;i++) {
 	double test = 1-(1-fRW[ptype][ntype][bin]/fCV[ptype][ntype][bin])*fWeightArray[i];

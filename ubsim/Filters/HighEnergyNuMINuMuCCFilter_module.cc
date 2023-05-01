@@ -103,36 +103,21 @@ bool lar::HighEnergyNuMINuMuCCFilter::filter(art::Event& e)
     throw std::exception();
   }
 
-  // Declare a vector of pointers with the 'MCFlux' object.                                                                                                                                             
-  std::vector<art::Ptr<simb::MCFlux> > ParentVec;
-  art::fill_ptr_vector(ParentVec, parent_h);
+  for (simb::MCFlux const& parent : *parent_h){
 
-  for (auto& parent : ParentVec){
-
-    parent_fvz   = parent->fvz;
+    // FIXME: Can this be right?  The fvz value of only the last parent is used?
+    parent_fvz   = parent.fvz;
 
   }
 
   if ( parent_fvz > 15600. ) 
     return false;
 
-  art::Handle<std::vector<simb::MCTruth> > neutrino_h;
-  e.getByLabel("generator", neutrino_h);
-
-  // make sure MCTruth info looks good                                                                                                                                                                     
-  if(!neutrino_h.isValid()) {
-    std::cerr<<"\033[93m[ERROR]\033[00m ... could not locate Neutrino!"<<std::endl;
-    throw std::exception();
-  }
-
-  std::vector<art::Ptr<simb::MCTruth> >NeutrinoVec;
-  art::fill_ptr_vector(NeutrinoVec, neutrino_h);
-
-  // loop through neutrinos..                                                                                                                                                                  
+  auto const& NeutrinoVec = e.getProduct<std::vector<simb::MCTruth>>("generator");
   for (auto& neutrino : NeutrinoVec ) {
 
     // Unpack the neutrino object to find an MCParticle.                                                                                                                                                  
-    const simb::MCNeutrino& truth_neutrino = neutrino->GetNeutrino();
+    const simb::MCNeutrino& truth_neutrino = neutrino.GetNeutrino();
     const simb::MCParticle& truth_particle = truth_neutrino.Nu();
 
     // Unpack the neutrino PDG code.

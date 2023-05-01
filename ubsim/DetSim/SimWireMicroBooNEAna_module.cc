@@ -67,27 +67,24 @@ void detsim::SimWireMicroBooNEAna::analyze(art::Event const & evt) {
 
    //std::cout << "DigSize: " << digitVecHandle->size() << std::endl;
    // How many raw digits are there? 8192?
-   for(size_t rdIter = 0; rdIter < digitVecHandle->size(); ++rdIter){ // ++ move
+   for(raw::RawDigit const& digit : *digitVecHandle) {
 
-     // get the reference to the current raw::RawDigit
-     art::Ptr<raw::RawDigit> digitVec(digitVecHandle, rdIter);
-
-     unsigned short mySize = digitVec->Samples();
+     unsigned short mySize = digit.Samples();
      //std::cout << "Size: " << mySize << std::endl;
      std::vector<float> holder(mySize);
      std::vector<short> rawadc(mySize);
 
-     uint32_t channel = digitVec->Channel();
+     uint32_t channel = digit.Channel();
 
-     for(size_t i = 0; i<digitVec->NADC(); i++) {
-       //std::cout << "i: " << i << "\tfADC[" << i << "]: " << digitVec->ADC(i) << std::endl;
+     for(size_t i = 0; i<digit.NADC(); i++) {
+       //std::cout << "i: " << i << "\tfADC[" << i << "]: " << digit.ADC(i) << std::endl;
      }
-     //std::cout << "fADC size: " << digitVec->NADC() << "\tEntry 0: " << digitVec->ADC(1236) << std::endl;
+     //std::cout << "fADC size: " << digit.NADC() << "\tEntry 0: " << digit.ADC(1236) << std::endl;
      // uncompress the data
-     raw::Uncompress(digitVec->ADCs(), rawadc, digitVec->Compression());
+     raw::Uncompress(digit.ADCs(), rawadc, digit.Compression());
 
      // loop over all adc values and subtract the pedestal
-     float pdstl = digitVec->GetPedestal();
+     float pdstl = digit.GetPedestal();
 
      std::string adcinfo="";
      for(size_t bin = 0; bin < mySize; ++bin) {

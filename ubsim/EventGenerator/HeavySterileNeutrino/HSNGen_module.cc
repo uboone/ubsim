@@ -148,7 +148,8 @@ namespace hsngen
     // create a default random engine; obtain the random seed from NuRandomService,
     // unless overridden in configuration with key "Seed"
     fEngine(art::ServiceHandle<rndm::NuRandomService>()
-            ->createEngine(*this, "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" }))
+            ->registerAndSeedEngine(createEngine(0, "HepJamesRandom", "gen"),
+                                    "HepJamesRandom", "gen", p, { "Seed", "SeedGenerator" }))
   {
     // Create larsoft products that will be added to the event
     produces< std::vector<simb::MCTruth> >();
@@ -191,7 +192,7 @@ namespace hsngen
   void HSNGen::beginRun(art::Run& run)
   {
     art::ServiceHandle<geo::Geometry> geo;
-    run.put(std::make_unique<sumdata::RunData>(geo->DetectorName()));
+    run.put(std::make_unique<sumdata::RunData>(geo->DetectorName()), art::fullRun());
   }
 
   void HSNGen::ClearData()

@@ -66,7 +66,7 @@ private:
 
 LYSimPhotonScaling::LYSimPhotonScaling(fhicl::ParameterSet const& p)
   : EDProducer{p},
-  fEngine(art::ServiceHandle<rndm::NuRandomService>{}->createEngine(*this, "HepJamesRandom", "LYscaling", p, "Seed"))
+    fEngine(art::ServiceHandle<rndm::NuRandomService>{}->registerAndSeedEngine(createEngine(0, "HepJamesRandom", "LYscaling"), "HepJamesRandom", "LYscaling", p, "Seed"))
   // More initializers here.
 {
 
