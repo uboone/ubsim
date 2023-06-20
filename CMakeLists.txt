@@ -56,6 +56,7 @@ find_ups_product( lardata v1_00_00 )
 find_ups_product( art v1_00_00 )
 find_ups_product( larcore )
 find_ups_product( nutools )
+find_ups_product( ppfx )
 
 # WireCell required
 find_ups_product( larwirecell v1_00_00 )
