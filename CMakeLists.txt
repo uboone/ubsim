@@ -55,6 +55,7 @@ find_ups_product( nugen )
 find_ups_product( nurandom )
 find_ups_product( ifdh_art )
 find_ups_product( genie )
+find_ups_product( ppfx )
 
 # WireCell required
 find_ups_product( jsoncpp )

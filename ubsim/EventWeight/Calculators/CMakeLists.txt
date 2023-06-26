@@ -4,16 +4,19 @@ include_directories ( $ENV{GEANT4_FQ_DIR}/include )
 include_directories ( $ENV{GENIE_INC} )
 include_directories ( $ENV{GENIE_INC}/GENIE )
 include_directories ( $ENV{LOG4CPP_INC} )
+include_directories ( $ENV{PPFX_DIR}/include )
+include_directories ( $ENV{DK2NU_INC} )
 
 art_make(
   LIBRARY_NAME ubsim_EventWeight_Calculators
   EXCLUDE UBGenieWeightCalc.cxx Geant4WeightCalc.cxx
   LIB_LIBRARIES
-    larsim_EventWeight_Base
-    lardata_Utilities
+    larsim::EventWeight_Base
+    lardata::Utilities
     nugen::NuReweight_art
     nugen::NuReweight
-    larsim_Simulation
+    nugen::EventGeneratorBase_GENIE
+    larsim::Simulation
     nurandom::RandomUtils_NuRandomService_service
     nusimdata::SimulationBase
     art::Framework_Core
@@ -27,6 +30,9 @@ art_make(
     cetlib::cetlib
     cetlib_except::cetlib_except
     fhiclcpp::fhiclcpp
+    ppfx::ppfx
+    dk2nu::Tree
+    dk2nu::Genie
     CLHEP::CLHEP
 
     log4cpp::log4cpp
