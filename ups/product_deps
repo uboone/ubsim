@@ -30,7 +30,7 @@ table_fragment_end
 
 product                 version
 ubevt                   v09_75_01
-larsim                  v09_36_01
+larsim                  v09_36_02
 larwirecell		v09_14_01
 geant4reweight		v01_18_01
 cetbuildtools	        v8_20_00	-	only_for_build
