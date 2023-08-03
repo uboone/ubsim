@@ -1,15 +1,10 @@
-
-art_make(
-	  LIB_LIBRARIES
-			#messagefacility::MF_MessageLogger
-			#
-			#cetlib::cetlib
-                        #cetlib_except::cetlib_except
-
-		        art::Framework_Core
-		        fhiclcpp::fhiclcpp
-        )
-
+cet_make_library(
+  SOURCE
+  CompressionAlgoBase.cxx
+  LIBRARIES
+  PUBLIC
+  fhiclcpp::fhiclcpp
+)
 
 install_headers()
 install_fhicl()

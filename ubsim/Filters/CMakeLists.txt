@@ -1,45 +1,63 @@
-if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-cet_add_compiler_flags(CXX -Wno-return-type-c-linkage )
-endif()
+cet_build_plugin(
+  CorsikaCosmicGen art::EDProducer
+  LIBRARIES
+  PRIVATE
+  larcore::Geometry_Geometry_service
+  nusimdata::SimulationBase
+  nurandom::RandomUtils_NuRandomService_service
+  nutools::EventGeneratorBase_CRY
+  CRY::CRY
+  ROOT::EG
+)
 
-#cet_find_library( CRY NAMES CRY PATHS ENV CRY_LIB NO_DEFAULT_PATH )
-include_directories ( $ENV{CRYHOME}/src )
+cet_build_plugin(
+  EtaFilter art::EDFilter
+  LIBRARIES
+  PRIVATE
+  nusimdata::SimulationBase
+)
 
-art_make( BASENAME_ONLY
+cet_build_plugin(
+  HighEnergyNuMINuMuCCFilter art::EDFilter
+  LIBRARIES
+  PRIVATE
+  lardataobj::MCBase
+  nusimdata::SimulationBase
+)
 
-          MODULE_LIBRARIES larcorealg_Geometry
-                        larcore_Geometry_Geometry_service
-                        larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
-                        lardata_Utilities
-			lardataobj_RecoBase
-			lardataobj_AnalysisBase
-                        larevt_Filters
-			larcoreobj_SummaryData
-			larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
-                        lardataobj_RawData
-                        nurandom::RandomUtils_NuRandomService_service
-                        art::Framework_Core
-                        art::Framework_Principal
-                        art::Framework_Services_Registry
-                        art_root_io::tfile_support ROOT::Core
-                        art::Framework_Services_Optional_RandomNumberGenerator_service
-                        art_root_io::TFileService_service
-                        art::Persistency_Common
-                        art::Persistency_Provenance
-                        art::Utilities
-                        canvas::canvas
-                        messagefacility::MF_MessageLogger
-                        fhiclcpp::fhiclcpp
-                        cetlib::cetlib
-                        cetlib_except::cetlib_except
-                        CLHEP::CLHEP
-                        ROOT::Geom
-                        ROOT::XMLIO
-                        ROOT::Gdml
-                        ROOT::EG
-                        CRY::CRY
+cet_build_plugin(
+  NeutrinoTruthFilter art::EDFilter
+  LIBRARIES
+  PRIVATE
+  nusimdata::SimulationBase
+)
 
-        )
+cet_build_plugin(
+  NuMIKDARFilter art::EDFilter
+  LIBRARIES
+  PRIVATE
+  lardata::DetectorPropertiesService
+  larcore::Geometry_Geometry_service
+  nusimdata::SimulationBase
+)
+
+cet_build_plugin(
+  NueBackgroundFilter art::EDFilter
+  LIBRARIES
+  PRIVATE
+  lardataobj::MCBase
+  nusimdata::SimulationBase
+)
+
+cet_build_plugin(
+  StopMuFilter art::EDFilter
+  LIBRARIES
+  PRIVATE
+  larevt::SpaceChargeService
+  lardata::DetectorClocksService
+  larcore::Geometry_Geometry_service
+  nusimdata::SimulationBase
+)
 
 install_headers()
 install_fhicl()

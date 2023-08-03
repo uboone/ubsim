@@ -1,16 +1,11 @@
-
-art_make(
-	  LIB_LIBRARIES
-	                ubsim_SNStreamSim_Fmwk
-			#messagefacility::MF_MessageLogger
-			#
-			#cetlib::cetlib
-                        #cetlib_except::cetlib_except
-
-		        cetlib::cetlib
-                        cetlib_except::cetlib_except
-        )
-
+cet_make_library(
+  SOURCE
+  AlgorithmFactory.cxx
+  MicrobooneFirmware.cxx
+  LIBRARIES
+  PUBLIC
+  ubsim::SNStreamSim_Fmwk
+)
 
 install_headers()
 install_fhicl()

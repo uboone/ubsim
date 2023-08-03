@@ -1,69 +1,40 @@
-art_make(BASENAME_ONLY
-          LIBRARY_NAME uboonecode_HiggsPortalScalarGen
-          LIB_LIBRARIES
-            larcoreobj_SummaryData
-            larcorealg_Geometry
-            larcore_Geometry_Geometry_service
-            nurandom::RandomUtils_NuRandomService_service
-            lardataobj_Simulation
-            nusimdata::SimulationBase
-            art::Framework_Core
-            art::Framework_Principal
-            art::Framework_Services_Registry
-            
-            art::Framework_Services_Optional_RandomNumberGenerator_service
-            art::Persistency_Common
-            art::Persistency_Provenance
-            art::Utilities
-            canvas::canvas
-            cetlib::cetlib
-            cetlib_except::cetlib_except
-            messagefacility::MF_MessageLogger
-            
-            fhiclcpp::fhiclcpp
-            CLHEP::CLHEP
-            SQLite::SQLite3
-            ROOT::EG
-            ROOT::Tree
-            ROOT::Geom
-	    ifdh::ifdh
-            
-            dk2nu::Tree
-            GENIE::GFwMsg
-	    GENIE::GFwParDat
-	    log4cpp::log4cpp
-      MODULE_LIBRARIES
-            uboonecode_HiggsPortalScalarGen
-            larcoreobj_SummaryData
-            larcorealg_Geometry
-            larcore_Geometry_Geometry_service
-            nurandom::RandomUtils_NuRandomService_service
-            lardataobj_Simulation
-            nusimdata::SimulationBase
-            art::Framework_Core
-            art::Framework_Principal
-            art::Framework_Services_Registry
-	    art_root_io::tfile_support ROOT::Core
-            art_root_io::TFileService_service
-            art::Persistency_Common
-            art::Persistency_Provenance
-            art::Utilities
-            canvas::canvas
-            cetlib::cetlib
-            cetlib_except::cetlib_except
-            messagefacility::MF_MessageLogger
-            
-            fhiclcpp::fhiclcpp
-            CLHEP::CLHEP
-            SQLite::SQLite3
-            ROOT::EG
-            ROOT::Geom
-	    ifdh::ifdh
-	    dk2nu::Tree
-            GENIE::GFwMsg
-	    GENIE::GFwParDat
-	    log4cpp::log4cpp
-            )
+cet_make_library(
+  SOURCE
+  FluxReader.cxx
+  FluxReaderBNB.cxx
+  FluxReaderNuMI.cxx
+  GenKinematics.cxx
+  LIBRARIES
+  PUBLIC
+  larcore::Geometry_Geometry_service
+  ifdh_art::IFDH_service
+  art::Framework_Services_Registry
+  dk2nu::Tree
+  GENIE::GFwParDat
+  fhiclcpp::fhiclcpp
+  nusimdata::SimulationBase
+  ROOT::Tree
+)
+
+cet_build_plugin(
+  HiggsPortalScalarGenFromBNBFlux art::EDProducer
+  LIBRARIES
+  PRIVATE
+  ubsim::EventGenerator_HiggsPortalScalarGen
+  lardata::Utilities
+  art_root_io::TFileService_service
+  nurandom::RandomUtils_NuRandomService_service
+)
+
+cet_build_plugin(
+  HiggsPortalScalarGenFromNuMIFlux art::EDProducer
+  LIBRARIES
+  PRIVATE
+  ubsim::EventGenerator_HiggsPortalScalarGen
+  lardata::Utilities
+  art_root_io::TFileService_service
+  nurandom::RandomUtils_NuRandomService_service
+)
 
 add_subdirectory(job)
 

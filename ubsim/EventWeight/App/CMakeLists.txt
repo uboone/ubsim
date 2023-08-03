@@ -1,17 +1,10 @@
-simple_plugin(
-  UBEventWeight service
-  larsim_EventWeight_Base
-  larsim_EventWeight_Calculators
-  ubsim_EventWeight_Calculators
-  ubsim_EventWeight_Calculators_BNBPrimaryHadron
-  larsim_EventWeight_Base
-  larsim_EventWeight_Calculators
-  ubsim_EventWeight_Calculators
-  ubsim_EventWeight_Calculators_BNBPrimaryHadron
-  messagefacility::MF_MessageLogger
+cet_build_plugin(
+  UBEventWeight art::service
+  LIBRARIES
+  PRIVATE
+  larsim::EventWeight_Base
 )
 
 install_headers()
 install_fhicl()
 install_source()
-

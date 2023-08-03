@@ -1,96 +1,100 @@
-art_make( EXCLUDE UBOpticalChConfig_service.cc OpticalDRAMReadout_module.cc
-	  #NO_PLUGINS
-	  BASENAME_ONLY
-	  LIBRARY_NAME  uboonecode_uboone_OpticalDetectorSim
-          LIB_LIBRARIES UBOpticalChConfig_service
-			larcoreobj_SummaryData
-			lardataobj_RawData
-			lardata_Utilities
-			larcorealg_Geometry
-                        nurandom::RandomUtils_NuRandomService_service
-                        nusimdata::SimulationBase
-                        art::Framework_Core
-			art::Framework_Principal
-			art::Framework_Services_Registry
-			art_root_io::tfile_support ROOT::Core
-			art_root_io::TFileService_service
-                        art::Framework_Services_Optional_RandomNumberGenerator_service
-                        art::Persistency_Common
-			art::Utilities
-                        canvas::canvas
-			messagefacility::MF_MessageLogger
-	                fhiclcpp::fhiclcpp
-			cetlib::cetlib
-                        cetlib_except::cetlib_except
-
-          MODULE_LIBRARIES larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
-			larcoreobj_SummaryData
-	       		ubevt_Database
-			UBOpticalChConfig_service
-			ubcore::UBOpReadoutMap_service
-			uboonecode_uboone_OpticalDetectorSim
-			lardata_Utilities
-			ubcore::UBooNEGeometryHelper_service
-			ubcore_Geometry
-                        nusimdata::SimulationBase
-                        art::Framework_Core
-			art::Framework_Principal
-			art::Framework_Services_Registry
-			art_root_io::tfile_support ROOT::Core
-			art_root_io::TFileService_service
-                        art::Framework_Services_Optional_RandomNumberGenerator_service
-                        art::Persistency_Common
-                        art::Persistency_Provenance
-                        canvas::canvas
-                        art::Utilities
-			messagefacility::MF_MessageLogger
-	                fhiclcpp::fhiclcpp
-                        cetlib::cetlib
-                        cetlib_except::cetlib_except
-                        ROOT::Tree
-         )
-
-simple_plugin(UBOpticalChConfig "service"
-	      ubcore_Geometry
-	      ubcore::UBOpReadoutMap_service
-	      larcore_Geometry_Geometry_service
-	      larcorealg_Geometry
-              art::Utilities
-              canvas::canvas
-	      messagefacility::MF_MessageLogger
-	      fhiclcpp::fhiclcpp
-              cetlib::cetlib
-              cetlib_except::cetlib_except
-
-              BASENAME_ONLY
+cet_build_plugin(
+  UBOpticalChConfig art::service
+  LIBRARIES
+  PUBLIC
+  ubcore::Geometry_UBOpReadoutMap_service
+  larcore::Geometry_Geometry_service
+  lardata::LArPropertiesService
 )
 
-simple_plugin(OpticalDRAMReadout "module"
-                  larsim_Simulation nug4::ParticleNavigation lardataobj_Simulation
-                  lardata_DetectorInfoServices_DetectorClocksServiceStandard_service # BUG note that we link to a specific service implementation
-                  UBOpticalChConfig_service
-                  ubcore::UBOpReadoutMap_service
-                  uboonecode_uboone_OpticalDetectorSim
-                  lardata_Utilities
-                  ubcore::UBooNEGeometryHelper_service
-                  ubcore_Geometry
-                  nusimdata::SimulationBase
-                  art::Framework_Core
-                  art::Framework_Principal
-                  art::Framework_Services_Registry
-                  art_root_io::tfile_support ROOT::Core
-                  art_root_io::TFileService_service
-                  art::Framework_Services_Optional_RandomNumberGenerator_service
-                  art::Persistency_Common
-                  art::Persistency_Provenance
-                  art::Utilities
-                  canvas::canvas
-                  messagefacility::MF_MessageLogger
-                  fhiclcpp::fhiclcpp
-                  cetlib::cetlib
-                  cetlib_except::cetlib_except
+cet_make_library(
+  SOURCE
+  RandomServer.cxx
+  SimpleChConfig.cxx
+  UBADCBase.cxx
+  UBLogicPulseADC.cxx
+  UBOpticalADC.cxx
+  UBOpticalException.cxx
+  WFAlgoAnalyticalSPE.cxx
+  WFAlgoArray.cxx
+  WFAlgoBase.cxx
+  WFAlgoDigitizedSPE.cxx
+  WFAlgoPedestal.cxx
+  WFAlgoSPEBase.cxx
+  WFAlgoUtilities.cxx
+  LIBRARIES
+  PUBLIC
+  ubsim::OpticalDetectorSim_UBOpticalChConfig_service
+  lardataalg::DetectorInfo
+  larcore::Geometry_Geometry_service
+  lardata::DetectorClocksService
+  ROOT::MathCore
+)
 
-              BASENAME_ONLY
+cet_build_plugin(
+  FakePhotonsAna art::EDAnalyzer
+  LIBRARIES
+  PRIVATE
+  lardataobj::RawData
+  ROOT::Tree
+)
+
+cet_build_plugin(
+  FakePhotons art::EDProducer
+  LIBRARIES
+  PRIVATE
+  larcore::Geometry_Geometry_service
+  lardataobj::Simulation
+  art_root_io::TFileService_service
+)
+
+cet_build_plugin(
+  LYSimPhotonScaling art::EDProducer
+  LIBRARIES
+  PRIVATE
+  larevt::CalibrationDBI_IOVData
+  larcore::Geometry_Geometry_service
+  lardataobj::Simulation
+  nurandom::RandomUtils_NuRandomService_service
+)
+
+cet_build_plugin(
+  OpticalDRAMReadout art::EDProducer
+  LIBRARIES
+  PRIVATE
+  ubcore::Geometry_UBOpReadoutMap_service
+  lardata::DetectorClocksService
+  larcore::ServiceUtil
+  lardataobj::headers
+  art_root_io::TFileService_service
+)
+
+cet_build_plugin(
+  OpticalFEM art::EDProducer
+  LIBRARIES
+  PRIVATE
+  ubsim::OpticalDetectorSim_UBOpticalChConfig_service
+  ubcore::Geometry_UBOpReadoutMap_service
+  lardata::DetectorClocksService
+  larcore::Geometry_Geometry_service
+  lardataobj::headers
+  art_root_io::TFileService_service
+)
+
+cet_build_plugin(
+  UBFlasherMC art::EDProducer
+  LIBRARIES
+  PRIVATE
+  ubsim::OpticalDetectorSim
+  art_root_io::TFileService_service
+)
+
+cet_build_plugin(
+  UBOpticalADCSim art::EDProducer
+  LIBRARIES
+  PRIVATE
+  ubsim::OpticalDetectorSim
+  art_root_io::TFileService_service
 )
 
 install_headers()

@@ -1,37 +1,24 @@
-install_fhicl()
-install_source()
+cet_build_plugin(
+  GeneratorPositionFilter art::EDFilter
+  LIBRARIES
+  PRIVATE
+  nusimdata::SimulationBase
+)
+
+cet_build_plugin(
+  MultiPartVertex art::EDProducer
+  LIBRARIES
+  PRIVATE
+  larcore::Geometry_Geometry_service
+  nurandom::RandomUtils_NuRandomService_service
+  nusimdata::SimulationBase
+  ROOT::EG
+)
+
 add_subdirectory(GENIE)
 add_subdirectory(HeavySterileNeutrino)
 add_subdirectory(HiggsPortalScalarGen)
 add_subdirectory(HeavyNeutralLeptonGen)
 
-art_make( BASENAME_ONLY
-          MODULE_LIBRARIES
-		   larcorealg_Geometry
-		   ubcore_Geometry
-		   larcore_Geometry_Geometry_service
-		   nug4::ParticleNavigation lardataobj_Simulation
-		   nusimdata::SimulationBase
-		   lardata_Utilities
-		   lardataobj_MCBase
-		   larcoreobj_SummaryData
-		   nurandom::RandomUtils_NuRandomService_service
-		   art::Framework_Core
-		   art::Framework_Principal
-		   art::Framework_Services_Registry
-		   art_root_io::tfile_support ROOT::Core
-		   art_root_io::TFileService_service
-                   art::Framework_Services_Optional_RandomNumberGenerator_service
-		   art::Persistency_Common
-		   art::Persistency_Provenance
-		   art::Utilities
-		   canvas::canvas
-		   messagefacility::MF_MessageLogger
-		   fhiclcpp::fhiclcpp
-		   CLHEP::CLHEP
-		   cetlib::cetlib
-		   ROOT::Geom
-		   ROOT::XMLIO
-		   ROOT::Gdml
-                   ROOT::EG
-		)
+install_fhicl()
+install_source()
