@@ -4,6 +4,8 @@ cet_make_library(
   UbDrifter.cxx
   LIBRARIES
   PUBLIC
+  ubevt::Database_TPCEnergyCalib
+  ubobj::DataOverlay
   larwirecell::IArtEventVisitor
   larevt::ElectronicsCalibService
   lardata::DetectorPropertiesService

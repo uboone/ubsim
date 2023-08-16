@@ -52,6 +52,7 @@ cet_build_plugin(
   LYSimPhotonScaling art::EDProducer
   LIBRARIES
   PRIVATE
+  ubevt::Database
   larevt::CalibrationDBI_IOVData
   larcore::Geometry_Geometry_service
   lardataobj::Simulation
