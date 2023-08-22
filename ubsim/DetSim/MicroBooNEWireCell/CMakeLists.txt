@@ -1,4 +1,5 @@
 cet_make_library(
+  LIBRARY_NAME WireCellubsim       # Wire cell toolkit needs this name.
   SOURCE
   ReweightedDepoTransform.cxx
   UbDrifter.cxx
