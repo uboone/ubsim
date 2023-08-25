@@ -74,7 +74,7 @@ void detsim::SimWireMicroBooNEAna::analyze(art::Event const & evt) {
      std::vector<float> holder(mySize);
      std::vector<short> rawadc(mySize);
 
-     uint32_t channel = digit.Channel();
+     //uint32_t channel = digit.Channel(); // unused
 
      for(size_t i = 0; i<digit.NADC(); i++) {
        //std::cout << "i: " << i << "\tfADC[" << i << "]: " << digit.ADC(i) << std::endl;
@@ -84,7 +84,7 @@ void detsim::SimWireMicroBooNEAna::analyze(art::Event const & evt) {
      raw::Uncompress(digit.ADCs(), rawadc, digit.Compression());
 
      // loop over all adc values and subtract the pedestal
-     float pdstl = digit.GetPedestal();
+     // float pdstl = digit.GetPedestal(); // unused
 
      std::string adcinfo="";
      for(size_t bin = 0; bin < mySize; ++bin) {
@@ -93,7 +93,7 @@ void detsim::SimWireMicroBooNEAna::analyze(art::Event const & evt) {
        if(bin+1<mySize)
 	 adcinfo += ",";
      }
-     channel += pdstl;
+     // channel += pdstl; // unused
      //std::cout << printf("Channel: %d\tPedestal: %f\tADCs:\n%s\n",channel,pdstl,adcinfo.c_str());
    }
 

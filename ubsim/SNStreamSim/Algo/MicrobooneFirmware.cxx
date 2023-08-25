@@ -110,10 +110,10 @@ namespace compress {
 	  int var  = 0;
 	  int diff = 0;
 	  tick t = _thisTick - _block + 1;
-	  int mm = 0;
+	  // int mm = 0; // unused
 	  for (; t < _thisTick + 1; t++){
 	    baseline += *t;
-	    mm += 1;
+	    // mm += 1; // unused
 	  }
 	  baseline /= _block;
 	  t = _thisTick - _block + 1;
@@ -138,12 +138,12 @@ namespace compress {
 	    baseline += *t;
 	  baseline = baseline >> 6;
 	  t = _thisTick + 1;
-	  int nn = 0;
+	  // int nn = 0; // unused
 	  for (; t < _thisTick + _block + 1; t++){
 	    diff = ( (*t) - baseline ) * ( (*t) - baseline );
 	    if (diff < _maxADC) var += diff;
 	    else var += _maxADC;
-	    nn += 1;
+	    // nn += 1; // unused
 	  }
 	  var = var >> 6;
 	  if (_debug){

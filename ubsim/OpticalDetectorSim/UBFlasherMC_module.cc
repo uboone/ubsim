@@ -263,7 +263,7 @@ namespace opdet {
     //
     double period_ns = (1.0/fPulserRateMHz)*1000.0;
     //double led_seq_delay_ns = 100.0;
-    double flasher_delay_ns = 125.0;
+    //double flasher_delay_ns = 125.0; // unused when pulse_start unused
     
     for(unsigned int ipmt=0; ipmt<geom->NOpDets(); ipmt++) {
       
@@ -277,9 +277,9 @@ namespace opdet {
 	if ( fMode==kSequence && ipulse%36!=(int)ipmt) 
 	  continue;
 	
-	double pulse_start = fG4StartTime + fGlobalTimeOffset + fPulserDelay_ns; // G4time of gate start
+	// double pulse_start = fG4StartTime + fGlobalTimeOffset + fPulserDelay_ns; // G4time of gate start
 	//if ( fMode==kBurst )
-	pulse_start += double(ipulse)*period_ns + flasher_delay_ns;
+	// pulse_start += double(ipulse)*period_ns + flasher_delay_ns; // unused
 	//else if ( fMode==kSequence )
 	//pulse_start += double(ipulse)*period_ns + double(ipmt)*led_seq_delay_ns +  flasher_delay_ns;
 	
