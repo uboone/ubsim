@@ -28,6 +28,7 @@ cet_set_compiler_flags(DIAGS CAUTIOUS
   WERROR
   NO_UNDEFINED
   EXTRA_FLAGS -pedantic -Wno-unused-local-typedefs
+              $<$<CXX_COMPILER_ID:Clang>:-Wno-c99-extensions>
 )
 
 cet_report_compiler_flags()
