@@ -37,8 +37,12 @@ cetbuildtools	        v8_20_00	-	only_for_build
 end_product_list
 
 qualifier      ubevt          larsim	      larwirecell     geant4reweight
+c14:debug      c14:debug      c14:debug       c14:debug       c14:debug:s120a
+c14:prof       c14:prof       c14:prof        c14:prof        c14:prof:s120a
 c7:debug       c7:debug       c7:debug        c7:debug        c7:debug:s120a
 c7:prof        c7:prof        c7:prof         c7:prof         c7:prof:s120a
+e26:debug      e26:debug      e26:debug       e26:debug       e26:debug:s120a
+e26:prof       e26:prof       e26:prof        e26:prof        e26:prof:s120a
 e20:debug      e20:debug      e20:debug       e20:debug       e20:debug:s120a
 e20:prof       e20:prof       e20:prof        e20:prof        e20:prof:s120a
 end_qualifier_list
