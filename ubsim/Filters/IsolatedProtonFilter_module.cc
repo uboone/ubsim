@@ -76,14 +76,12 @@ bool sim::IsolatedProtonFilter::filter(art::Event& e)
   e.getByLabel(fMCParticleLabel, mcparHandle);
   std::vector<simb::MCParticle> const& mcparVec(*mcparHandle);
   bool isTargetedProton = false;
-
-  if (mcparVec.size() != 1) return isTargetedProton; // check if it is only particle track in the event. 
-
+  
   for (auto const& mcpar : mcparVec){
     float track_x_length_abs=std::abs(mcpar.Vx()-mcpar.EndX());
     float track_length=std::hypot(mcpar.Vx()-mcpar.EndX(), mcpar.Vy()-mcpar.EndY(), mcpar.Vz()-mcpar.EndZ());
-
-    if (mcpar.PdgCode()==fPDG_code){ // check if it is the proton
+    
+    if (mcpar.PdgCode()==fPDG_code && mcpar.Mother()==0){ // check if it is the primary proton
       // If particle is within the fiducial volume cut
       if ((mcpar.Vx() > fXmin && mcpar.EndX() > fXmin && mcpar.Vx() < fXmax && mcpar.EndX() < fXmax) &&
           (mcpar.Vy() > fYmin && mcpar.EndY() > fYmin && mcpar.Vy() < fYmax && mcpar.EndY() < fYmax) &&
