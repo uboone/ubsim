@@ -11,6 +11,7 @@ cet_build_plugin(
   GENIE::GFwParDat
   ROOT::Tree
   ROOT::MathCore
+  SQLite::SQLite3
 )
 
 add_subdirectory(Helpers)
