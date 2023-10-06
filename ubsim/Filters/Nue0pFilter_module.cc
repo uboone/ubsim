@@ -47,6 +47,7 @@ private:
 
   art::InputTag fMCTproducer;
   float fProtonKEThreshold;
+  bool f0pNp; // 0 -> 0p, 1 -> Np
 
   // Declare member data here.
 
@@ -63,6 +64,7 @@ Nue0pFilter::Nue0pFilter(fhicl::ParameterSet const& p)
   // threshold of 0 should allow any event with protons regardless of KE
   // threshold of 0 should return true if no true protons are present
   fProtonKEThreshold = p.get<float>("ProtonKEThreshold",0.);
+  f0pNp = p.get<bool>("0pNp",0);
 
 }
 
@@ -102,7 +104,8 @@ bool Nue0pFilter::filter(art::Event& e)
     
   }// for all MCParticles
 
-  if (LeadingProtonKE > fProtonKEThreshold) return false;
+  if ( (f0pNp)  && (LeadingProtonKE > fProtonKEThreshold) ) return false;
+  if ( (!f0pNp) && (LeadingProtonKE < fProtonKEThreshold) ) return false;
 
   std::cout << "[Nue0pFilter] pass with leading proton energy of " << LeadingProtonKE << std::endl;
 
