@@ -1,0 +1,7 @@
+nue0pfilter:
+{
+    module_type: "Nue0pFilter"
+    MCTproducer: "generator"
+    ProtonKEThreshold: 0.050 # GeV KE
+    ProtonBool: false # false (0) -> 0p, true (1) -> Np.
+}
