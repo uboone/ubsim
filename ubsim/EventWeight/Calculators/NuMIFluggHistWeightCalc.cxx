@@ -57,14 +57,14 @@ namespace evwgh {
     std::string rwfile = dataInput;
     std::string ntype[] = {"numu", "numubar", "nue", "nuebar"};
 
-    TFile frw(Form("%s",rwfile.c_str()));
+    TFile* frw = TFile::Open(Form("%s",rwfile.c_str()), "read");
     for (int intyp=0;intyp<4;intyp++) {
-      TH1D* hrw = dynamic_cast<TH1D*> (frw.Get(Form("ratio_%s_%s",ntype[intyp].c_str(), fHorn.c_str())));
+      TH1D* hrw = dynamic_cast<TH1D*> (frw->Get(Form("ratio_%s_%s",ntype[intyp].c_str(), fHorn.c_str())));
       for (int ibin=0;ibin<200;ibin++) {
         fRW[intyp][ibin]= hrw->GetBinContent(ibin+1);
       }
     }
-    frw.Close();
+    frw->Close();
 
     fWeightArray.resize(fNmultisims);
 

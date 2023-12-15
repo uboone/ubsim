@@ -11,6 +11,6 @@ reweight_numi_flugg: {
     mode: unisim
     number_of_multisims: 1
     horn: "FHC"
-    rw_hist_file: "/pnfs/uboone/persistent/users/bnayak/flugg_studies/flugg_ratios.root"
+    rw_hist_file: "root://fndca1.fnal.gov:1094//pnfs/fnal.gov/usr/uboone/persistent/users/bnayak/flugg_studies/flugg_ratios.root"
   }
 }
