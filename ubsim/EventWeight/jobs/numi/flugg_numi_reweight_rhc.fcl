@@ -1,0 +1,16 @@
+reweight_numi_flugg: {
+  weight_functions_flugg: [
+    flugg_unisim
+  ]
+  min_weight: 0
+  max_weight: 100
+
+  flugg_unisim:{
+    type: NuMIFluggHist
+    random_seed: 84
+    mode: unisim
+    number_of_multisims: 1
+    horn: "RHC"
+    rw_hist_file: "/uboone/data/users/bnayak/ppfx/flugg_studies/flugg_ratios.root"
+  }
+}

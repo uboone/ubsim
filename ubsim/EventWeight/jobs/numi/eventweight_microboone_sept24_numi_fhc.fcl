@@ -9,15 +9,16 @@ BEGIN_PROLOG
 #include "eventweight_microboone_spline.fcl"
 #include "eventweight_microboone_xs.fcl"
 #include "ppfx_numi_reweight_sept24_fhc.fcl"
+#include "flugg_numi_reweight_fhc.fcl"
 
 microboone_eventweight_sept24: {
   module_type: "EventWeight"
- 
+
   # Throw exception if weight outside limits
   min_weight: 0
   max_weight: 1000
- 
-  genie_module_label: generator  
+
+  genie_module_label: generator
 
   # Revised MicroBooNE CV tune, 24 September 2020
   # Based on 4-parameter fit with NUISANCE to T2K 2016 CC0pi data
@@ -27,8 +28,9 @@ microboone_eventweight_sept24: {
     NormCCMEC: 1.31189 # GENIE knob setting, gives scaling factor of 1.66
     XSecShape_CCMEC: 1.0 # 0 --> Nieves CCMEC default, 1 --> GENIE empirical
   }
- 
+
   # Load calculator configurations
+  @table::reweight_numi_flugg
   @table::reweight_numi_ppfx
   @table::microboone_eventweight_genie
   @table::microboone_eventweight_spline
@@ -38,6 +40,7 @@ microboone_eventweight_sept24: {
 
 # All available weight functions
 microboone_eventweight_sept24.weight_functions: [
+  @sequence::microboone_eventweight_sept24.weight_functions_flugg,
   @sequence::microboone_eventweight_sept24.weight_functions_ppfx,
   @sequence::microboone_eventweight_sept24.weight_functions_genie,
   @sequence::microboone_eventweight_sept24.weight_functions_spline,
