@@ -13,7 +13,7 @@
 #include "nusimdata/SimulationBase/MCTruth.h"
 
 #include "TFile.h"
-#include "TH1F.h"
+#include "TH1D.h"
 
 namespace evwgh {
   class NuMIFluggHistWeightCalc : public WeightCalc
@@ -55,12 +55,11 @@ namespace evwgh {
     // cet::search_path sp("FW_SEARCH_PATH");
     // std::string rwfile = sp.find_file(dataInput);
     std::string rwfile = dataInput;
-
     std::string ntype[] = {"numu", "numubar", "nue", "nuebar"};
 
     TFile frw(Form("%s",rwfile.c_str()));
     for (int intyp=0;intyp<4;intyp++) {
-      TH1F* hrw = dynamic_cast<TH1F*> (frw.Get(Form("ratio_%s_%s",ntype[intyp].c_str(), fHorn.c_str())));
+      TH1D* hrw = dynamic_cast<TH1D*> (frw.Get(Form("ratio_%s_%s",ntype[intyp].c_str(), fHorn.c_str())));
       for (int ibin=0;ibin<200;ibin++) {
         fRW[intyp][ibin]= hrw->GetBinContent(ibin+1);
       }
