@@ -248,11 +248,11 @@ fwdir	product_dir	scripts
 #
 ####################################
 product		version		qual	flags		<table_format=2>
-geant4reweight	v01_20_03	-
-larsim		v09_39_03	-
-larwirecell	v09_17_04	-
+geant4reweight	v01_20_05	-
+larsim		v09_90_00rc2	-
+larwirecell	v09_90_00rc2	-
 ubevt		v09_83_00	-
-cetmodules	v3_21_01	-	only_for_build
+cetmodules	v3_24_01	-	only_for_build
 end_product_list
 ####################################
 
@@ -308,14 +308,14 @@ end_product_list
 #
 ####################################
 qualifier	ubevt		larsim		larwirecell	geant4reweight
-c14:debug       c14:debug       c14:debug       c14:debug       c14:debug:s120a
-c14:prof        c14:prof        c14:prof        c14:prof        c14:prof:s120a
-c7:debug	c7:debug	c7:debug	c7:debug	c7:s120a:debug
-c7:prof		c7:prof		c7:prof		c7:prof		c7:s120a:prof
-e26:debug       e26:debug       e26:debug       e26:debug       e26:debug:s120a
-e26:prof        e26:prof        e26:prof        e26:prof        e26:prof:s120a
-e20:debug	e20:debug	e20:debug	e20:debug	e20:s120a:debug
-e20:prof	e20:prof	e20:prof	e20:prof	e20:s120a:prof
+c14:debug       c14:debug       c14:debug       c14:debug       c14:debug:s130
+c14:prof        c14:prof        c14:prof        c14:prof        c14:prof:s130
+c7:debug	c7:debug	c7:debug	c7:debug	c7:s130:debug
+c7:prof		c7:prof		c7:prof		c7:prof		c7:s130:prof
+e26:debug       e26:debug       e26:debug       e26:debug       e26:debug:s130
+e26:prof        e26:prof        e26:prof        e26:prof        e26:prof:s130
+e20:debug	e20:debug	e20:debug	e20:debug	e20:s130:debug
+e20:prof	e20:prof	e20:prof	e20:prof	e20:s130:prof
 end_qualifier_list
 ####################################
 
