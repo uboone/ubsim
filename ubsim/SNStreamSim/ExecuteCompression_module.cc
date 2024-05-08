@@ -18,7 +18,7 @@
 #include "messagefacility/MessageLogger/MessageLogger.h"
 
 // services etc...
-#include "larcore/Geometry/Geometry.h"
+#include "larcore/Geometry/WireReadout.h"
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 
 // data-products
@@ -90,8 +90,7 @@ private:
   /// Compression Algorithm Object...performs compression
   std::unique_ptr< compress::CompressionAlgoBase > _compress_algo;
 
-  // get the geometry
-  art::ServiceHandle<geo::Geometry> _geom;
+  geo::WireReadoutGeom const& _channelMapAlg = art::ServiceHandle<geo::WireReadout const>()->Get();
 
   const std::vector<std::pair< compress::tick, compress::tick> > ApplyCompression(const art::Ptr<raw::RawDigit> rawwf);
   void CalculateCompression(const std::vector<short> &beforeADCs,
@@ -209,7 +208,7 @@ void ExecuteCompression::produce(art::Event & e)
 
     if (wf_ROIs.size() == 0) continue;
 
-    recob::Wire wire(std::move(wf_ROIs), chan, _geom->View(chan) );
+    recob::Wire wire(std::move(wf_ROIs), chan, _channelMapAlg.View(chan) );
 
     //wire_v->emplace_back( recob::WireCreator(std::move(wf_ROIs),*rawdigit).move() );
     
@@ -241,7 +240,7 @@ const std::vector<std::pair< compress::tick, compress::tick> > ExecuteCompressio
   }//if wf size < 1
 
   auto const& ch   = rawwf->Channel();
-  auto const& wids = _geom->ChannelToWire(ch);
+  auto const& wids = _channelMapAlg.ChannelToWire(ch);
   auto const& pl   = wids[0].Plane;
 
   // finally, apply compression:

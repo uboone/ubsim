@@ -161,13 +161,13 @@ MultiPartVertex::MultiPartVertex(fhicl::ParameterSet const & p)
   if(!zrange.empty() && zrange.size() >2) this->abort("Incompatible legnth @ Z vector!" );
 
   // range register
-  art::ServiceHandle<geo::Geometry> geo;
+  geo::TPCGeo const& tpc = art::ServiceHandle<geo::Geometry>()->TPC();
   _xrange[0] = 0.;
-  _xrange[1] = 2. * geo->DetHalfWidth();
-  _yrange[0] = -1. * geo->DetHalfHeight();
-  _yrange[1] =  1. * geo->DetHalfHeight();
+  _xrange[1] = 2. * tpc.HalfWidth();
+  _yrange[0] = -1. * tpc.HalfHeight();
+  _yrange[1] =  1. * tpc.HalfHeight();
   _zrange[0] = 0.;
-  _zrange[1] = geo->DetLength();
+  _zrange[1] = tpc.Length();
   if(xrange.size()==1) { _xrange[0] += xrange[0]; _xrange[1] -= xrange[0]; }
   if(xrange.size()==2) { _xrange[0]  = xrange[0]; _xrange[1]  = xrange[1]; }
   if(yrange.size()==1) { _yrange[0] += yrange[0]; _yrange[1] -= yrange[0]; }
