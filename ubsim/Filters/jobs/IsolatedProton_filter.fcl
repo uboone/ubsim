@@ -1,0 +1,18 @@
+BEGIN_PROLOG
+
+IsolatedProtonFilter:
+{
+    module_type:           IsolatedProtonFilter
+    MCParticleLabel:       "largeant"
+    PDGCode:               2212
+    Xmin:                  10.
+    Xmax:                  245.
+    Ymin:                  -105.
+    Ymax:                  105.
+    Zmin:                  0.
+    Zmax:                  1037.
+    track_len_cut:         34.
+    track_len_x_cut:       12. 
+}
+
+END_PROLOG
