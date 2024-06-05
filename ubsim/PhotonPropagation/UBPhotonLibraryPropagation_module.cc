@@ -70,6 +70,7 @@ private:
   bool   fDoSlowComponent;
 
   std::vector<art::InputTag> fEDepTags;
+  std::vector<double> fPhotonScale;
 
   larg4::ISCalcSeparate fISAlg;
 
@@ -172,7 +173,9 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
     photonCollection.emplace_back(i_op);
   }
 
+  size_t nvec = 0;
   for(auto const& edeps : edep_vecs){
+    double scale_factor = fPhotonScale[nvec++];
 
     for(auto const& edep : *edeps){
       /*
@@ -204,7 +207,7 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
 					    randflatscinttime(),randflatscinttime());
       //std::cout << "\t\tPhoton fast time is " << photon.Time << " (" << edep.T() << " orig)" << std::endl;
       for(size_t i_op=0; i_op<NOpChannels; ++i_op){
-	auto nph = randpoisphot.fire(nphot_fast*Visibilities[i_op]);
+	auto nph = randpoisphot.fire(nphot_fast*Visibilities[i_op]*scale_factor);
 	/*
 	  std::cout << "\t\tHave " << nph << " fast photons ("
 	  << Visibilities[i_op] << "*" << nphot_fast << " from " << nphot << ")"
@@ -221,7 +224,7 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
 						randflatscinttime(),randflatscinttime());
 	  //std::cout << "\t\tPhoton slow time is " << photon.Time << " (" << edep.T() << " orig)" << std::endl;
 	  for(size_t i_op=0; i_op<NOpChannels; ++i_op){
-	    auto nph = randpoisphot.fire(nphot_slow*Visibilities[i_op]);
+	    auto nph = randpoisphot.fire(nphot_slow*Visibilities[i_op]*scale_factor);
 	    //std::cout << "\t\tHave " << nph << " slow photons ("
 	    //	      << Visibilities[i_op] << "*" << nphot_slow << " from " << nphot << ")"
 	    //	      << " for opdet " << i_op << std::endl;
@@ -263,6 +266,9 @@ void phot::UBPhotonLibraryPropagation::reconfigure(fhicl::ParameterSet const & p
   fDoSlowComponent = p.get<bool>("DoSlowComponent");
 
   fEDepTags = p.get< std::vector<art::InputTag> >("EDepModuleLabels");
+  fPhotonScale = p.get< std::vector<double> >("PhotonScale", std::vector<double>());
+  while(fPhotonScale.size() < fEDepTags.size())
+    fPhotonScale.push_back(1.);
 }
 
 void phot::UBPhotonLibraryPropagation::beginJob()
