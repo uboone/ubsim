@@ -1,6 +1,6 @@
-
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
+#include "messagefacility/MessageLogger/MessageLogger.h"
 
 #include "CLHEP/Random/RandGaussQ.h"
 
@@ -120,6 +120,12 @@ void UBOLDPPFXCVWeightCalc::Configure(fhicl::ParameterSet const& p,
   fSeed                   = pset.get<int>("random_seed");
 
   gSystem->Setenv("MODE", fPPFXMode.c_str());
+
+  mf::LogWarning("evwgh::UBOLDPPFXWeightCalc.cxx")                   <<
+    "\nUSE ONLY WHEN WORKING FROM OLD FLUX FILES AND"                <<
+    "\nRUNNING WITH MODERN PPFX (TUNED TO G4.10.4)"                  <<
+    "\nTHIS REWEIGHTS THE OLD FLUX PREDICTION TO THE NEW G4 VERSION" <<
+    "\nAND THEN CALCULATES THE MODERN PPFX WEIGHT";
 
   fPPFXrw = NeutrinoFluxReweight::MakeReweight::getInstance();
 
