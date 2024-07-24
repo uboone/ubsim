@@ -170,7 +170,7 @@ reweight_numi_ppfx: {
     verbose:     0
     horn_curr: "-200i"
     target_config: "me000z"
-    oldflux_reweight: "/pnfs/uboone/persistent/uboonebeam/numi_oldg4rw_ratiohists/unweighted_ratios/ratios_g4_10_4_cvonly_g3Chase_standardbin_noppfx.root"
+    oldflux_reweight: "/cvmfs/uboone.osgstorage.org/stash/uboonebeam/numi_oldg4rw_ratiohists/unweighted_ratios/ratios_g4_10_4_cvonly_g3Chase_standardbin_noppfx.root"
   }
 
   ppfx_oldrw_cv: {
@@ -183,6 +183,6 @@ reweight_numi_ppfx: {
     verbose:     0
     horn_curr: "-200i"
     target_config: "me000z"
-    oldflux_reweight: "/pnfs/uboone/persistent/uboonebeam/numi_oldg4rw_ratiohists/unweighted_ratios/ratios_g4_10_4_cvonly_g3Chase_standardbin_noppfx.root"
+    oldflux_reweight: "/cvmfs/uboone.osgstorage.org/stash/uboonebeam/numi_oldg4rw_ratiohists/unweighted_ratios/ratios_g4_10_4_cvonly_g3Chase_standardbin_noppfx.root"
   }
 }
