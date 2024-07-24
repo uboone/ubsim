@@ -28,7 +28,7 @@ physics: {
      module_type: "RandomNumberSaver"
    }
  }
- 
+
  simulate: [ rns, eventweightSep24 ]
  stream1: [ out1 ]
  trigger_paths: [ simulate ]
@@ -43,3 +43,8 @@ outputs: {
    compressionLevel: 1
  }
 }
+
+source.inputCommands: [
+  "keep *",
+  "drop *_*_*_EventWeightSep24"
+]
