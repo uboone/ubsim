@@ -38,6 +38,7 @@
 /// LArSoft
 #include "lardataobj/OpticalDetectorData/ChannelDataGroup.h"
 #include "lardata/DetectorInfoServices/DetectorClocksService.h"
+#include "larcore/Geometry/WireReadout.h"
 #include "larcore/Geometry/Geometry.h"
 #include "lardataobj/Simulation/SimPhotons.h"
 #include "UBOpticalADC.h" // uboonecode
@@ -153,6 +154,7 @@ namespace opdet {
     // Get services
     //
     ::art::ServiceHandle<geo::Geometry> geom;
+    auto const& channelMapAlg = art::ServiceHandle<geo::WireReadout const>()->Get();
     auto const clockData = art::ServiceHandle<detinfo::DetectorClocksService>()->DataFor(evt);
 
     // allocate the container
@@ -171,7 +173,7 @@ namespace opdet {
     fOpticalGen.SetTimeInfo(clock,fDuration);
     fLogicGen.SetTimeInfo(clock,fDuration);
 
-    wfs->reserve(geom->NOpChannels());
+    wfs->reserve(channelMapAlg.NOpChannels());
     wfs->SetFrame(clock.Frame());
     wfs->SetTimeSlice(clock.Sample());
 
@@ -230,8 +232,8 @@ namespace opdet {
       /// for each pmt we generate multiple readout streams with different gains
       /// tmw: right now adc/pe is assigned per channel. I don't like this. 
       /// this is a shaper property
-      for (unsigned int ireadout=0; ireadout<geom->NOpHardwareChannels(ipmt); ireadout++) {
-	unsigned int channel_num = geom->OpChannel( ipmt, ireadout );
+      for (unsigned int ireadout=0; ireadout<channelMapAlg.NOpHardwareChannels(ipmt); ireadout++) {
+        unsigned int channel_num = channelMapAlg.OpChannel( ipmt, ireadout );
 	optdata::ChannelData adc_wfm( channel_num );
 	//fOpticalGen.GenWaveform(ipmt, adc_wfm );
         fOpticalGen.GenWaveform(clockData, channel_num, adc_wfm );

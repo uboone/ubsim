@@ -3,6 +3,8 @@
 
 #include "UBOpticalADC.h"
 
+#include "larcore/Geometry/WireReadout.h"
+
 namespace opdet {
 
   //----------------------------------------
@@ -64,8 +66,7 @@ namespace opdet {
     fDarkPhotonTime.clear();
 
     art::ServiceHandle<opdet::UBOpticalChConfig> ch_conf;
-    art::ServiceHandle<geo::Geometry> geom;
-    unsigned int ch = geom->OpChannel( pmtid, 0 ); // get channel reading out that PMT
+    unsigned int ch = art::ServiceHandle<geo::WireReadout const>()->Get().OpChannel( pmtid, 0 ); // get channel reading out that PMT
 
     double dark_rate = ch_conf->GetFloat(kDarkRate,ch);
 
