@@ -248,7 +248,7 @@ fwdir	product_dir	scripts
 #
 ####################################
 product		version		qual	flags		<table_format=2>
-geant4reweight	v01_20_08	-
+geant4reweight	v01_20_09	-
 larsim		v10_00_00	-
 larwirecell	v10_00_00	-
 ubevt		v09_92_00	-
