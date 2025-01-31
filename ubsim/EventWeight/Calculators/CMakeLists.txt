@@ -15,6 +15,7 @@ cet_make_library(
   LIBRARIES
   PUBLIC
   larsim::EventWeight_Base
+  larcore::Geometry_Geometry_service
   nusimdata::SimulationBase
   nugen::EventGeneratorBase_GENIE
   Geant4::G4event
@@ -22,6 +23,7 @@ cet_make_library(
   dk2nu::Tree
   art_root_io::TFileService_service
   fhiclcpp::fhiclcpp
+  geant4reweight::ReweightBaseLib
   GENIE::GRwClc
   GENIE::GFwInt
   GENIE::GRwFwk
