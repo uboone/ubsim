@@ -30,6 +30,8 @@ find_package(art_root_io REQUIRED EXPORT )
 find_package( nurandom REQUIRED EXPORT )
 find_package( ifdh_art REQUIRED EXPORT )
 find_package( larwirecell REQUIRED EXPORT )
+find_package( larcore  REQUIRED EXPORT )
+find_package( larcorealg  REQUIRED EXPORT )
 find_package( geant4reweight REQUIRED EXPORT )
 
 # macros for dictionary and simple_plugin

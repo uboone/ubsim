@@ -11,6 +11,7 @@
 #include "TDirectory.h"
 #include "TFile.h"
 #include "TH1D.h"
+#include "TTree.h"
 #include "Geant4/G4LossTableManager.hh"
 #include "Geant4/G4ParticleTable.hh"
 #include "Geant4/G4ParticleDefinition.hh"
@@ -32,8 +33,10 @@
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 #include "larcore/Geometry/Geometry.h"
-#include "geant4reweight/src/ReweightBase/G4ReweighterFactory.hh"
-#include "geant4reweight/src/ReweightBase/G4Reweighter.hh"
+// #include "geant4reweight/src/ReweightBase/G4ReweighterFactory.hh"
+// #include "geant4reweight/src/ReweightBase/G4Reweighter.hh"
+#include "geant4reweight/src/ReweightBase/G4MultiReweighter.hh"
+#include "geant4reweight/src/ReweightBase/G4ReweightManager.hh"
 #include "geant4reweight/src/ReweightBase/G4ReweightTraj.hh"
 #include "geant4reweight/src/ReweightBase/G4ReweightStep.hh"
 #include "geant4reweight/src/PropBase/G4ReweightParameterMaker.hh"
@@ -59,11 +62,16 @@ private:
   unsigned fNsims;  //!< Number of multisims
   int fPdg; //!< PDG value for particles that a given weight calculator should apply to. Note that for now this module can only handle weights for one particle species at a time.
   // float fXSUncertainty;  //!< Flat cross section uncertainty
+
+  G4ReweightManager * fRWManager;
+  fhicl::ParameterSet fRWMaterial;
+  G4MultiReweighter * fMultiRW;
   G4ReweighterFactory RWFactory; //!< Base class to handle all Geant4Reweighters (right now "all" means pi+, pi-, p)
   G4Reweighter *theReweighter; //!< Geant4Reweighter -- this is what provides the weights
   G4ReweightParameterMaker *ParMaker;
   std::vector<std::map<std::string, double>> UniverseVals; //!< Vector of maps relating parameter name to value (defines parameter values that will be evaluated in universes). Each map should have one entry per parameter we are considering
-
+  std::vector<std::vector<double>> OrderedVals;
+  // std::vector<std::string> fParNames;
   art::ServiceHandle < geo::Geometry > fGeometryService;
 
   bool fMakeOutputTrees; ///!< Fcl parameter to decide whether to save output tree (useful for validations but not necessary when running in production)
@@ -106,8 +114,9 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
   fMakeOutputTrees = pset.get< bool >( "makeoutputtree", false );
   std::string mode = pset.get<std::string>("mode");
   std::string FracsFileName = pset.get< std::string >( "fracsfile" );
-  std::string XSecFileName = pset.get< std::string >( "xsecfile" );
-  std::vector< fhicl::ParameterSet > FitParSets = pset.get< std::vector< fhicl::ParameterSet > >("parameters");
+  // std::string XSecFileName = pset.get< std::string >( "xsecfile" );
+  std::vector< fhicl::ParameterSet > FitParSets = pset.get< std::vector< fhicl::ParameterSet > >("parameters");  
+  // for (const auto & par : FitParSets) fParNames.push_back(par);
   fNsims = pset.get<int> ("number_of_multisims", 0);
   fPdg = pset.get<int> ("pdg_to_reweight");
   fDebug = pset.get<bool> ("debug",false);
@@ -117,13 +126,18 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
 
   // Get input files
   TFile FracsFile( FracsFileName.c_str(), "OPEN" );
-  TFile XSecFile( XSecFileName.c_str(), "OPEN" );
+  // TFile XSecFile( XSecFileName.c_str(), "OPEN" );
 
   // Configure G4Reweighter
-  bool totalonly = false;
-  if (fPdg==2212) totalonly = true;
-  ParMaker = new G4ReweightParameterMaker( FitParSets, totalonly );
-  theReweighter = RWFactory.BuildReweighter(fPdg, &XSecFile, &FracsFile, ParMaker->GetFSHists(), ParMaker->GetElasticHist() );
+  fRWMaterial = pset.get<fhicl::ParameterSet>("Material");
+  fRWManager = new G4ReweightManager({fRWMaterial});
+  fMultiRW = new G4MultiReweighter(fPdg, FracsFile, FitParSets,
+                                   fRWMaterial,
+                                   fRWManager);
+  // bool totalonly = false;
+  // if (fPdg==2212) totalonly = true;
+  // ParMaker = new G4ReweightParameterMaker( FitParSets, totalonly );
+  // theReweighter = RWFactory.BuildReweighter(fPdg, &XSecFile, &FracsFile, ParMaker->GetFSHists(), ParMaker->GetElasticHist() );
 
   // Make output trees to save things for quick and easy validation
   art::ServiceHandle<art::TFileService> tfs;
@@ -198,6 +212,16 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
       // Finally, add these universes into the vector
       UniverseVals.push_back(tmp_vals_p1sigma);
       UniverseVals.push_back(tmp_vals_m1sigma);
+
+      //Put it in a specific order for MultiRW
+      OrderedVals.push_back(std::vector<double>(tmp_vals_p1sigma.size()));
+      for (size_t i = 0; i < FitParNames.size(); ++i)
+        OrderedVals.back()[i] = tmp_vals_p1sigma.at(FitParNames[i]);
+
+      OrderedVals.push_back(std::vector<double>(tmp_vals_p1sigma.size()));
+      for (size_t i = 0; i < FitParNames.size(); ++i)
+        OrderedVals.back()[i] = tmp_vals_m1sigma.at(FitParNames[i]);
+
     } // end loop over parsets (i)
   } // pm1sigma
   else if (mode=="multisim"){
@@ -206,17 +230,26 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
     for (unsigned j=0; j<fNsims; j++){
       // In each multisim universe, loop through all parameters. For each parameter, generate a new random number from Nominal-Sigma to Nominal+Sigma.
       std::map<std::string, double> tmp_vals;
+      std::vector<double> flat_vals;
       for (size_t i_parset=0; i_parset<n_parsets; ++i_parset){
         double r = fGaussRandom->fire(0.0,1.0);
         tmp_vals[FitParNames.at(i_parset)] = FitParNominals.at(i_parset)+(FitParSigmas.at(i_parset)*r);
+        flat_vals.push_back(tmp_vals[FitParNames.at(i_parset)]);
       } // loop over parameters (i_parset)
       // Now save this universe
       UniverseVals.push_back(tmp_vals);
+      OrderedVals.push_back(flat_vals);
+      
     } // loop over Nsims (j)
   } // multisim
   else{
     // Anything else mode: Set parameters to user-defined nominal value
     UniverseVals.push_back(theNominals);
+    OrderedVals.emplace_back(theNominals.size());
+    for (size_t i=0; i < n_parsets; ++i){
+      OrderedVals.back()[i] = theNominals[FitParNames[i]];
+    }
+
   } // any other mode
 
   fNsims = UniverseVals.size();
@@ -444,21 +477,26 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
 
         // Loop through universes (j)
         for (size_t j=0; j<weight[0].size(); j++) {
-          float w, el_w;
+          float w, el_w=1.;
 
           // I think this is the only bit that needs to change for different universes -- all the above is jut about the track, which doesn't change based on universe
-          ParMaker->SetNewVals(UniverseVals.at(j));
-          theReweighter->SetNewHists(ParMaker->GetFSHists());
-          theReweighter->SetNewElasticHists(ParMaker->GetElasticHist());
+          // ParMaker->SetNewVals(UniverseVals.at(j));
+          // theReweighter->SetNewHists(ParMaker->GetFSHists());
+          // theReweighter->SetNewElasticHists(ParMaker->GetElasticHist());
+          // auto & these_pars = UniverseVals.at(j);
+          // std::vector<double> vals;
+          // for (auto & name : fParNames) vals.push_back(these_pars.at(name));
+          fMultiRW->SetAllParameterValues(OrderedVals.at(j));
 
           //Get the weight from the G4ReweightTraj
-          w = theReweighter->GetWeight( &theTraj );
+          // w = theReweighter->GetWeight( &theTraj );
+          w = fMultiRW->GetWeightFromSetParameters(theTraj);
           // Total weight is the product of track weights in the event
           weight[itruth][j] *= std::max((float)0.0, w);
 
           // Do the same for elastic weight (should be 1 unless set to non-nominal )
-          el_w = theReweighter->GetElasticWeight( &theTraj );
-          weight[itruth][j] *= std::max((float)0.0,el_w);
+          // el_w = theReweighter->GetElasticWeight( &theTraj );
+          // weight[itruth][j] *= std::max((float)0.0,el_w);
 
           // just for the output tree
           p_inel_weight[j] = w;
