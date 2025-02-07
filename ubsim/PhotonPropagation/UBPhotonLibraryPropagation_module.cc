@@ -5,6 +5,7 @@
 //
 // Generated at Tue Mar 21 07:45:42 2017 by Wesley Ketchum using cetskelgen
 // from cetlib version v1_21_00.
+// Modified by Vincent Basque January 2025 to include the transport time of the photons calling the propagationtime class from legacylarg4
 ////////////////////////////////////////////////////////////////////////
 
 #include "art/Framework/Core/EDProducer.h"
@@ -38,6 +39,7 @@
 #include "lardata/DetectorInfoServices/DetectorPropertiesService.h"
 #include "larsim/Simulation/LArG4Parameters.h"
 #include "larevt/SpaceChargeServices/SpaceChargeService.h"
+#include "larsim/PhotonPropagation/PropagationTimeModel.h" //ns timing new!
 
 
 namespace phot {
@@ -68,6 +70,8 @@ private:
   double fRiseTimeFast;
   double fRiseTimeSlow;
   bool   fDoSlowComponent;
+  bool   fIncludePhotPropTimeUBSim;
+  bool   fUsingScaleFactor;
 
   std::vector<art::InputTag> fEDepTags;
   std::vector<double> fPhotonScale;
@@ -78,8 +82,15 @@ private:
   CLHEP::HepRandomEngine& fScintEngine;
 
   double GetScintYield(sim::SimEnergyDeposit const&, detinfo::LArProperties const&);
+  // Old Method
+  //double GetScintTime(double scint_time, double rise_time, double, double);
+  // New Method
+  double GetScintTime(double rise_time, double scint_time, CLHEP::RandFlat& randflatscinttime);
+  double bi_exp(double t, double tau1, double tau2);
+  double single_exp(double t, double tau2);
+  // propagation time model
+  std::unique_ptr<PropagationTimeModel> fPropTimeModel;
 
-  double GetScintTime(double scint_time, double rise_time, double, double);
 };
 
 
@@ -88,18 +99,40 @@ phot::UBPhotonLibraryPropagation::UBPhotonLibraryPropagation(fhicl::ParameterSet
   fRiseTimeFast(p.get<double>("RiseTimeFast",-1.0)),
   fRiseTimeSlow(p.get<double>("RiseTimeSlow",-1.0)),
   fDoSlowComponent(p.get<bool>("DoSlowComponent")),
+  fIncludePhotPropTimeUBSim(p.get<bool>("IncludePhotPropTimeUBSim")),
+  fUsingScaleFactor(p.get<bool>("UsingScaleFactor")),
   fEDepTags(p.get< std::vector<art::InputTag> >("EDepModuleLabels")),
   fPhotonScale(p.get< std::vector<double> >("PhotonScale", std::vector<double>())),
-  fPhotonEngine(art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "photon",    p, "SeedPhoton")),
-  fScintEngine(art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, "HepJamesRandom", "scinttime", p, "SeedScintTime"))
+  fPhotonEngine(art::ServiceHandle<rndm::NuRandomService>()
+                ->registerAndSeedEngine(createEngine(0, "HepJamesRandom", "photon"),
+                                        "HepJamesRandom", "photon", p, "SeedPhoton")),
+  fScintEngine(art::ServiceHandle<rndm::NuRandomService>()
+               ->registerAndSeedEngine(createEngine(0, "HepJamesRandom", "scinttime"),
+                                       "HepJamesRandom", "scinttime", p, "SeedScintTime"))
 {
   while(fPhotonScale.size() < fEDepTags.size())
     fPhotonScale.push_back(1.);
   produces< std::vector<sim::SimPhotons> >();
+
+  // Parameterized Simulation
+  fhicl::ParameterSet VUVTimingParams;
+  fhicl::ParameterSet VISTimingParams; //this is not used in MicroBooNE because it is for the reflected light but it needs to be set here to work
+
+  // validate configuration    
+  if(fIncludePhotPropTimeUBSim && !p.get_if_present<fhicl::ParameterSet>("VUVTiming", VUVTimingParams)) 
+    {
+      throw art::Exception(art::errors::Configuration)
+	<< "Propagation time simulation requested, but VUVTiming not specified." << "\n";
+    }
+
+  //setting reflected light which is last parameter to false makes it such that it doesn't go took for VISTimingParams
+  if (fIncludePhotPropTimeUBSim)
+    fPropTimeModel = std::make_unique<PropagationTimeModel>(
+							    VUVTimingParams, VISTimingParams, fScintEngine, false, false);
 }
 
 double phot::UBPhotonLibraryPropagation::GetScintYield(sim::SimEnergyDeposit const& edep,
-						     detinfo::LArProperties const& larp)
+						       detinfo::LArProperties const& larp)
 {
   double yieldRatio = larp.ScintYieldRatio();
   if(larp.ScintByParticleType()){
@@ -139,6 +172,7 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
   art::ServiceHandle<PhotonVisibilityService> pvs;
   art::ServiceHandle<sim::LArG4Parameters> lgpHandle;
   const detinfo::LArProperties* larp = lar::providerFrom<detinfo::LArPropertiesService>();
+  auto const detprop = art::ServiceHandle<detinfo::DetectorPropertiesService>()->DataForJob();
   
   art::ServiceHandle<art::RandomNumberGenerator> rng;  
 
@@ -157,11 +191,6 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
   photon.Energy = 9.7e-6;
   photon.SetInSD = false;
   
-  fISAlg.Initialize(larp,
-		    lar::providerFrom<detinfo::DetectorPropertiesService>(),
-		    &(*lgpHandle),
-		    lar::providerFrom<spacecharge::SpaceChargeService>());
-
   std::unique_ptr< std::vector<sim::SimPhotons> > photCol ( new std::vector<sim::SimPhotons>);
   auto & photonCollection(*photCol);
 
@@ -183,60 +212,81 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
 
     for(auto const& edep : *edeps){
       /*
-      std::cout << "Processing edep with trackID=" 
-		<< edep.TrackID()
-		<< " pdgCode="
-		<< edep.PdgCode() 
-		<< " energy="
-		<< edep.Energy()
-		<< "(x,y,z)=("
-		<< edep.X() << "," << edep.Y() << "," << edep.Z() << ")"
-		<< std::endl;
+	std::cout << "Processing edep with trackID=" 
+	<< edep.TrackID()
+	<< " pdgCode="
+	<< edep.PdgCode() 
+	<< " energy="
+	<< edep.Energy()
+	<< "(x,y,z)=("
+	<< edep.X() << "," << edep.Y() << "," << edep.Z() << ")"
+	<< std::endl;
       */
       double const xyz[3] = { edep.X(), edep.Y(), edep.Z() };
       
       photon.InitialPosition = TVector3(xyz[0],xyz[1],xyz[2]);
       
-      float const* Visibilities = pvs->GetAllVisibilities(xyz);
+      geo::Point_t pos(xyz[0], xyz[1], xyz[2]);
+      geo::Point_t const ScintPoint = {xyz[0], xyz[1], xyz[2]};
+      phot::MappedCounts_t Visibilities = pvs->GetAllVisibilities(pos);
+
       if(!Visibilities)
 	continue;
       
       yieldRatio = GetScintYield(edep,*larp);
-      fISAlg.Reset();
-      fISAlg.CalculateIonizationAndScintillation(edep);
-      nphot =fISAlg.NumberScintillationPhotons();
+      larg4::ISCalcData isdata = fISAlg.CalcIonAndScint(detprop, edep);
+      nphot = isdata.numPhotons;
       nphot_fast = yieldRatio*nphot;
-
-      photon.Time = edep.T() + GetScintTime(larp->ScintFastTimeConst(),fRiseTimeFast,
-					    randflatscinttime(),randflatscinttime());
-      //std::cout << "\t\tPhoton fast time is " << photon.Time << " (" << edep.T() << " orig)" << std::endl;
+      nphot_slow = nphot - nphot_fast;
+      
       for(size_t i_op=0; i_op<NOpChannels; ++i_op){
-	auto nph = randpoisphot.fire(nphot_fast*Visibilities[i_op]*scale_factor);
-	/*
-	  std::cout << "\t\tHave " << nph << " fast photons ("
-	  << Visibilities[i_op] << "*" << nphot_fast << " from " << nphot << ")"
-	  << " for opdet " << i_op << std::endl;
-	  //photonCollection[i_op].insert(photonCollection[i_op].end(),randpoisphot.fire(nphot_fast*Visibilities[i_op]),photon);
-	  */
-	photonCollection[i_op].insert(photonCollection[i_op].end(),nph,photon);
-      }
-      if(fDoSlowComponent){
-	nphot_slow = nphot - nphot_fast;
-	
-	if(nphot_slow>0){
-	  photon.Time = edep.T() + GetScintTime(larp->ScintSlowTimeConst(),fRiseTimeSlow,
-						randflatscinttime(),randflatscinttime());
-	  //std::cout << "\t\tPhoton slow time is " << photon.Time << " (" << edep.T() << " orig)" << std::endl;
-	  for(size_t i_op=0; i_op<NOpChannels; ++i_op){
-	    auto nph = randpoisphot.fire(nphot_slow*Visibilities[i_op]*scale_factor);
-	    //std::cout << "\t\tHave " << nph << " slow photons ("
-	    //	      << Visibilities[i_op] << "*" << nphot_slow << " from " << nphot << ")"
-	    //	      << " for opdet " << i_op << std::endl;
-	    photonCollection[i_op].insert(photonCollection[i_op].end(),nph,photon);
+	if (Visibilities[i_op] < 1e-9) continue; // voxel is not visible at this optical channel
+	auto nph_fast = 0.0;
+	auto nph_slow = 0.0;
+	if(fUsingScaleFactor) //scaling factor for increasing the light outside the TPC. This is off by default
+	  {
+	    nph_fast = randpoisphot.fire(nphot_fast*Visibilities[i_op]*scale_factor);
+	    nph_slow = randpoisphot.fire(nphot_slow*Visibilities[i_op]*scale_factor);
 	  }
-	}
+	else
+	  {
+	    nph_fast = randpoisphot.fire(nphot_fast*Visibilities[i_op]);
+	    nph_slow = randpoisphot.fire(nphot_slow*Visibilities[i_op]);
+	  }
 	
-      }//end doing slow component
+	//skip if there is nophotons that are visible to the OpChannels
+	if(nph_fast+nph_slow == 0) continue;
+
+	// initialize transport time distribution vector
+	std::vector<double> transport_time;
+	// calculate propagation times if included, does not matter whether fast or slow photon
+	if (fIncludePhotPropTimeUBSim) {
+	  transport_time.resize(nph_fast + nph_slow);
+	  fPropTimeModel->propagationTime(transport_time, ScintPoint, i_op, false);
+	}
+
+	if(nph_fast > 0)
+	  {
+
+	    for (int i = 0; i <= nph_fast; i++)
+	      {
+		double dTime = edep.T() + GetScintTime(fRiseTimeFast,larp->ScintFastTimeConst(),randflatscinttime);
+		if(fIncludePhotPropTimeUBSim) dTime += transport_time[i];
+		photon.Time = dTime;
+		photonCollection[i_op].insert(photonCollection[i_op].end(),1,photon);
+	      }
+	  }
+	if(fDoSlowComponent && nph_slow>0){
+
+          for (int i = 0; i <= nph_slow; i++)
+	    {
+	      double dTime = edep.T() + GetScintTime(fRiseTimeSlow,larp->ScintSlowTimeConst(),randflatscinttime);
+	      if(fIncludePhotPropTimeUBSim) dTime += transport_time[i+nph_fast];
+	      photon.Time = dTime;
+	      photonCollection[i_op].insert(photonCollection[i_op].end(),1,photon);
+	    }
+	}//end doing slow component
+      }//end loop over OpChannels
       
     }//end loop over edeps
   }//end loop over edep vectors
@@ -245,8 +295,9 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
   
 }
 
-double phot::UBPhotonLibraryPropagation::GetScintTime(double scint_time, double rise_time,
-						    double r1, double r2)
+// Old Method
+/*double phot::UBPhotonLibraryPropagation::GetScintTime(double scint_time, double rise_time,
+      double r1, double r2)
 {
   //no rise time
   if(rise_time<0.0)
@@ -261,7 +312,38 @@ double phot::UBPhotonLibraryPropagation::GetScintTime(double scint_time, double 
   
   return 1;
   
+  }*/
+// New Method
+// Returns the time within the time distribution of the scintillation process, when the photon was created.
+// Scintillation light has an exponential decay which here is given by the decay time, tau2,
+// and an exponential increase, which here is given by the rise time, tau1.
+// randflatscinttime is passed to use the saved seed from the RandomNumberSaver in order to be able to reproduce the same results.
+double phot::UBPhotonLibraryPropagation::single_exp(double t, double tau2)
+{ 
+  return exp((-1.0 * t) / tau2) / tau2;
 }
+
+double phot::UBPhotonLibraryPropagation::bi_exp(double t, double tau1, double tau2)
+{
+  return (((exp((-1.0 * t) / tau2) * (1.0 - exp((-1.0 * t) / tau1))) / tau2) / tau2) *
+    (tau1 + tau2);
+}
+
+double phot::UBPhotonLibraryPropagation::GetScintTime(double tau1, double tau2, CLHEP::RandFlat& randflatscinttime)
+{
+  // tau1: rise time (originally defaulted to -1) and tau2: decay time
+  //ran1, ran2 = random numbers for the algorithm
+  if ((tau1 == 0.0) || (tau1 == -1.0)) { return -tau2 * log(randflatscinttime()); }
+  while (1) {
+    auto ran1 = randflatscinttime();
+    auto ran2 = randflatscinttime();
+    auto d = (tau1 + tau2) / tau2;
+    auto t = -tau2 * log(1 - ran1);
+    auto g = d * single_exp(t, tau2);
+    if (ran2 <= bi_exp(t, tau1, tau2) / g) { return t; }
+  }
+}
+
 
 void phot::UBPhotonLibraryPropagation::beginJob()
 {
@@ -269,4 +351,3 @@ void phot::UBPhotonLibraryPropagation::beginJob()
 }
 
 DEFINE_ART_MODULE(phot::UBPhotonLibraryPropagation)
-
