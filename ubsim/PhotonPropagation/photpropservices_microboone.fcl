@@ -9,6 +9,12 @@ microboone_photonvisibilityservice:
    @table::standard_photonvisibilityservice
    
    LibraryFile: "PhotonPropagation/LibraryData/uboone_photon_library_v6_70kV.root"
+
+   # Flag to enable time parameterizations
+   IncludePropTime: true
+
+   # Generic VUV timing parameterization
+   @table::common_vuv_timing_parameterization
 }
 
 microboone_photonvisibilityservice_semi_analytical_60cm:
@@ -20,7 +26,13 @@ microboone_photonvisibilityservice_semi_analytical_60cm:
    DoNotLoadLibrary: true
 
    # MicroBooNE-specific VUV semi-analytic Nhits parameters
-   @table::microboone_vuv_RS60cm_hits_parameterization # Assuming 60cm RSL. 
+   @table::microboone_vuv_RS60cm_hits_parameterization # Assuming 60cm RSL.
+
+   # Flag to enable time parameterizations
+   IncludePropTime: true
+
+   # Generic VUV timing parameterization
+   @table::common_vuv_timing_parameterization 
 }
 
 microboone_photonvisibilityservice_semi_analytical_100cm:
@@ -32,7 +44,13 @@ microboone_photonvisibilityservice_semi_analytical_100cm:
    DoNotLoadLibrary: true
 
    # MicroBooNE-specific VUV semi-analytic Nhits parameters
-   @table::microboone_vuv_RS100cm_hits_parameterization # Assuming 100cm RSL. 
+   @table::microboone_vuv_RS100cm_hits_parameterization # Assuming 100cm RSL.
+
+   # Flag to enable time parameterizations
+   IncludePropTime: true
+
+   # Generic VUV timing parameterization
+   @table::common_vuv_timing_parameterization 
 }
 
 END_PROLOG
