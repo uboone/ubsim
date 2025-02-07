@@ -31,6 +31,10 @@
 #include "nusimdata/SimulationBase/MCTruth.h"
 #include "nusimdata/SimulationBase/GTruth.h"
 
+#include "fhiclcpp/ParameterSet.h"
+
+#include "canvas/Persistency/Common/Ptr.h"
+
 // GENIE includes
 // TODO: add support for GENIE v2
 #include "GENIE/Framework/Conventions/KineVar.h"

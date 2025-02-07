@@ -11,6 +11,7 @@
 #include "TDirectory.h"
 #include "TFile.h"
 #include "TH1D.h"
+#include "TTree.h"
 #include "Geant4/G4LossTableManager.hh"
 #include "Geant4/G4ParticleTable.hh"
 #include "Geant4/G4ParticleDefinition.hh"
