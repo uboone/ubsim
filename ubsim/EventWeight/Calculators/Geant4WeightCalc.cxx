@@ -33,13 +33,13 @@
 #include "larsim/EventWeight/Base/WeightCalcCreator.h"
 #include "larsim/EventWeight/Base/WeightCalc.h"
 #include "larcore/Geometry/Geometry.h"
-// #include "geant4reweight/src/ReweightBase/G4ReweighterFactory.hh"
-// #include "geant4reweight/src/ReweightBase/G4Reweighter.hh"
 #include "geant4reweight/src/ReweightBase/G4MultiReweighter.hh"
 #include "geant4reweight/src/ReweightBase/G4ReweightManager.hh"
 #include "geant4reweight/src/ReweightBase/G4ReweightTraj.hh"
 #include "geant4reweight/src/ReweightBase/G4ReweightStep.hh"
 #include "geant4reweight/src/PropBase/G4ReweightParameterMaker.hh"
+
+#include "ubsim/EventWeight/Calculators/G4RWManagerService.h"
 
 // local include
 #include "BetheBlochForG4ReweightValid.h"
@@ -63,6 +63,8 @@ private:
   int fPdg; //!< PDG value for particles that a given weight calculator should apply to. Note that for now this module can only handle weights for one particle species at a time.
   // float fXSUncertainty;  //!< Flat cross section uncertainty
 
+  
+  art::ServiceHandle<evwgh::G4RWManagerService> fRWManagerService;
   G4ReweightManager * fRWManager;
   fhicl::ParameterSet fRWMaterial;
   G4MultiReweighter * fMultiRW;
@@ -126,11 +128,10 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
 
   // Get input files
   TFile FracsFile( FracsFileName.c_str(), "OPEN" );
-  // TFile XSecFile( XSecFileName.c_str(), "OPEN" );
 
   // Configure G4Reweighter
-  fRWMaterial = pset.get<fhicl::ParameterSet>("Material");
-  fRWManager = new G4ReweightManager({fRWMaterial});
+  fRWManager = fRWManagerService->GetManager();
+  fRWMaterial = fRWManagerService->GetMaterial();
   fMultiRW = new G4MultiReweighter(fPdg, FracsFile, FitParSets,
                                    fRWMaterial,
                                    fRWManager);
@@ -480,12 +481,6 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           float w, el_w=1.;
 
           // I think this is the only bit that needs to change for different universes -- all the above is jut about the track, which doesn't change based on universe
-          // ParMaker->SetNewVals(UniverseVals.at(j));
-          // theReweighter->SetNewHists(ParMaker->GetFSHists());
-          // theReweighter->SetNewElasticHists(ParMaker->GetElasticHist());
-          // auto & these_pars = UniverseVals.at(j);
-          // std::vector<double> vals;
-          // for (auto & name : fParNames) vals.push_back(these_pars.at(name));
           fMultiRW->SetAllParameterValues(OrderedVals.at(j));
 
           //Get the weight from the G4ReweightTraj
@@ -493,10 +488,6 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
           w = fMultiRW->GetWeightFromSetParameters(theTraj);
           // Total weight is the product of track weights in the event
           weight[itruth][j] *= std::max((float)0.0, w);
-
-          // Do the same for elastic weight (should be 1 unless set to non-nominal )
-          // el_w = theReweighter->GetElasticWeight( &theTraj );
-          // weight[itruth][j] *= std::max((float)0.0,el_w);
 
           // just for the output tree
           p_inel_weight[j] = w;

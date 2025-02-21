@@ -1,3 +1,8 @@
+cet_build_plugin(G4RWManagerService art::service
+  geant4reweight::ReweightBaseLib
+  fhiclcpp::fhiclcpp
+)
+
 cet_make_library(
   SOURCE
   FluxHistWeightCalc.cxx
@@ -36,6 +41,7 @@ cet_make_library(
   ROOT::MathCore
   geant4reweight::ReweightBaseLib
   larcorealg::Geometry
+  ubsim_EventWeight_Calculators_G4RWManagerService_service
 )
 
 # get_cmake_property(_variableNames VARIABLES)
