@@ -2,6 +2,7 @@
 #include "microboone_eventweight_service.fcl"
 #include "seedservice_microboone.fcl"
 #include "eventweight_microboone_genie_knobs.fcl"
+#include "eventweight_microboone_g4rwt_reint.fcl"
 
 process_name: EventWeightGenieKnobs
 
