@@ -15,6 +15,7 @@ services: {
   TFileService: { fileName: "microboone_reint_hist.root" }
   WireReadout: @local::microboone_wire_readout
   Geometry: @local::microboone_geo
+  G4RWManagerService: @local::microboone_g4rw_manager
 }
 
 source: {
