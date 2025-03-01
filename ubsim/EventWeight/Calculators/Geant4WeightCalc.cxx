@@ -68,9 +68,9 @@ private:
   G4ReweightManager * fRWManager;
   fhicl::ParameterSet fRWMaterial;
   G4MultiReweighter * fMultiRW;
-  G4ReweighterFactory RWFactory; //!< Base class to handle all Geant4Reweighters (right now "all" means pi+, pi-, p)
-  G4Reweighter *theReweighter; //!< Geant4Reweighter -- this is what provides the weights
-  G4ReweightParameterMaker *ParMaker;
+  //G4ReweighterFactory RWFactory; //!< Base class to handle all Geant4Reweighters (right now "all" means pi+, pi-, p)
+  //G4Reweighter *theReweighter; //!< Geant4Reweighter -- this is what provides the weights
+  //G4ReweightParameterMaker *ParMaker;
   std::vector<std::map<std::string, double>> UniverseVals; //!< Vector of maps relating parameter name to value (defines parameter values that will be evaluated in universes). Each map should have one entry per parameter we are considering
   std::vector<std::vector<double>> OrderedVals;
   // std::vector<std::string> fParNames;
