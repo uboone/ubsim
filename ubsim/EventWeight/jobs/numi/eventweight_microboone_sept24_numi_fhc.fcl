@@ -29,19 +29,19 @@ microboone_eventweight_sept24: {
   }
  
   # Load calculator configurations
-  #@table::reweight_numi_ppfx
-  #@table::microboone_eventweight_genie
-  #@table::microboone_eventweight_spline
-  #@table::microboone_eventweight_xs
+  @table::reweight_numi_ppfx
+  @table::microboone_eventweight_genie
+  @table::microboone_eventweight_spline
+  @table::microboone_eventweight_xs
   @table::microboone_eventweight_reint
 }
 
 # All available weight functions
 microboone_eventweight_sept24.weight_functions: [
-  #@sequence::microboone_eventweight_sept24.weight_functions_ppfx,
-  #@sequence::microboone_eventweight_sept24.weight_functions_genie,
-  #@sequence::microboone_eventweight_sept24.weight_functions_spline,
-  #@sequence::microboone_eventweight_sept24.weight_functions_xs,
+  @sequence::microboone_eventweight_sept24.weight_functions_ppfx,
+  @sequence::microboone_eventweight_sept24.weight_functions_genie,
+  @sequence::microboone_eventweight_sept24.weight_functions_spline,
+  @sequence::microboone_eventweight_sept24.weight_functions_xs,
   @sequence::microboone_eventweight_sept24.weight_functions_reint
 ]
 END_PROLOG
