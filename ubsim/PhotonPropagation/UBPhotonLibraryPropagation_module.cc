@@ -268,7 +268,7 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
 	if(nph_fast > 0)
 	  {
 
-	    for (int i = 0; i <= nph_fast; i++)
+	    for (int i = 0; i < nph_fast; i++)
 	      {
 		double dTime = edep.T() + GetScintTime(fRiseTimeFast,larp->ScintFastTimeConst(),randflatscinttime);
 		if(fIncludePhotPropTimeUBSim) dTime += transport_time[i];
@@ -278,7 +278,7 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
 	  }
 	if(fDoSlowComponent && nph_slow>0){
 
-          for (int i = 0; i <= nph_slow; i++)
+          for (int i = 0; i < nph_slow; i++)
 	    {
 	      double dTime = edep.T() + GetScintTime(fRiseTimeSlow,larp->ScintSlowTimeConst(),randflatscinttime);
 	      if(fIncludePhotPropTimeUBSim) dTime += transport_time[i+nph_fast];
