@@ -45,7 +45,6 @@ outputs: {
 }
 physics.producers.eventweightreint.reinteractions_kminus.debug: false
 physics.producers.eventweightreint.reinteractions_kplus.debug: false
-physics.producers.eventweightreint.reinteractions_neutron.debug: false
 physics.producers.eventweightreint.reinteractions_piminus.debug: false
 physics.producers.eventweightreint.reinteractions_piplus.debug: false
 physics.producers.eventweightreint.reinteractions_proton.debug: false

@@ -120,7 +120,9 @@ void Geant4WeightCalc::Configure(fhicl::ParameterSet const& p,
 
   // Configure G4Reweighter
   bool totalonly = false;
-  if (fPdg==2212) totalonly = true;
+  std::vector<int> total_pdgs = {2212, 2112, -321, 321};
+  // if (fPdg==2212) totalonly = true;
+  if (std::find(total_pdgs.begin(), total_pdgs.end(), fPdg) != total_pdgs.end()) totalonly = true;
   ParMaker = new G4ReweightParameterMaker( FitParSets, totalonly );
   theReweighter = RWFactory.BuildReweighter(fPdg, &XSecFile, &FracsFile, ParMaker->GetFSHists(), ParMaker->GetElasticHist() );
 
@@ -290,6 +292,8 @@ Geant4WeightCalc::GetWeight(art::Event& e) {
       double mass = 0.;
       if( TMath::Abs(p_PDG) == 211 ) mass = 139.57;
       else if( p_PDG == 2212 ) mass = 938.28;
+      else if( p_PDG == 2112 ) mass = 939.565;
+      else if ( TMath::Abs(p_PDG) == 321 ) mass = 493.677;
 
       // We only want to record weights for one type of particle (defined by fPDG from the fcl file), so skip other particles
       if (p_PDG == fPdg){
