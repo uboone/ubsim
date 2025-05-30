@@ -12,7 +12,7 @@ NeutronParameters: [
   {
     Name:       "fNeutronElast"
     Cut:        "elast"
-    Range:      [30.0, 2005.00]
+    Range:      [100.0, 2005.00]
     Nominal:    1.0
     Sigma:      0.2
   }
