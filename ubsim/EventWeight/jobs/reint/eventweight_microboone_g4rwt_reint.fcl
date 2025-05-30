@@ -21,9 +21,11 @@ BEGIN_PROLOG
 
 microboone_eventweight_reint: {
   weight_functions_reint: [ 
-    reinteractions_piplus, reinteractions_piminus, reinteractions_proton,
-    reinteractions_kplus, reinteractions_kminus
+    #reinteractions_piplus, reinteractions_piminus, reinteractions_proton,
+    #reinteractions_kplus, reinteractions_kminus, reinteractions_neutron
+    reinteractions_neutron
   ]
+  
   reinteractions_piplus: {
     type: Geant4
     random_seed: 58
@@ -86,18 +88,18 @@ microboone_eventweight_reint: {
     pdg_to_reweight: -321
     debug: false
   }
-  #reinteractions_neutron: {
-  #  type: Geant4
-  #  random_seed: 63
-  #  parameters: @local::NeutronParameters
-  #  mode: multisim
-  #  number_of_multisims: 1000
-  #  fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_proton.root" #"/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_neutron.root"
-  #  xsecfile: "/exp/uboone/app/users/calcuttj/ubsim-work-mcc9/srcs/geant4reweight/geant4reweight/app/PredictionBase/neutron_cross_section.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_neutron.root"
-  #  makeoutputtree: false
-  #  pdg_to_reweight: 2112
-  #  debug: false
-  #}
+  reinteractions_neutron: {
+    type: Geant4
+    random_seed: 63
+    parameters: @local::NeutronParameters
+    mode: multisim
+    number_of_multisims: 1000
+    fracsfile: "$UBOONEDATA_DIR/systematics/reint/g4_fracs_proton.root" #"/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_fracs_neutron.root"
+    xsecfile: "/exp/uboone/app/users/calcuttj/ubsim-work-mcc9/srcs/geant4reweight/geant4reweight/app/PredictionBase/neutron_cross_section.root" # "/uboone/app/users/kduffy/CC1pi/MCC9/GeantReweight/g4_cross_section_neutron.root"
+    makeoutputtree: false
+    pdg_to_reweight: 2112
+    debug: false
+  }
 }
 
 ###

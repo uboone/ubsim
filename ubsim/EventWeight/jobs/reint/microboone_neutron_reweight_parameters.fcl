@@ -4,7 +4,7 @@ NeutronParameters: [
   {
     Name:       "fNeutronReac"
     Cut:        "reac"
-    Range:      [10., 2005.]
+    Range:      [55., 2005.]
     Nominal:    1
     Sigma:      0.2
   },
@@ -12,7 +12,7 @@ NeutronParameters: [
   {
     Name:       "fNeutronElast"
     Cut:        "elast"
-    Range:      [75.0, 2005.00]
+    Range:      [30.0, 2005.00]
     Nominal:    1.0
     Sigma:      0.2
   }
