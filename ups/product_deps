@@ -2,7 +2,7 @@
 
 # The *parent* line must the first non-commented line and defines this product and version
 # The version must be of the form vxx_yy_zz (e.g. v01_02_03)
-parent ubsim v08_00_00_88
+parent ubsim v08_00_00_92
 
 defaultqual e17
 
@@ -32,7 +32,7 @@ product                 version
 ubevt                   v08_00_00_88
 larsim                  v08_02_00_22
 larwirecell             v08_02_00_17
-geant4reweight		v01_00_03e
+geant4reweight		v01_00_03f
 cetbuildtools	        v7_13_02	-	only_for_build
 end_product_list
 
