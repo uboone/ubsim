@@ -84,12 +84,16 @@ namespace evwgh {
       fWeightArray.resize(2*fNmultisims);
            
       for (double& weight : fWeightArray) {
-	if (fMode.find("multisim") != std::string::npos ){
-          weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
-	}	
-	else{
+        if (fMode.find("multisim") != std::string::npos ){
+                weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
+        }	
+        else if (fMode.find("multi_sigma") != std::string::npos ){
+          // NOT IMPLEMENTED YET
           weight = 1.;
-	}
+        }
+        else{
+          weight = 1.;
+        }
       }
     }//Use LArSoft Randoms
 

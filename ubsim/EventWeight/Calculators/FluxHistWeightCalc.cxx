@@ -77,6 +77,9 @@ namespace evwgh {
 
     if (fMode.find("multisim") != std::string::npos )
       for (double& weight : fWeightArray) weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
+    else if (fMode.find("multi_sigma") != std::string::npos )
+      // NOT IMPLEMENTED YET
+      for (double& weight : fWeightArray) weight = 1.;
     else
       for (double& weight : fWeightArray) weight = 1.;
   }

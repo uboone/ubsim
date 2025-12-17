@@ -389,7 +389,7 @@ namespace evwgh {
       genie::rew::GSyst_t current_knob = knobs_to_use.at( k );
 
       for ( size_t u = 0u; u < num_universes; ++u ) {
-	if ( mode.find("multisim") != std::string::npos ) {
+	      if ( mode.find("multisim") != std::string::npos ) {
           reweightingSigmas[k][u] = par_sigmas[k] * CLHEP::RandGaussQ::shoot(&engine, 0., 1.);
         }
         else if ( mode.find("pm1sigma") != std::string::npos ) {
@@ -400,6 +400,10 @@ namespace evwgh {
         }
         else if ( mode.find("central_value") != std::string::npos ) {
           reweightingSigmas[k][u] = 0.; // we'll correct for a modified CV below if needed
+        }
+        else if ( mode.find("multi_sigma") != std::string::npos ) {
+          // NOT IMPLEMENTED YET
+          reweightingSigmas[k][u] = 0.;
         }
 	else {
 	  reweightingSigmas[k][u] = par_sigmas[k];

@@ -133,15 +133,21 @@ namespace evwgh {
       fWeightArray.resize(2*fNmultisims);
       
       for (unsigned int i=0;i<fWeightArray.size();i++) {
-	fWeightArray[i].resize(FSKPlusFitCov->GetNcols());      
-	if (fMode.find("multisim") != std::string::npos ){
-	  for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
-            fWeightArray[i][j] = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
-	  }
-	}
-	else{
-	  std::fill(fWeightArray[i].begin(), fWeightArray[i].end(), 1.);
-	}
+        fWeightArray[i].resize(FSKPlusFitCov->GetNcols());      
+        if (fMode.find("multisim") != std::string::npos ){
+          for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
+                  fWeightArray[i][j] = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
+          }
+        }
+        else if (fMode.find("multi_sigma") != std::string::npos ){
+          // NOT IMPLEMENTED YET
+          for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
+            fWeightArray[i][j] = 1.;
+          }
+        }
+        else{
+          std::fill(fWeightArray[i].begin(), fWeightArray[i].end(), 1.);
+        }
       }
     }
   
