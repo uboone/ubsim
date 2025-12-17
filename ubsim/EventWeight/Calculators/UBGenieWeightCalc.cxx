@@ -319,10 +319,10 @@ namespace evwgh {
 
     auto const mode = pset.get<std::string>( "mode" );
 
-    if ( pars.size() != par_sigmas.size() ) {
+    if ( (pars.size() != par_sigmas.size()) && (mode.find("multi_sigma") == std::string::npos) ) {
       throw cet::exception(__PRETTY_FUNCTION__) << GetName()
         << "::Bad fcl configuration. parameter_list and parameter_sigma"
-        << " need to have same number of parameters.";
+        << " need to have same number of parameters, unless multi_sigma mode is specified.";
     }
 
     if ( !pars.empty() && !fQuietMode ) MF_LOG_INFO("GENIEWeightCalc") << "Configuring"
