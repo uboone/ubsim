@@ -154,14 +154,7 @@ namespace evwgh {
       else if (fMode.find("multisigma") != std::string::npos ) {
         // multi sigma mode uses three universes: -1sigma, 0sigma, +1sigma
         // corresponding to the three input files: CentralValue_hist_file, PositiveSystematicVariation_hist_file, NegativeSystematicVariation_hist_file
-        int weight_index = 0;
-        for (double& weight : fWeightArray) {
-          if (weight_index == 0) weight = -1.;
-          else if (weight_index == 1) weight = 0.;
-          else if (weight_index == 2) weight = 1.;
-          else throw cet::exception(__FUNCTION__) << GetName()<<"::More than 3 universes for multisigma mode in FluxUnisimWeightCalc!" << std::endl;
-          weight_index++;
-        }
+        fWeightArray = {-1., 0., 1.};
       }
       else {
         for (double& weight : fWeightArray) weight=1.;

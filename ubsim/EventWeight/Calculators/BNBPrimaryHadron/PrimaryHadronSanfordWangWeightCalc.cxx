@@ -77,7 +77,6 @@ namespace evwgh {
     auto const parameter_list = pset.get<std::vector<std::string> >("parameter_list");
     auto const dataInput      = pset.get< std::string >("ExternalData");
     fNmultisims			=   pset.get<int>("number_of_multisims");
-    fmultisigmas = pset.get<std::vector<double> >("multisigmas");
     fprimaryHad			=   pset.get< std::vector< int > >("PrimaryHadronGeantCode");
     fWeightCalc                 =   pset.get<std::string>("weight_calculator");
     fMode                       =   pset.get<std::string>("mode");
