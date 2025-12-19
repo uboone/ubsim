@@ -402,11 +402,10 @@ namespace evwgh {
           reweightingSigmas[k][u] = 0.; // we'll correct for a modified CV below if needed
         }
         else if ( mode.find("multisigma") != std::string::npos ) {
-          // NOT IMPLEMENTED YET
-          reweightingSigmas[k][u] = 0.;
+          reweightingSigmas[k][u] = par_sigmas[u];
         }
-	else {
-	  reweightingSigmas[k][u] = par_sigmas[k];
+        else {
+          reweightingSigmas[k][u] = par_sigmas[k];
         }
 
         if ( !fQuietMode ) MF_LOG_INFO("GENIEWeightCalc")
