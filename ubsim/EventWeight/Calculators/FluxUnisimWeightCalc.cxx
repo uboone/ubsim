@@ -151,12 +151,17 @@ namespace evwgh {
       if (fMode.find("multisim") != std::string::npos ) {
         for (double& weight : fWeightArray) weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
       }
-      else if (fMode.find("multi_sigma") != std::string::npos ) {
+      else if (fMode.find("multisigma") != std::string::npos ) {
         // multi sigma mode uses three universes: -1sigma, 0sigma, +1sigma
         // corresponding to the three input files: CentralValue_hist_file, PositiveSystematicVariation_hist_file, NegativeSystematicVariation_hist_file
-        fWeightArray[0] = -1;
-        fWeightArray[1] = 0;
-        fWeightArray[2] = 1;
+        int weight_index = 0;
+        for (double& weight : fWeightArray) {
+          if (weight_index == 0) weight = -1.;
+          else if (weight_index == 1) weight = 0.;
+          else if (weight_index == 2) weight = 1.;
+          else throw cet::exception(__FUNCTION__) << GetName()<<"::More than 3 universes for multisigma mode in FluxUnisimWeightCalc!" << std::endl;
+          weight_index++;
+        }
       }
       else {
         for (double& weight : fWeightArray) weight=1.;
@@ -224,7 +229,7 @@ namespace evwgh {
       double enu=mclist[inu].GetNeutrino().Nu().E();      
 
       //Let's make a weights based on the calculator you have requested 
-      if(fMode.find("multisim") != std::string::npos){
+      if((fMode.find("multisim") != std::string::npos) || (fMode.find("multisigma") != std::string::npos)){
         for (int i=0;i<fNuni;i++) {
 
           if(fWeightCalc.find("MicroBooNE") != std::string::npos){

@@ -319,10 +319,10 @@ namespace evwgh {
 
     auto const mode = pset.get<std::string>( "mode" );
 
-    if ( (pars.size() != par_sigmas.size()) && (mode.find("multi_sigma") == std::string::npos) ) {
+    if ( (pars.size() != par_sigmas.size()) && (mode.find("multisigma") == std::string::npos) ) {
       throw cet::exception(__PRETTY_FUNCTION__) << GetName()
         << "::Bad fcl configuration. parameter_list and parameter_sigma"
-        << " need to have same number of parameters, unless multi_sigma mode is specified.";
+        << " need to have same number of parameters, unless multisigma mode is specified.";
     }
 
     if ( !pars.empty() && !fQuietMode ) MF_LOG_INFO("GENIEWeightCalc") << "Configuring"
@@ -401,7 +401,7 @@ namespace evwgh {
         else if ( mode.find("central_value") != std::string::npos ) {
           reweightingSigmas[k][u] = 0.; // we'll correct for a modified CV below if needed
         }
-        else if ( mode.find("multi_sigma") != std::string::npos ) {
+        else if ( mode.find("multisigma") != std::string::npos ) {
           // NOT IMPLEMENTED YET
           reweightingSigmas[k][u] = 0.;
         }

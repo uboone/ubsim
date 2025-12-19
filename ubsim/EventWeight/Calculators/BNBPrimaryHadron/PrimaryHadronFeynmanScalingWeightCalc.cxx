@@ -53,6 +53,7 @@ namespace evwgh {
     std::string fGenieModuleLabel{};
     std::vector<std::string> fParameter_list{};
     float fParameter_sigma{};
+    std::vector<double> fmultisigmas{};
     int fNmultisims{};
     int fprimaryHad{};
     std::string fWeightCalc{};
@@ -88,6 +89,12 @@ namespace evwgh {
     fScaleFactor                =   pset.get<double>("scale_factor");
     fSeed 			=   pset.get<double>("random_seed");
     fUseMBRands                 =   pset.get<bool>("use_MiniBooNE_random_numbers");
+
+    // Only require multisigmas when running in multisigma mode.
+    if ( fMode.find("multisigma") != std::string::npos ) {
+      std::cout << "Multi-sigma mode enabled for PrimaryHadronFeynmanScalingWeightCalc" << std::endl;
+      fmultisigmas = pset.get<std::vector<double> >("multisigmas");
+    }
 
     // Getting External Data:
     //   Now let's get the external data that we will need 
@@ -139,10 +146,9 @@ namespace evwgh {
                   fWeightArray[i][j] = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
           }
         }
-        else if (fMode.find("multi_sigma") != std::string::npos ){
-          // NOT IMPLEMENTED YET
+        else if (fMode.find("multisigma") != std::string::npos ){
           for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
-            fWeightArray[i][j] = 1.;
+            fWeightArray[i][j] = fmultisigmas[j];
           }
         }
         else{
@@ -185,39 +191,39 @@ namespace evwgh {
       // First let's check that the parent of the neutrino we are looking for is 
       //  the particle we intended it to be, if not set all weights to 1
       if (fluxlist[inu].ftptype != fprimaryHad){
-	weight[inu].resize(fNmultisims);
-	std::fill(weight[inu].begin(), weight[inu].end(), 1);
-	continue; //now move on to the next neutrino
+        weight[inu].resize(fNmultisims);
+        std::fill(weight[inu].begin(), weight[inu].end(), 1);
+        continue; //now move on to the next neutrino
       }// Hadronic parent check
           
       //Let's make a weights based on the calculator you have requested 
-      if(fMode.find("multisim") != std::string::npos){       
-	for (unsigned int i = 0; int(weight[inu].size()) < fNmultisims; i++) {
-	  if(fWeightCalc.find("MicroBooNE") != std::string::npos){
-	    
-	    //
-	    //This way we only have to call the WeightCalc once
-	    // 
-	    std::pair<bool, double> test_weight =
-	      MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
-	    
-	    if(test_weight.first){
-	      weight[inu].push_back(test_weight.second);
-	    }
-	  }
-	  if(fWeightCalc.find("MiniBooNE") != std::string::npos){
+      if((fMode.find("multisim") != std::string::npos) || (fMode.find("multisigma") != std::string::npos)){       
+        for (unsigned int i = 0; int(weight[inu].size()) < fNmultisims; i++) {
+          if(fWeightCalc.find("MicroBooNE") != std::string::npos){
+            
+            //
+            //This way we only have to call the WeightCalc once
+            // 
+            std::pair<bool, double> test_weight =
+              MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
+            
+            if(test_weight.first){
+              weight[inu].push_back(test_weight.second);
+            }
+          }
+          if(fWeightCalc.find("MiniBooNE") != std::string::npos){
 
-	    //
-	    //This way we only have to call the WeightCalc once
-	    // 
-	    std::pair<bool, double> test_weight =
-	      MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
-	    
-	    if(test_weight.first){
-	      weight[inu].push_back(test_weight.second);
-	    }
-	  }
-	}//Iterate through the number of universes      
+            //
+            //This way we only have to call the WeightCalc once
+            // 
+            std::pair<bool, double> test_weight =
+              MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
+            
+            if(test_weight.first){
+              weight[inu].push_back(test_weight.second);
+            }
+          }
+        }//Iterate through the number of universes      
       } // make sure we are multisiming
 
         
@@ -262,8 +268,8 @@ namespace evwgh {
       
       if(fabs(fprimaryHad) == 321) HadronMass = 0.4937; //Charged Kaon
       else{ 
-	throw art::Exception(art::errors::StdException)
-	  << "Feynman Scaling is only configured for Charged Kaons ";
+        throw art::Exception(art::errors::StdException)
+          << "Feynman Scaling is only configured for Charged Kaons ";
       }
 
       TLorentzVector HadronVec; 
@@ -306,11 +312,11 @@ namespace evwgh {
 
       double MaxThreshold;
       if(fabs(fprimaryHad) == 321){
-	MaxThreshold = 2.053; // Mike S. Comment: K+: lambda + proton
+        MaxThreshold = 2.053; // Mike S. Comment: K+: lambda + proton
       }
       else{
-	throw art::Exception(art::errors::StdException)
-	  << "Feynman Scaling is only configured for Charged Kaons ";	
+        throw art::Exception(art::errors::StdException)
+          << "Feynman Scaling is only configured for Charged Kaons ";	
       }
 
       double E_cm_max = (E_cm*E_cm
@@ -360,11 +366,11 @@ namespace evwgh {
       double smeared_c7 = FSKPlusFitSmeared.at(6);     
 
       if(smeared_c1 > 0 && 
-	 smeared_c2 > 0 && 
-	 smeared_c3 > 0 && 
-	 smeared_c5 > 0 && 
-	 smeared_c7 > 0){
-	parameters_pass = true;	
+        smeared_c2 > 0 && 
+        smeared_c3 > 0 && 
+        smeared_c5 > 0 && 
+        smeared_c7 > 0){
+        parameters_pass = true;	
       }
         
       double RW = smeared_c1*(HadronVec.P()*HadronVec.P()/HadronE)*exp(-1.*smeared_c3*pow(fabs(xF),smeared_c4) 
@@ -378,13 +384,13 @@ namespace evwgh {
       double weight = 1; 
 
       if(RW < 0 || CV < 0){
-	weight = 1;
+        weight = 1;
       }
       else if(CV < 1.e-12){
-	weight = 1;
+        weight = 1;
       }
       else{
-	weight *= RW/CV;
+        weight *= RW/CV;
       }
 
       if(weight < 0) weight = 0;
@@ -423,8 +429,8 @@ namespace evwgh {
       
       if(fabs(fprimaryHad) == 321) HadronMass = 0.4937; //Charged Kaon
       else{ 
-	throw art::Exception(art::errors::StdException)
-	  << "Feynman Scaling is only configured for Charged Kaons ";
+        throw art::Exception(art::errors::StdException)
+          << "Feynman Scaling is only configured for Charged Kaons ";
       }
 
       TLorentzVector HadronVec; 
@@ -463,11 +469,11 @@ namespace evwgh {
 
       double MaxThreshold;
       if(fabs(fprimaryHad) == 321){
-	MaxThreshold = 2.053; // Mike S. Comment: K+: lambda + proton
+        MaxThreshold = 2.053; // Mike S. Comment: K+: lambda + proton
       }
       else{
-	throw art::Exception(art::errors::StdException)
-	  << "Feynman Scaling is only configured for Charged Kaons ";	
+        throw art::Exception(art::errors::StdException)
+          << "Feynman Scaling is only configured for Charged Kaons ";	
       }
 
       double E_cm_max = (E_cm*E_cm
@@ -517,11 +523,11 @@ namespace evwgh {
       double smeared_c7 = FSKPlusFitSmeared.at(6);     
 
       if(smeared_c1 > 0 && 
-	 smeared_c2 > 0 && 
-	 smeared_c3 > 0 && 
-	 smeared_c5 > 0 && 
-	 smeared_c7 > 0){
-	parameters_pass = true;	
+        smeared_c2 > 0 && 
+        smeared_c3 > 0 && 
+        smeared_c5 > 0 && 
+        smeared_c7 > 0){
+        parameters_pass = true;	
       }
         
       double RW = smeared_c1*(HadronVec.P()*HadronVec.P()/HadronE)*exp(-1.*smeared_c3*pow(fabs(xF),smeared_c4) 
@@ -535,24 +541,23 @@ namespace evwgh {
       double weight = 1; 
 
       if(RW < 0 || CV < 0){
-	weight = 1;
+        weight = 1;
       }
       else if(CV < 1.e-12){
-	weight = 1;
+        weight = 1;
       }
       else{
-	weight *= RW/CV;
+        weight *= RW/CV;
       }
 
       if(weight < 0) weight = 0;
       if(weight > 30) weight = 30;
       if(!(std::isfinite(weight))){
-	std::cout << "FS : Failed to get a finite weight" << std::endl; 
-	weight = 30;}
+        std::cout << "FS : Failed to get a finite weight" << std::endl; 
+        weight = 30;
+      }
 
       std::pair<bool, double> output(parameters_pass, weight);
-
-      
 
       return output; 
 
