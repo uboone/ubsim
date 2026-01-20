@@ -198,7 +198,7 @@ namespace evwgh {
           
       //Let's make a weights based on the calculator you have requested 
       if((fMode.find("multisim") != std::string::npos) || (fMode.find("multisigma") != std::string::npos)){       
-        for (unsigned int i = 0; int(weight[inu].size()) < fNmultisims; i++) {
+        for (unsigned int i = 0; int(weight[inu].size()) < fNmultisims && i < fWeightArray.size(); i++) {
           if(fWeightCalc.find("MicroBooNE") != std::string::npos){
             
             //
@@ -223,7 +223,11 @@ namespace evwgh {
               weight[inu].push_back(test_weight.second);
             }
           }
-        }//Iterate through the number of universes      
+        }//Iterate through the number of universes
+        // If we didn't get enough weights (calculator returned false too often), pad with a sentinel value, -9898.
+        while(int(weight[inu].size()) < fNmultisims) {
+          weight[inu].push_back(-9898.0);
+        }
       } // make sure we are multisiming
 
         
