@@ -94,18 +94,23 @@ namespace evwgh {
         fWeightArray[i] = fGaussRandom->fire(0, 1.0);
        }
     }
+    else if (fMode.find("multisigma") != std::string::npos) {
+      for (int i=0; i<fNmultisims; i++) {
+        fWeightArray[i] = parsigmas[i];
+      }
+    }
     else {
       for (int i=0; i<fNmultisims; i++) {
         fWeightArray[i] = 1.0;
       }
     }
 
-    if (pars.size() != parsigmas.size())
+    if ((pars.size() != parsigmas.size()) && (fMode.find("multisigma") == std::string::npos))
        throw cet::exception(__FUNCTION__)
          << GetName()
          << ": Bad fcl configuration. "
          << "parameter_list and parameter_sigma need to have same "
-         << "number of parameters."
+         << "number of parameters, unless multisigma mode is specified."
          << std::endl;
 
     for (auto& s : pars) {

@@ -323,10 +323,10 @@ namespace evwgh {
 
     auto const mode = pset.get<std::string>( "mode" );
 
-    if ( pars.size() != par_sigmas.size() ) {
+    if ( (pars.size() != par_sigmas.size()) && (mode.find("multisigma") == std::string::npos) ) {
       throw cet::exception(__PRETTY_FUNCTION__) << GetName()
         << "::Bad fcl configuration. parameter_list and parameter_sigma"
-        << " need to have same number of parameters.";
+        << " need to have same number of parameters, unless multisigma mode is specified.";
     }
 
     if ( !pars.empty() && !fQuietMode ) MF_LOG_INFO("GENIEWeightCalc") << "Configuring"
@@ -393,7 +393,7 @@ namespace evwgh {
       genie::rew::GSyst_t current_knob = knobs_to_use.at( k );
 
       for ( size_t u = 0u; u < num_universes; ++u ) {
-	if ( mode.find("multisim") != std::string::npos ) {
+	      if ( mode.find("multisim") != std::string::npos ) {
           reweightingSigmas[k][u] = par_sigmas[k] * CLHEP::RandGaussQ::shoot(&engine, 0., 1.);
         }
         else if ( mode.find("pm1sigma") != std::string::npos ) {
@@ -405,8 +405,11 @@ namespace evwgh {
         else if ( mode.find("central_value") != std::string::npos ) {
           reweightingSigmas[k][u] = 0.; // we'll correct for a modified CV below if needed
         }
-	else {
-	  reweightingSigmas[k][u] = par_sigmas[k];
+        else if ( mode.find("multisigma") != std::string::npos ) {
+          reweightingSigmas[k][u] = par_sigmas[u];
+        }
+        else {
+          reweightingSigmas[k][u] = par_sigmas[k];
         }
 
         if ( !fQuietMode ) MF_LOG_INFO("GENIEWeightCalc")

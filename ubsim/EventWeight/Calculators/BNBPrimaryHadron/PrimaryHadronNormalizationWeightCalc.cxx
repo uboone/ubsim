@@ -52,6 +52,7 @@ namespace evwgh {
 
     std::string fGenieModuleLabel{};
     int fNmultisims{};
+    std::vector<double> fmultisigmas{};
     int fprimaryHad{};
     std::string fWeightCalc{};
     std::vector< double > fWeightArray{};
@@ -75,6 +76,12 @@ namespace evwgh {
     fWeightCalc                 =   pset.get<std::string>("weight_calculator");
     fMode                       =   pset.get<std::string>("mode");
     fUseMBRands                 =   pset.get<bool>("use_MiniBooNE_random_numbers");
+
+    // Only require multisigmas when running in multisigma mode.
+    if ( fMode.find("multisigma") != std::string::npos ) {
+      std::cout << "Multi-sigma mode enabled for PrimaryHadronNormalizationWeightCalc" << std::endl;
+      fmultisigmas = pset.get<std::vector<double> >("multisigmas");
+    }
     
     //
     // This is the meat of this, select random numbers that will be the 
@@ -85,14 +92,19 @@ namespace evwgh {
     }//Use MiniBooNE Randoms
     else{
       fWeightArray.resize(2*fNmultisims);
-           
+      
+      int weight_index = 0;
       for (double& weight : fWeightArray) {
-	if (fMode.find("multisim") != std::string::npos ){
-          weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
-	}	
-	else{
+        if (fMode.find("multisim") != std::string::npos ){
+                weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
+        }	
+        else if (fMode.find("multisigma") != std::string::npos ){
+          weight = fmultisigmas[weight_index];
+        }
+        else{
           weight = 1.;
-	}
+        }
+        weight_index++;
       }
     }//Use LArSoft Randoms
 
@@ -134,33 +146,33 @@ namespace evwgh {
       
   
       //Let's make a weights based on the calculator you have requested 
-      if(fMode.find("multisim") != std::string::npos){       
-	for (unsigned int i = 0;  int(weight[inu].size()) < fNmultisims; i++) {
-	  if(fWeightCalc.find("MicroBooNE") != std::string::npos){
-	    
-	    //
-	    //This way we only have to call the WeightCalc once
-	    // 
-	    std::pair<bool, double> test_weight =
-	      MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
-	    
-	    if(test_weight.first){
-	      weight[inu].push_back(test_weight.second);
-	    }
-	  }
-	  if(fWeightCalc.find("MiniBooNE") != std::string::npos){
+      if((fMode.find("multisim") != std::string::npos) || (fMode.find("multisigma") != std::string::npos)){       
+        for (unsigned int i = 0;  int(weight[inu].size()) < fNmultisims; i++) {
+          if(fWeightCalc.find("MicroBooNE") != std::string::npos){
+            
+            //
+            //This way we only have to call the WeightCalc once
+            // 
+            std::pair<bool, double> test_weight =
+              MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
+            
+            if(test_weight.first){
+              weight[inu].push_back(test_weight.second);
+            }
+          }
+          if(fWeightCalc.find("MiniBooNE") != std::string::npos){
 
-	    //
-	    //This way we only have to call the WeightCalc once
-	    // 
-	    std::pair<bool, double> test_weight =
-	      MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
-	    
-	    if(test_weight.first){
-	      weight[inu].push_back(test_weight.second);
-	    }
-	  }
-	}//Iterate through the number of universes      
+            //
+            //This way we only have to call the WeightCalc once
+            // 
+            std::pair<bool, double> test_weight =
+              MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
+            
+            if(test_weight.first){
+              weight[inu].push_back(test_weight.second);
+            }
+          }
+        }//Iterate through the number of universes      
       } // make sure we are multisiming
 
         
