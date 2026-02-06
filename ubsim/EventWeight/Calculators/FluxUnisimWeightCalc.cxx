@@ -119,13 +119,13 @@ namespace evwgh {
 
     for (int iptyp=0;iptyp<4;iptyp++) {
       for (int intyp=0;intyp<4;intyp++) {
-	for (int ibin=0;ibin<200;ibin++) { //Grab events from ibin+1 
+        for (int ibin=0;ibin<200;ibin++) { //Grab events from ibin+1 
 
-	  fCV[iptyp][intyp][ibin]=(dynamic_cast<TH1F*> (fcv.Get(Form("h5%d%d",ptype[iptyp],ntype[intyp]))))->GetBinContent(ibin+1);
-	  fRWpos[iptyp][intyp][ibin]=(dynamic_cast<TH1F*> (frwpos.Get(Form("h5%d%d",ptype[iptyp],ntype[intyp]))))->GetBinContent(ibin+1);
-	  fRWneg[iptyp][intyp][ibin]=(dynamic_cast<TH1F*> (frwneg.Get(Form("h5%d%d",ptype[iptyp],ntype[intyp]))))->GetBinContent(ibin+1);
+          fCV[iptyp][intyp][ibin]=(dynamic_cast<TH1F*> (fcv.Get(Form("h5%d%d",ptype[iptyp],ntype[intyp]))))->GetBinContent(ibin+1);
+          fRWpos[iptyp][intyp][ibin]=(dynamic_cast<TH1F*> (frwpos.Get(Form("h5%d%d",ptype[iptyp],ntype[intyp]))))->GetBinContent(ibin+1);
+          fRWneg[iptyp][intyp][ibin]=(dynamic_cast<TH1F*> (frwneg.Get(Form("h5%d%d",ptype[iptyp],ntype[intyp]))))->GetBinContent(ibin+1);
 
-	}// energy bin
+        }// energy bin
       }//   type of neutrinos
     }//     type of hadron parent 
     
@@ -148,10 +148,17 @@ namespace evwgh {
       fWeightArray.resize(fNuni);
       
       // This sets up if we want to reweight events or just assess 1sigma shifts 
-      if (fMode.find("multisim") != std::string::npos )
+      if (fMode.find("multisim") != std::string::npos ) {
         for (double& weight : fWeightArray) weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
-      else
+      }
+      else if (fMode.find("multisigma") != std::string::npos ) {
+        // multi sigma mode uses three universes: -1sigma, 0sigma, +1sigma
+        // corresponding to the three input files: CentralValue_hist_file, PositiveSystematicVariation_hist_file, NegativeSystematicVariation_hist_file
+        fWeightArray = {-1., 0., 1.};
+      }
+      else {
         for (double& weight : fWeightArray) weight=1.;
+      }
     }//Use LArSoft Randoms
 
   }
@@ -198,7 +205,7 @@ namespace evwgh {
       else if ( fluxlist[inu].fptype==130                               ) ptype = 2;
       else if ( fluxlist[inu].fptype==321 || fluxlist[inu].fptype==-321 ) ptype = 3;                                    
       else {
-	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0].fptype<< std::endl;
+        throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ptype "<<fluxlist[0].fptype<< std::endl;
       }
 
       // Discover the neutrino type
@@ -208,24 +215,24 @@ namespace evwgh {
       else if ( fluxlist[inu].fntype== 14  ) ntype=2;
       else if ( fluxlist[inu].fntype==-14  ) ntype=3;
       else {
-	throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ntype "<<fluxlist[0].fntype<< std::endl;
+       throw cet::exception(__FUNCTION__) << GetName()<<"::Unknown ntype "<<fluxlist[0].fntype<< std::endl;
       }
 
       // Collect neutrino energy
       double enu=mclist[inu].GetNeutrino().Nu().E();      
 
       //Let's make a weights based on the calculator you have requested 
-      if(fMode.find("multisim") != std::string::npos){
-	for (int i=0;i<fNuni;i++) {
+      if((fMode.find("multisim") != std::string::npos) || (fMode.find("multisigma") != std::string::npos)){
+        for (int i=0;i<fNuni;i++) {
 
-	  if(fWeightCalc.find("MicroBooNE") != std::string::npos){
-	    weight[inu][i]=MicroBooNEWeightCalc(enu, ptype, ntype, i, PosOnly);
-	  }
-	  if(fWeightCalc.find("MiniBooNE") != std::string::npos){
-	    weight[inu][i]=MiniBooNEWeightCalc(enu, ptype, ntype, i, PosOnly);
-	  }
+          if(fWeightCalc.find("MicroBooNE") != std::string::npos){
+            weight[inu][i]=MicroBooNEWeightCalc(enu, ptype, ntype, i, PosOnly);
+          }
+          if(fWeightCalc.find("MiniBooNE") != std::string::npos){
+            weight[inu][i]=MiniBooNEWeightCalc(enu, ptype, ntype, i, PosOnly);
+          }
 
-	}//Iterate through the number of universes      
+        }//Iterate through the number of universes      
       }
     }
      

@@ -55,6 +55,7 @@ namespace evwgh {
 
     std::string fGenieModuleLabel{};
     int fNmultisims{};
+    std::vector<double> fmultisigmas{};
     std::vector<int> fprimaryHad{};
     std::string fWeightCalc{};
     std::string ExternalDataInput{};
@@ -87,6 +88,13 @@ namespace evwgh {
     fScaleFactor                =   pset.get<double>("scale_factor");
     fSeed                       =   pset.get<double>("random_seed");
     fUseMBRands                 =   pset.get<bool>("use_MiniBooNE_random_numbers");
+
+    // Only require multisigmas when running in multisigma mode.
+    if ( fMode.find("multisigma") != std::string::npos ) {
+      std::cout << "Multi-sigma mode enabled for PrimaryHadronSanfordWangWeightCalc" << std::endl;
+      fmultisigmas = pset.get<std::vector<double> >("multisigmas");
+    }
+
     // Getting External Data:
     //   Now let's get the external data that we will need
     //   to assess what the central value of the p+Be -> K0
@@ -137,6 +145,11 @@ namespace evwgh {
             fWeightArray[i][j] = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
 	  }
 	}
+        else if (fMode.find("multisigma") != std::string::npos ){
+          for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
+            fWeightArray[i][j] = fmultisigmas[j];
+          }
+        }
 	else{
 	  std::fill(fWeightArray[i].begin(), fWeightArray[i].end(), 1.);
 	}
@@ -187,8 +200,8 @@ namespace evwgh {
       }// Hadronic parent check
 
       //Let's make a weights based on the calculator you have requested
-      if(fMode.find("multisim") != std::string::npos){
-	for (unsigned int i = 0;  int(weight[inu].size()) < fNmultisims; i++) {
+      if((fMode.find("multisim") != std::string::npos) || (fMode.find("multisigma") != std::string::npos)){       
+        for (unsigned int i = 0;  int(weight[inu].size()) < fNmultisims && i < fWeightArray.size(); i++) {
 	  if(fWeightCalc.find("MicroBooNE") != std::string::npos){
 
 	    //
@@ -214,6 +227,10 @@ namespace evwgh {
 	    }
 	  }
 	}//Iterate through the number of universes
+        // If we didn't get enough weights (calculator returned false too often), pad with a sentinel value, -9898.
+        while(int(weight[inu].size()) < fNmultisims) {
+          weight[inu].push_back(-9898.0);
+        }
       } // make sure we are multisiming
 
 
