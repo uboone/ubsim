@@ -3,7 +3,6 @@ cet_build_plugin(
   LIBRARIES
   PRIVATE
   larsim::IonizationScintillation
-  larsim::LegacyLArG4
   larsim::PhotonPropagation_PhotonVisibilityService_service
   larsim::PhotonPropagation
   larevt::SpaceChargeService
