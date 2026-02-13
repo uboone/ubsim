@@ -1,6 +1,6 @@
 add_subdirectory(DetSim)
 add_subdirectory(EventWeight)
-add_subdirectory(LArG4)
+#add_subdirectory(LArG4)
 add_subdirectory(OpticalDetectorSim)
 add_subdirectory(PhotonPropagation)
 add_subdirectory(SNStreamSim)
