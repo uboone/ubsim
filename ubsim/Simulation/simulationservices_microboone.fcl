@@ -11,4 +11,55 @@ microboone_largeantparameters.ElectronClusterSize: 20.0
 
 microboone_larvoxelcalculator: @local::standard_larvoxelcalculator
 
+# Services used by refactored geant.
+
+microboone_larg4detector:
+{
+  category: "world"
+  gdmlFileName_ : "microboonev12_nowires.gdml"
+}
+
+microboone_physicslist:
+{
+  PhysicsListName: "QGSP_BERT_HP"
+  DumpList: true
+  enableNeutronLimit: false
+  NeutronTimeLimit: 0.0
+  NeutronKinELimit: 0.0
+  enableStepLimit: true
+  enableOptical: false
+  enableCerenkov: false
+  CerenkovStackPhotons: false
+  CerenkovMaxNumPhotons: 100
+  CerenkovMaxBetaChange: 10.0
+  enableScintillation: false
+  ScintillationStackPhotons: false
+  ScintillationByParticleType: false
+  ScintillationTrackInfo: false
+  ScintillationTrackSecondariesFirst: false
+  enableAbsorption: false
+  enableRayleigh: false
+  enableMieHG: false
+  enableBoundary: false
+  enableWLS: false
+  BoundaryInvokeSD: false
+  Verbosity: 1
+  WLSProfile: delta
+}
+
+microboone_particlelistaction:
+{
+  service_type: "ParticleListActionService"
+  EnergyCut: 1e-2
+  keepEMShowerDaughters: true
+  KeepDroppedParticlesInVolumes: []
+  storeTrajectories: true
+  keepGenTrajectories: ["generator", "corsika"]
+  keepOnlyPrimaryFullTrajectories: false
+  SparsifyTrajectories: true
+  SparsifyMargin: 0.015
+  KeepTransportation: true
+  KeepSecondToLast: true
+}
+
 END_PROLOG

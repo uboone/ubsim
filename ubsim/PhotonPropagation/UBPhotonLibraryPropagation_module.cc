@@ -197,8 +197,9 @@ void phot::UBPhotonLibraryPropagation::produce(art::Event & e)
   //size_t edep_reserve_size=0;
   std::vector< std::vector<sim::SimEnergyDeposit> const*> edep_vecs;
   for(auto label : fEDepTags){
-    auto const& edep_handle = e.getValidHandle< std::vector<sim::SimEnergyDeposit> >(label);
-    edep_vecs.push_back(edep_handle);
+    auto const& edep_handle = e.getHandle< std::vector<sim::SimEnergyDeposit> >(label);
+    if(edep_handle.isValid())
+      edep_vecs.push_back(edep_handle.product());
     //edep_reserve_size += edep_handle->size();
   }
 
