@@ -115,7 +115,7 @@ microboone_optical_adc_sim:
 
   module_type:  "UBOpticalADCSim"
 
-  G4ModName:    "largeant"
+  G4ModName:    "fastop"
 
   BeamModName:  ["generator"]
 
