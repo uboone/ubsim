@@ -17,7 +17,7 @@ microboone_genericcrt:
   module_type: "GenericCRT"
 }
 
-microboone_fastop:
+microboone_phprop:
 {
       module_type: "UBPhotonLibraryPropagation"
       EDepModuleLabels: [ "largeant:LArG4DetectorServicevolTPCActive",
