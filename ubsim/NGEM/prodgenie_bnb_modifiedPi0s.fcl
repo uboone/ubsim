@@ -2,7 +2,7 @@
 
 process_name: GenieGenFiltered
 
-outputs.out1.fileName: "prodgenie_bnb_nu_filtered_del1g_uboone_%tc_gen.root"
+outputs.out1.fileName: "prodgenie_bnb_nu_filtered_modpi0_uboone_%tc_gen.root"
 
 source.maxEvents: 750
 
@@ -16,7 +16,13 @@ physics.producers.generator.module_type: "GENIEGenNGEM"
 physics.producers.generator.ManuallyDecayPi0s: false
 physics.producers.generator.DeleteRandomGamma: false
 physics.producers.generator.GenerateIsotropicSinglePhoton: false
-physics.producers.generator.ModifyPi0s: true
+
+physics.producers.generator.ModifyParticle: true
+physics.producers.generator.ModifyParticlePdg: 111 # pi0
+physics.producers.generator.ModifyParticleVar: ["mass"] # modify mass of pi0s
+physics.producers.generator.ModifyParticleVarBinEdges: [[0.001, 2.0, 5.0]] # bin edges for mass modification (in GeV)
+physics.producers.generator.ModifyParticleVarBinProbs: [[0.85, 0.15]] # probabilities for each mass bin
+physics.producers.generator.ModifyParticleRandomSeed: 5 # random seed for particle modification, default is 0 (no seed)
 
 physics.filters.finalstatefilter.IsVerbose: false
 physics.filters.finalstatefilter.isInclusive: true

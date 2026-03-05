@@ -72,16 +72,15 @@ namespace evgen {
 
   // modify particle kinematics
   inline void ModifyParticle(int modPdg, std::string modVar, 
-                const std::vector<double>& varBinEdges, const std::vector<double>& varBinProbs,
-                simb::MCTruth& originalMCTruth, simb::MCTruth& newMCTruth,
-                int seed = 0) {
+                const std::vector<double>& varBinEdges, const std::vector<double>& varBinProbs, int seed
+                simb::MCTruth& originalMCTruth, simb::MCTruth& newMCTruth) {
     for (int i = 0; i < originalMCTruth.NParticles(); ++i) {
       TRandom3 randomGen;
       randomGen.SetSeed(seed);
 
       int pdgCode = originalMCTruth.GetParticle(i).PdgCode();
       int statusCode = originalMCTruth.GetParticle(i).StatusCode();
-      if (pdgCode == modPdg && statusCode == 1) { // pi0, GENIE status code 1 = kIstStableFinalState
+      if (pdgCode == modPdg && statusCode == 1) { // GENIE status code 1 = kIstStableFinalState
 	      std::cout << "Modifying " << modVar << " of particle with pdg code " << modPdg << " at index " << i << std::endl;
         const simb::MCParticle& part = originalMCTruth.GetParticle(i);
 
@@ -97,18 +96,21 @@ namespace evgen {
         double part_mass = part.Mass();
         //double theta = randomGen.Uniform(0, 2 * M_PI);
         //double phi = acos(1 - 2 * randomGen.Uniform(0, 1));
-        double pE = part_mass / 2;
-        double px = pE * sin(phi) * cos(theta);
-        double py = pE * sin(phi) * sin(theta);
-        double pz = pE * cos(phi);
-        TLorentzVector rest_frame_momentum(px, py, pz, pE);
+        double pE = part_momentum.E(); //part_mass / 2;
+        double px = part_momentum.Px(); //pE * sin(phi) * cos(theta);
+        double py = part_momentum.Py(); //pE * sin(phi) * sin(theta);
+        double pz = part_momentum.Pz(); //pE * cos(phi);
+        //TLorentzVector rest_frame_momentum(px, py, pz, pE);
+
+        double T = part_position.T();
+        double x = part_position.Vx();
+        double y = part_position.Vy();
+        double z = part_position.Vz();
 
         // transform the momenta to the lab frame using a Lorentz boost
-        TLorentzVector lab_frame_momentum = rest_frame_momentum;
-        lab_frame_momentum.Boost(part_boost_vector);
+        //TLorentzVector lab_frame_momentum = rest_frame_momentum;
+        //lab_frame_momentum.Boost(part_boost_vector);
 
-        auto new_part_process = part.Process();
-        auto new_part_mother = part.Mother();
         auto new_part_mass = part.Mass();
         auto new_part_position = part_position;
         auto new_part_momentum = part_momentum;
@@ -118,44 +120,55 @@ namespace evgen {
         if (modVar == "mass"){
           new_part_mass = new_part_var;
         } else if (modVar == "E") {
-          new_part_momentum.SetE(new_part_var);
+          new_part_momentum = TLorentzVector mom(px, py, pz, new_part_var);
         } else if (modVar == "px") {
-          new_part_momentum.SetPx(new_part_var);
+          new_part_momentum = TLorentzVector mom(new_part_var, py, pz, pE);
         } else if (modVar == "py") {
-          new_part_momentum.SetPy(new_part_var);
+          new_part_momentum = TLorentzVector mom(px, new_part_var, pz, pE);
         } else if (modVar == "pz") {
-          new_part_momentum.SetPz(new_part_var);
+          new_part_momentum = TLorentzVector mom(px, py, new_part_var, pE);
         } else if (modVar == "theta") {
           double p = new_part_momentum.P();
           double phi = new_part_momentum.Phi();
-          double px = p * sin(new_part_var) * cos(phi);
-          double py = p * sin(new_part_var) * sin(phi);
-          double pz = p * cos(new_part_var);
-          new_part_momentum.SetPx(px);
-          new_part_momentum.SetPy(py);
-          new_part_momentum.SetPz(pz);
+          double new_px = p * sin(new_part_var) * cos(phi);
+          double new_py = p * sin(new_part_var) * sin(phi);
+          double new_pz = p * cos(new_part_var);
+          new_part_momentum = TLorentzVector mom(new_px, new_py, new_pz, pE);
         } else if (modVar == "phi") {
           double p = new_part_momentum.P();
           double theta = new_part_momentum.Theta();
-          double px = p * sin(theta) * cos(new_part_var);
-          double py = p * sin(theta) * sin(new_part_var);
-          double pz = p * cos(theta);
-          new_part_momentum.SetPx(px);
-          new_part_momentum.SetPy(py);
-          new_part_momentum.SetPz(pz);
+          double new_px = p * sin(theta) * cos(new_part_var);
+          double new_py = p * sin(theta) * sin(new_part_var);
+          double new_pz = p * cos(theta);
+          new_part_momentum = TLorentzVector mom(new_px, new_py, new_pz, pE);
+        } else if (modVar == "p") {
+          double theta = new_part_momentum.Theta();
+          double phi = new_part_momentum.Phi();
+          double new_px = new_part_var * sin(theta) * cos(phi);
+          double new_py = new_part_var * sin(theta) * sin(phi);
+          double new_pz = new_part_var * cos(theta);
+          new_part_momentum = TLorentzVector mom(new_px, new_py, new_pz, pE);
+        } else if ( modVar == "x") {
+          new_part_position = TLorentzVector(new_part_var, y, z, T);
+        } else if ( modVar == "y") {
+          new_part_position = TLorentzVector(x, new_part_var, z, T);
+        } else if ( modVar == "z") {
+          new_part_position = TLorentzVector(x, y, new_part_var, T);
+        } else if ( modVar == "T") {
+          new_part_position = TLorentzVector(x, y, z, new_part_var);
         } else {
           throw std::runtime_error("ModifyParticle: Invalid modVar " + modVar);
         }
 
         // make new Part particle with modifications
-	      simb::MCParticle newPart(part.TrackId(), part.PdgCode(), part.Process(), part.Mother(), part.Mass(), part.StatusCode());
-        newPart.AddTrajectoryPoint(part_position, part_momentum);
+	      simb::MCParticle newPart(part.TrackId(), part.PdgCode(), part.Process(), part.Mother(), new_part_mass, part.StatusCode());
+        newPart.AddTrajectoryPoint(new_part_position, new_part_momentum);
 
         newMCTruth.Add(newPart);
       } else {
         // Copy over other particles
         const simb::MCParticle& particle = originalMCTruth.GetParticle(i);
-	simb::MCParticle non_const_particle = simb::MCParticle(particle);
+	      simb::MCParticle non_const_particle = simb::MCParticle(particle);
         newMCTruth.Add(non_const_particle);
       }
     }

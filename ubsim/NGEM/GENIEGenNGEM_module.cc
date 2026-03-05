@@ -171,6 +171,14 @@ namespace evgen {
     std::vector<double> SinglePhotonCosThetaBinEdges; ///< configurable via FHiCL
     std::vector<double> SinglePhotonCosThetaBinProbs; ///< configurable via FHiCL
 
+    bool ModifyParticle; ///< whether to modify particles according to configuration parameters
+    int ModifyParticlePdg; ///< pdg code of particle to modify
+    std::vector<std::string> ModifyParticleVar; ///< variables to modify 
+    //(options: "E", "px", "py", "pz", "mass", "x", "y", "z", "T", "theta", "phi", "p"); configurable via FHiCL
+    std::vector<std::vector<double>> ModifyParticleVarBinEdges; ///< configurable via FHiCL
+    std::vector<std::vector<double>> ModifyParticleVarBinProbs; ///< configurable via FHiCL
+    int ModifyParticleRandomSeed; ///< random seed for particle modification; configurable via FHiCL
+
   };
 }
 
@@ -192,6 +200,12 @@ namespace evgen{
     , SinglePhotonEnergyBinProbs(pset.get<std::vector<double>>("SinglePhotonEnergyBinProbs", std::vector<double>()))
     , SinglePhotonCosThetaBinEdges(pset.get<std::vector<double>>("SinglePhotonCosThetaBinEdges", std::vector<double>()))
     , SinglePhotonCosThetaBinProbs(pset.get<std::vector<double>>("SinglePhotonCosThetaBinProbs", std::vector<double>()))
+    , ModifyParticle(pset.get<bool>("ModifyParticle", false))
+    , ModifyParticlePdg(pset.get<int>("ModifyParticlePdg", 0))
+    , ModifyParticleVar(pset.get<std::vector<std::string>>("ModifyParticleVar", std::vector<std::string>()))
+    , ModifyParticleVarBinEdges(pset.get<std::vector<std::vector<double>>>("ModifyParticleVarBinEdges", std::vector<std::vector<double>>()))
+    , ModifyParticleVarBinProbs(pset.get<std::vector<std::vector<double>>>("ModifyParticleVarBinProbs", std::vector<std::vector<double>>()))
+    , ModifyParticleRandomSeed(pset.get<int>("ModifyParticleRandomSeed", 0))
   {
     fStopwatch.Start();
 
@@ -476,6 +490,35 @@ namespace evgen{
 	      std::cout << std::endl;
 	    }
 	  }
+
+    if (ModifyParticle) {
+      std::cout << "Modifying particles with pdg code " << ModifyParticlePdg << std::endl;
+      if (ModifyParticleVar.size() != ModifyParticleVarBinEdges.size() || ModifyParticleVar.size() != ModifyParticleVarBinProbs.size()) {
+        std::cerr << "Error: ModifyParticleVar, ModifyParticleVarBinEdges, and ModifyParticleVarBinProbs must have the same size" << std::endl;
+        return;
+      }
+      for (int i_v = 0; i_v < ModifyParticleVar.size(); ++i_v) {
+        std::cout << "    Modifying variable " << ModifyParticleVar.at(i_v) << std::endl;
+        ModifyParticle(
+          ModifyParticlePdg, ModifyParticleVar.at(i_v), 
+          ModifyParticleVarBinEdges.at(i_v), ModifyParticleVarBinProbs.at(i_v), 
+          ModifyParticleRandomSeed, truth
+        );
+      }
+      std::cout << "truth.NParticles(): " << truth.NParticles() << std::endl;
+      for (int i = 0; i < truth.NParticles(); ++i) {
+        std::cout << "    pdg: " << truth.GetParticle(i).PdgCode();
+        std::cout << ", track_id: " << truth.GetParticle(i).TrackId();
+        std::cout << ", mother: " << truth.GetParticle(i).Mother();
+        std::cout << ", mass: " << truth.GetParticle(i).Mass();
+        std::cout << ", position: (" << truth.GetParticle(i).Vx() << ", " << truth.GetParticle(i).Vy() << ", " << truth.GetParticle(i).Vz() << ")";
+        std::cout << ", momentum: (" << truth.GetParticle(i).Px() << ", " << truth.GetParticle(i).Py() << ", " << truth.GetParticle(i).Pz() << ")";
+        std::cout << ", Gvtx: (" << truth.GetParticle(i).Gvx() << ", " << truth.GetParticle(i).Gvy() << ", " << truth.GetParticle(i).Gvz() << ", " << truth.GetParticle(i).Gvt() << ")";
+        std::cout << ", status code: " << truth.GetParticle(i).StatusCode();
+        std::cout << ", process: " << truth.GetParticle(i).Process();
+        std::cout << std::endl;
+      }
+    }
 
 	  truthcol ->push_back(truth);
 	  fluxcol  ->push_back(flux);
