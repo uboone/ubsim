@@ -67,6 +67,7 @@
 #include "ManuallyDecayPi0sToTwoPhotons.h"
 #include "DeleteOneRandomPhoton.h"
 #include "GenerateIsotropicSinglePhoton.h"
+#include "ModifyParticle.h"
 
 ///Event Generation using GENIE, cosmics or single particles
 namespace evgen {
@@ -171,13 +172,13 @@ namespace evgen {
     std::vector<double> SinglePhotonCosThetaBinEdges; ///< configurable via FHiCL
     std::vector<double> SinglePhotonCosThetaBinProbs; ///< configurable via FHiCL
 
-    bool ModifyParticle; ///< whether to modify particles according to configuration parameters
-    int ModifyParticlePdg; ///< pdg code of particle to modify
-    std::vector<std::string> ModifyParticleVar; ///< variables to modify 
+    bool fModifyParticle; ///< whether to modify particles according to configuration parameters
+    int fModifyParticlePdg; ///< pdg code of particle to modify
+    std::vector<std::string> fModifyParticleVar; ///< variables to modify 
     //(options: "E", "px", "py", "pz", "mass", "x", "y", "z", "T", "theta", "phi", "p"); configurable via FHiCL
-    std::vector<std::vector<double>> ModifyParticleVarBinEdges; ///< configurable via FHiCL
-    std::vector<std::vector<double>> ModifyParticleVarBinProbs; ///< configurable via FHiCL
-    int ModifyParticleRandomSeed; ///< random seed for particle modification; configurable via FHiCL
+    std::vector<std::vector<double>> fModifyParticleVarBinEdges; ///< configurable via FHiCL
+    std::vector<std::vector<double>> fModifyParticleVarBinProbs; ///< configurable via FHiCL
+    int fModifyParticleRandomSeed; ///< random seed for particle modification; configurable via FHiCL
 
   };
 }
@@ -200,12 +201,12 @@ namespace evgen{
     , SinglePhotonEnergyBinProbs(pset.get<std::vector<double>>("SinglePhotonEnergyBinProbs", std::vector<double>()))
     , SinglePhotonCosThetaBinEdges(pset.get<std::vector<double>>("SinglePhotonCosThetaBinEdges", std::vector<double>()))
     , SinglePhotonCosThetaBinProbs(pset.get<std::vector<double>>("SinglePhotonCosThetaBinProbs", std::vector<double>()))
-    , ModifyParticle(pset.get<bool>("ModifyParticle", false))
-    , ModifyParticlePdg(pset.get<int>("ModifyParticlePdg", 0))
-    , ModifyParticleVar(pset.get<std::vector<std::string>>("ModifyParticleVar", std::vector<std::string>()))
-    , ModifyParticleVarBinEdges(pset.get<std::vector<std::vector<double>>>("ModifyParticleVarBinEdges", std::vector<std::vector<double>>()))
-    , ModifyParticleVarBinProbs(pset.get<std::vector<std::vector<double>>>("ModifyParticleVarBinProbs", std::vector<std::vector<double>>()))
-    , ModifyParticleRandomSeed(pset.get<int>("ModifyParticleRandomSeed", 0))
+    , fModifyParticle(pset.get<bool>("ModifyParticle", false))
+    , fModifyParticlePdg(pset.get<int>("ModifyParticlePdg", 0))
+    , fModifyParticleVar(pset.get<std::vector<std::string>>("ModifyParticleVar", std::vector<std::string>()))
+    , fModifyParticleVarBinEdges(pset.get<std::vector<std::vector<double>>>("ModifyParticleVarBinEdges", std::vector<std::vector<double>>()))
+    , fModifyParticleVarBinProbs(pset.get<std::vector<std::vector<double>>>("ModifyParticleVarBinProbs", std::vector<std::vector<double>>()))
+    , fModifyParticleRandomSeed(pset.get<int>("ModifyParticleRandomSeed", 0))
   {
     fStopwatch.Start();
 
@@ -491,19 +492,15 @@ namespace evgen{
 	    }
 	  }
 
-    if (ModifyParticle) {
-      std::cout << "Modifying particles with pdg code " << ModifyParticlePdg << std::endl;
-      if (ModifyParticleVar.size() != ModifyParticleVarBinEdges.size() || ModifyParticleVar.size() != ModifyParticleVarBinProbs.size()) {
-        std::cerr << "Error: ModifyParticleVar, ModifyParticleVarBinEdges, and ModifyParticleVarBinProbs must have the same size" << std::endl;
+    if (fModifyParticle) {
+      std::cout << "Modifying particles with pdg code " << fModifyParticlePdg << std::endl;
+      if (fModifyParticleVar.size() != fModifyParticleVarBinEdges.size() || fModifyParticleVar.size() != fModifyParticleVarBinProbs.size()) {
+        std::cerr << "Error: fModifyParticleVar, fModifyParticleVarBinEdges, and fModifyParticleVarBinProbs must have the same size" << std::endl;
         return;
       }
-      for (int i_v = 0; i_v < ModifyParticleVar.size(); ++i_v) {
-        std::cout << "    Modifying variable " << ModifyParticleVar.at(i_v) << std::endl;
-        ModifyParticle(
-          ModifyParticlePdg, ModifyParticleVar.at(i_v), 
-          ModifyParticleVarBinEdges.at(i_v), ModifyParticleVarBinProbs.at(i_v), 
-          ModifyParticleRandomSeed, truth
-        );
+      for (uint i_v = 0; i_v < fModifyParticleVar.size(); ++i_v) {
+        std::cout << "    Modifying variable " << fModifyParticleVar.at(i_v) << std::endl;
+        ModifyParticle(fModifyParticlePdg, fModifyParticleVar.at(i_v), fModifyParticleVarBinEdges.at(i_v), fModifyParticleVarBinProbs.at(i_v), fModifyParticleRandomSeed, truth);
       }
       std::cout << "truth.NParticles(): " << truth.NParticles() << std::endl;
       for (int i = 0; i < truth.NParticles(); ++i) {
