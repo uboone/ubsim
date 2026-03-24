@@ -501,6 +501,10 @@ namespace evgen{
       for (uint i_v = 0; i_v < fModifyParticleVar.size(); ++i_v) {
         std::cout << "    Modifying variable " << fModifyParticleVar.at(i_v) << std::endl;
         ModifyParticle(fModifyParticlePdg, fModifyParticleVar.at(i_v), fModifyParticleVarBinEdges.at(i_v), fModifyParticleVarBinProbs.at(i_v), fModifyParticleRandomSeed, truth);
+        if (fModifyParticleVar.at(i_v) == "mass" && fModifyParticlePdg == 111) {
+          std::cout << "Manually decaying pi0s" << std::endl;
+          ManuallyDecayPi0sToTwoPhotons(truth);
+	      }
       }
       std::cout << "truth.NParticles(): " << truth.NParticles() << std::endl;
       for (int i = 0; i < truth.NParticles(); ++i) {
