@@ -68,14 +68,20 @@ namespace evgen {
 
         if (modVar == "mass"){
           new_part_mass = new_part_var;
-          double new_pE_rest = new_part_mass;
-          double new_px_rest = 0; //new_pE_rest * sin(phi) * cos(theta);
-          double new_py_rest = 0; //new_pE_rest * sin(phi) * sin(theta);
-          double new_pz_rest = 0; //new_pE_rest * cos(phi);
-          TLorentzVector new_rest_frame_momentum(new_px_rest, new_py_rest, new_pz_rest, new_pE_rest);
-          TLorentzVector new_lab_frame_momentum = new_rest_frame_momentum;
-          new_lab_frame_momentum.Boost(part_boost_vector);
-          new_part_momentum = new_lab_frame_momentum;
+          double new_pE = pE;
+          // Compute new |p| from E^2 = p^2 + m^2
+          double new_p2 = new_pE*new_pE - new_part_mass*new_part_mass;
+          if (new_p2 < 0) new_p2 = 0; // protect against numerical issues / invalid input
+          double new_p = std::sqrt(new_p2);
+
+          // Keep original direction
+          TVector3 dir = part_momentum.Vect().Unit();
+
+          double new_px = new_p * dir.X();
+          double new_py = new_p * dir.Y();
+          double new_pz = new_p * dir.Z();
+          TLorentzVector mom(new_px, new_py, new_pz, new_pE);
+          new_part_momentum = mom;
         } else if (modVar == "E") { 
           TLorentzVector mom(px, py, pz, new_part_var);
           new_part_momentum = mom;
