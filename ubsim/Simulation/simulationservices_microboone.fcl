@@ -16,7 +16,7 @@ microboone_larvoxelcalculator: @local::standard_larvoxelcalculator
 microboone_larg4detector:
 {
   category: "world"
-  gdmlFileName_ : "microboonev12_nowires.gdml"
+  gdmlFileName_ : "microboonev12.gdml"
 }
 
 microboone_physicslist:
