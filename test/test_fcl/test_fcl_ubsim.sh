@@ -17,6 +17,14 @@ find $MRB_BUILDDIR/ubsim/job -name \*.fcl -print | while read fcl
 do
   echo "Testing fcl file $fcl"
 
+  # Skip some fcls of libtorch is not set up.
+
+  if [ x$LIBTORCH_DIR = x ]; then
+    if [ `basename $fcl` = run_compression_larlite.fcl ]; then
+      continue
+    fi
+  fi
+
   # Parse this fcl file.
 
   fclout=`basename ${fcl}`.out
