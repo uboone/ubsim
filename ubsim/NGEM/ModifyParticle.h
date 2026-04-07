@@ -45,10 +45,10 @@ namespace evgen {
         double part_mass = part.Mass();
         //double theta = randomGen.Uniform(0, 2 * M_PI);
         //double phi = acos(1 - 2 * randomGen.Uniform(0, 1));
-        double pE = part_momentum.E(); //part_mass / 2;
-        double px = part_momentum.Px(); //pE * sin(phi) * cos(theta);
-        double py = part_momentum.Py(); //pE * sin(phi) * sin(theta);
-        double pz = part_momentum.Pz(); //pE * cos(phi);
+        double pE = part_momentum.E(); 
+        //double px = part_momentum.Px(); 
+        //double py = part_momentum.Py(); 
+        //double pz = part_momentum.Pz(); 
         //TLorentzVector rest_frame_momentum(px, py, pz, pE);
 
         double T = part.T();

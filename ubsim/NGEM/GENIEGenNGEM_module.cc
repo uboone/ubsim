@@ -175,7 +175,7 @@ namespace evgen {
     bool fModifyParticle; ///< whether to modify particles according to configuration parameters
     int fModifyParticlePdg; ///< pdg code of particle to modify
     std::vector<std::string> fModifyParticleVar; ///< variables to modify 
-    //(options: "E", "px", "py", "pz", "mass", "x", "y", "z", "T", "theta", "phi", "p"); configurable via FHiCL
+    //(options: "E", "p", "mass", "x", "y", "z", "T", "theta", "phi"); configurable via FHiCL
     std::vector<std::vector<double>> fModifyParticleVarBinEdges; ///< configurable via FHiCL
     std::vector<std::vector<double>> fModifyParticleVarBinProbs; ///< configurable via FHiCL
     int fModifyParticleRandomSeed; ///< random seed for particle modification; configurable via FHiCL
