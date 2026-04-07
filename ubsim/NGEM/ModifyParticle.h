@@ -83,16 +83,19 @@ namespace evgen {
           TLorentzVector mom(new_px, new_py, new_pz, new_pE);
           new_part_momentum = mom;
         } else if (modVar == "E") { 
-          TLorentzVector mom(px, py, pz, new_part_var);
-          new_part_momentum = mom;
-        } else if (modVar == "px") {
-          TLorentzVector mom(new_part_var, py, pz, pE);
-          new_part_momentum = mom;
-        } else if (modVar == "py") {
-          TLorentzVector mom(px, new_part_var, pz, pE);
-          new_part_momentum = mom;
-        } else if (modVar == "pz") {
-          TLorentzVector mom(px, py, new_part_var, pE);
+          double new_pE = new_part_var;
+          // Compute new |p| from E^2 = p^2 + m^2
+          double new_p2 = new_pE*new_pE - part_mass*part_mass;
+          if (new_p2 < 0) new_p2 = 0; // protect against numerical issues / invalid input
+          double new_p = std::sqrt(new_p2);
+
+          // Keep original direction
+          TVector3 dir = part_momentum.Vect().Unit();
+
+          double new_px = new_p * dir.X();
+          double new_py = new_p * dir.Y();
+          double new_pz = new_p * dir.Z();
+          TLorentzVector mom(new_px, new_py, new_pz, new_pE);
           new_part_momentum = mom;
         } else if (modVar == "theta") {
           double p = new_part_momentum.P();
@@ -111,12 +114,18 @@ namespace evgen {
           TLorentzVector mom(new_px, new_py, new_pz, pE);
           new_part_momentum = mom;
         } else if (modVar == "p") {
-          double theta = new_part_momentum.Theta();
-          double phi = new_part_momentum.Phi();
-          double new_px = new_part_var * sin(theta) * cos(phi);
-          double new_py = new_part_var * sin(theta) * sin(phi);
-          double new_pz = new_part_var * cos(theta);
-          TLorentzVector mom(new_px, new_py, new_pz, pE);
+          double new_p = new_part_var;
+          // Compute new |p| from E^2 = p^2 + m^2
+          double new_pE = std::sqrt(new_p*new_p + part_mass*part_mass);
+          if (new_pE < 0) new_pE = 0; // protect against numerical issues / invalid input
+
+          // Keep original direction
+          TVector3 dir = part_momentum.Vect().Unit();
+
+          double new_px = new_p * dir.X();
+          double new_py = new_p * dir.Y();
+          double new_pz = new_p * dir.Z();
+          TLorentzVector mom(new_px, new_py, new_pz, new_pE);
           new_part_momentum = mom;
         } else if ( modVar == "x") {
           new_part_position = TLorentzVector(new_part_var, y, z, T);
