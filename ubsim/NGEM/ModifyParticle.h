@@ -87,7 +87,7 @@ namespace evgen {
           double new_pE = new_part_var;
           // protect against numerical issues / invalid input
           if (new_pE < 0) {
-            cout << "Warning: Invalid particle parameters (negative energy or momentum)" << endl; 
+            std::cout << "Warning: Invalid particle parameters (negative energy or momentum)" << std::endl; 
             continue;
           }
           // Compute new |p| from E^2 = p^2 + m^2
@@ -124,7 +124,7 @@ namespace evgen {
           double new_p = new_part_var;
           // protect against numerical issues / invalid input
           if (new_p < 0) {
-            cout << "Warning: Invalid particle parameters (negative energy or momentum)" << endl; 
+            std::cout << "Warning: Invalid particle parameters (negative energy or momentum)" << std::endl; 
             continue;
           }
           // Compute new |p| from E^2 = p^2 + m^2
