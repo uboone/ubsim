@@ -71,7 +71,8 @@ namespace evgen {
           double new_pE = pE;
           // Compute new |p| from E^2 = p^2 + m^2
           double new_p2 = new_pE*new_pE - new_part_mass*new_part_mass;
-          if (new_p2 < 0) new_p2 = 0; // protect against numerical issues / invalid input
+          //if the new particle mass is greater than the original particle total energy, create the new particle at rest rather than conserving energy
+          if (new_p2 < 0) new_p2 = 0; 
           double new_p = std::sqrt(new_p2);
 
           // Keep original direction
@@ -84,9 +85,15 @@ namespace evgen {
           new_part_momentum = mom;
         } else if (modVar == "E") { 
           double new_pE = new_part_var;
+          // protect against numerical issues / invalid input
+          if (new_pE < 0) {
+            cout << "Warning: Invalid particle parameters (negative energy or momentum)" << endl; 
+            continue;
+          }
           // Compute new |p| from E^2 = p^2 + m^2
           double new_p2 = new_pE*new_pE - part_mass*part_mass;
-          if (new_p2 < 0) new_p2 = 0; // protect against numerical issues / invalid input
+          // if the new energy is set smaller than the rest mass, we will create the particle at rest
+          if (new_pE < part_mass) new_pE = part_mass; 
           double new_p = std::sqrt(new_p2);
 
           // Keep original direction
@@ -115,9 +122,13 @@ namespace evgen {
           new_part_momentum = mom;
         } else if (modVar == "p") {
           double new_p = new_part_var;
+          // protect against numerical issues / invalid input
+          if (new_p < 0) {
+            cout << "Warning: Invalid particle parameters (negative energy or momentum)" << endl; 
+            continue;
+          }
           // Compute new |p| from E^2 = p^2 + m^2
           double new_pE = std::sqrt(new_p*new_p + part_mass*part_mass);
-          if (new_pE < 0) new_pE = 0; // protect against numerical issues / invalid input
 
           // Keep original direction
           TVector3 dir = part_momentum.Vect().Unit();

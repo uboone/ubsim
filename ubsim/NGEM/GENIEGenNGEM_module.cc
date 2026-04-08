@@ -180,6 +180,7 @@ namespace evgen {
     std::vector<std::vector<double>> fModifyParticleVarBinProbs; ///< configurable via FHiCL
     int fModifyParticleRandomSeed; ///< random seed for particle modification; configurable via FHiCL
     bool fManuallyDecayModifiedPi0s; ///< whether to manually decay pi0s after modification. must use if mass is modified.
+    bool fDeleteRandomModifiedGamma; ///< whether to delete a random gamma after modification. 
 
   };
 }
@@ -209,6 +210,7 @@ namespace evgen{
     , fModifyParticleVarBinProbs(pset.get<std::vector<std::vector<double>>>("ModifyParticleVarBinProbs", std::vector<std::vector<double>>()))
     , fModifyParticleRandomSeed(pset.get<int>("ModifyParticleRandomSeed", 0))
     , fManuallyDecayModifiedPi0s(pset.get<bool>("ManuallyDecayModifiedPi0s", false))
+    , fDeleteRandomModifiedGamma(pset.get<bool>("DeleteRandomModifiedGamma", false))
   {
     fStopwatch.Start();
 
@@ -504,9 +506,13 @@ namespace evgen{
         std::cout << "    Modifying variable " << fModifyParticleVar.at(i_v) << std::endl;
         ModifyParticle(fModifyParticlePdg, fModifyParticleVar.at(i_v), fModifyParticleVarBinEdges.at(i_v), fModifyParticleVarBinProbs.at(i_v), fModifyParticleRandomSeed, truth);
         if (fManuallyDecayModifiedPi0s){ //fModifyParticleVar.at(i_v) == "mass" && fModifyParticlePdg == 111) {
-          std::cout << "Manually decaying pi0s" << std::endl;
+          std::cout << "Manually decaying modified pi0s" << std::endl;
           ManuallyDecayPi0sToTwoPhotons(truth);
 	      }
+        if (fDeleteRandomModifiedGamma) {
+          std::cout << "Deleting random modified gamma" << std::endl;
+          DeleteOneRandomPhoton(truth);
+        }
       }
       std::cout << "truth.NParticles(): " << truth.NParticles() << std::endl;
       for (int i = 0; i < truth.NParticles(); ++i) {
