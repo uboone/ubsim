@@ -24,7 +24,7 @@ physics.producers.generator.ManuallyDecayModifiedPi0s: true # whether to manuall
 physics.producers.generator.DeleteRandomModifiedGamma: false # whether to delete a random gamma after modification. must have ManuallyDecayModifiedPi0s true.
 physics.producers.generator.ModifyParticleVarBinEdges: [[0.0, 1.000]] # bin edges for mass modification (in GeV)
 physics.producers.generator.ModifyParticleVarBinProbs: [[1.00]] # probabilities for each mass bin
-physics.producers.generator.ModifyParticleRandomSeed: 5 # random seed for particle modification, default is 0 (no seed)
+#physics.producers.generator.ModifyParticleRandomSeed: 5 # random seed for particle modification, default is 0 (no seed)
 
 physics.filters.finalstatefilter.IsVerbose: false
 physics.filters.finalstatefilter.isInclusive: true
