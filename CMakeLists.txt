@@ -38,6 +38,7 @@ find_package( larcorealg  REQUIRED EXPORT )
 find_package( geant4reweight REQUIRED EXPORT )
 find_package(LibXml2 REQUIRED EXPORT)
 find_package(log4cpp REQUIRED EXPORT)
+find_package(GENIE REQUIRED EXPORT)
 
 # macros for dictionary and simple_plugin
 include(ArtDictionary)

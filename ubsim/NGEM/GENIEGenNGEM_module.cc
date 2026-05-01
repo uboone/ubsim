@@ -33,14 +33,14 @@
 #include "fhiclcpp/ParameterSet.h"
 #include "art/Framework/Principal/Handle.h"
 #include "art/Framework/Services/Registry/ServiceHandle.h"
-#include "art/Framework/Services/Optional/TFileService.h"
-#include "art/Framework/Services/Optional/TFileDirectory.h"
+#include "art_root_io/TFileService.h"
+#include "art_root_io/TFileDirectory.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
 #include "canvas/Persistency/Common/Assns.h"
 #include "art/Framework/Core/EDProducer.h"
 
 // art extensions
-#include "nutools/RandomUtils/NuRandomService.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 
 // LArSoft includes
 #include "lardataalg/MCDumpers/MCDumpers.h" // sim::dump namespace
@@ -51,7 +51,7 @@
 #include "larcore/Geometry/Geometry.h"
 #include "larcoreobj/SummaryData/RunData.h"
 #include "larcoreobj/SummaryData/POTSummary.h"
-#include "nutools/EventGeneratorBase/GENIE/GENIEHelper.h"
+#include "nugen/EventGeneratorBase/GENIE/GENIEHelper.h"
 #include "lardata/Utilities/AssociationUtil.h"
 
 // dk2nu extensions
@@ -60,8 +60,8 @@
 #include "dk2nu/genie/GDk2NuFlux.h"
 
 #include "GENIE/Framework/EventGen/EventRecord.h"
-#include "nutools/EventGeneratorBase/GENIE/EVGBAssociationUtil.h"
-#include "nutools/EventGeneratorBase/evgenbase.h"
+#include "nugen/EventGeneratorBase/GENIE/EVGBAssociationUtil.h"
+#include "nugen/EventGeneratorBase/evgenbase.h"
 
 // Optional Modifications, if you don't want to modify normal GENIE neutrino generation events
 #include "ManuallyDecayPi0sToTwoPhotons.h"
@@ -189,7 +189,8 @@ namespace evgen{
 
   //____________________________________________________________________________
   GENIEGenNGEM::GENIEGenNGEM(fhicl::ParameterSet const& pset)
-    : fGENIEHelp(0)
+    : art::EDProducer(pset)
+    , fGENIEHelp(0)
     , fDefinedVtxHistRange (pset.get< bool >("DefinedVtxHistRange"))
     , fVtxPosHistRange (pset.get< std::vector<double> >("VtxPosHistRange"))
     , fPassEmptySpills (pset.get< bool   >("PassEmptySpills"))
@@ -263,7 +264,7 @@ namespace evgen{
     
     fGENIEHelp = new evgb::GENIEHelper(GENIEconfig, 
 				       geo->ROOTGeoManager(),
-				       geo->ROOTFile(),
+				       geo->GDMLFile(),
 				       geo->TotalMass(pset.get< std::string>("TopVolume").c_str()));
     
   }
@@ -325,9 +326,10 @@ namespace evgen{
     fECons  = tfs->make<TH1F>("fECons", ";#Delta E(#nu,lepton);", 500, -5., 5.);
 
     art::ServiceHandle<geo::Geometry> geo;
-    double x = 2.1*geo->DetHalfWidth();
-    double y = 2.1*geo->DetHalfHeight();
-    double z = 2.*geo->DetLength();
+    geo::TPCGeo const& tpc = geo->TPC();
+    double x = 2.1*tpc.ActiveHalfWidth();
+    double y = 2.1*tpc.ActiveHalfHeight();
+    double z = 2.*tpc.ActiveLength();
     int xdiv = TMath::Nint(2*x/5.);
     int ydiv = TMath::Nint(2*y/5.);
     int zdiv = TMath::Nint(2*z/5.);
@@ -363,7 +365,7 @@ namespace evgen{
     art::ServiceHandle<geo::Geometry> geo;
     std::unique_ptr<sumdata::RunData> runcol(new sumdata::RunData(geo->DetectorName()));
 
-    run.put(std::move(runcol));
+    run.put(std::move(runcol), art::fullRun());
 
     return;
   }
@@ -387,7 +389,7 @@ namespace evgen{
     p->totpot = fGENIEHelp->TotalExposure() - fPrevTotPOT;
     p->totgoodpot = fGENIEHelp->TotalExposure() - fPrevTotGoodPOT;
 
-    sr.put(std::move(p));
+    sr.put(std::move(p), art::subRunFragment());
 
     return;
   }
