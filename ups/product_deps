@@ -248,10 +248,10 @@ fwdir	product_dir	scripts
 #
 ####################################
 product		version		qual	flags		<table_format=2>
-geant4reweight	v01_21_02	-
-larsim		v10_20_01	-
-larwirecell	v10_03_03	-
-ubevt		v10_20_06	-
+geant4reweight	v01_21_03	-
+larsim		v10_20_02	-
+larwirecell	v10_03_04	-
+ubevt		v10_20_07	-
 cetmodules	v3_24_01	-	only_for_build
 end_product_list
 ####################################
