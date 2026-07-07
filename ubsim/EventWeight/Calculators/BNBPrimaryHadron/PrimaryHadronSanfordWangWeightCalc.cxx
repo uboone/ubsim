@@ -50,7 +50,6 @@ namespace evwgh {
 
     std::string fGenieModuleLabel{};
     int fNmultisims{};
-    std::vector<double> fmultisigmas{};
     std::vector<int> fprimaryHad{};
     std::string fWeightCalc{};
     std::string ExternalDataInput{};
@@ -84,10 +83,16 @@ namespace evwgh {
     fSeed                       =   pset.get<double>("random_seed");
     fUseMBRands                 =   pset.get<bool>("use_MiniBooNE_random_numbers");
 
-    // Only require multisigmas when running in multisigma mode.
+    // This calculator smears a multi-parameter fit through its covariance
+    // matrix, so its uncertainty is not one-dimensional: a single-sigma scan
+    // would shift all parameters coherently along an arbitrary (parameter-
+    // ordering-dependent) direction whose length is sqrt(Nparams) sigma, not
+    // 1 sigma.  Use multisim mode and build a covariance from the universes.
     if ( fMode.find("multisigma") != std::string::npos ) {
-      std::cout << "Multi-sigma mode enabled for PrimaryHadronSanfordWangWeightCalc" << std::endl;
-      fmultisigmas = pset.get<std::vector<double> >("multisigmas");
+      throw art::Exception(art::errors::Configuration)
+        << GetName() << ": multisigma mode is not supported for "
+        << "PrimaryHadronSanfordWang because the uncertainty is a "
+        << "multi-parameter covariance; use multisim mode instead.";
     }
 
     // Getting External Data:
@@ -140,11 +145,6 @@ namespace evwgh {
                   fWeightArray[i][j] = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
           }
         }
-        else if (fMode.find("multisigma") != std::string::npos ){
-          for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
-            fWeightArray[i][j] = fmultisigmas[j];
-          }
-        }
         else{
           std::fill(fWeightArray[i].begin(), fWeightArray[i].end(), 1.);
         }
@@ -193,18 +193,18 @@ namespace evwgh {
         std::fill(weight[inu].begin(), weight[inu].end(), 1);
         continue; //now move on to the next neutrino
       }// Hadronic parent check
-          
-      //Let's make a weights based on the calculator you have requested 
-      if((fMode.find("multisim") != std::string::npos) || (fMode.find("multisigma") != std::string::npos)){       
+
+      //Let's make a weights based on the calculator you have requested
+      if (fMode.find("multisim") != std::string::npos){
         for (unsigned int i = 0;  int(weight[inu].size()) < fNmultisims && i < fWeightArray.size(); i++) {
           if(fWeightCalc.find("MicroBooNE") != std::string::npos){
-            
+
             //
             //This way we only have to call the WeightCalc once
-            // 
+            //
             std::pair<bool, double> test_weight =
               MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
-            
+
             if(test_weight.first){
               weight[inu].push_back(test_weight.second);
             }
@@ -213,10 +213,10 @@ namespace evwgh {
 
             //
             //This way we only have to call the WeightCalc once
-            // 
+            //
             std::pair<bool, double> test_weight =
               MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
-            
+
             if(test_weight.first){
               weight[inu].push_back(test_weight.second);
             }
