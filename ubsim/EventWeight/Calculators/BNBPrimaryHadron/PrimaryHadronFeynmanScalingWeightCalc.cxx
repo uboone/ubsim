@@ -55,7 +55,6 @@ namespace evwgh {
     std::string fGenieModuleLabel{};
     std::vector<std::string> fParameter_list{};
     float fParameter_sigma{};
-    std::vector<double> fmultisigmas{};
     int fNmultisims{};
     int fprimaryHad{};
     std::string fWeightCalc{};
@@ -92,10 +91,16 @@ namespace evwgh {
     fSeed 			=   pset.get<double>("random_seed");
     fUseMBRands                 =   pset.get<bool>("use_MiniBooNE_random_numbers");
 
-    // Only require multisigmas when running in multisigma mode.
+    // This calculator smears a multi-parameter fit through its covariance
+    // matrix, so its uncertainty is not one-dimensional: a single-sigma scan
+    // would shift all parameters coherently along an arbitrary (parameter-
+    // ordering-dependent) direction whose length is sqrt(Nparams) sigma, not
+    // 1 sigma.  Use multisim mode and build a covariance from the universes.
     if ( fMode.find("multisigma") != std::string::npos ) {
-      std::cout << "Multi-sigma mode enabled for PrimaryHadronFeynmanScalingWeightCalc" << std::endl;
-      fmultisigmas = pset.get<std::vector<double> >("multisigmas");
+      throw art::Exception(art::errors::Configuration)
+        << GetName() << ": multisigma mode is not supported for "
+        << "PrimaryHadronFeynmanScaling because the uncertainty is a "
+        << "multi-parameter covariance; use multisim mode instead.";
     }
 
     // Getting External Data:
@@ -148,11 +153,6 @@ namespace evwgh {
                   fWeightArray[i][j] = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
           }
         }
-        else if (fMode.find("multisigma") != std::string::npos ){
-          for(unsigned int j = 0; j < fWeightArray[i].size(); j++){
-            fWeightArray[i][j] = fmultisigmas[j];
-          }
-        }
         else{
           std::fill(fWeightArray[i].begin(), fWeightArray[i].end(), 1.);
         }
@@ -199,7 +199,7 @@ namespace evwgh {
       }// Hadronic parent check
           
       //Let's make a weights based on the calculator you have requested 
-      if((fMode.find("multisim") != std::string::npos) || (fMode.find("multisigma") != std::string::npos)){       
+      if (fMode.find("multisim") != std::string::npos){
         for (unsigned int i = 0; int(weight[inu].size()) < fNmultisims && i < fWeightArray.size(); i++) {
           if(fWeightCalc.find("MicroBooNE") != std::string::npos){
             

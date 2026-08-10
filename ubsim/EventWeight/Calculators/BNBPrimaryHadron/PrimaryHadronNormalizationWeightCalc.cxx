@@ -81,6 +81,11 @@ namespace evwgh {
     if ( fMode.find("multisigma") != std::string::npos ) {
       std::cout << "Multi-sigma mode enabled for PrimaryHadronNormalizationWeightCalc" << std::endl;
       fmultisigmas = pset.get<std::vector<double> >("multisigmas");
+      if (fmultisigmas.size() != static_cast<size_t>(fNmultisims)) {
+        throw art::Exception(art::errors::Configuration)
+          << GetName() << ": multisigmas size (" << fmultisigmas.size()
+          << ") does not match number_of_multisims (" << fNmultisims << ")";
+      }
     }
     
     //
@@ -91,20 +96,27 @@ namespace evwgh {
       fWeightArray = PrimaryHadronNormalizationWeightCalc::MiniBooNERandomNumbers(parameter_list.at(0));
     }//Use MiniBooNE Randoms
     else{
-      fWeightArray.resize(2*fNmultisims);
-      
-      int weight_index = 0;
-      for (double& weight : fWeightArray) {
-        if (fMode.find("multisim") != std::string::npos ){
-                weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
-        }	
-        else if (fMode.find("multisigma") != std::string::npos ){
-          weight = fmultisigmas[weight_index];
+      if (fMode.find("multisigma") != std::string::npos ){
+        // Multisigma mode: the sigma grid itself is the "random number" array,
+        // exactly one entry per universe.  (Previously this branch resized to
+        // 2*fNmultisims -- the spare-draw sizing only multisim needs -- and
+        // read fmultisigmas[weight_index] past the end of the sigma list,
+        // filling universes 7..13 with out-of-bounds heap garbage.)
+        fWeightArray = fmultisigmas;
+      }
+      else{
+        // multisim mode draws 2*fNmultisims Gaussians: the second half are
+        // spare draws consumed by the truncated-Gaussian rejection loop in
+        // GetWeight when a draw gives an unphysical (w <= 0) weight.
+        fWeightArray.resize(2*fNmultisims);
+        for (double& weight : fWeightArray) {
+          if (fMode.find("multisim") != std::string::npos ){
+            weight = CLHEP::RandGaussQ::shoot(&engine, 0, 1.);
+          }
+          else{
+            weight = 1.;
+          }
         }
-        else{
-          weight = 1.;
-        }
-        weight_index++;
       }
     }//Use LArSoft Randoms
 
@@ -139,23 +151,42 @@ namespace evwgh {
       // 
       
       if (fluxlist[inu].ftptype != fprimaryHad){	
-	weight[inu].resize(fNmultisims);
-	std::fill(weight[inu].begin(), weight[inu].end(), 1);
-	continue; //now move on to the next neutrino
+        weight[inu].resize(fNmultisims);
+        std::fill(weight[inu].begin(), weight[inu].end(), 1);
+        continue; //now move on to the next neutrino
       }// Hadronic parent check
       
   
-      //Let's make a weights based on the calculator you have requested 
-      if((fMode.find("multisim") != std::string::npos) || (fMode.find("multisigma") != std::string::npos)){       
-        for (unsigned int i = 0;  int(weight[inu].size()) < fNmultisims; i++) {
+      //Let's make a weights based on the calculator you have requested
+      if (fMode.find("multisigma") != std::string::npos){
+        // Multisigma mode: exactly one weight per sigma point, in the order of
+        // the `multisigmas` fcl parameter.  A weight w = 1 + sigma <= 0 (a
+        // downward normalization shift of 100% or more) is unphysical and is
+        // stored as 0 ("no K- production in this universe") rather than being
+        // skipped: skipping shifted later sigma points into earlier slots and
+        // walked into uninitialized entries of fWeightArray, destroying the
+        // slot<->sigma correspondence.
+        for (int i = 0; i < fNmultisims; i++) {
+          std::pair<bool, double> test_weight(false, 0.);
+          if (fWeightCalc.find("MicroBooNE") != std::string::npos){
+            test_weight = MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
+          }
+          else if (fWeightCalc.find("MiniBooNE") != std::string::npos){
+            test_weight = MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
+          }
+          weight[inu].push_back(test_weight.first ? test_weight.second : 0.);
+        }
+      }
+      else if (fMode.find("multisim") != std::string::npos){
+        for (unsigned int i = 0;  int(weight[inu].size()) < fNmultisims && i < fWeightArray.size(); i++) {
           if(fWeightCalc.find("MicroBooNE") != std::string::npos){
-            
+
             //
             //This way we only have to call the WeightCalc once
-            // 
+            //
             std::pair<bool, double> test_weight =
               MicroBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
-            
+
             if(test_weight.first){
               weight[inu].push_back(test_weight.second);
             }
@@ -164,15 +195,21 @@ namespace evwgh {
 
             //
             //This way we only have to call the WeightCalc once
-            // 
+            //
             std::pair<bool, double> test_weight =
               MiniBooNEWeightCalc(fluxlist[inu], fWeightArray[i]);
-            
+
             if(test_weight.first){
               weight[inu].push_back(test_weight.second);
             }
           }
-        }//Iterate through the number of universes      
+        }//Iterate through the number of universes
+        // If we ran out of spare draws (calculator returned false too often),
+        // pad with the sentinel value -9898 (matches the sibling PrimaryHadron
+        // calculators) instead of reading past the end of fWeightArray.
+        while(int(weight[inu].size()) < fNmultisims) {
+          weight[inu].push_back(-9898.0);
+        }
       } // make sure we are multisiming
 
         
