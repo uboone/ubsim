@@ -251,7 +251,7 @@ product		version		qual	flags		<table_format=2>
 geant4reweight	v01_21_04	-
 larsim		v10_20_06	-
 larwirecell	v10_04_00	-
-ubevt		v10_22_00	-
+ubevt		v10_23_00	-
 cetmodules	v3_24_01	-	only_for_build
 end_product_list
 ####################################
