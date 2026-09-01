@@ -17,7 +17,7 @@ cet_cmake_env()
 cet_set_compiler_flags(DIAGS CAUTIOUS
   WERROR
   NO_UNDEFINED
-  EXTRA_FLAGS -pedantic -Wno-unused-local-typedefs
+  EXTRA_FLAGS -pedantic -Wno-unused-local-typedefs -Wno-aggressive-loop-optimizations
               $<$<CXX_COMPILER_ID:Clang>:-Wno-c99-extensions>
 )
 
