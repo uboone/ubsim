@@ -23,27 +23,27 @@ namespace evwgh {
        void Configure(fhicl::ParameterSet const& p,
                       CLHEP::HepRandomEngine& engine);
 
-       std::array<std::array<double, 101>, 1001> reweightingRatio; 
-       std::array<std::array<double, 101>, 1001> reweightingSigmas;
-       std::array<std::array<double, 101>, 1001> reweightingSigmas_e;
+       std::array<std::array<double, 1001>, 101> reweightingRatio; 
+       std::array<std::array<double, 1001>, 101> reweightingSigmas;
+       std::array<std::array<double, 1001>, 101> reweightingSigmas_e;
  
        std::array<double, 101> enumuon_nominal;
        std::array<double, 1001> q2muon_nominal;
        std::array<double, 101> binwidth_enu;
        std::array<double, 1001> binwidth_q2;
-       std::array<std::array<double, 101>, 1001> xsecratio_nominal;
-       std::array<std::array<double, 101>, 1001>  xsecratio_Fv3;
-       std::array<std::array<double, 101>, 1001>  xsecratio_Fa3;
-       std::array<std::array<double, 101>, 1001>  xsecratio_Fv3Fa3;
+       std::array<std::array<double, 1001>, 101> xsecratio_nominal;
+       std::array<std::array<double, 1001>, 101>  xsecratio_Fv3;
+       std::array<std::array<double, 1001>, 101>  xsecratio_Fa3;
+       std::array<std::array<double, 1001>, 101>  xsecratio_Fv3Fa3;
 
-       std::array<std::array<double, 101>, 1001> xsecmuon_nominal;
-       std::array<std::array<double, 101>, 1001>  xsecmuon_Fv3;
-       std::array<std::array<double, 101>, 1001>  xsecmuon_Fa3;
-       std::array<std::array<double, 101>, 1001>  xsecmuon_Fv3Fa3;
-       std::array<std::array<double, 101>, 1001> xsece_nominal;
-       std::array<std::array<double, 101>, 1001>  xsece_Fv3;
-       std::array<std::array<double, 101>, 1001>  xsece_Fa3;
-       std::array<std::array<double, 101>, 1001>  xsece_Fv3Fa3;
+       std::array<std::array<double, 1001>, 101> xsecmuon_nominal;
+       std::array<std::array<double, 1001>, 101>  xsecmuon_Fv3;
+       std::array<std::array<double, 1001>, 101>  xsecmuon_Fa3;
+       std::array<std::array<double, 1001>, 101>  xsecmuon_Fv3Fa3;
+       std::array<std::array<double, 1001>, 101> xsece_nominal;
+       std::array<std::array<double, 1001>, 101>  xsece_Fv3;
+       std::array<std::array<double, 1001>, 101>  xsece_Fa3;
+       std::array<std::array<double, 1001>, 101>  xsece_Fv3Fa3;
   
        enum SCCRW{
          knominal,
