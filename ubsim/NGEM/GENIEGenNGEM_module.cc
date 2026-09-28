@@ -233,7 +233,6 @@ namespace evgen{
     , fRadCorrMaxAngle(pset.get<double>("RadCorrMaxAngle", 60.))
     , fRadCorrForceEmission(pset.get<bool>("RadCorrForceEmission", false))
     , fRadCorrRequireRadiation(pset.get<bool>("RadCorrRequireRadiation", false))
-    , fRadCorrRandom(pset.get<unsigned int>("RadCorrRandomSeed", 0)) // 0 = unique seed from ROOT
   {
     fStopwatch.Start();
 
@@ -283,6 +282,15 @@ namespace evgen{
       // Instead, we explicitly configure the random seed for GENIEHelper:
       GENIEconfig.put("RandomSeed", seed);
     } // if no RandomSeed present
+
+    // seed for the radiative-correction photon, from NuRandomService (a separate seed from GENIE's)
+    // unless set in the configuration. Not TRandom3(0): its time-based seed was seen to repeat
+    // for grid jobs started in the same second on the same node.
+    unsigned int radcorr_seed;
+    if (!pset.get_if_present("RadCorrRandomSeed", radcorr_seed))
+      radcorr_seed = art::ServiceHandle<rndm::NuRandomService>()->getSeed("radcorr");
+    fRadCorrRandom.SetSeed(radcorr_seed);
+    mf::LogInfo("GENIEGenNGEM") << "radiative-correction photon random seed: " << radcorr_seed;
     
     fGENIEHelp = new evgb::GENIEHelper(GENIEconfig, 
 				       geo->ROOTGeoManager(),

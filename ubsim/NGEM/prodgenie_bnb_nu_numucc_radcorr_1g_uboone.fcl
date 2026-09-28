@@ -44,4 +44,4 @@ physics.producers.generator.RadCorrForceEmission: false
 // their POT is still counted)
 physics.producers.generator.RadCorrRequireRadiation: true
 
-#physics.producers.generator.RadCorrRandomSeed: 5      # default is 0 (unique seed from ROOT)
+#physics.producers.generator.RadCorrRandomSeed: 5      # default: from NuRandomService, different for each job
