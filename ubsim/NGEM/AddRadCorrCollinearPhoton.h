@@ -38,6 +38,13 @@ namespace evgen {
   // photons near maxAngleDeg. The missing momentum is not given to the
   // (unmodified) hadronic system.
   //
+  // Particle list: the GENIE lepton is kept at its index with its tree-level kinematics,
+  // but with status 3 (decayed, as for pi0s in ManuallyDecayPi0sToTwoPhotons), and the
+  // radiated lepton and the photon are appended as its status-1 daughters. Only status-1
+  // particles are tracked by Geant4. MCNeutrino::Lepton() stays the tree-level lepton, so
+  // GENIE event reweighting (which rebuilds the GENIE event with the final-state lepton
+  // momentum from MCNeutrino::Lepton()) sees exactly the original GENIE event.
+  //
   // Emission modes:
   //   forceEmission = false: a photon is added with probability P(E_tree), where P is
   //     the integral of j over the allowed region. The resulting sample is unweighted.
@@ -122,31 +129,39 @@ namespace evgen {
       for (int i = 0; i < originalMCTruth.NParticles(); ++i) {
         max_track_id = std::max(max_track_id, originalMCTruth.GetParticle(i).TrackId());
       }
-      const int gamma_track_id = max_track_id + 1;
+      const int radiated_lepton_track_id = max_track_id + 1;
+      const int gamma_track_id = max_track_id + 2;
 
       for (int i = 0; i < originalMCTruth.NParticles(); ++i) {
         const simb::MCParticle& particle = originalMCTruth.GetParticle(i);
         if (i == lepton_index) {
-          // same lepton, radiated kinematics
-          simb::MCParticle newLepton(particle.TrackId(), particle.PdgCode(), particle.Process(), particle.Mother(), particle.Mass(), particle.StatusCode());
-          newLepton.SetPolarization(particle.Polarization());
-          newLepton.SetGvtx(particle.Gvx(), particle.Gvy(), particle.Gvz(), particle.Gvt());
-          newLepton.SetRescatter(particle.Rescatter());
-          newLepton.SetWeight(particle.Weight());
-          newLepton.SetEndProcess(particle.EndProcess());
-          for (int i_d = 0; i_d < particle.NumberDaughters(); ++i_d) newLepton.AddDaughter(particle.Daughter(i_d));
-          newLepton.AddTrajectoryPoint(particle.Position(), lep_momentum);
-          newMCTruth.Add(newLepton);
+          // tree-level lepton, unchanged except for status 3 (decayed) and its two new daughters
+          // track_id, pdg, process, mother, mass, status_code
+          simb::MCParticle treeLepton(particle.TrackId(), particle.PdgCode(), particle.Process(), particle.Mother(), particle.Mass(), 3);
+          treeLepton.SetPolarization(particle.Polarization());
+          treeLepton.SetGvtx(particle.Gvx(), particle.Gvy(), particle.Gvz(), particle.Gvt());
+          treeLepton.SetRescatter(particle.Rescatter());
+          treeLepton.SetWeight(particle.Weight());
+          treeLepton.SetEndProcess(particle.EndProcess());
+          for (int i_d = 0; i_d < particle.NumberDaughters(); ++i_d) treeLepton.AddDaughter(particle.Daughter(i_d));
+          treeLepton.AddDaughter(radiated_lepton_track_id);
+          treeLepton.AddDaughter(gamma_track_id);
+          treeLepton.AddTrajectoryPoint(particle.Position(), particle.Momentum());
+          newMCTruth.Add(treeLepton);
         } else {
           simb::MCParticle non_const_particle = simb::MCParticle(particle);
-          if (particle.TrackId() == lepton.Mother()) non_const_particle.AddDaughter(gamma_track_id);
           newMCTruth.Add(non_const_particle);
         }
       }
 
-      // the photon is a sibling of the lepton, starting at the interaction vertex
-      // track_id, pdg, process, mother, mass, status_code
-      simb::MCParticle gamma(gamma_track_id, 22, "primary", lepton.Mother(), 0.0, 1);
+      // the radiated lepton and the photon start at the interaction vertex
+      simb::MCParticle radiatedLepton(radiated_lepton_track_id, lepton.PdgCode(), "primary", lepton.TrackId(), m_lep, 1);
+      radiatedLepton.SetPolarization(lepton.Polarization());
+      radiatedLepton.SetGvtx(lepton.Gvx(), lepton.Gvy(), lepton.Gvz(), lepton.Gvt());
+      radiatedLepton.AddTrajectoryPoint(lepton.Position(), lep_momentum);
+      newMCTruth.Add(radiatedLepton);
+
+      simb::MCParticle gamma(gamma_track_id, 22, "primary", lepton.TrackId(), 0.0, 1);
       gamma.SetGvtx(lepton.Gvx(), lepton.Gvy(), lepton.Gvz(), lepton.Gvt());
       gamma.SetWeight(forceEmission ? prob : 1.0);
       gamma.AddTrajectoryPoint(lepton.Position(), gamma_momentum);
