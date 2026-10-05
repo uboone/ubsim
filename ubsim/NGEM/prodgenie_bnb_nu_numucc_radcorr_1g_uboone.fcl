@@ -1,0 +1,47 @@
+#include "prodgenie_common_uboone.fcl"
+
+// this fhicl runs GENIE, then adds a QED radiative-correction photon collinear
+// with the outgoing muon of numuCC events, sampled from the collinear function of
+// Tomalak et al., Phys. Rev. D 106, 093006 (2022), Eqs. (35)-(36)
+
+// standard_overlay_gen_SimInfoMixer_prod.fcl mixes in the MCTruth etc. from "generator::GenieGenFiltered",
+// so the process name must match (otherwise no neutrino interactions are mixed into the data events)
+process_name: GenieGenFiltered
+
+outputs.out1.fileName: "prodgenie_bnb_nu_numucc_radcorr_1g_uboone_%tc_gen.root"
+
+source.maxEvents: 500
+
+physics.producers.generator: @local::microboone_genie_simple
+physics.producers.generator.GlobalTimeOffset: 3125.
+physics.producers.generator.RandomTimeOffset: 1600.
+physics.producers.generator.TopVolume: "volCryostat"
+physics.producers.generator.BeamName: "booster"
+
+// estimate the maximum path lengths through the geometry from 10000 flux rays, with a 1.3 safety factor.
+// with the default scan, GENIE occasionally aborts with "Negative no interaction probability", which
+// becomes likely here since only ~2% of numuCC interactions radiate, so each job throws ~50x more neutrinos
+physics.producers.generator.GeomScan: "flux: 10000 1.3 1" # same as e.g. prodgenie_common_uboone_NCDeltaRadFiltered.fcl
+
+// only ~2% of interactions are kept, so keep the per-interaction printout short:
+// no full particle lists, and quiet the GENIE decayer messages
+physics.producers.generator.PrintParticles: false
+physics.producers.generator.GENIEQuietStreams: ["ResonanceDecay", "Pythia6Decay"]
+
+physics.producers.generator.module_type: "GENIEGenNGEM"
+physics.producers.generator.AddRadCorrPhoton: true
+physics.producers.generator.RadCorrLeptonPdg: 13        # |pdg| of the CC lepton (13 = numuCC and anti-numuCC)
+physics.producers.generator.RadCorrDeltaE: 0.020        # GeV, minimum photon energy (soft-photon cutoff)
+physics.producers.generator.RadCorrMaxAngle: 60.        # degrees, maximum muon-photon opening angle
+
+// RadCorrForceEmission: false -> a photon is added with the physical probability P(E_tree),
+//                                so the sample is unweighted (per-POT normalization is correct)
+// RadCorrForceEmission: true  -> every eligible event gets a photon, with the photon
+//                                MCParticle weight set to P(E_tree), to be applied as an event weight
+physics.producers.generator.RadCorrForceEmission: false
+
+// only keep interactions in which a photon was added (other interactions are skipped like a filter,
+// their POT is still counted)
+physics.producers.generator.RadCorrRequireRadiation: true
+
+#physics.producers.generator.RadCorrRandomSeed: 5      # default: from NuRandomService, different for each job
