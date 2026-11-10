@@ -5,5 +5,5 @@
 # GXMLPATH by the ExtGen fcl files (GXMLPATH: "$UBSIM_DIR/gxml").
 
 install( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-         DESTINATION ${product}/${version}/gxml
+         DESTINATION gxml
          FILES_MATCHING PATTERN "*.xml" )

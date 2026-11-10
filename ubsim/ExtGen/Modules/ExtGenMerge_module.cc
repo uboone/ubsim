@@ -54,7 +54,7 @@
 #include "canvas/Utilities/InputTag.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
-#include "nutools/RandomUtils/NuRandomService.h"
+#include "nurandom/RandomUtils/NuRandomService.h"
 
 #include "dk2nu/tree/NuChoice.h"
 #include "dk2nu/tree/dk2nu.h"
@@ -152,7 +152,7 @@ ubext::ExtGenMerge::ExtGenMerge(fhicl::ParameterSet const& p)
   , fRandomAzimuth(p.get<bool>("RandomAzimuth", true))
   , fRequireAllServed(p.get<bool>("RequireAllServed", true))
   // seed from NuRandomService unless "Seed" is set
-  , fEngine(art::ServiceHandle<rndm::NuRandomService>()->createEngine(*this, p, "Seed"))
+  , fEngine(art::ServiceHandle<rndm::NuRandomService>{}->registerAndSeedEngine(createEngine(0, "HepJamesRandom", "extgen"), "HepJamesRandom", "extgen", p, "Seed"))
 {
   fRequests = ReadRequests(fRequestFile);
   fServed = ReadServed(fServedFile);
@@ -181,7 +181,7 @@ ubext::ExtGenMerge::ExtGenMerge(fhicl::ParameterSet const& p)
 void ubext::ExtGenMerge::beginRun(art::Run& r)
 {
   auto const& rd = r.getValidHandle<sumdata::RunData>(fInputTruth);
-  r.put(std::make_unique<sumdata::RunData>(*rd));
+  r.put(std::make_unique<sumdata::RunData>(*rd), art::fullRun());
 }
 
 //------------------------------------------------------------------------------
@@ -190,7 +190,7 @@ void ubext::ExtGenMerge::endSubRun(art::SubRun& sr)
   // Step A's POT for this subrun (with one event per subrun, the exact POT
   // behind that event).
   auto const& pot = sr.getValidHandle<sumdata::POTSummary>(fInputTruth);
-  sr.put(std::make_unique<sumdata::POTSummary>(*pot));
+  sr.put(std::make_unique<sumdata::POTSummary>(*pot), art::fullSubRun());
 }
 
 //------------------------------------------------------------------------------

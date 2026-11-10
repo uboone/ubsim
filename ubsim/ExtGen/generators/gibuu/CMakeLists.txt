@@ -4,10 +4,9 @@
 # directory they are installed in, so they are installed together.
 cet_make_exec( extgen_gibuu_convert
                SOURCE extgen_gibuu_convert.cc
-               LIBRARIES ubsim_ExtGen_Modules
-                         cetlib_except
-                         ${ROOT_BASIC_LIB_LIST}
-                         ${ROOT_PHYSICS}
+               LIBRARIES
+                 ubsim::ExtGen_Modules
+                 nusimdata::SimulationBase
              )
 
 cet_script( extgen_gibuu_card.sh extgen_gibuu_scan.sh extgen_gibuu_scan_grid.sh
