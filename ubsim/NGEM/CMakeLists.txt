@@ -12,9 +12,11 @@ cet_build_plugin(
   nugen::EventGeneratorBase
   nugen::EventGeneratorBase_GENIE
   art_root_io::TFileService_service
+  log4cpp::log4cpp
   dk2nu::Genie
   dk2nu::Tree
   GENIE::GFwEG
+  GENIE::GFwMsg
   ROOT::Tree
   ROOT::EG
 )
